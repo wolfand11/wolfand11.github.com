@@ -397,7 +397,7 @@ function DijkstraSSSPaths(g, s, isPNodeInfo)
     local nodeInfo = nil
     local node = nil
     while #queue>0 do
-        curNode = table.remove(queue,1)
+        curNode = ExtractMinWeightNode(nodeInfoMap, queue)
         nodeInfoMap[curNode].color = NodeColor.kBlack
         curNodeDis = nodeInfoMap[curNode].distance
 

@@ -397,7 +397,9 @@ function DijkstraSSSPaths(g, s, isPNodeInfo)
     local nodeInfo = nil
     local node = nil
     while #queue>0 do
-        curNode = ExtractMinWeightNode(nodeInfoMap, queue)
+        --curNode = table.remove(queue,1)
+		curNode = table.remove(queue)
+        --curNode = ExtractMinWeightNode(nodeInfoMap, queue)
         nodeInfoMap[curNode].color = NodeColor.kBlack
         curNodeDis = nodeInfoMap[curNode].distance
 
@@ -429,6 +431,11 @@ function DijkstraSSSPaths(g, s, isPNodeInfo)
 end
 ------------------------------------------------------------------------------------------------
 -- A Star Search Path
+
+------------------------------------------------------------------------------------------------
+-- Bellman Ford Shortest Path
+function BellmanFordSSSPaths(g, s, isPNodeInfo)
+end
 
 ------------------------------------------------------------------------------------------------
 --

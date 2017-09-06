@@ -4766,9 +4766,9 @@ When viewing imported Animation keyframes, the Animation window provides a read-
             
             <tag> unity </tag>
             
-            <tag> animation </tag>
-            
             <tag> unity-doc </tag>
+            
+            <tag> animation </tag>
             
         </tags>
         
@@ -5023,9 +5023,9 @@ When viewing imported Animation keyframes, the Animation window provides a read-
             
             <tag> unity </tag>
             
-            <tag> animation </tag>
-            
             <tag> unity-doc </tag>
+            
+            <tag> animation </tag>
             
         </tags>
         
@@ -5208,9 +5208,9 @@ Unity intends to phase out the Legacy animation system over time for all cases b
             
             <tag> unity </tag>
             
-            <tag> animation </tag>
-            
             <tag> unity-doc </tag>
+            
+            <tag> animation </tag>
             
         </tags>
         
@@ -13615,215 +13615,6 @@ class in UnityEditor/Inherits from:Object<br>
     </entry>
     
     <entry>
-      <title><![CDATA[Unity 5 Lighting Cookbook]]></title>
-      <url>http://wolfand11.coding.me/2016/08/20/unity/Unity5LightingCookbook/</url>
-      <content type="html"><![CDATA[
-
-<p>
-这是一篇译文，原文地址：<a href="http://www.edy.es/dev/docs/unity-5-lighting-cookbook/" target="_blank" rel="external">http://www.edy.es/dev/docs/unity-5-lighting-cookbook/</a><br>
-</p>
-<a id="more"></a>
-
-<p>
-这篇笔记的主题是关于如何运用 Unity5 的光照。<br>
-文章中截图所示的工程可以在 Github 上找到，地址为 <a href="https://github.com/EdyJ/unity-5-lighting-cookbook" target="_blank" rel="external">https://github.com/EdyJ/unity-5-lighting-cookbook</a><br>
-为了防止上面的 github 地址失效，我 fork 了一份，地址为 <a href="https://github.com/wolfand11/unity-5-lighting-cookbook" target="_blank" rel="external">https://github.com/wolfand11/unity-5-lighting-cookbook</a><br>
-</p>
-
-<div id="outline-container-orgheadline4" class="outline-2">
-<h2 id="orgheadline4"><span class="section-number-2">1</span> Standard realtime lighting 标准的实时光照</h2>
-<div class="outline-text-2" id="text-1">
-<p>
-标准的实时光照包含了环境光照，环境反射以及实时光照和阴影。它不需要任何全局照明或预处理工作等等。Lighting-&gt;Scene 下的 Precomputed Realtime GI 和 Baked GI 选项都可以关闭。<br>
-<img src="http://www.edy.es/dev/wp-content/uploads/2015/03/Unity-5-Lighting-Cookbook-Standard-Lighting.png"><br>
-</p>
-</div>
-<div id="outline-container-orgheadline1" class="outline-3">
-<h3 id="orgheadline1"><span class="section-number-3">1.1</span> Ambient Light 环境光</h3>
-<div class="outline-text-3" id="text-1-1">
-<p>
-环境光会影响到所有物体。<br>
-<img src="http://www.edy.es/dev/wp-content/uploads/2015/03/Unity-5-Lighting-Cookbook-Ambient-Light.png"><br>
-上图中选项可以设置 环境光源（天空盒，渐变色，颜色） 以及 强度<br>
-</p>
-</div>
-</div>
-<div id="outline-container-orgheadline2" class="outline-3">
-<h3 id="orgheadline2"><span class="section-number-3">1.2</span> Environment Reflection 环境反射</h3>
-<div class="outline-text-3" id="text-1-2">
-<p>
-反射路径会随着摄像机的角度而改变。应用独立的环境光。也会影响影响菲涅尔效果。<br>
-如果反射探针被应用，他们将成为 Reflection Source 并且物体的 Intensity 会受到他们的影响，所以全局的反射设置不会影响这些物体。Reflection Bounces 定义了反射可以在多个探针之间可以回弹多少次（例如：一个探针采集的物体在另一个探针的影响下）。<br>
-<img src="http://www.edy.es/dev/wp-content/uploads/2015/03/Unity-5-Lighting-Cookbook-Environment-Reflection.png"><br>
-<img src="http://www.edy.es/dev/wp-content/uploads/2015/03/Unity-5-Lighting-Cookbook-Reflection-Probes.png"><br>
-上面第一幅图片：Reflection Source (Skybox, Cubemap), Resolution and Reflection Intensity.<br>
-上面第二幅图片：一个反射探针影响这个物体，所以全局环境反射源不会影响这个网格。<br>
-</p>
-</div>
-</div>
-<div id="outline-container-orgheadline3" class="outline-3">
-<h3 id="orgheadline3"><span class="section-number-3">1.3</span> Standard Lights</h3>
-<div class="outline-text-3" id="text-1-3">
-<p>
-场景中，所有的标准实时光照应用方向光和阴影到物体上。<br>
-默认情况下，场景中的第一个方向光被当做太阳。默认的天空盒会基于太阳的水平倾斜度来调整它的强度和颜色。也可以选择特定的方向光作为太阳来影响默认的天空盒。<br>
-<img src="http://www.edy.es/dev/wp-content/uploads/2015/03/Unity-5-Lighting-Cookbook-Standard-Light1.png"><br>
-<img src="http://www.edy.es/dev/wp-content/uploads/2015/03/Unity-5-Lighting-Cookbook-Skybox-Sun.png"><br>
-</p>
-</div>
-</div>
-</div>
-<div id="outline-container-orgheadline8" class="outline-2">
-<h2 id="orgheadline8"><span class="section-number-2">2</span> Precomputed realtime lighting 预计算的实时光照</h2>
-<div class="outline-text-2" id="text-2">
-<p>
-预计算的实时光照添加了实时的光照回弹，颜色渗透以及发光材质。任何属性都可以动态的修改（灯光颜色、强度、材质颜色、材质发射颜色等），场景中的光照会实时地对应获得更新。<br>
-</p>
-
-<p>
-Lighting &gt; Scene &gt; Precomputed Realtime GI enabled, Baked GI disabled.<br>
-<img src="http://www.edy.es/dev/wp-content/uploads/2015/03/Unity-5-Lighting-Cookbook-Precomputed-Realtime-GI-Settings1.png"><br>
-</p>
-</div>
-<div id="outline-container-orgheadline5" class="outline-3">
-<h3 id="orgheadline5"><span class="section-number-3">2.1</span> Light Bounces 光照回弹</h3>
-<div class="outline-text-3" id="text-2-1">
-<p>
-每个灯光可以被配置为从物体反弹并且影响其他的物体。<br>
-<img src="http://www.edy.es/dev/wp-content/uploads/2015/03/Unity-5-Lighting-Cookbook-Light-Bounces.png"><br>
-</p>
-</div>
-</div>
-<div id="outline-container-orgheadline6" class="outline-3">
-<h3 id="orgheadline6"><span class="section-number-3">2.2</span> Emissive Materials</h3>
-<div class="outline-text-3" id="text-2-2">
-<p>
-被标记为 Static 物体包含一个发射材质会依据它自己的几何形状来发光。<br>
-<img src="http://www.edy.es/dev/wp-content/uploads/2015/03/Unity-5-Lighting-Cookbook-Emissive-Object.png"><br>
-<img src="http://www.edy.es/dev/wp-content/uploads/2015/03/Unity-5-Lighting-Cookbook-Emissive-Material.png"><br>
-场景中被标记为 Static 的物体上会执行预计算实时光照。当被标记为 Static 的物体的 Transform 被改变，或者 Static 标记本身改变都会触发预计算阶段。<br>
-参数 Lighting &gt; Scene &gt; Precomputed Realtime GI &gt; Realtime Resolution 直接影响预计算数据所花费的时间。在 Unity 编辑器中使用尽可能低的值(0.01-0.5)可以快速的创建原型。<br>
-<img src="http://www.edy.es/dev/wp-content/uploads/2015/03/Unity-5-Lighting-Cookbook-Precomputed-Resolution.png"><br>
-CPU 的使用会影响运行时动态光照改变的反应。在编辑器中烘焙预计算数据的 CPU 使用是不会有什么影响的。<br>
-光照回弹和材质发射只会影响静态物体。预计算效果要应用到动态物体上必须使用光照探针。<br>
-</p>
-</div>
-</div>
-<div id="outline-container-orgheadline7" class="outline-3">
-<h3 id="orgheadline7"><span class="section-number-3">2.3</span> Ambient Light in precomputed realtime lighting</h3>
-<div class="outline-text-3" id="text-2-3">
-<p>
-环境光会影响到一个静态几何体的一些不同部位。这些部位会被光源从外部照射到，背面也包括在内。例如，在室内场景中由静态几何体定义了封闭的外壳，环境光对静态网格将不会有任何影响。光可以从外部照射到该静态几何体的任何缝隙或部位将会通过环境光来受到影响。<br>
-</p>
-</div>
-</div>
-</div>
-<div id="outline-container-orgheadline9" class="outline-2">
-<h2 id="orgheadline9"><span class="section-number-2">3</span> Baked lightmaps 烘焙光照</h2>
-<div class="outline-text-2" id="text-3">
-<p>
-环境光，标准光照（烘焙或混合），光照回弹以及发射材质都被烘焙到光照贴图中。只有环境反射可以在运行时修改。<br>
-</p>
-
-<p>
-Lighting &gt; Scene &gt; Baked GI 开启, Precomputed Realtime GI 关闭.<br>
-<img src="http://www.edy.es/dev/wp-content/uploads/2015/03/Unity-5-Lighting-Cookbook-Baked-GI-Settings1.png"><br>
-标准光照可以被配置为 Baked 或者 Mixed 从而允许无缝地在只烘焙和只实时模式之间切换.<br>
-</p>
-
-<p>
-参数 Lighting &gt; Scene &gt; Baked GI &gt; Baked Resolution 直接影响生成光照贴图所花费的时间。使用编辑器时，尽可能使用 1-4 来快速建立原型。<br>
-<img src="http://www.edy.es/dev/wp-content/uploads/2015/03/Unity-5-Lighting-Cookbook-Baked-Resolution.png"><br>
-修改任何涉及到的光照（环境光，标准光照，光照回弹，发射材质）参数，或者修改任何静态物体将会触发新光照贴图的计算阶段。<br>
-</p>
-</div>
-</div>
-<div id="outline-container-orgheadline10" class="outline-2">
-<h2 id="orgheadline10"><span class="section-number-2">4</span> General GI settings 通用的全局照明设置</h2>
-<div class="outline-text-2" id="text-4">
-<p>
-<img src="http://www.edy.es/dev/wp-content/uploads/2015/03/Unity-5-Lighting-Cookbook-General-GI.png"><br>
-直接光照包括环境光、光照回弹、发射材质(在靠近的物体上的光照效果，不是发射物体他们自己上的)的光照效果，但不包括环境反射的光照效果。Scene 视图窗口中选择 Irradiance 可以显示场景中的直接灯光：<br>
-<img src="http://www.edy.es/dev/wp-content/uploads/2015/03/Unity-5-Lighting-Cookbook-Irradiance-Indirect-Light.png"><br>
-</p>
-
-<p>
-下面这些设置会同时影响直接光照，无论是实时模式还是烘焙模式：<br>
-Indirect intensity (直接光照强度)： 缩放直接光照(环境光照+回弹的光照+发射的光照)<br>
-Bounce Boost (回弹增量): 光从一个表面回弹到下一个表面的强度. 回弹的光和物体表面的照度相乘通过该设置来增强。<br>
-</p>
-
-<p>
-下面的设置只会影响烘焙全局照明模式：<br>
-Directional mode (方向模式): 烘焙模式下，在光照贴图中是否保存方向和镜面信息。<br>
-Atlas size (地图尺寸): 烘焙模式下，光照贴图的尺寸.<br>
-</p>
-</div>
-</div>
-<div id="outline-container-orgheadline13" class="outline-2">
-<h2 id="orgheadline13"><span class="section-number-2">5</span> Combining different lighting methods 组合不同的光照方法</h2>
-<div class="outline-text-2" id="text-5">
-<p>
-Unity5 的教程-Lighting and Rendering 对于理解 Unity5 中全局照明的见解来说是必读的.下面引号中的内容就是摘自这篇教程。<br>
-这篇教程的地址：<a href="http://unity3d.com/cn/learn/tutorials/topics/graphics/unity-5-lighting-and-rendering" target="_blank" rel="external">http://unity3d.com/cn/learn/tutorials/topics/graphics/unity-5-lighting-and-rendering</a><br>
-</p>
-</div>
-<div id="outline-container-orgheadline11" class="outline-3">
-<h3 id="orgheadline11"><span class="section-number-3">5.1</span> Precomputed realtime lighting + Baked lightmaps</h3>
-<div class="outline-text-3" id="text-5-1">
-<p>
-这样做这不是一个好主意，即使默认情况下会同时开启这两种光照：<br>
-</p>
-<pre class="example">
-// 下面引用自 Unity5 的教程-Lighting and Rendering
-尽管可以同时使用烘焙全局光照和预计算实时全局光照，需要注意的是同时渲染两个系统所涉及的性能消耗是他们每个所消耗的总和。我们不仅需要存储两套光照贴图到显存中，而且我们也要在着色器中负担这两套光照贴图的解码处理。
-...... 使用哪种方式必须基于你的项目性质和目标平台来进行评估。记住当面对多个不同的硬件平台，通常最低性能的平台将会决定采用什么样的方式。
-</pre>
-</div>
-</div>
-<div id="outline-container-orgheadline12" class="outline-3">
-<h3 id="orgheadline12"><span class="section-number-3">5.2</span> Standard realtime lighthting + Baked lightmaps</h3>
-<div class="outline-text-3" id="text-5-2">
-<p>
-对于处于相同的恒定光照条件下的静态和动态的物体来说，这是一个实用的方法：<br>
-</p>
-<pre class="example">
-在 Light 组件中，选择'Mixed'烘焙模式，被标记为静态的物体将在他们的烘焙光照贴图中包含这个光照。然而，不同于被标记为'Baked'的光照，混合的光照将依然会对非静态的对象产生实时、直接的光照效果。当你在静态环境中需要使用光照贴图，但是你依然希望有一个角色使用这些相同的光照来产生实时的阴影到光照贴图过的几何体上时，'Mixed'方式将会很有用。
-</pre>
-</div>
-</div>
-</div>
-<div id="outline-container-orgheadline14" class="outline-2">
-<h2 id="orgheadline14"><span class="section-number-2">6</span> Generating lightmap files 生成光照贴图</h2>
-<div class="outline-text-2" id="text-6">
-<p>
-默认情况下，每次光照贴图计算阶段被触发时(例如，移动静态元素)，光照贴图文件在内部被生成和存储。<br>
-通过关闭 Lighting 窗口中的自动选项，然后，点击 Build 按钮，这样光照贴图也可以被手动计算。生成的图片会被存储在和场景同名的文件夹下。烘焙数据包含了光照贴图和反射探针。<br>
-General GI 部分的 Directional Mode 和 Atlas Size 参数会影响光照贴图的类型和数目。<br>
-<img src="http://www.edy.es/dev/wp-content/uploads/2015/03/Unity-5-Lighting-Cookbook-Generating-Lightmap-Files.png"><br>
-</p>
-</div>
-</div>
-]]></content>
-      
-        <categories>
-            
-            <category> unity </category>
-            
-        </categories>
-        
-        
-        <tags>
-            
-            <tag> unity </tag>
-            
-            <tag> graphics </tag>
-            
-        </tags>
-        
-    </entry>
-    
-    <entry>
       <title><![CDATA[UnityShaderAndEffectCookbook]]></title>
       <url>http://wolfand11.coding.me/2016/08/20/unity/UnityShaderAndEffectCookbook/</url>
       <content type="html"><![CDATA[
@@ -15405,177 +15196,209 @@ OpenGL 为右手坐标系<br>
     </entry>
     
     <entry>
-      <title><![CDATA[Git Github]]></title>
-      <url>http://wolfand11.coding.me/2016/08/14/tools/GitAndGithub/</url>
+      <title><![CDATA[Unity 5 Lighting Cookbook]]></title>
+      <url>http://wolfand11.coding.me/2016/08/20/unity/Unity5LightingCookbook/</url>
       <content type="html"><![CDATA[
 
-
-<div id="outline-container-orgheadline11" class="outline-2">
-<h2 id="orgheadline11"><span class="section-number-2">1</span> Git Github SourceTree</h2>
-<div class="outline-text-2" id="text-1">
-<pre class="example">
-该文档主要纪录 Git Github SourceTree 相关工具的使用。
-</pre>
-
+<p>
+这是一篇译文，原文地址：<a href="http://www.edy.es/dev/docs/unity-5-lighting-cookbook/" target="_blank" rel="external">http://www.edy.es/dev/docs/unity-5-lighting-cookbook/</a><br>
+</p>
 <a id="more"></a>
-</div>
 
-<div id="outline-container-orgheadline5" class="outline-3">
-<h3 id="orgheadline5"><span class="section-number-3">1.1</span> 常用命令</h3>
+<p>
+这篇笔记的主题是关于如何运用 Unity5 的光照。<br>
+文章中截图所示的工程可以在 Github 上找到，地址为 <a href="https://github.com/EdyJ/unity-5-lighting-cookbook" target="_blank" rel="external">https://github.com/EdyJ/unity-5-lighting-cookbook</a><br>
+为了防止上面的 github 地址失效，我 fork 了一份，地址为 <a href="https://github.com/wolfand11/unity-5-lighting-cookbook" target="_blank" rel="external">https://github.com/wolfand11/unity-5-lighting-cookbook</a><br>
+</p>
+
+<div id="outline-container-orgheadline4" class="outline-2">
+<h2 id="orgheadline4"><span class="section-number-2">1</span> Standard realtime lighting 标准的实时光照</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+标准的实时光照包含了环境光照，环境反射以及实时光照和阴影。它不需要任何全局照明或预处理工作等等。Lighting-&gt;Scene 下的 Precomputed Realtime GI 和 Baked GI 选项都可以关闭。<br>
+<img src="http://www.edy.es/dev/wp-content/uploads/2015/03/Unity-5-Lighting-Cookbook-Standard-Lighting.png"><br>
+</p>
+</div>
+<div id="outline-container-orgheadline1" class="outline-3">
+<h3 id="orgheadline1"><span class="section-number-3">1.1</span> Ambient Light 环境光</h3>
 <div class="outline-text-3" id="text-1-1">
-</div><div id="outline-container-orgheadline3" class="outline-4">
-<h4 id="orgheadline3"><span class="section-number-4">1.1.1</span> git</h4>
-<div class="outline-text-4" id="text-1-1-1">
-</div><ol class="org-ol"><li><a id="orgheadline1"></a>project manager<br><div class="outline-text-5" id="text-1-1-1-1">
-<pre class="example">
-克隆默认分支的代码 git clone git://github.com/cocos2d/CocosBuilder.git ./CocosBuilder_origin_default
-克隆指定分支的代码 git clone -b develop git://github.com/cocos2d/CocosBuilder.git ./CocosBuilder_origin_develop
-在本地初始化一个空仓库			git init
-获得本地分支信息                   	git branch
-创建新的本地分支                           git branch new_branch_name
-切换分支                                	git checkout des_branch_name
-创建并切换分支                           	git checkout -b new_branch_name
-重命名分支				git branch -m|-M old_name new_name
-删除分支					git branch -d|-D branch_name
-查看 git branch 帮助                      	git help branch
-获得 romote 信息                     	git remote (git remote -v)
-添加新的 remote                     	git remote add &lt;remote_name&gt; &lt;remote_url&gt;
-删除一个 remote                     	git remote rm &lt;remote_name&gt;
-重命名一个 remote                   	git remote rename &lt;remote_old_name&gt; &lt;remote_new_name&gt;
-将本地代码 push 到远程分支（远程分支不存在则创建）	git push &lt;remote_name&gt; &lt;local_branch&gt;:&lt;remote_branch&gt;
-删除 remote 的一个分支                   	git push &lt;remote_name&gt; :&lt;remote_branch&gt;
-添加子工程                             	git submodule add 仓库地址 路径
-删除子工程
-</pre>
-</div></li>
-<li><a id="orgheadline2"></a>content manager<br><div class="outline-text-5" id="text-1-1-1-2">
-<pre class="example">
-将本地修改加入索引			git add
-取消本地内容修改 			  git reset --hard HEAD
-回退到某个版本					git reset --hard &lt;commit id&gt;
-提交本地修改到分支			git commit -m "commit msg"
-取消前一次版本的修改内容	git revert HEAD
-取消某个版本的修改内容		git revert &lt;commit id&gt;
-</pre>
-</div></li></ol>
-</div>
-<div id="outline-container-orgheadline4" class="outline-4">
-<h4 id="orgheadline4"><span class="section-number-4">1.1.2</span> git svn</h4>
-<div class="outline-text-4" id="text-1-1-2">
-<pre class="example">
-克隆 svn 仓库到本地仓库   git svn clone http://your.svn.url/svn/Demo
-同步 svn 仓库到本地仓库   git svn rebase
-将修改添加到本地仓库    git add/commit
-将本地仓库同步到 svn 仓库 git svn dcommit (git svn dcommit 不会将本地的多个版本按时间顺序提交给 svn 服务器，而是将这些合为一个进行提交)
-处理代码冲突的步骤：
-（1）git svn dcommit 时提示需要更新,执行 git svn rebase
-（2）解决冲突，执行 git add confilict.files 告知 git 已经解决冲突
-（3）执行 git rebase --continue 自己对 confilict.files 的修改进入到本地仓库
-（4）执行 git svn dcommit 将改动同步到 svn 仓库
-
-为本地代码添加 git 仓库
-git remote add my_origin https://github.com/wolfand11/XXX_SVN
-将本地代码同步到 git 仓库
-git push my_origin master:master
-</pre>
+<p>
+环境光会影响到所有物体。<br>
+<img src="http://www.edy.es/dev/wp-content/uploads/2015/03/Unity-5-Lighting-Cookbook-Ambient-Light.png"><br>
+上图中选项可以设置 环境光源（天空盒，渐变色，颜色） 以及 强度<br>
+</p>
 </div>
 </div>
-</div>
-
-<div id="outline-container-orgheadline6" class="outline-3">
-<h3 id="orgheadline6"><span class="section-number-3">1.2</span> 更新自己 fork 出来的源代码</h3>
+<div id="outline-container-orgheadline2" class="outline-3">
+<h3 id="orgheadline2"><span class="section-number-3">1.2</span> Environment Reflection 环境反射</h3>
 <div class="outline-text-3" id="text-1-2">
-<pre class="example">
-问题说明：
-从 https://github.com/cocos2d/CocosBuilder fork 出来一份 CocosBuilder 的源代码 MyCocosBuilder，
-过一段时间以后，原来的 CocosBuilder 的 develop 分支有更新，需要将 CocosBuilder/develop 的更新添加到 MyCocosBuilder/develop 中。
-操作方法：
-(1)获得最新 MyCocosBuilder/develop 源代码
-git clone -b develop https://github.com/wolfand11/CocosBuilder_v2_1.git ./MyCocosBuilder
-cd MyCocosBuilder
-git submodule update --init --recursive
-(2)添加新的远程库
-执行命令 git remote add real_origin https://github.com/cocos2d/CocosBuilder
-(3)获得 real_origin/develop
-git fetch real_origin develop
-(4)Merge 修改到本地代码
-git merge real_origin/develop
-(5)更新 origin/develop 分支
-push 本地的 develop 分支到 origin/develop 分支。即 https://github.com/wolfand11/CocosBuilder_v2_1.git 的 develop 分支
-</pre>
+<p>
+反射路径会随着摄像机的角度而改变。应用独立的环境光。也会影响影响菲涅尔效果。<br>
+如果反射探针被应用，他们将成为 Reflection Source 并且物体的 Intensity 会受到他们的影响，所以全局的反射设置不会影响这些物体。Reflection Bounces 定义了反射可以在多个探针之间可以回弹多少次（例如：一个探针采集的物体在另一个探针的影响下）。<br>
+<img src="http://www.edy.es/dev/wp-content/uploads/2015/03/Unity-5-Lighting-Cookbook-Environment-Reflection.png"><br>
+<img src="http://www.edy.es/dev/wp-content/uploads/2015/03/Unity-5-Lighting-Cookbook-Reflection-Probes.png"><br>
+上面第一幅图片：Reflection Source (Skybox, Cubemap), Resolution and Reflection Intensity.<br>
+上面第二幅图片：一个反射探针影响这个物体，所以全局环境反射源不会影响这个网格。<br>
+</p>
 </div>
 </div>
-
-<div id="outline-container-orgheadline7" class="outline-3">
-<h3 id="orgheadline7"><span class="section-number-3">1.3</span> 在自己 fork 出来的源代码中，以最新源码为基础创建新分支</h3>
+<div id="outline-container-orgheadline3" class="outline-3">
+<h3 id="orgheadline3"><span class="section-number-3">1.3</span> Standard Lights</h3>
 <div class="outline-text-3" id="text-1-3">
+<p>
+场景中，所有的标准实时光照应用方向光和阴影到物体上。<br>
+默认情况下，场景中的第一个方向光被当做太阳。默认的天空盒会基于太阳的水平倾斜度来调整它的强度和颜色。也可以选择特定的方向光作为太阳来影响默认的天空盒。<br>
+<img src="http://www.edy.es/dev/wp-content/uploads/2015/03/Unity-5-Lighting-Cookbook-Standard-Light1.png"><br>
+<img src="http://www.edy.es/dev/wp-content/uploads/2015/03/Unity-5-Lighting-Cookbook-Skybox-Sun.png"><br>
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline8" class="outline-2">
+<h2 id="orgheadline8"><span class="section-number-2">2</span> Precomputed realtime lighting 预计算的实时光照</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+预计算的实时光照添加了实时的光照回弹，颜色渗透以及发光材质。任何属性都可以动态的修改（灯光颜色、强度、材质颜色、材质发射颜色等），场景中的光照会实时地对应获得更新。<br>
+</p>
+
+<p>
+Lighting &gt; Scene &gt; Precomputed Realtime GI enabled, Baked GI disabled.<br>
+<img src="http://www.edy.es/dev/wp-content/uploads/2015/03/Unity-5-Lighting-Cookbook-Precomputed-Realtime-GI-Settings1.png"><br>
+</p>
+</div>
+<div id="outline-container-orgheadline5" class="outline-3">
+<h3 id="orgheadline5"><span class="section-number-3">2.1</span> Light Bounces 光照回弹</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+每个灯光可以被配置为从物体反弹并且影响其他的物体。<br>
+<img src="http://www.edy.es/dev/wp-content/uploads/2015/03/Unity-5-Lighting-Cookbook-Light-Bounces.png"><br>
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline6" class="outline-3">
+<h3 id="orgheadline6"><span class="section-number-3">2.2</span> Emissive Materials</h3>
+<div class="outline-text-3" id="text-2-2">
+<p>
+被标记为 Static 物体包含一个发射材质会依据它自己的几何形状来发光。<br>
+<img src="http://www.edy.es/dev/wp-content/uploads/2015/03/Unity-5-Lighting-Cookbook-Emissive-Object.png"><br>
+<img src="http://www.edy.es/dev/wp-content/uploads/2015/03/Unity-5-Lighting-Cookbook-Emissive-Material.png"><br>
+场景中被标记为 Static 的物体上会执行预计算实时光照。当被标记为 Static 的物体的 Transform 被改变，或者 Static 标记本身改变都会触发预计算阶段。<br>
+参数 Lighting &gt; Scene &gt; Precomputed Realtime GI &gt; Realtime Resolution 直接影响预计算数据所花费的时间。在 Unity 编辑器中使用尽可能低的值(0.01-0.5)可以快速的创建原型。<br>
+<img src="http://www.edy.es/dev/wp-content/uploads/2015/03/Unity-5-Lighting-Cookbook-Precomputed-Resolution.png"><br>
+CPU 的使用会影响运行时动态光照改变的反应。在编辑器中烘焙预计算数据的 CPU 使用是不会有什么影响的。<br>
+光照回弹和材质发射只会影响静态物体。预计算效果要应用到动态物体上必须使用光照探针。<br>
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline7" class="outline-3">
+<h3 id="orgheadline7"><span class="section-number-3">2.3</span> Ambient Light in precomputed realtime lighting</h3>
+<div class="outline-text-3" id="text-2-3">
+<p>
+环境光会影响到一个静态几何体的一些不同部位。这些部位会被光源从外部照射到，背面也包括在内。例如，在室内场景中由静态几何体定义了封闭的外壳，环境光对静态网格将不会有任何影响。光可以从外部照射到该静态几何体的任何缝隙或部位将会通过环境光来受到影响。<br>
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline9" class="outline-2">
+<h2 id="orgheadline9"><span class="section-number-2">3</span> Baked lightmaps 烘焙光照</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+环境光，标准光照（烘焙或混合），光照回弹以及发射材质都被烘焙到光照贴图中。只有环境反射可以在运行时修改。<br>
+</p>
+
+<p>
+Lighting &gt; Scene &gt; Baked GI 开启, Precomputed Realtime GI 关闭.<br>
+<img src="http://www.edy.es/dev/wp-content/uploads/2015/03/Unity-5-Lighting-Cookbook-Baked-GI-Settings1.png"><br>
+标准光照可以被配置为 Baked 或者 Mixed 从而允许无缝地在只烘焙和只实时模式之间切换.<br>
+</p>
+
+<p>
+参数 Lighting &gt; Scene &gt; Baked GI &gt; Baked Resolution 直接影响生成光照贴图所花费的时间。使用编辑器时，尽可能使用 1-4 来快速建立原型。<br>
+<img src="http://www.edy.es/dev/wp-content/uploads/2015/03/Unity-5-Lighting-Cookbook-Baked-Resolution.png"><br>
+修改任何涉及到的光照（环境光，标准光照，光照回弹，发射材质）参数，或者修改任何静态物体将会触发新光照贴图的计算阶段。<br>
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline10" class="outline-2">
+<h2 id="orgheadline10"><span class="section-number-2">4</span> General GI settings 通用的全局照明设置</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+<img src="http://www.edy.es/dev/wp-content/uploads/2015/03/Unity-5-Lighting-Cookbook-General-GI.png"><br>
+直接光照包括环境光、光照回弹、发射材质(在靠近的物体上的光照效果，不是发射物体他们自己上的)的光照效果，但不包括环境反射的光照效果。Scene 视图窗口中选择 Irradiance 可以显示场景中的直接灯光：<br>
+<img src="http://www.edy.es/dev/wp-content/uploads/2015/03/Unity-5-Lighting-Cookbook-Irradiance-Indirect-Light.png"><br>
+</p>
+
+<p>
+下面这些设置会同时影响直接光照，无论是实时模式还是烘焙模式：<br>
+Indirect intensity (直接光照强度)： 缩放直接光照(环境光照+回弹的光照+发射的光照)<br>
+Bounce Boost (回弹增量): 光从一个表面回弹到下一个表面的强度. 回弹的光和物体表面的照度相乘通过该设置来增强。<br>
+</p>
+
+<p>
+下面的设置只会影响烘焙全局照明模式：<br>
+Directional mode (方向模式): 烘焙模式下，在光照贴图中是否保存方向和镜面信息。<br>
+Atlas size (地图尺寸): 烘焙模式下，光照贴图的尺寸.<br>
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline13" class="outline-2">
+<h2 id="orgheadline13"><span class="section-number-2">5</span> Combining different lighting methods 组合不同的光照方法</h2>
+<div class="outline-text-2" id="text-5">
+<p>
+Unity5 的教程-Lighting and Rendering 对于理解 Unity5 中全局照明的见解来说是必读的.下面引号中的内容就是摘自这篇教程。<br>
+这篇教程的地址：<a href="http://unity3d.com/cn/learn/tutorials/topics/graphics/unity-5-lighting-and-rendering" target="_blank" rel="external">http://unity3d.com/cn/learn/tutorials/topics/graphics/unity-5-lighting-and-rendering</a><br>
+</p>
+</div>
+<div id="outline-container-orgheadline11" class="outline-3">
+<h3 id="orgheadline11"><span class="section-number-3">5.1</span> Precomputed realtime lighting + Baked lightmaps</h3>
+<div class="outline-text-3" id="text-5-1">
+<p>
+这样做这不是一个好主意，即使默认情况下会同时开启这两种光照：<br>
+</p>
 <pre class="example">
-问题说明：
-从 https://github.com/cocos2d/CocosBuilder fork 出来一份 CocosBuilder 的源代码 MyCocosBuilder，
-并且在 MyCocosBuilder/develop 分支的基础上添加自己的分支 v2_0，.过一段时间以后，需要添加分支 MyCocosBuilder/v3_0，
-并且要求 My_v3_0 以最新的 CocosBuilder/develop(或者 CocosBuilder/master)为基础。
-操作方法：
-(1)获得最新 CocosBuilder/develop 源代码
-git clone -b develop git://github.com/cocos2d/CocosBuilder.git ./MyCocosBuilder/CocosBuilder_v3_0
-cd MyCocosBuilder/CocosBuilder_v3_0
-git submodule update --init --recursive
-(2)添加新的远程库
-执行命令 git remote add my_resource https://github.com/wolfand11/CocosBuilder_v2_1
-(3)将本地 develop 分支 push 到 my_resource
-git push my_source develop:v3_1
+// 下面引用自 Unity5 的教程-Lighting and Rendering
+尽管可以同时使用烘焙全局光照和预计算实时全局光照，需要注意的是同时渲染两个系统所涉及的性能消耗是他们每个所消耗的总和。我们不仅需要存储两套光照贴图到显存中，而且我们也要在着色器中负担这两套光照贴图的解码处理。
+...... 使用哪种方式必须基于你的项目性质和目标平台来进行评估。记住当面对多个不同的硬件平台，通常最低性能的平台将会决定采用什么样的方式。
 </pre>
 </div>
 </div>
-
-
-<div id="outline-container-orgheadline10" class="outline-3">
-<h3 id="orgheadline10"><span class="section-number-3">1.4</span> 库管理方案</h3>
-<div class="outline-text-3" id="text-1-4">
-</div><div id="outline-container-orgheadline8" class="outline-4">
-<h4 id="orgheadline8"><span class="section-number-4">1.4.1</span> 库管理流程</h4>
-<div class="outline-text-4" id="text-1-4-1">
+<div id="outline-container-orgheadline12" class="outline-3">
+<h3 id="orgheadline12"><span class="section-number-3">5.2</span> Standard realtime lighthting + Baked lightmaps</h3>
+<div class="outline-text-3" id="text-5-2">
+<p>
+对于处于相同的恒定光照条件下的静态和动态的物体来说，这是一个实用的方法：<br>
+</p>
 <pre class="example">
-1 初始化
-（1）fork lib source
-（2）以自己依赖的分支为基础，创建自己的分支
-2 维护
-方案 1：简单粗暴法
-使用最新库源代码，覆盖当前自己的分支，然后 merge 变化
-方案 2：
-参考上面的文档：更新自己 fork 出来的源代码
+在 Light 组件中，选择'Mixed'烘焙模式，被标记为静态的物体将在他们的烘焙光照贴图中包含这个光照。然而，不同于被标记为'Baked'的光照，混合的光照将依然会对非静态的对象产生实时、直接的光照效果。当你在静态环境中需要使用光照贴图，但是你依然希望有一个角色使用这些相同的光照来产生实时的阴影到光照贴图过的几何体上时，'Mixed'方式将会很有用。
 </pre>
 </div>
 </div>
-<div id="outline-container-orgheadline9" class="outline-4">
-<h4 id="orgheadline9"><span class="section-number-4">1.4.2</span> 项目命名 分支命名规则 CommitLog 规则</h4>
-<div class="outline-text-4" id="text-1-4-2">
-<pre class="example">
-自己的代码
-1、项目名称以及分支名称可以参照其他开源项目命名方案。
-
-Fork 出来的代码
-1、项目名称前面加 My。例如：MyCocosBuilder Mycocos2d-x
-2、加分支时，分支的命名前加 My_。例如：My_v2_1 My_v3_0
-3、commit 时，如果修改了原来源代码的，日志前加[ChangeOrigin]
-</pre>
 </div>
-</div>
+<div id="outline-container-orgheadline14" class="outline-2">
+<h2 id="orgheadline14"><span class="section-number-2">6</span> Generating lightmap files 生成光照贴图</h2>
+<div class="outline-text-2" id="text-6">
+<p>
+默认情况下，每次光照贴图计算阶段被触发时(例如，移动静态元素)，光照贴图文件在内部被生成和存储。<br>
+通过关闭 Lighting 窗口中的自动选项，然后，点击 Build 按钮，这样光照贴图也可以被手动计算。生成的图片会被存储在和场景同名的文件夹下。烘焙数据包含了光照贴图和反射探针。<br>
+General GI 部分的 Directional Mode 和 Atlas Size 参数会影响光照贴图的类型和数目。<br>
+<img src="http://www.edy.es/dev/wp-content/uploads/2015/03/Unity-5-Lighting-Cookbook-Generating-Lightmap-Files.png"><br>
+</p>
 </div>
 </div>
 ]]></content>
       
         <categories>
             
-            <category> tools </category>
+            <category> unity </category>
             
         </categories>
         
         
         <tags>
             
-            <tag> tools </tag>
+            <tag> unity </tag>
             
-            <tag> git </tag>
+            <tag> graphics </tag>
             
         </tags>
         
@@ -17739,185 +17562,177 @@ H       Display current process
     </entry>
     
     <entry>
-      <title><![CDATA[Programing in Elisp]]></title>
-      <url>http://wolfand11.coding.me/2016/08/14/language/Elisp/</url>
+      <title><![CDATA[Git Github]]></title>
+      <url>http://wolfand11.coding.me/2016/08/14/tools/GitAndGithub/</url>
       <content type="html"><![CDATA[
 
 
-<div id="outline-container-orgheadline12" class="outline-2">
-<h2 id="orgheadline12"><span class="section-number-2">1</span> 语法知识</h2>
+<div id="outline-container-orgheadline11" class="outline-2">
+<h2 id="orgheadline11"><span class="section-number-2">1</span> Git Github SourceTree</h2>
 <div class="outline-text-2" id="text-1">
+<pre class="example">
+该文档主要纪录 Git Github SourceTree 相关工具的使用。
+</pre>
+
 <a id="more"></a>
 </div>
-<div id="outline-container-orgheadline1" class="outline-3">
-<h3 id="orgheadline1"><span class="section-number-3">1.1</span> List</h3>
+
+<div id="outline-container-orgheadline5" class="outline-3">
+<h3 id="orgheadline5"><span class="section-number-3">1.1</span> 常用命令</h3>
 <div class="outline-text-3" id="text-1-1">
+</div><div id="outline-container-orgheadline3" class="outline-4">
+<h4 id="orgheadline3"><span class="section-number-4">1.1.1</span> git</h4>
+<div class="outline-text-4" id="text-1-1-1">
+</div><ol class="org-ol"><li><a id="orgheadline1"></a>project manager<br><div class="outline-text-5" id="text-1-1-1-1">
 <pre class="example">
-List      由括号括起来的原子，或括号括起来的 list，或括号括起来的原子和 list,或者一个空括号。元素之间通过空格分隔。
-原子       可以是数字、单字符符号、多字符符号、字符串
-符号表达式  原子和列表的书面或计算机表示被称作符号表达式。
-
-Example:
-'(name age class grade)
-(+ 1 2)
-'(name "wolfand11")
-
-Tips:
-(1) 空列表既是一个列表，也是一个原子; nil 等价于()
-(2) 元素直接的空格可以任意多，解析器在处理的时候会去掉所有多余的空格只留下一个。
-(3) 所谓 s 表达式(s-expression)就是符号表达式(symbolic expression)
+克隆默认分支的代码 git clone git://github.com/cocos2d/CocosBuilder.git ./CocosBuilder_origin_default
+克隆指定分支的代码 git clone -b develop git://github.com/cocos2d/CocosBuilder.git ./CocosBuilder_origin_develop
+在本地初始化一个空仓库			git init
+获得本地分支信息                   	git branch
+创建新的本地分支                           git branch new_branch_name
+切换分支                                	git checkout des_branch_name
+创建并切换分支                           	git checkout -b new_branch_name
+重命名分支				git branch -m|-M old_name new_name
+删除分支					git branch -d|-D branch_name
+查看 git branch 帮助                      	git help branch
+获得 romote 信息                     	git remote (git remote -v)
+添加新的 remote                     	git remote add &lt;remote_name&gt; &lt;remote_url&gt;
+删除一个 remote                     	git remote rm &lt;remote_name&gt;
+重命名一个 remote                   	git remote rename &lt;remote_old_name&gt; &lt;remote_new_name&gt;
+将本地代码 push 到远程分支（远程分支不存在则创建）	git push &lt;remote_name&gt; &lt;local_branch&gt;:&lt;remote_branch&gt;
+删除 remote 的一个分支                   	git push &lt;remote_name&gt; :&lt;remote_branch&gt;
+添加子工程                             	git submodule add 仓库地址 路径
+删除子工程
 </pre>
-</div>
-</div>
-<div id="outline-container-orgheadline9" class="outline-3">
-<h3 id="orgheadline9"><span class="section-number-3">1.2</span> Base Special List</h3>
-<div class="outline-text-3" id="text-1-2">
-</div><div id="outline-container-orgheadline2" class="outline-4">
-<h4 id="orgheadline2"><span class="section-number-4">1.2.1</span> defun</h4>
-<div class="outline-text-4" id="text-1-2-1">
-<p>
-定义函数 (defun func-name argument-list body)<br>
-</p>
-</div>
-</div>
-<div id="outline-container-orgheadline3" class="outline-4">
-<h4 id="orgheadline3"><span class="section-number-4">1.2.2</span> let</h4>
-<div class="outline-text-4" id="text-1-2-2">
-<p>
-定义局部变量，该变量只在 let 列表内可用。 (let ((local-var value) &#x2026;) body)<br>
-</p>
-</div>
+</div></li>
+<li><a id="orgheadline2"></a>content manager<br><div class="outline-text-5" id="text-1-1-1-2">
+<pre class="example">
+将本地修改加入索引			git add
+取消本地内容修改 			  git reset --hard HEAD
+回退到某个版本					git reset --hard &lt;commit id&gt;
+提交本地修改到分支			git commit -m "commit msg"
+取消前一次版本的修改内容	git revert HEAD
+取消某个版本的修改内容		git revert &lt;commit id&gt;
+</pre>
+</div></li></ol>
 </div>
 <div id="outline-container-orgheadline4" class="outline-4">
-<h4 id="orgheadline4"><span class="section-number-4">1.2.3</span> set setq setf</h4>
-<div class="outline-text-4" id="text-1-2-3">
-<p>
-定义全局变量。(set 'var value) (setq var value) (setf var value)<br>
-</p>
-<div class="org-src-container">
+<h4 id="orgheadline4"><span class="section-number-4">1.1.2</span> git svn</h4>
+<div class="outline-text-4" id="text-1-1-2">
+<pre class="example">
+克隆 svn 仓库到本地仓库   git svn clone http://your.svn.url/svn/Demo
+同步 svn 仓库到本地仓库   git svn rebase
+将修改添加到本地仓库    git add/commit
+将本地仓库同步到 svn 仓库 git svn dcommit (git svn dcommit 不会将本地的多个版本按时间顺序提交给 svn 服务器，而是将这些合为一个进行提交)
+处理代码冲突的步骤：
+（1）git svn dcommit 时提示需要更新,执行 git svn rebase
+（2）解决冲突，执行 git add confilict.files 告知 git 已经解决冲突
+（3）执行 git rebase --continue 自己对 confilict.files 的修改进入到本地仓库
+（4）执行 git svn dcommit 将改动同步到 svn 仓库
 
-<pre class="src src-elisp">(set ls '(1 2 3 4))  =&gt; Error - ls has no value
-(set 'ls '(1 2 3 4)) =&gt; OK
-(<span style="color: #00ffff;">setq</span> ls '(1 2 3 4)) =&gt; OK - make ls to (<span style="color: #00ffff;">quote</span> ls) and then have the usual set
-(<span style="color: #00ffff;">setf</span> ls '(1 2 3 4)) =&gt; OK - same as setq so far BUT
-(<span style="color: #00ffff;">setf</span> (car ls) 10)   =&gt; Makes ls '(10 2 3 4) - not duplicated by setq/set
+为本地代码添加 git 仓库
+git remote add my_origin https://github.com/wolfand11/XXX_SVN
+将本地代码同步到 git 仓库
+git push my_origin master:master
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline5" class="outline-4">
-<h4 id="orgheadline5"><span class="section-number-4">1.2.4</span> if</h4>
-<div class="outline-text-4" id="text-1-2-4">
-<p>
-分支语句。 (if do-someing do-other-thing)<br>
-</p>
+
+<div id="outline-container-orgheadline6" class="outline-3">
+<h3 id="orgheadline6"><span class="section-number-3">1.2</span> 更新自己 fork 出来的源代码</h3>
+<div class="outline-text-3" id="text-1-2">
 <pre class="example">
-Tips:
-elisp 中除去()和 nil 外都为 true
-(if () "() is true" "() is false")
-;; () is false
-(if 0 "0 is true" "0 is false")
-;; 0 is true
-(if 'false "'false is true" "'false is false") == (if (quote false) "'false is true" "'false is false")
-;; 'false is true
+问题说明：
+从 https://github.com/cocos2d/CocosBuilder fork 出来一份 CocosBuilder 的源代码 MyCocosBuilder，
+过一段时间以后，原来的 CocosBuilder 的 develop 分支有更新，需要将 CocosBuilder/develop 的更新添加到 MyCocosBuilder/develop 中。
+操作方法：
+(1)获得最新 MyCocosBuilder/develop 源代码
+git clone -b develop https://github.com/wolfand11/CocosBuilder_v2_1.git ./MyCocosBuilder
+cd MyCocosBuilder
+git submodule update --init --recursive
+(2)添加新的远程库
+执行命令 git remote add real_origin https://github.com/cocos2d/CocosBuilder
+(3)获得 real_origin/develop
+git fetch real_origin develop
+(4)Merge 修改到本地代码
+git merge real_origin/develop
+(5)更新 origin/develop 分支
+push 本地的 develop 分支到 origin/develop 分支。即 https://github.com/wolfand11/CocosBuilder_v2_1.git 的 develop 分支
 </pre>
 </div>
 </div>
-<div id="outline-container-orgheadline6" class="outline-4">
-<h4 id="orgheadline6"><span class="section-number-4">1.2.5</span> interactive</h4>
-<div class="outline-text-4" id="text-1-2-5">
-<p>
-使函数变为交互函数。 (interactive arg)<br>
-</p>
+
+<div id="outline-container-orgheadline7" class="outline-3">
+<h3 id="orgheadline7"><span class="section-number-3">1.3</span> 在自己 fork 出来的源代码中，以最新源码为基础创建新分支</h3>
+<div class="outline-text-3" id="text-1-3">
 <pre class="example">
-Example:
-(defun AddTwo (var1)
-  "add two with argument"
-  (interactive "p")
-  (let ((two_value 2) result (info "result is %d"))
-    (setq result (+ var1 two_value))
-    (message info (+ var1 two_value))))
+问题说明：
+从 https://github.com/cocos2d/CocosBuilder fork 出来一份 CocosBuilder 的源代码 MyCocosBuilder，
+并且在 MyCocosBuilder/develop 分支的基础上添加自己的分支 v2_0，.过一段时间以后，需要添加分支 MyCocosBuilder/v3_0，
+并且要求 My_v3_0 以最新的 CocosBuilder/develop(或者 CocosBuilder/master)为基础。
+操作方法：
+(1)获得最新 CocosBuilder/develop 源代码
+git clone -b develop git://github.com/cocos2d/CocosBuilder.git ./MyCocosBuilder/CocosBuilder_v3_0
+cd MyCocosBuilder/CocosBuilder_v3_0
+git submodule update --init --recursive
+(2)添加新的远程库
+执行命令 git remote add my_resource https://github.com/wolfand11/CocosBuilder_v2_1
+(3)将本地 develop 分支 push 到 my_resource
+git push my_source develop:v3_1
 </pre>
 </div>
 </div>
-<div id="outline-container-orgheadline7" class="outline-4">
-<h4 id="orgheadline7"><span class="section-number-4">1.2.6</span> save-excursion</h4>
-<div class="outline-text-4" id="text-1-2-6">
-<p>
-保存恢复 point 和 mark 变量<br>
-</p>
-</div>
-</div>
-<div id="outline-container-orgheadline8" class="outline-4">
-<h4 id="orgheadline8"><span class="section-number-4">1.2.7</span> eval-last-sexp</h4>
-<div class="outline-text-4" id="text-1-2-7">
-<p>
-对前面的表达式求值<br>
-</p>
-</div>
-</div>
-</div>
+
 
 <div id="outline-container-orgheadline10" class="outline-3">
-<h3 id="orgheadline10"><span class="section-number-3">1.3</span> Buffer-related List</h3>
-</div>
-<div id="outline-container-orgheadline11" class="outline-3">
-<h3 id="orgheadline11"><span class="section-number-3">1.4</span> Evaluation 表达式求值</h3>
+<h3 id="orgheadline10"><span class="section-number-3">1.4</span> 库管理方案</h3>
 <div class="outline-text-3" id="text-1-4">
+</div><div id="outline-container-orgheadline8" class="outline-4">
+<h4 id="orgheadline8"><span class="section-number-4">1.4.1</span> 库管理流程</h4>
+<div class="outline-text-4" id="text-1-4-1">
 <pre class="example">
-Number 求值
-直接返回数值
-
-符号求值
-(1) 变量求值 返回变量符号指向的值
-(2) 函数求值 执行函数符号指向的指令，返回最后一个指令的返回值
-
-Lisp 中的任何一个 List 都是一个可以运行的程序。运行一个列表，被称作对这个列表求值。
-运行一个列表会有三类情况：
-(1)只返回列表本身
-(2)提示错误信息
-(3)将列表第一个符号当作命令，然后执行这个命令
-
-Tips:
-单引号(')，表示一个引用。单引号出现在一个列表前，告诉 Lisp 不要对这个列表 做任何操作，仅仅保持其原样。如果一个列表前没有引号，这个列表的第一个符 号就是计算机将要执行的一条命令(Lisp 中，这些命令称为函数)。
-'(setq count 20)  ;;C-x C-e 得到 list (setq count 20)
-(setq count 20)   ;;C-x C-e 得到 20
-'('name)          ;;C-x C-3 得到((quote name))
+1 初始化
+（1）fork lib source
+（2）以自己依赖的分支为基础，创建自己的分支
+2 维护
+方案 1：简单粗暴法
+使用最新库源代码，覆盖当前自己的分支，然后 merge 变化
+方案 2：
+参考上面的文档：更新自己 fork 出来的源代码
 </pre>
 </div>
 </div>
-</div>
-
-<div id="outline-container-orgheadline13" class="outline-2">
-<h2 id="orgheadline13"><span class="section-number-2">2</span> Emacs 相关命令</h2>
-<div class="outline-text-2" id="text-2">
+<div id="outline-container-orgheadline9" class="outline-4">
+<h4 id="orgheadline9"><span class="section-number-4">1.4.2</span> 项目命名 分支命名规则 CommitLog 规则</h4>
+<div class="outline-text-4" id="text-1-4-2">
 <pre class="example">
-1、lisp 代码缩排：
-M-C-\ 一个区域内正确缩排命令
-TAB   光标所在行缩排
+自己的代码
+1、项目名称以及分支名称可以参照其他开源项目命名方案。
 
-2、运行一个列表
-C-x C-e
-
-3、查看 variable function 信息
-C-h v
+Fork 出来的代码
+1、项目名称前面加 My。例如：MyCocosBuilder Mycocos2d-x
+2、加分支时，分支的命名前加 My_。例如：My_v2_1 My_v3_0
+3、commit 时，如果修改了原来源代码的，日志前加[ChangeOrigin]
 </pre>
+</div>
+</div>
 </div>
 </div>
 ]]></content>
       
         <categories>
             
-            <category> language </category>
+            <category> tools </category>
             
         </categories>
         
         
         <tags>
             
-            <tag> language </tag>
+            <tag> tools </tag>
             
-            <tag> elisp </tag>
+            <tag> git </tag>
             
         </tags>
         
@@ -18787,6 +18602,291 @@ service network restart
     </entry>
     
     <entry>
+      <title><![CDATA[Programing in Elisp]]></title>
+      <url>http://wolfand11.coding.me/2016/08/14/language/Elisp/</url>
+      <content type="html"><![CDATA[
+
+
+<div id="outline-container-orgheadline12" class="outline-2">
+<h2 id="orgheadline12"><span class="section-number-2">1</span> 语法知识</h2>
+<div class="outline-text-2" id="text-1">
+<a id="more"></a>
+</div>
+<div id="outline-container-orgheadline1" class="outline-3">
+<h3 id="orgheadline1"><span class="section-number-3">1.1</span> List</h3>
+<div class="outline-text-3" id="text-1-1">
+<pre class="example">
+List      由括号括起来的原子，或括号括起来的 list，或括号括起来的原子和 list,或者一个空括号。元素之间通过空格分隔。
+原子       可以是数字、单字符符号、多字符符号、字符串
+符号表达式  原子和列表的书面或计算机表示被称作符号表达式。
+
+Example:
+'(name age class grade)
+(+ 1 2)
+'(name "wolfand11")
+
+Tips:
+(1) 空列表既是一个列表，也是一个原子; nil 等价于()
+(2) 元素直接的空格可以任意多，解析器在处理的时候会去掉所有多余的空格只留下一个。
+(3) 所谓 s 表达式(s-expression)就是符号表达式(symbolic expression)
+</pre>
+</div>
+</div>
+<div id="outline-container-orgheadline9" class="outline-3">
+<h3 id="orgheadline9"><span class="section-number-3">1.2</span> Base Special List</h3>
+<div class="outline-text-3" id="text-1-2">
+</div><div id="outline-container-orgheadline2" class="outline-4">
+<h4 id="orgheadline2"><span class="section-number-4">1.2.1</span> defun</h4>
+<div class="outline-text-4" id="text-1-2-1">
+<p>
+定义函数 (defun func-name argument-list body)<br>
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline3" class="outline-4">
+<h4 id="orgheadline3"><span class="section-number-4">1.2.2</span> let</h4>
+<div class="outline-text-4" id="text-1-2-2">
+<p>
+定义局部变量，该变量只在 let 列表内可用。 (let ((local-var value) &#x2026;) body)<br>
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline4" class="outline-4">
+<h4 id="orgheadline4"><span class="section-number-4">1.2.3</span> set setq setf</h4>
+<div class="outline-text-4" id="text-1-2-3">
+<p>
+定义全局变量。(set 'var value) (setq var value) (setf var value)<br>
+</p>
+<div class="org-src-container">
+
+<pre class="src src-elisp">(set ls '(1 2 3 4))  =&gt; Error - ls has no value
+(set 'ls '(1 2 3 4)) =&gt; OK
+(<span style="color: #00ffff;">setq</span> ls '(1 2 3 4)) =&gt; OK - make ls to (<span style="color: #00ffff;">quote</span> ls) and then have the usual set
+(<span style="color: #00ffff;">setf</span> ls '(1 2 3 4)) =&gt; OK - same as setq so far BUT
+(<span style="color: #00ffff;">setf</span> (car ls) 10)   =&gt; Makes ls '(10 2 3 4) - not duplicated by setq/set
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline5" class="outline-4">
+<h4 id="orgheadline5"><span class="section-number-4">1.2.4</span> if</h4>
+<div class="outline-text-4" id="text-1-2-4">
+<p>
+分支语句。 (if do-someing do-other-thing)<br>
+</p>
+<pre class="example">
+Tips:
+elisp 中除去()和 nil 外都为 true
+(if () "() is true" "() is false")
+;; () is false
+(if 0 "0 is true" "0 is false")
+;; 0 is true
+(if 'false "'false is true" "'false is false") == (if (quote false) "'false is true" "'false is false")
+;; 'false is true
+</pre>
+</div>
+</div>
+<div id="outline-container-orgheadline6" class="outline-4">
+<h4 id="orgheadline6"><span class="section-number-4">1.2.5</span> interactive</h4>
+<div class="outline-text-4" id="text-1-2-5">
+<p>
+使函数变为交互函数。 (interactive arg)<br>
+</p>
+<pre class="example">
+Example:
+(defun AddTwo (var1)
+  "add two with argument"
+  (interactive "p")
+  (let ((two_value 2) result (info "result is %d"))
+    (setq result (+ var1 two_value))
+    (message info (+ var1 two_value))))
+</pre>
+</div>
+</div>
+<div id="outline-container-orgheadline7" class="outline-4">
+<h4 id="orgheadline7"><span class="section-number-4">1.2.6</span> save-excursion</h4>
+<div class="outline-text-4" id="text-1-2-6">
+<p>
+保存恢复 point 和 mark 变量<br>
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline8" class="outline-4">
+<h4 id="orgheadline8"><span class="section-number-4">1.2.7</span> eval-last-sexp</h4>
+<div class="outline-text-4" id="text-1-2-7">
+<p>
+对前面的表达式求值<br>
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline10" class="outline-3">
+<h3 id="orgheadline10"><span class="section-number-3">1.3</span> Buffer-related List</h3>
+</div>
+<div id="outline-container-orgheadline11" class="outline-3">
+<h3 id="orgheadline11"><span class="section-number-3">1.4</span> Evaluation 表达式求值</h3>
+<div class="outline-text-3" id="text-1-4">
+<pre class="example">
+Number 求值
+直接返回数值
+
+符号求值
+(1) 变量求值 返回变量符号指向的值
+(2) 函数求值 执行函数符号指向的指令，返回最后一个指令的返回值
+
+Lisp 中的任何一个 List 都是一个可以运行的程序。运行一个列表，被称作对这个列表求值。
+运行一个列表会有三类情况：
+(1)只返回列表本身
+(2)提示错误信息
+(3)将列表第一个符号当作命令，然后执行这个命令
+
+Tips:
+单引号(')，表示一个引用。单引号出现在一个列表前，告诉 Lisp 不要对这个列表 做任何操作，仅仅保持其原样。如果一个列表前没有引号，这个列表的第一个符 号就是计算机将要执行的一条命令(Lisp 中，这些命令称为函数)。
+'(setq count 20)  ;;C-x C-e 得到 list (setq count 20)
+(setq count 20)   ;;C-x C-e 得到 20
+'('name)          ;;C-x C-3 得到((quote name))
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline13" class="outline-2">
+<h2 id="orgheadline13"><span class="section-number-2">2</span> Emacs 相关命令</h2>
+<div class="outline-text-2" id="text-2">
+<pre class="example">
+1、lisp 代码缩排：
+M-C-\ 一个区域内正确缩排命令
+TAB   光标所在行缩排
+
+2、运行一个列表
+C-x C-e
+
+3、查看 variable function 信息
+C-h v
+</pre>
+</div>
+</div>
+]]></content>
+      
+        <categories>
+            
+            <category> language </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> language </tag>
+            
+            <tag> elisp </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Create Blog With Jeykll]]></title>
+      <url>http://wolfand11.coding.me/2016/08/12/tools/CreateBlogWithJeykll/</url>
+      <content type="html"><![CDATA[
+
+<div id="outline-container-orgheadline1" class="outline-2">
+<h2 id="orgheadline1"><span class="section-number-2">1</span> Jeykll 配置</h2>
+<div class="outline-text-2" id="text-1">
+<a id="more"></a>
+
+<pre class="example">
+修改_config.yml 文件中的配置信息:
+title:wolfand11's Blog
+name:Dong Guo
+github : wolfand11
+production_url : http://wolfand11.github.com
+......
+</pre>
+</div>
+</div>
+<div id="outline-container-orgheadline2" class="outline-2">
+<h2 id="orgheadline2"><span class="section-number-2">2</span> org-mode 配置</h2>
+<div class="outline-text-2" id="text-2">
+<pre class="example">
+org-mode 配置指南
+http://orgmode.org/worg/org-tutorials/org-jekyll.html
+</pre>
+</div>
+</div>
+
+<div id="outline-container-orgheadline3" class="outline-2">
+<h2 id="orgheadline3"><span class="section-number-2">3</span> 新建一篇博文</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+在 wolfand11.github.com/org/目录下新建一个 XXXX.org 文件。<br>
+.org 文件的名称必须以时间开始，例如:2012-12-2-Github 博客使用指南.org。否则，github 上不会显示该博文。<br>
+在 org-mode 下，调用命令 org/github-blog-new-entry。这样就会生成一个博文的模板。模板内容为:<br>
+</p>
+<pre class="example">
+// #+Tile: dired-mode document
+// #+BEGIN_HTML
+// ---
+// layout: page
+// title: TEST
+// category : tool
+// tags : [tool, emacs]
+// ---
+// \{\% include JB/setup %\}   //you should remove \
+// #+END_HTML
+</pre>
+</div>
+</div>
+<div id="outline-container-orgheadline6" class="outline-2">
+<h2 id="orgheadline6"><span class="section-number-2">4</span> 发布博文</h2>
+<div class="outline-text-2" id="text-4">
+</div><div id="outline-container-orgheadline4" class="outline-3">
+<h3 id="orgheadline4"><span class="section-number-3">4.1</span> 发布当前的博文</h3>
+<div class="outline-text-3" id="text-4-1">
+<p>
+在 org-mode 下，调用命令 org-publish-current-file。该命令会在\_posts 对应生成.xml 文件。<br>
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline5" class="outline-3">
+<h3 id="orgheadline5"><span class="section-number-3">4.2</span> 重新发布 org 目录下的所有博文</h3>
+<div class="outline-text-3" id="text-4-2">
+<p>
+在 org-mode 下，调用命令 org-publish-project,然后输入 Project 名称:iGitBlog。该命令会将 org 目录下的所有.org 文件都重新发布一遍。<br>
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline7" class="outline-2">
+<h2 id="orgheadline7"><span class="section-number-2">5</span> 注意事项:</h2>
+<div class="outline-text-2" id="text-5">
+<pre class="example">
+1、不要在#+BEGIN_HTML 之前添加#+Title 等标签，否则生成的 HTML 不会被 jekyll 支持，出现页面没有 css的情况。
+</pre>
+</div>
+</div>
+]]></content>
+      
+        <categories>
+            
+            <category> tools </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> blog </tag>
+            
+            <tag> tools </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[Create Blog With Hexo]]></title>
       <url>http://wolfand11.coding.me/2016/08/12/tools/CreateBlogWithHexo/</url>
       <content type="html"><![CDATA[
@@ -19583,106 +19683,6 @@ npm config set msvs_version=2015 &#x2013;global<br>
 <a href="https://tono.tk/2016/03/26/Add_copyright_for_hexo/" target="_blank" rel="external">https://tono.tk/2016/03/26/Add_copyright_for_hexo/</a><br>
 <a href="http://cighao.com/2016/03/01/add-copyright-to-hexo/" target="_blank" rel="external">http://cighao.com/2016/03/01/add-copyright-to-hexo/</a><br>
 </p>
-</div>
-</div>
-]]></content>
-      
-        <categories>
-            
-            <category> tools </category>
-            
-        </categories>
-        
-        
-        <tags>
-            
-            <tag> blog </tag>
-            
-            <tag> tools </tag>
-            
-        </tags>
-        
-    </entry>
-    
-    <entry>
-      <title><![CDATA[Create Blog With Jeykll]]></title>
-      <url>http://wolfand11.coding.me/2016/08/12/tools/CreateBlogWithJeykll/</url>
-      <content type="html"><![CDATA[
-
-<div id="outline-container-orgheadline1" class="outline-2">
-<h2 id="orgheadline1"><span class="section-number-2">1</span> Jeykll 配置</h2>
-<div class="outline-text-2" id="text-1">
-<a id="more"></a>
-
-<pre class="example">
-修改_config.yml 文件中的配置信息:
-title:wolfand11's Blog
-name:Dong Guo
-github : wolfand11
-production_url : http://wolfand11.github.com
-......
-</pre>
-</div>
-</div>
-<div id="outline-container-orgheadline2" class="outline-2">
-<h2 id="orgheadline2"><span class="section-number-2">2</span> org-mode 配置</h2>
-<div class="outline-text-2" id="text-2">
-<pre class="example">
-org-mode 配置指南
-http://orgmode.org/worg/org-tutorials/org-jekyll.html
-</pre>
-</div>
-</div>
-
-<div id="outline-container-orgheadline3" class="outline-2">
-<h2 id="orgheadline3"><span class="section-number-2">3</span> 新建一篇博文</h2>
-<div class="outline-text-2" id="text-3">
-<p>
-在 wolfand11.github.com/org/目录下新建一个 XXXX.org 文件。<br>
-.org 文件的名称必须以时间开始，例如:2012-12-2-Github 博客使用指南.org。否则，github 上不会显示该博文。<br>
-在 org-mode 下，调用命令 org/github-blog-new-entry。这样就会生成一个博文的模板。模板内容为:<br>
-</p>
-<pre class="example">
-// #+Tile: dired-mode document
-// #+BEGIN_HTML
-// ---
-// layout: page
-// title: TEST
-// category : tool
-// tags : [tool, emacs]
-// ---
-// \{\% include JB/setup %\}   //you should remove \
-// #+END_HTML
-</pre>
-</div>
-</div>
-<div id="outline-container-orgheadline6" class="outline-2">
-<h2 id="orgheadline6"><span class="section-number-2">4</span> 发布博文</h2>
-<div class="outline-text-2" id="text-4">
-</div><div id="outline-container-orgheadline4" class="outline-3">
-<h3 id="orgheadline4"><span class="section-number-3">4.1</span> 发布当前的博文</h3>
-<div class="outline-text-3" id="text-4-1">
-<p>
-在 org-mode 下，调用命令 org-publish-current-file。该命令会在\_posts 对应生成.xml 文件。<br>
-</p>
-</div>
-</div>
-<div id="outline-container-orgheadline5" class="outline-3">
-<h3 id="orgheadline5"><span class="section-number-3">4.2</span> 重新发布 org 目录下的所有博文</h3>
-<div class="outline-text-3" id="text-4-2">
-<p>
-在 org-mode 下，调用命令 org-publish-project,然后输入 Project 名称:iGitBlog。该命令会将 org 目录下的所有.org 文件都重新发布一遍。<br>
-</p>
-</div>
-</div>
-</div>
-
-<div id="outline-container-orgheadline7" class="outline-2">
-<h2 id="orgheadline7"><span class="section-number-2">5</span> 注意事项:</h2>
-<div class="outline-text-2" id="text-5">
-<pre class="example">
-1、不要在#+BEGIN_HTML 之前添加#+Title 等标签，否则生成的 HTML 不会被 jekyll 支持，出现页面没有 css的情况。
-</pre>
 </div>
 </div>
 ]]></content>

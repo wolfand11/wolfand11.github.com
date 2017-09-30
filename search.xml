@@ -4,8 +4,1142 @@
   
     
     <entry>
+      <title><![CDATA[AlgorithmIntroduceExercises]]></title>
+      <url>http://wolfand11.coding.me/2017/09/26/algorithm/AlgorithmIntroduceExercises/</url>
+      <content type="html"><![CDATA[
+
+<a id="more"></a>
+]]></content>
+      
+        <categories>
+            
+            <category> algorithm </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> algorithm </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Cryptology]]></title>
+      <url>http://wolfand11.coding.me/2017/09/14/architecture/Cryptology/</url>
+      <content type="html"><![CDATA[
+
+密码学相关的一些笔记。
+<a id="more"></a>
+
+<div id="outline-container-orgheadline147" class="outline-2">
+<h2 id="orgheadline147"><span class="section-number-2">1</span> 密码学理论</h2>
+<div class="outline-text-2" id="text-1">
+</div><div id="outline-container-orgheadline8" class="outline-3">
+<h3 id="orgheadline8"><span class="section-number-3">1.1</span> 数学</h3>
+<div class="outline-text-3" id="text-1-1">
+</div><div id="outline-container-orgheadline7" class="outline-4">
+<h4 id="orgheadline7"><span class="section-number-4">1.1.1</span> 时钟运算</h4>
+<div class="outline-text-4" id="text-1-1-1">
+</div><ol class="org-ol"><li><a id="orgheadline1"></a>加法<br><div class="outline-text-5" id="text-1-1-1-1">
+<p>
+时钟指针向前（顺时针）转 x 刻度会指向几？<br>
+new = (old + x) / 12 取余数<br>
+</p>
+</div></li>
+<li><a id="orgheadline2"></a>减法<br><div class="outline-text-5" id="text-1-1-1-2">
+<p>
+时钟指针向后（逆时针）转 x 刻度会指向几？<br>
+减法可以通过下面方法转化为加法<br>
+如果 0&lt;x&lt;12<br>
+new = (old + (12 - x)) / 12 取余数<br>
+如果 x&gt;12<br>
+x = x/12 取余数<br>
+new = (old + (12 - x)) / 12 取余数<br>
+</p>
+</div></li>
+<li><a id="orgheadline3"></a>乘法<br><div class="outline-text-5" id="text-1-1-1-3">
+<p>
+时钟指针向前（顺时针）转 x 刻度 y 次会指向几？<br>
+乘法可以通过下面方法转化为加法<br>
+new = (x * y)/12 取余数<br>
+</p>
+</div></li>
+<li><a id="orgheadline4"></a>除法<br><div class="outline-text-5" id="text-1-1-1-4">
+<p>
+将"向前（顺时针）转 x 个刻度的操作"重复几次指针会指向 1 呢？<br>
+除法可以通过互为倒数的概念转化为乘法(除以一个数等于乘以它的倒数)<br>
+</p>
+
+<p>
+1 = (x*y)/12 取余数<br>
+以 x=7 为例，求 y 的值<br>
+<img src="18_mode_division_eg1.jpg"><br>
+</p>
+</div></li>
+<li><a id="orgheadline5"></a>乘方<br><div class="outline-text-5" id="text-1-1-1-5">
+<p>
+乘方也称为指数运算，乘方可以转化为乘法的多次重复。<br>
+new = (x * x * x * &#x2026;)/12 取余数<br>
+</p>
+</div></li>
+<li><a id="orgheadline6"></a>对数<br><div class="outline-text-5" id="text-1-1-1-6">
+<p>
+乘方的逆运算称为对数运算。时钟运算中的对数称为离散对数。<br>
+<img src="18_mode_log_eg1.jpg"><br>
+</p>
+</div></li></ol>
+</div>
+</div>
+<div id="outline-container-orgheadline82" class="outline-3">
+<h3 id="orgheadline82"><span class="section-number-3">1.2</span> 密码</h3>
+<div class="outline-text-3" id="text-1-2">
+</div><div id="outline-container-orgheadline11" class="outline-4">
+<h4 id="orgheadline11"><span class="section-number-4">1.2.1</span> 密码学概述</h4>
+<div class="outline-text-4" id="text-1-2-1">
+</div><ol class="org-ol"><li><a id="orgheadline9"></a>密码学术语<br><div class="outline-text-5" id="text-1-2-1-1">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col class="org-left">
+
+<col class="org-left">
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">名称</th>
+<th scope="col" class="org-left">解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">发送者</td>
+<td class="org-left">发送信息的人</td>
+</tr>
+
+<tr>
+<td class="org-left">接收者</td>
+<td class="org-left">接收信息的人</td>
+</tr>
+
+<tr>
+<td class="org-left">窃听者</td>
+<td class="org-left">偷看信息的人</td>
+</tr>
+
+<tr>
+<td class="org-left">消息</td>
+<td class="org-left">被发送的信息</td>
+</tr>
+
+<tr>
+<td class="org-left">密码</td>
+<td class="org-left">密码是一种能够让消息内容变得无法解读的技术</td>
+</tr>
+
+<tr>
+<td class="org-left">明文</td>
+<td class="org-left">加密之前的消息</td>
+</tr>
+
+<tr>
+<td class="org-left">密文</td>
+<td class="org-left">加密之后的消息</td>
+</tr>
+
+<tr>
+<td class="org-left">解密</td>
+<td class="org-left">正当接收者将密文还原为明文</td>
+</tr>
+
+<tr>
+<td class="org-left">密码破译、密码分析</td>
+<td class="org-left">接收者以外的其他人试图将密文还原为明文</td>
+</tr>
+
+<tr>
+<td class="org-left">破译者</td>
+<td class="org-left">进行破译的人</td>
+</tr>
+
+<tr>
+<td class="org-left">加密算法</td>
+<td class="org-left">从明文生成密文的步骤，即加密的步骤</td>
+</tr>
+
+<tr>
+<td class="org-left">解密算法</td>
+<td class="org-left">解密的步骤</td>
+</tr>
+
+<tr>
+<td class="org-left">密码算法</td>
+<td class="org-left">加密、解密的算法合在一起统称为密码算法</td>
+</tr>
+
+<tr>
+<td class="org-left">密钥</td>
+<td class="org-left">密钥是一种参数，它是在明文转换为密文或将密文转换为明文的算法中会作为输入的参数</td>
+</tr>
+
+<tr>
+<td class="org-left">对称密码</td>
+<td class="org-left">在加密和解密时使用同一密钥的方式</td>
+</tr>
+
+<tr>
+<td class="org-left">公钥密码</td>
+<td class="org-left">在加密和解密时使用不同密钥的方式，也称为非对称密码</td>
+</tr>
+
+<tr>
+<td class="org-left">混合密码系统</td>
+<td class="org-left">将对称密码和公钥密码结合起来的密码方式</td>
+</tr>
+
+<tr>
+<td class="org-left">单向散列函数</td>
+<td class="org-left">把任意长的输入消息串变化成固定长的输出串且由输出串难以得到输入串的一种函数。一种保证完整性的密码技术</td>
+</tr>
+
+<tr>
+<td class="org-left">散列值</td>
+<td class="org-left">用单向散列函数计算出来的数值</td>
+</tr>
+
+<tr>
+<td class="org-left">消息认证码</td>
+<td class="org-left">一种能够保证完整性和提供认证的密码技术</td>
+</tr>
+
+<tr>
+<td class="org-left">数字签名</td>
+<td class="org-left">能够防止伪装、篡改和否认等威胁的技术</td>
+</tr>
+
+<tr>
+<td class="org-left">伪随机数生成器</td>
+<td class="org-left">一种能够模拟产生随机数列的算法</td>
+</tr>
+</tbody>
+</table>
+
+
+<div class="figure">
+<p><img src="0_cryptographer_toolkit.jpg"><br>
+</p>
+</div>
+</div></li>
+<li><a id="orgheadline10"></a>密码与信息安全常识<br><div class="outline-text-5" id="text-1-2-1-2">
+<ul class="org-ul">
+<li>不要使用保密的密码算法<br></li>
+<li>使用低强度的密码比不进行任何加密更危险<br></li>
+<li>任何密码总有一天都会被破解<br></li>
+<li>密码只是信息安全的一部分<br></li>
+</ul>
+</div></li></ol>
+</div>
+
+<div id="outline-container-orgheadline17" class="outline-4">
+<h4 id="orgheadline17"><span class="section-number-4">1.2.2</span> 历史上的密码</h4>
+<div class="outline-text-4" id="text-1-2-2">
+</div><ol class="org-ol"><li><a id="orgheadline13"></a>凯撒密码<br><div class="outline-text-5" id="text-1-2-2-1">
+<p>
+凯撒密码是通过将明文中所使用的字母表按照一定的字数平移来进行加密的。<br>
+</p>
+
+<p>
+例如：所有字母平移 2 位来进行加密。guodong &#x2013;（加密）&#x2013;&gt;iwqfqpi. 此处 2 相当于密钥<br>
+</p>
+</div>
+<ol class="org-ol"><li><a id="orgheadline12"></a>破解方法<br><div class="outline-text-6" id="text-1-2-2-1-1">
+<p>
+因为密钥空间比较小，只有 26，可以使用暴力破解来破译这种密码.<br>
+</p>
+</div></li></ol></li>
+
+<li><a id="orgheadline15"></a>简单替换密码<br><div class="outline-text-5" id="text-1-2-2-2">
+<p>
+将明文中所使用的字母表替换为另一套字母表的密码称为简单替换密码。<br>
+</p>
+
+
+<div class="figure">
+<p><img src="1_simple_passwordlist.jpg"><br>
+</p>
+</div>
+</div>
+<ol class="org-ol"><li><a id="orgheadline14"></a>破解方法<br><div class="outline-text-6" id="text-1-2-2-2-1">
+<p>
+使用频率分析的密码破译方法可以破解简单替换密码<br>
+</p>
+</div></li></ol></li>
+<li><a id="orgheadline16"></a>Enigma<br><div class="outline-text-5" id="text-1-2-2-3">
+<p>
+德国纳粹时期，德国国防军采用了 Enigma。<br>
+</p>
+</div></li></ol>
+</div>
+<div id="outline-container-orgheadline34" class="outline-4">
+<h4 id="orgheadline34"><span class="section-number-4">1.2.3</span> 对称密码</h4>
+<div class="outline-text-4" id="text-1-2-3">
+</div><ol class="org-ol"><li><a id="orgheadline20"></a>基础概念<br><ol class="org-ol"><li><a id="orgheadline18"></a>编码<br><div class="outline-text-6" id="text-1-2-3-1-1">
+<p>
+将现实世界中的东西映射为比特序列的操作称为编码。例如，常见的字符编码有 ASCII UTF8 等编码<br>
+</p>
+</div></li>
+<li><a id="orgheadline19"></a>XOR 运算<br><div class="outline-text-6" id="text-1-2-3-1-2">
+<p>
+全称为 exclusive or,译作异或运算。<br>
+XOR 运算规则如下:<br>
+0 XOR 0 = 0<br>
+0 XOR 1 = 1<br>
+1 XOR 0 = 1<br>
+1 XOR 1 = 0<br>
+</p>
+
+<p>
+将 0 理解为偶数，将 1 理解为奇数，就可以将 XOR 和一般的加法运算等同起来。<br>
+偶数 0 + 偶数 0 = 偶数 0<br>
+偶数 0 + 奇数 1 = 奇数 1<br>
+奇数 1 + 偶数 0 = 奇数 1<br>
+奇数 1 + 奇数 1 = 偶数 0<br>
+</p>
+
+<p>
+将一个棋子保持原状（不翻转）看做 0，将一个棋子翻转到另一面看做 1，那么 XOR 运算就相当于将黑白棋的一个棋子进行翻转的操作进行连接<br>
+不翻转 0 + 不翻转 0 = 不翻转 0<br>
+不翻转 0 + 翻转 1 = 翻转 0<br>
+翻转 1 + 不翻转 0 = 翻转 0<br>
+翻转 1 + 翻转 1 = 不翻转 0<br>
+</p>
+</div></li></ol></li>
+<li><a id="orgheadline21"></a>一次性密码本<br><div class="outline-text-5" id="text-1-2-3-2">
+<p>
+一次性密码本是将明文与一串随机的比特序列进行 XOR 运算。<br>
+一次性密码本是无法破译的。因为密钥和明文的长度相同，使用暴力破解法会枚举出所有明文长度的可能信息，无法判断真正的明文是哪个。<br>
+</p>
+</div></li>
+<li><a id="orgheadline27"></a>DES<br><ol class="org-ol"><li><a id="orgheadline22"></a>概述<br><div class="outline-text-6" id="text-1-2-3-3-1">
+<p>
+DES 全称 Data Encryption Standard,1999 年 DES ChallengeIII 中用了 22 小时 15 分破解了 DES 加密的密文。目前已经不再使用该加密算法.<br>
+DES 是以 64 比特的明文为一个单位来进行加密的，这个 64 比特的单位称为分组。以分组为单位进行处理的密码算法称为分组密码。<br>
+DES 每次只能加密 64 比特的数据，如果要加密的明文比较长，就需要对 DES 加密进行迭代，而迭代的具体方式就称为模式。<br>
+</p>
+</div></li>
+<li><a id="orgheadline26"></a>DES 的结构（Feistel 网络）<br><div class="outline-text-6" id="text-1-2-3-3-2">
+<p>
+在 Feistel 网络中，加密的各个步骤称为轮，整个加密过程就是进行若干次轮的循环。DES 是一种 16 轮循环的 Feistel 网络。<br>
+</p>
+</div>
+<ol class="org-ol"><li><a id="orgheadline23"></a>Feistel 的加密<br><div class="outline-text-7" id="text-1-2-3-3-2-1">
+
+<div class="figure">
+<p><img src="2_feistel_network_1times.jpg"><br>
+</p>
+</div>
+
+<p>
+一轮的具体计算步骤：<br>
+</p>
+<ul class="org-ul">
+<li>将输入的数据等分为左右两部分<br></li>
+<li>将输入的右侧直接发送到输出的右侧<br></li>
+<li>将输入的右侧发送到轮函数<br></li>
+<li>轮函数根据右侧数据和子密钥，计算初一串看上去是随机的比特序列<br></li>
+<li>将上一步得到的比特序列与左侧的数据进行 XOR 运算，并将结果作为加密后的左侧<br></li>
+</ul>
+
+<p>
+中间的“子密钥”指的是本轮加密所使用的密钥。在 Feistel 网络中，每一轮都需要使用不同的子密钥。由于子密钥只在一轮中使用，它只是一个局部密钥，因此才称为子密钥。<br>
+</p>
+
+<p>
+<img src="3_feistel_network_3times.jpg"><br>
+在一轮运算中，“右侧”根本没有被加密，因此需要用不同的子密钥对一轮的处理重复若干次，并在每两轮处理之间将左侧和右侧数据对调。<br>
+</p>
+</div></li>
+<li><a id="orgheadline24"></a>Feistel 的解密<br><div class="outline-text-7" id="text-1-2-3-3-2-2">
+<p>
+<img src="4_feistel_network_decryption_1times.jpg"><br>
+<img src="5_feistel_network_decryption_3times.jpg"><br>
+</p>
+</div></li>
+<li><a id="orgheadline25"></a>Feistel 网络的性质<br><div class="outline-text-7" id="text-1-2-3-3-2-3">
+<ul class="org-ul">
+<li>Feistel 网络的轮数可以任意增加<br></li>
+<li>加密时无论使用任何函数作为轮函数都可以正确解密<br></li>
+<li>加密和解密可以用完全相同的结构来实现<br></li>
+</ul>
+</div></li></ol></li></ol></li>
+<li><a id="orgheadline30"></a>三重 DES<br><ol class="org-ol"><li><a id="orgheadline28"></a>概述<br><div class="outline-text-6" id="text-1-2-3-4-1">
+<p>
+三重 DES 是为了增加 DES 的强度，将 DES 重复 3 次所得到的一种密码算法。<br>
+</p>
+</div></li>
+<li><a id="orgheadline29"></a>3DES 的机制<br><div class="outline-text-6" id="text-1-2-3-4-2">
+<p>
+<img src="6_3des_cryption.jpg"><br>
+3DES 之所以设计为 加密-&gt;解密-&gt;加密 的过程是为了兼容普通的 DES。<br>
+<img src="7_3des_des_cryption.jpg"><br>
+<img src="8_3des_decryption.jpg"><br>
+</p>
+
+<p>
+3DES 目前还被银行等机构使用，但其处理速度不高。<br>
+</p>
+</div></li></ol></li>
+<li><a id="orgheadline33"></a>AES<br><ol class="org-ol"><li><a id="orgheadline31"></a>概述<br><div class="outline-text-6" id="text-1-2-3-5-1">
+<p>
+AES (Advanced Encrytion Standard)是取代其前任标准 DES 而成为新标准的一种对称密码算法。<br>
+</p>
+</div></li>
+<li><a id="orgheadline32"></a>Rijndael<br><div class="outline-text-6" id="text-1-2-3-5-2">
+<p>
+Rijndael 算法在 2000 年被选为新一代标准密码算法——AES。Rijndael 的分组长度为 128 比特，密钥长度可以以 32 比特为单位在 128 比特到 256 比特的范围内进行选择（在 AES 的规格中，密钥长度只有 128,193,256 比特三种）。<br>
+它也是由多个轮构成的，其使用了 SPN 结构。<br>
+</p>
+
+<p>
+<img src="9_aes_cryption.jpg"><br>
+<img src="10_aes_decryption.jpg"><br>
+</p>
+</div></li></ol></li></ol>
+</div>
+<div id="outline-container-orgheadline47" class="outline-4">
+<h4 id="orgheadline47"><span class="section-number-4">1.2.4</span> 分组密码的模式</h4>
+<div class="outline-text-4" id="text-1-2-4">
+</div><ol class="org-ol"><li><a id="orgheadline35"></a>基础概念<br><div class="outline-text-5" id="text-1-2-4-1">
+<p>
+密码算法可以分为分组密码和流密码两种。<br>
+</p>
+<ul class="org-ul">
+<li>分组密码<br></li>
+</ul>
+<p>
+每次只能处理特定长度的一块数据的一类密码算法，这里的“一块”就称为分组。一个分组的比特数就称为分组长度。<br>
+</p>
+<ul class="org-ul">
+<li>流密码<br></li>
+</ul>
+<p>
+对数据流进行连续处理的一类密码算法。<br>
+</p>
+<ul class="org-ul">
+<li>分组密码的模式<br></li>
+</ul>
+<p>
+分组密码算法只能加密固定长度的分组，当需要加密的明文长度超过分组密码的分组长度，就需要对分组密码算法进行迭代，以便将一段很长的明文全部加密。而迭代的方法就称为分组密码的模式。<br>
+</p>
+<ul class="org-ul">
+<li>分组密码模式的分类<br>
+<ul class="org-ul">
+<li>ECB 模式：Electronic CodeBook mode 电子密码本模式<br></li>
+<li>CBC 模式：Cipher Block Channing mode 密码分组链接模式<br></li>
+<li>CFB 模式：Cipher FeedBack mode 密文反馈模式<br></li>
+<li>OFB 模式：Output FeedBack mode 输出反馈模式<br></li>
+<li>CTR 模式：CounTeR mode 计数器模式<br></li>
+</ul></li>
+<li>明文分组<br></li>
+</ul>
+<p>
+明文分组是指分组密码算法中作为加密对象的明文。明文分组的长度和分组密码算法的分组长度是相等的。<br>
+</p>
+<ul class="org-ul">
+<li>密文分组<br></li>
+</ul>
+<p>
+密文分组是指使用分组密码算法将明文分组加密之后所生成的密文。<br>
+</p>
+</div></li>
+<li><a id="orgheadline37"></a>ECB 模式<br><div class="outline-text-5" id="text-1-2-4-2">
+<p>
+在 ECB 模式中，将明文分组加密之后的结果将直接成为密文分组。<br>
+<img src="11_ecb_mode.jpg"><br>
+</p>
+</div>
+<ol class="org-ol"><li><a id="orgheadline36"></a>ECB 模式的特点<br><div class="outline-text-6" id="text-1-2-4-2-1">
+<p>
+相同的明文分组会被转换为相同的密文分组。<br>
+</p>
+</div></li></ol></li>
+<li><a id="orgheadline39"></a>CBC 模式<br><div class="outline-text-5" id="text-1-2-4-3">
+<p>
+在 CBC 模式中，首先将明文分组与前一个密文分组进行 XOR 运算，然后再进行加密<br>
+<img src="12_cbc_mode.jpg"><br>
+</p>
+</div>
+<ol class="org-ol"><li><a id="orgheadline38"></a>CBC 模式的特点<br><div class="outline-text-6" id="text-1-2-4-3-1">
+<p>
+明文在加密之前回合前一个密文分组进行 XOR 运算，所以相同的明文分组对应的密文也不一样。<br>
+有一个密文分组损坏会影响该密文分组以及下一个密文分组的明文，但是下下的密文分组不会受到影响。<br>
+<img src="12_cbc_mode_error.jpg"><br>
+如果能够对初始化向量中的任意比特进行反转，则第一个明文分组中相应的比特也会被反转。<br>
+<img src="12_cbc_mode_crack.jpg"><br>
+CBC 模式也可以被重放攻击<br>
+</p>
+</div></li></ol></li>
+<li><a id="orgheadline41"></a>CFB 模式<br><div class="outline-text-5" id="text-1-2-4-4">
+<p>
+在 CFB 模式中，前一个密文分组会被送回到密码算法的输入端。所谓反馈，这里指的就是返回输入端的意思。<br>
+<img src="13_cfb_mode.jpg"><br>
+</p>
+</div>
+<ol class="org-ol"><li><a id="orgheadline40"></a>CFB 模式的特点<br><div class="outline-text-6" id="text-1-2-4-4-1">
+<p>
+CFB 模式中，密码算法的输出相当于一次性密码本中的随机比特序列。密码算法就相当于用来生成密钥流的伪随机生成器，而初始化向量就相当于伪随机数生成器的种子。<br>
+CFB 模式可以被重放攻击<br>
+<img src="13_cfb_mode_crack.jpg"><br>
+</p>
+</div></li></ol></li>
+<li><a id="orgheadline43"></a>OFB 模式<br><div class="outline-text-5" id="text-1-2-4-5">
+<p>
+在 OFB 模式中，密码算法的输出会反馈到密码算法的输入中。<br>
+<img src="14_ofb_mode.jpg"><br>
+</p>
+</div>
+<ol class="org-ol"><li><a id="orgheadline42"></a>OFB 模式的特点<br><div class="outline-text-6" id="text-1-2-4-5-1">
+<p>
+OFB 模式中，XOR 所需要的比特序列（密钥流）可以事先通过密码算法生成，和明文分组无关。<br>
+OFB 模式中，如果对密钥流的一个分组进行加密后其结果碰巧和加密前是相同的，那么这一分组之后的密钥流就会变成同一值的不断反复。<br>
+</p>
+</div></li></ol></li>
+<li><a id="orgheadline45"></a>CTR 模式<br><div class="outline-text-5" id="text-1-2-4-6">
+<p>
+CTR 模式是一种通过将逐次累加的计数器进行加密来生成密钥流的流密码。<br>
+<img src="15_ctr_mode.jpg"><br>
+</p>
+</div>
+<ol class="org-ol"><li><a id="orgheadline44"></a>CTR 模式的特点<br><div class="outline-text-6" id="text-1-2-4-6-1">
+<p>
+CTR 模式中可以以任意顺序对分组进行加密和解密，因此在加密和解密时需要用到的“计数器”的值可以由 nonce 和分组序号直接计算出来。<br>
+CTR 模式的密文分组中由一个比特被反转了，则解密后明文分组中仅由与之对应的比特会被翻转，这一错误不会放大。但是，攻击者也可以利用该特性来反转密文分组的某些比特，来引起明文中相应比特的反转。<br>
+CTR 模式避免了 OFB 中加密前后一致导致的问题。<br>
+</p>
+</div></li></ol></li>
+<li><a id="orgheadline46"></a>模式选择<br><div class="outline-text-5" id="text-1-2-4-7">
+
+<div class="figure">
+<p><img src="16_block_cipher_mode.jpg"><br>
+</p>
+</div>
+</div></li></ol>
+</div>
+<div id="outline-container-orgheadline58" class="outline-4">
+<h4 id="orgheadline58"><span class="section-number-4">1.2.5</span> 公钥密码</h4>
+<div class="outline-text-4" id="text-1-2-5">
+</div><ol class="org-ol"><li><a id="orgheadline54"></a>密钥配送问题<br><div class="outline-text-5" id="text-1-2-5-1">
+<p>
+密钥必须要发送，但又不能发送，这就是对称密码的密钥配送问题。<br>
+</p>
+</div>
+<ol class="org-ol"><li><a id="orgheadline49"></a>通过事先共享密钥来解决<br><div class="outline-text-6" id="text-1-2-5-1-1">
+<p>
+需要用一种安全的方式将密钥交给对方。例如，直接将密钥保存在 U 盘中，然后亲手将 U 盘交给对方。<br>
+</p>
+</div>
+<ol class="org-ol"><li><a id="orgheadline48"></a>缺点<br><div class="outline-text-7" id="text-1-2-5-1-1-1">
+<p>
+当人数很多时，通信需要的密钥数量会增大。1000 名员工彼此加密通讯需要 1000*999/2 = 499500 个密钥<br>
+</p>
+</div></li></ol></li>
+<li><a id="orgheadline51"></a>通过密钥分配中心来解决<br><div class="outline-text-6" id="text-1-2-5-1-2">
+<p>
+密钥中心为每次会话生成会话密钥，然后，用参与会话的人的密钥加密会话密钥，将加密后的会话密钥发给参与会话的人。<br>
+</p>
+</div>
+<ol class="org-ol"><li><a id="orgheadline50"></a>缺点<br><div class="outline-text-7" id="text-1-2-5-1-2-1">
+<p>
+每次会话都需要密钥中心进行处理，密钥中心负荷随通话增多而增多。<br>
+密钥中心瘫痪后，整个加密通讯就瘫痪了。<br>
+密钥中心被攻破，全公司的所有加密通讯都会被破译。<br>
+</p>
+</div></li></ol></li>
+<li><a id="orgheadline52"></a>通过 Diffie-Hellman 密钥交换来解决<br><div class="outline-text-6" id="text-1-2-5-1-3">
+<p>
+根据所交换的信息，双方可以各自生成相同的密钥，而窃听者却无法生成相同的密钥。<br>
+</p>
+</div></li>
+<li><a id="orgheadline53"></a>通过公钥密码来解决<br><div class="outline-text-6" id="text-1-2-5-1-4">
+<p>
+公钥密码中，密钥分为加密密钥和解密密钥，它们是不同的。发送者用加密密钥对消息进行加密，接收者用解密密钥对密文进行解密。只要拥有加密密钥，任何人都可以进行加密，但是没有解密密钥是无法解密的。<br>
+</p>
+</div></li></ol></li>
+<li><a id="orgheadline57"></a>公钥密码<br><div class="outline-text-5" id="text-1-2-5-2">
+<p>
+在公钥密码中，加密密钥一般时公开的。因此该密钥被称为公钥。<br>
+在公钥密码中，解密密钥是绝对不能公开的，这个密钥只能自己来使用，因此该密钥被称为私钥。<br>
+公钥和私钥是一一对应的，一对公钥和私钥统称为密钥对。<br>
+</p>
+</div>
+<ol class="org-ol"><li><a id="orgheadline55"></a>公钥密码通讯流程<br><div class="outline-text-6" id="text-1-2-5-2-1">
+
+<div class="figure">
+<p><img src="17_public_key_communication.jpg"><br>
+</p>
+</div>
+</div></li>
+<li><a id="orgheadline56"></a>缺点<br><div class="outline-text-6" id="text-1-2-5-2-2">
+<p>
+公钥密码带来了公钥认证问题，需要判断得到的公钥是否正确合法。<br>
+公钥密码的处理速度比对称密码要慢很多.<br>
+</p>
+</div></li></ol></li></ol>
+</div>
+<div id="outline-container-orgheadline78" class="outline-4">
+<h4 id="orgheadline78"><span class="section-number-4">1.2.6</span> RSA</h4>
+<div class="outline-text-4" id="text-1-2-6">
+<p>
+RSA 是一种公钥密码算法，RSA 可被用于公钥密码和数字签名。<br>
+</p>
+</div>
+<ol class="org-ol"><li><a id="orgheadline59"></a>RSA 加密<br><div class="outline-text-5" id="text-1-2-6-1">
+<p>
+RSA 的密文是代表明文的数字的 E 次方求 mod N 的结果。也就是说将明文和自己做 E 次乘法，然后将其结果除以 N 求余数，这个余数就是密文。<br>
+E 和 N 的组合就是公钥。(E 表示 Encryption，N 表示 Number)<br>
+</p>
+</div></li>
+<li><a id="orgheadline60"></a>RSA 解密<br><div class="outline-text-5" id="text-1-2-6-2">
+<p>
+RSA 的对表示密文的数字的 D 次方求 mod N 的结果。也就是说将密文和自己做 D 次乘法，然后将其结果除以 N 求余数，这个余数就是明文。<br>
+D 和 N 的组合就是私钥。(D 表示 Decryption，N 表示 Number)<br>
+</p>
+</div></li>
+<li><a id="orgheadline66"></a>生成密钥对<br><div class="outline-text-5" id="text-1-2-6-3">
+<p>
+求 E、D、N 这三个数就是生成密钥对。RAS 密钥对的生成步骤如下：<br>
+</p>
+</div>
+<ol class="org-ol"><li><a id="orgheadline61"></a>求 N<br><div class="outline-text-6" id="text-1-2-6-3-1">
+<p>
+准备两个很大的质数：p 和 q<br>
+N = p * q<br>
+</p>
+</div></li>
+<li><a id="orgheadline62"></a>求 L（L 是仅在生成密钥对的过程中使用的数）<br><div class="outline-text-6" id="text-1-2-6-3-2">
+<p>
+L 是 p-1 和 q-1 的最小公倍数<br>
+L = lcm(p-1, q-1)<br>
+</p>
+</div></li>
+<li><a id="orgheadline63"></a>求 E<br><div class="outline-text-6" id="text-1-2-6-3-3">
+<p>
+E 和 L 之间存在下列关系：<br>
+1&lt; E &lt;L<br>
+gcd(E,L) = 1 (E 和 L 的最大公约数为 1 E 和 L 互质,该条件保证一定存在解密时需要使用的数 D)<br>
+</p>
+</div></li>
+<li><a id="orgheadline64"></a>求 D<br><div class="outline-text-6" id="text-1-2-6-3-4">
+<p>
+D、E、L 之间必须具备下列关系：<br>
+1&lt;D&lt;L<br>
+E*D mod L = 1<br>
+</p>
+</div></li>
+<li><a id="orgheadline65"></a>RSA 生成密钥对图解<br><div class="outline-text-6" id="text-1-2-6-3-5">
+
+<div class="figure">
+<p><img src="19_rsa.jpg"><br>
+</p>
+</div>
+</div></li></ol></li>
+<li><a id="orgheadline73"></a>对 RSA 的攻击<br><div class="outline-text-5" id="text-1-2-6-4">
+<ul class="org-ul">
+<li>密码破译者知道的信息：<br>
+<ul class="org-ul">
+<li>密文：可以通过窃听来获取<br></li>
+<li>数 E 和 N:公钥是公开的信息<br></li>
+</ul></li>
+<li>密码破译者不知道的信息：<br>
+<ul class="org-ul">
+<li>明文:需要破译的内容<br></li>
+<li>数字 D:私钥中至少 D 是不知道的信息<br></li>
+<li>其他：密码破译者不知道生成密钥对时所使用的 p、q 和 L<br></li>
+</ul></li>
+</ul>
+</div>
+<ol class="org-ol"><li><a id="orgheadline67"></a>通过密文来求明文<br><div class="outline-text-6" id="text-1-2-6-4-1">
+<p>
+密文 = 明文^E mode N<br>
+目前还没有发现求离散对数的高效算法，所以通过明文求密文非常困难。<br>
+</p>
+</div></li>
+<li><a id="orgheadline68"></a>通过暴力破解来找出 D<br><div class="outline-text-6" id="text-1-2-6-4-2">
+<p>
+RSA 中所使用的 p 和 q 的长度都是 512 比特以上，N 的长度为 1024 比特以上。由于 E 和 D 的长度可以和 N 差不多，因此要找出 D，就需要进行 1024 比特以上的暴力破解，这也非常困难。<br>
+</p>
+</div></li>
+<li><a id="orgheadline71"></a>通过 E 和 N 求出 D<br><div class="outline-text-6" id="text-1-2-6-4-3">
+<p>
+D 和 E 的关系如下：<br>
+E x D mod L = 1<br>
+L = lcm(p-1, q-1)<br>
+N = p * q<br>
+</p>
+</div>
+<ol class="org-ol"><li><a id="orgheadline69"></a>对 N 进行质因数分解攻击<br><div class="outline-text-7" id="text-1-2-6-4-3-1">
+<p>
+由 N 求 p 和 q 可以通过将 N 进行质因数分解来完成。所以一旦发现了对大整数进行质因数分解的高效算法，RSA 就能够被破译。<br>
+目前还没有发现对大整数进行质因数分解的高效算法，也没有证明质因数分解是否真的是非常困难的问题，也不知道是否存在一种分解质因数的简单方法。<br>
+</p>
+</div></li>
+<li><a id="orgheadline70"></a>通过推测 p 和 q 进行攻击<br><div class="outline-text-7" id="text-1-2-6-4-3-2">
+<p>
+由于 p 和 q 是通过伪随机数生成器产生的，如果伪随机数生成器的算法很差，密码破译者就有可能推测出来 p 和 q。<br>
+</p>
+</div></li></ol></li>
+<li><a id="orgheadline72"></a>中间人攻击<br><div class="outline-text-6" id="text-1-2-6-4-4">
+
+<div class="figure">
+<p><img src="19_rsa_middleman_crack.jpg"><br>
+</p>
+</div>
+</div></li></ol></li>
+
+<li><a id="orgheadline77"></a>其他公钥密码<br><ol class="org-ol"><li><a id="orgheadline74"></a>EIGamal 方式<br><div class="outline-text-6" id="text-1-2-6-5-1">
+<p>
+EIGamal 方式利用了 mod N 下求离散对数的困难度。<br>
+EIGamal 方式的一个缺点是，经过加密的密文长度会变为明文的两倍。<br>
+</p>
+</div></li>
+<li><a id="orgheadline75"></a>Rabin 方式<br><div class="outline-text-6" id="text-1-2-6-5-2">
+<p>
+Rabin 方式利用了 mod N 下求平方根的困难度。<br>
+</p>
+</div></li>
+<li><a id="orgheadline76"></a>椭圆曲线密码<br><div class="outline-text-6" id="text-1-2-6-5-3">
+<p>
+椭圆曲线密码的特点是所需密钥长度比 RSA 短。<br>
+椭圆曲线密码是通过将椭圆曲线上的特定点进行特殊的乘法运算来实现的，它利用了这种乘法运算的逆运算非常困难这一特性。<br>
+</p>
+</div></li></ol></li></ol>
+</div>
+<div id="outline-container-orgheadline81" class="outline-4">
+<h4 id="orgheadline81"><span class="section-number-4">1.2.7</span> 混合密码系统</h4>
+<div class="outline-text-4" id="text-1-2-7">
+</div><ol class="org-ol"><li><a id="orgheadline79"></a>加密<br><div class="outline-text-5" id="text-1-2-7-1">
+
+<div class="figure">
+<p><img src="20_hybird_encrypt.jpg"><br>
+</p>
+</div>
+</div></li>
+<li><a id="orgheadline80"></a>解密<br><div class="outline-text-5" id="text-1-2-7-2">
+
+<div class="figure">
+<p><img src="20_hybird_decrypt.jpg"><br>
+</p>
+</div>
+</div></li></ol>
+</div>
+</div>
+<div id="outline-container-orgheadline140" class="outline-3">
+<h3 id="orgheadline140"><span class="section-number-3">1.3</span> 认证</h3>
+<div class="outline-text-3" id="text-1-3">
+</div><div id="outline-container-orgheadline113" class="outline-4">
+<h4 id="orgheadline113"><span class="section-number-4">1.3.1</span> 单向散列函数</h4>
+<div class="outline-text-4" id="text-1-3-1">
+<p>
+单向散列函数有一个输入和一个输出，其中输入称为消息，输出称为散列值。单向散列函数可以根据消息的内容计算出散列值，散列值可以被用来检查消息的完整性。<br>
+</p>
+</div>
+<ol class="org-ol"><li><a id="orgheadline86"></a>单向散列函数的性质<br><ol class="org-ol"><li><a id="orgheadline83"></a>根据任意长度的消息计算初固定长度的散列值<br></li>
+<li><a id="orgheadline84"></a>消息不同散列值也不同<br><div class="outline-text-6" id="text-1-3-1-1-2">
+<p>
+两个不同的消息产生同一个散列值的情况称为碰撞.<br>
+难以发现碰撞的性质称为抗碰撞性。<br>
+弱抗碰撞性：当给定某条消息的散列值时，单向散列函数必须确保要找到和该条消息具备相同散列值的另外一条消息是非常困难的。<br>
+强抗碰撞性：要找到散列值相同的两条不同的消息时非常困难的，这里的散列值可以是任意值。<br>
+</p>
+</div></li>
+<li><a id="orgheadline85"></a>具备单向性<br><div class="outline-text-6" id="text-1-3-1-1-3">
+<p>
+无法通过散列值反算出消息的内容。<br>
+</p>
+</div></li></ol></li>
+<li><a id="orgheadline93"></a>单向散列函数的应用<br><ol class="org-ol"><li><a id="orgheadline87"></a>检测软件是否被篡改<br><div class="outline-text-6" id="text-1-3-1-2-1">
+<p>
+用户下载到软件后，可以自行计算散列值，然后与官方网站上公布的散列值进行对比。<br>
+</p>
+</div></li>
+<li><a id="orgheadline88"></a>基于口令的加密<br><div class="outline-text-6" id="text-1-3-1-2-2">
+<p>
+基于口令的加密（PBE password based encrytion）的原理是将口令和盐（salt，通过伪随机数生成器产生的随机值）混合后计算其散列值，然后，将这个散列值作为加密的密钥。通过这样的方法能够预防针对口令的字典攻击。<br>
+</p>
+</div></li>
+<li><a id="orgheadline89"></a>消息认证码<br><div class="outline-text-6" id="text-1-3-1-2-3">
+<p>
+使用单向散列函数可以构造消息认证码。消息认证码是将“发送者和接收者之间的共享密钥”和“信息”进行混合后计算出的散列值。<br>
+</p>
+</div></li>
+<li><a id="orgheadline90"></a>数字签名<br><div class="outline-text-6" id="text-1-3-1-2-4">
+<p>
+数字签名的处理过程非常耗时，因此一般不会对整个消息内容直接施加数字签名，而是先通过单向散列函数计算出消息的散列值，然后再对这个散列值施加数字签名。<br>
+</p>
+</div></li>
+<li><a id="orgheadline91"></a>伪随机数生成器<br><div class="outline-text-6" id="text-1-3-1-2-5">
+<p>
+密码技术中所使用的随机数需要具备“事实上不可能根据过去的随机数列预测未来的随机数列”这样的性质。为了保证不可预测性，可以利用单向散列函数的单向性。<br>
+</p>
+</div></li>
+<li><a id="orgheadline92"></a>一次性口令<br><div class="outline-text-6" id="text-1-3-1-2-6">
+<p>
+一次性口令经常被用于服务器对客户端的合法性认证。在这种方式中，通过使用单向散列函数可以保证口令只在通信链路上传送一次，因此即使窃听者窃取了口令，也无法使用。<br>
+</p>
+</div></li></ol></li>
+<li><a id="orgheadline98"></a>单向散列函数的具体实例<br><ol class="org-ol"><li><a id="orgheadline94"></a>MD4 MD5<br><div class="outline-text-6" id="text-1-3-1-3-1">
+<p>
+MD 是消息摘要（Message Digest）的缩写。MD4 和 MD5 目前都已经不安全了。<br>
+</p>
+</div></li>
+<li><a id="orgheadline95"></a>SHA-1 SHA-256 SHA-384 SHA-512<br><div class="outline-text-6" id="text-1-3-1-3-2">
+<p>
+SHA-1 的强抗碰撞性已于 2005 年被攻破。<br>
+</p>
+</div></li>
+<li><a id="orgheadline96"></a>RIPEMD-160<br><div class="outline-text-6" id="text-1-3-1-3-3">
+<p>
+RIPEMD-160 是 RIPEMD 的修订版。RIPEMD 的强抗碰撞性已经于 2004 年被攻破。<br>
+</p>
+</div></li>
+<li><a id="orgheadline97"></a>ASH 与 SHA-3<br><div class="outline-text-6" id="text-1-3-1-3-4">
+<p>
+SHA-3 用于取代 SHA-1。SHA-3 和 AES 一样采用公开竞赛的方式进行标准化。<br>
+2012 年 10 月 2 日，期盼已久的 SHA-3 获胜算法终于揭开了她的面纱，她就是 Keccak 算法！Keccak 算法由意法半导体的 Guido Bertoni、Joan Daemen（AES 算法合作者）和 Gilles Van Assche，以及恩智浦半导体的 Michaël Peeters 联合开发。NIST 计算机安全专家 Tim Polk 说，Keccak 的优势在于它与 SHA-2 设计上存在极大差别，适用于 SHA-2 的攻击方法将不能作用于 Keccak。<br>
+</p>
+</div></li></ol></li>
+<li><a id="orgheadline108"></a>单向散列函数 SHA-1<br><div class="outline-text-5" id="text-1-3-1-4">
+
+<div class="figure">
+<p><img src="21_sha1_overview.jpg"><br>
+</p>
+</div>
+</div>
+<ol class="org-ol"><li><a id="orgheadline102"></a>填充<br><div class="outline-text-6" id="text-1-3-1-4-1">
+<p>
+对消息进行填充处理，使其长度为 512 比特的整数倍。这里 512 比特称为一个输入分组。<br>
+输入 SHA-1 的消息长度应大于 0 比特小于 2^64 比特。<br>
+SHA-1 的填充过程如下：<br>
+</p>
+</div>
+<ol class="org-ol"><li><a id="orgheadline99"></a>添加 1<br><div class="outline-text-7" id="text-1-3-1-4-1-1">
+<p>
+在消息末尾添加一个 1 比特的数值“1”，这样消息的长度就增加了 1 比特。<br>
+</p>
+</div></li>
+<li><a id="orgheadline100"></a>添加 0<br><div class="outline-text-7" id="text-1-3-1-4-1-2">
+<p>
+在消息的末尾继续添加 0，直到消息的长度达到 512 比特的整数倍。但是，最后一个分组的最后 64 比特需要空出来以便保存原始的消息长度。<br>
+</p>
+</div></li>
+<li><a id="orgheadline101"></a>添加消息长度<br><div class="outline-text-7" id="text-1-3-1-4-1-3">
+<p>
+在最后一个分组的最后 64 比特中保存原始消息的长度。<br>
+</p>
+</div></li></ol></li>
+<li><a id="orgheadline105"></a>计算 W0-W79<br><div class="outline-text-6" id="text-1-3-1-4-2">
+<p>
+根据输入分组的 512 比特计算出 80 个 32 比特的值（W0-W79）<br>
+首先，输入分组的 512 比特分成 32 比特*16 组，并将它们命名为 W0-W15.<br>
+然后，剩下的 W16-W79 的计算方法如下。<br>
+W16 = （W0 xor W2 xor W8 xor W13） 循环左移 1 比特<br>
+Wt = W(t-16) xor W(t-14) xor W(t-8) xor W(t-3) 循环左移 1 比特<br>
+</p>
+</div>
+<ol class="org-ol"><li><a id="orgheadline103"></a>循环左移 1 比特操作图如下：<br><div class="outline-text-7" id="text-1-3-1-4-2-1">
+
+<div class="figure">
+<p><img src="21_sha1_shiftleft1.jpg"><br>
+</p>
+</div>
+</div></li>
+<li><a id="orgheadline104"></a>计算 W0-W79 操作图如下：<br><div class="outline-text-7" id="text-1-3-1-4-2-2">
+
+<div class="figure">
+<p><img src="21_sha1_calcW.jpg"><br>
+</p>
+</div>
+</div></li></ol></li>
+<li><a id="orgheadline106"></a>分组处理<br><div class="outline-text-6" id="text-1-3-1-4-3">
+<p>
+对输入分组一次进行 80 个步骤的处理，计算 5 个 32 比特的值（A-E）作为 SHA-1 的内部状态。对所有的分组都要进行这一操作。<br>
+160 比特的内部状态是通过名为 ABCDE 的 5 个 32 比特的缓冲区来表示的，80 个步骤所完成的操作，就是将输入分组的 512 比特的数据，与 SHA-1 所保持的 160 比特的内部状态（5 个缓冲区）进行混合。通过上述 80 个步骤的反复执行，SHA-1 就能够将已经过填充的消息全部混入这 160 比特的内部状态中，而 SHA-1 所输出的散列值，就是所有处理结束之后最终的内部状态（160 比特）。<br>
+<img src="21_sha1_processblock.jpg"><br>
+</p>
+</div></li>
+<li><a id="orgheadline107"></a>单步处理<br><div class="outline-text-6" id="text-1-3-1-4-4">
+<p>
+分组处理是由 80 个步骤的处理组成的，其中每个步骤都是基于 W0-W79 使内部状态进行复杂变化的处理。<br>
+在一个步骤完成后，缓冲区 ABCD 的内容会被分别复制到 BCDE 中（其中 B 要循环左移 30 比特之后再复制），而缓冲区 E 的内容则会与其他缓冲区的内容以及 Wt，Kt 相加之后再被复制到缓冲区 A 中。<br>
+由于上述处理要循环 80 个步骤，因此输入分组中 1 个比特的变化，就会影响到散列值中几乎所有的比特，通过这样的方式，我们就能够实现单向散列函数所应具备的性质。<br>
+<img src="21_sha1_onestep.jpg"><br>
+</p>
+</div></li></ol></li>
+<li><a id="orgheadline111"></a>对单向散列函数的攻击<br><ol class="org-ol"><li><a id="orgheadline109"></a>暴力破解<br><div class="outline-text-6" id="text-1-3-1-5-1">
+<p>
+寻找和特定消息具备相同散列值的另一条不同的消息。这是一种试图破解单向散列函数的“弱抗碰撞性”的攻击<br>
+</p>
+</div></li>
+<li><a id="orgheadline110"></a>生日攻击<br><div class="outline-text-6" id="text-1-3-1-5-2">
+<p>
+寻找散列值相同的两条消息，散列值可以是任意值。这是一种试图破解单向散列函数的“强抗碰撞性”的攻击<br>
+</p>
+</div></li></ol></li>
+<li><a id="orgheadline112"></a>单向散列函数无法解决的问题<br><div class="outline-text-5" id="text-1-3-1-6">
+<p>
+单向散列函数可以辨别出“篡改”，但无法辨别出“伪装”<br>
+</p>
+</div></li></ol>
+</div>
+<div id="outline-container-orgheadline137" class="outline-4">
+<h4 id="orgheadline137"><span class="section-number-4">1.3.2</span> 消息认证码</h4>
+<div class="outline-text-4" id="text-1-3-2">
+</div><ol class="org-ol"><li><a id="orgheadline114"></a>什么是消息认证码<br><div class="outline-text-5" id="text-1-3-2-1">
+<p>
+消息认证码（message authentication code）是一种确认完整性并进行认证的技术，取三个单词的首字母，简称 MAC。<br>
+消息认证码的输入包括任意长度的消息和一个发送者和接收者之间共享的密钥，它可以输出固定长度的数据，这个数据称为 MAC 值。<br>
+根据任意长度的消息输出固定长度的数据，这一点和单向散列函数很类似。但是单向散列函数中计算散列值时不需要密钥，而消息认证码中则需要使用发送者和接收者之间共享的密钥。<br>
+要计算 MAC 必须持有共享密钥，没有共享密钥的人就无法计算 MAC 值，消息认证码正式利用这一性质来完成认证的。<br>
+和单向散列函数的散列值一样，哪怕消息中发生 1 比特的变化，MAC 值也会产生变化，消息认证码正是利用这一性质来确认完整性的。<br>
+<img src="22_mac_vs_sha.jpg"><br>
+</p>
+</div></li>
+<li><a id="orgheadline115"></a>消息认证码的使用步骤<br><div class="outline-text-5" id="text-1-3-2-2">
+
+<div class="figure">
+<p><img src="22_mac.jpg"><br>
+</p>
+</div>
+</div></li>
+<li><a id="orgheadline119"></a>消息认证码的实现方法<br><ol class="org-ol"><li><a id="orgheadline116"></a>利用单向散列函数可以实现消息认证码<br></li>
+<li><a id="orgheadline117"></a>使用分组密码实现<br><div class="outline-text-6" id="text-1-3-2-3-2">
+<p>
+使用 DES，AES 之类的分组密码可以实现消息认证码。具体做法为，将分组密码的密钥作为消息认证码的共享密钥来使用，并使用 CBC 模式将消息全部加密。由于消息认证码中不需要解密，因此将除最后一个分组以外的密文部分全部丢弃，而将最后一个分组作为 MAC 值。由于 CBC 模式的最后一个分组会受到整个消息以及密钥的双重影响，因此可以将它用作消息认证码。<br>
+</p>
+</div></li>
+<li><a id="orgheadline118"></a>其他实现方法<br><div class="outline-text-6" id="text-1-3-2-3-3">
+<p>
+使用流密码和公钥密码也可以实现消息认证码。<br>
+</p>
+</div></li></ol></li>
+<li><a id="orgheadline127"></a>HMAC<br><div class="outline-text-5" id="text-1-3-2-4">
+<p>
+HMAC 是一种使用单向散列函数来构造消息认证码的方法，其中 HMAC 的 H 就是 Hash 的意思。HMAC 中所使用的单向散列函数并不仅限于一种，任何高强度的单向散列函数都可以被用于 HMAC。<br>
+<img src="22_mac_hmac.jpg"><br>
+</p>
+</div>
+<ol class="org-ol"><li><a id="orgheadline120"></a>1 密钥填充<br><div class="outline-text-6" id="text-1-3-2-4-1">
+<p>
+如果密钥比单向散列函数的分组长度要短，就需要在末尾填充 0，直到其长度达到单向散列函数的分组长度为止。<br>
+如果密钥比单向散列函数的分组要长，则要用单向散列函数求出密钥的散列值，然后将这个散列值用作 HMAC 的密钥。<br>
+</p>
+</div></li>
+<li><a id="orgheadline121"></a>2 填充后的密钥与 ipad 的 XOR<br><div class="outline-text-6" id="text-1-3-2-4-2">
+<p>
+将填充后的密钥与被称为 ipad 的比特序列进行 XOR 运算。ipad 是将 00110110 这一比特序列（即 16 进制的 36）不断循环反复直到达到分组长度所形成的比特序列，其中 ipad 的 i 是 inner（内部）的意思。<br>
+XOR 运算所得到的值，就是一个和单向散列函数的分组长度相同，且和密钥相关的比特序列。这里我们将这个比特序列称为 ipadkey<br>
+</p>
+</div></li>
+<li><a id="orgheadline122"></a>3 与消息组合<br><div class="outline-text-6" id="text-1-3-2-4-3">
+<p>
+随后，将 ipadkey 与消息进行组合，也就是将密钥相关的比特序列（ipadkey）附加在消息的开头。<br>
+</p>
+</div></li>
+<li><a id="orgheadline123"></a>4 计算散列值<br><div class="outline-text-6" id="text-1-3-2-4-4">
+<p>
+将第 3 步的结果输入单向散列函数，并计算初散列值。<br>
+</p>
+</div></li>
+<li><a id="orgheadline124"></a>5 填充后的密钥与 opad 的 XOR<br><div class="outline-text-6" id="text-1-3-2-4-5">
+<p>
+将填充后的密钥与被称为 opad 的比特序列进行 XOR 运算。opad 是将 01011100 这一比特序列（即 16 进制的 5C）不断循环反复直到达到分组长度所形成的比特序列，其中 opad 的 o 是 outer（外部）的意思。<br>
+XOR 运算所得到的值，这里我们将其称为 opadkey<br>
+</p>
+</div></li>
+<li><a id="orgheadline125"></a>6 将 第 4 步 的散列值拼在 opadkey 后面<br></li>
+<li><a id="orgheadline126"></a>7 计算散列值<br><div class="outline-text-6" id="text-1-3-2-4-7">
+<p>
+将第 6 步的结果输入单向散列函数，并计算出散列值。这个散列值就是最终的 MAC 值。<br>
+</p>
+</div></li></ol></li>
+<li><a id="orgheadline133"></a>对消息认证码的攻击<br><ol class="org-ol"><li><a id="orgheadline131"></a>重放攻击<br><div class="outline-text-6" id="text-1-3-2-5-1">
+<p>
+将正确的 MAC 值保持下来重复利用，这种攻击方式称为重放攻击。<br>
+</p>
+</div>
+<ol class="org-ol"><li><a id="orgheadline128"></a>序号<br><div class="outline-text-7" id="text-1-3-2-5-1-1">
+<p>
+约定每次都对发送的消息赋予一个递增的编号（序号），并且计算 MAC 值时将序号也包含在消息中。这种方法虽然有效，但是对每个通信对象都需要记录最后一个消息的序号。<br>
+</p>
+</div></li>
+<li><a id="orgheadline129"></a>时间戳<br><div class="outline-text-7" id="text-1-3-2-5-1-2">
+<p>
+约定在消息发送时包含当前的时间，如果收到以前的消息，即便 MAC 值正确也将其当做错误的消息来处理。这种方法需要保证发送者和接收者的时钟必须一致，而且考虑到通信的延迟，必须在时间的判断上留下缓冲，依然还有重放攻击的可能。<br>
+</p>
+</div></li>
+<li><a id="orgheadline130"></a>nonce<br><div class="outline-text-7" id="text-1-3-2-5-1-3">
+<p>
+在通信之前，接收者先向发送者发送一个一次性的随机数，这个随机数一般称为 nonce。发送者在消息中包含这个 nonce 并计算 MAC 值。由于每次通信时 nonce 的值都会发生变化，因此无法进行重放攻击。该方法虽然有效，但通信的数据量会有所增加。<br>
+</p>
+</div></li></ol></li>
+<li><a id="orgheadline132"></a>密钥推测攻击<br><div class="outline-text-6" id="text-1-3-2-5-2">
+<p>
+对于消息认证码来说，应保证不能根据 MAC 值推测出通信双方所使用的密钥。HMAC 中就是利用单向散列函数的单向性和抗碰撞性来保证无法根据 MAC 值推测出密钥的。<br>
+此外，在生成消息认证码所使用的密钥时，必须使用密码学安全的、高强度的伪随机数生成器。如果密钥是人为选定的，则会增加密钥被推测的风险。<br>
+</p>
+</div></li></ol></li>
+<li><a id="orgheadline136"></a>消息认证码无法解决的问题<br><ol class="org-ol"><li><a id="orgheadline134"></a>对第三方证明<br></li>
+<li><a id="orgheadline135"></a>防止否认<br></li></ol></li></ol>
+</div>
+<div id="outline-container-orgheadline138" class="outline-4">
+<h4 id="orgheadline138"><span class="section-number-4">1.3.3</span> 数字签名</h4>
+</div>
+
+<div id="outline-container-orgheadline139" class="outline-4">
+<h4 id="orgheadline139"><span class="section-number-4">1.3.4</span> 证书</h4>
+</div>
+</div>
+<div id="outline-container-orgheadline146" class="outline-3">
+<h3 id="orgheadline146"><span class="section-number-3">1.4</span> 密码学应用</h3>
+<div class="outline-text-3" id="text-1-4">
+</div><div id="outline-container-orgheadline141" class="outline-4">
+<h4 id="orgheadline141"><span class="section-number-4">1.4.1</span> 密钥-秘密的精华</h4>
+</div>
+<div id="outline-container-orgheadline142" class="outline-4">
+<h4 id="orgheadline142"><span class="section-number-4">1.4.2</span> 随机数-不可预测性的源泉</h4>
+</div>
+<div id="outline-container-orgheadline143" class="outline-4">
+<h4 id="orgheadline143"><span class="section-number-4">1.4.3</span> PGP</h4>
+</div>
+<div id="outline-container-orgheadline144" class="outline-4">
+<h4 id="orgheadline144"><span class="section-number-4">1.4.4</span> SSL/TLS</h4>
+</div>
+<div id="outline-container-orgheadline145" class="outline-4">
+<h4 id="orgheadline145"><span class="section-number-4">1.4.5</span> 密码技术与现实社会</h4>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline148" class="outline-2">
+<h2 id="orgheadline148"><span class="section-number-2">2</span> 密码学实践</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+实践项目 <a href="https://github.com/wolfand11/cryptology" target="_blank" rel="external">https://github.com/wolfand11/cryptology</a><br>
+</p>
+<ul class="org-ul">
+<li>DES 实现<br></li>
+<li>AES 实现<br></li>
+<li>TEA 实现<br></li>
+<li>RSA 实现<br></li>
+<li>sha-1 实现<br></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgheadline149" class="outline-2">
+<h2 id="orgheadline149"><span class="section-number-2">3</span> 参考资料</h2>
+<div class="outline-text-2" id="text-3">
+<ul class="org-ul">
+<li>TEA <a href="https://en.wikipedia.org/wiki/Tiny_Encryption_Algorithm" target="_blank" rel="external">https://en.wikipedia.org/wiki/Tiny_Encryption_Algorithm</a><br></li>
+</ul>
+</div>
+</div>
+]]></content>
+      
+        <categories>
+            
+            <category> cryptology </category>
+            
+            <category> theory </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> cryptology </tag>
+            
+            <tag> decode </tag>
+            
+            <tag> encode </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Compiler]]></title>
+      <url>http://wolfand11.coding.me/2017/09/14/architecture/Compiler/</url>
+      <content type="html"><![CDATA[
+
+关于编译器的一些笔记
+<a id="more"></a>
+
+<div id="outline-container-orgheadline9" class="outline-2">
+<h2 id="orgheadline9"><span class="section-number-2">1</span> 编译器理论</h2>
+<div class="outline-text-2" id="text-1">
+</div><div id="outline-container-orgheadline1" class="outline-3">
+<h3 id="orgheadline1"><span class="section-number-3">1.1</span> 编译器概述</h3>
+</div>
+<div id="outline-container-orgheadline2" class="outline-3">
+<h3 id="orgheadline2"><span class="section-number-3">1.2</span> 词法分析</h3>
+</div>
+<div id="outline-container-orgheadline3" class="outline-3">
+<h3 id="orgheadline3"><span class="section-number-3">1.3</span> 语法分析</h3>
+</div>
+<div id="outline-container-orgheadline4" class="outline-3">
+<h3 id="orgheadline4"><span class="section-number-3">1.4</span> 语法制导翻译与抽象语法树</h3>
+</div>
+<div id="outline-container-orgheadline5" class="outline-3">
+<h3 id="orgheadline5"><span class="section-number-3">1.5</span> 语义分析</h3>
+</div>
+<div id="outline-container-orgheadline6" class="outline-3">
+<h3 id="orgheadline6"><span class="section-number-3">1.6</span> 代码生成</h3>
+</div>
+<div id="outline-container-orgheadline7" class="outline-3">
+<h3 id="orgheadline7"><span class="section-number-3">1.7</span> 中间代码与程序分析</h3>
+</div>
+<div id="outline-container-orgheadline8" class="outline-3">
+<h3 id="orgheadline8"><span class="section-number-3">1.8</span> 代码优化</h3>
+</div>
+</div>
+
+<div id="outline-container-orgheadline10" class="outline-2">
+<h2 id="orgheadline10"><span class="section-number-2">2</span> sproto 源码分析</h2>
+</div>
+
+
+<div id="outline-container-orgheadline11" class="outline-2">
+<h2 id="orgheadline11"><span class="section-number-2">3</span> 参考资料</h2>
+<div class="outline-text-2" id="text-3">
+<ul class="org-ul">
+<li>中科大 编译原理公开课 <a href="http://mooc.study.163.com/course/USTC-1000002001" target="_blank" rel="external">http://mooc.study.163.com/course/USTC-1000002001</a><br></li>
+</ul>
+</div>
+</div>
+]]></content>
+      
+        <categories>
+            
+            <category> theory </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> compiler </tag>
+            
+            <tag> theory </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[Game Engine Architecture]]></title>
-      <url>http://wolfand11.coding.me/2017/09/04/architecture/GameEngineArchitecture/</url>
+      <url>http://wolfand11.coding.me/2017/09/03/architecture/GameEngineArchitecture/</url>
       <content type="html"><![CDATA[
 
 Game Engine Architecture 读书笔记
@@ -131,7 +1265,7 @@ Game Engine Architecture 读书笔记
     
     <entry>
       <title><![CDATA[ArtTools]]></title>
-      <url>http://wolfand11.coding.me/2017/08/29/tools/ArtTools/</url>
+      <url>http://wolfand11.coding.me/2017/08/28/tools/ArtTools/</url>
       <content type="html"><![CDATA[
 
 记录一些美术工具的使用方法。
@@ -569,7 +1703,7 @@ sliderTime = 10
     
     <entry>
       <title><![CDATA[Python Note]]></title>
-      <url>http://wolfand11.coding.me/2017/08/18/language/Python/</url>
+      <url>http://wolfand11.coding.me/2017/08/17/language/Python/</url>
       <content type="html"><![CDATA[
 
 
@@ -746,7 +1880,7 @@ ZipDir(g_curPath+<span style="color: #ffa07a;">"/testx"</span>, g_curPath+<span 
     
     <entry>
       <title><![CDATA[GameAI]]></title>
-      <url>http://wolfand11.coding.me/2017/05/16/gameplay/GameAI/</url>
+      <url>http://wolfand11.coding.me/2017/05/15/gameplay/GameAI/</url>
       <content type="html"><![CDATA[
 
 
@@ -873,7 +2007,7 @@ behaviac <a href="http://www.behaviac.com/" target="_blank" rel="external">http:
     
     <entry>
       <title><![CDATA[DOTween]]></title>
-      <url>http://wolfand11.coding.me/2017/05/01/unity/DOTween/</url>
+      <url>http://wolfand11.coding.me/2017/04/30/unity/DOTween/</url>
       <content type="html"><![CDATA[
 
 
@@ -1010,7 +2144,7 @@ DOTween 官网文档<br>
     
     <entry>
       <title><![CDATA[Matlab]]></title>
-      <url>http://wolfand11.coding.me/2017/03/20/tools/Matlab/</url>
+      <url>http://wolfand11.coding.me/2017/03/19/tools/Matlab/</url>
       <content type="html"><![CDATA[
 
 
@@ -1087,7 +2221,7 @@ plot(x,y1,x,y2);
     
     <entry>
       <title><![CDATA[KSFramework Note]]></title>
-      <url>http://wolfand11.coding.me/2017/03/08/architecture/KSFrameworkNote/</url>
+      <url>http://wolfand11.coding.me/2017/03/07/architecture/KSFrameworkNote/</url>
       <content type="html"><![CDATA[
 
 
@@ -1365,7 +2499,7 @@ IsEditorLoadAsset = 1
     
     <entry>
       <title><![CDATA[Unity Hot Update]]></title>
-      <url>http://wolfand11.coding.me/2017/02/26/unity/UnityHotUpdate/</url>
+      <url>http://wolfand11.coding.me/2017/02/25/unity/UnityHotUpdate/</url>
       <content type="html"><![CDATA[
 
 
@@ -1570,7 +2704,7 @@ prefab 之间的依赖关系是否需要处理？<br></li>
     
     <entry>
       <title><![CDATA[Action Script Developer Guide To PureMVC]]></title>
-      <url>http://wolfand11.coding.me/2017/02/13/architecture/ActionScriptDeveloperGuideToPureMVC/</url>
+      <url>http://wolfand11.coding.me/2017/02/12/architecture/ActionScriptDeveloperGuideToPureMVC/</url>
       <content type="html"><![CDATA[
 
 <p>
@@ -4356,7 +5490,7 @@ SelectContext 不属于 PureMVC 的任何角色，它属于一个 ValueObject �
     
     <entry>
       <title><![CDATA[Move Sync]]></title>
-      <url>http://wolfand11.coding.me/2017/01/06/gameplay/MoveSync/</url>
+      <url>http://wolfand11.coding.me/2017/01/05/gameplay/MoveSync/</url>
       <content type="html"><![CDATA[
 
 <p>
@@ -4680,7 +5814,7 @@ slowdownFactor 为缓动因子，slowdownFactor 越大，平滑速度越慢。<b
     
     <entry>
       <title><![CDATA[Unity GUI]]></title>
-      <url>http://wolfand11.coding.me/2017/01/01/unity/UnityGUI/</url>
+      <url>http://wolfand11.coding.me/2016/12/31/unity/UnityGUI/</url>
       <content type="html"><![CDATA[
 
 
@@ -5357,7 +6491,7 @@ Unlit - Text 3.shader 三个 UIPanel 嵌套裁剪<br>
     
     <entry>
       <title><![CDATA[Animation From External Sources]]></title>
-      <url>http://wolfand11.coding.me/2016/12/23/unity/UnityDoc-AnimationFromExternalSources/</url>
+      <url>http://wolfand11.coding.me/2016/12/22/unity/UnityDoc-AnimationFromExternalSources/</url>
       <content type="html"><![CDATA[
 
 <div id="outline-container-orgheadline3" class="outline-2">
@@ -5517,7 +6651,7 @@ When viewing imported Animation keyframes, the Animation window provides a read-
     
     <entry>
       <title><![CDATA[Animation Clips]]></title>
-      <url>http://wolfand11.coding.me/2016/12/22/unity/UnityDoc-AnimationClips/</url>
+      <url>http://wolfand11.coding.me/2016/12/21/unity/UnityDoc-AnimationClips/</url>
       <content type="html"><![CDATA[
 
 
@@ -5774,7 +6908,7 @@ When viewing imported Animation keyframes, the Animation window provides a read-
     
     <entry>
       <title><![CDATA[Animation System Overview]]></title>
-      <url>http://wolfand11.coding.me/2016/12/12/unity/UnityDoc-AnimationSystemOverview/</url>
+      <url>http://wolfand11.coding.me/2016/12/11/unity/UnityDoc-AnimationSystemOverview/</url>
       <content type="html"><![CDATA[
 
 
@@ -5959,7 +7093,7 @@ Unity intends to phase out the Legacy animation system over time for all cases b
     
     <entry>
       <title><![CDATA[Programming in Lua]]></title>
-      <url>http://wolfand11.coding.me/2016/11/09/language/Lua/</url>
+      <url>http://wolfand11.coding.me/2016/11/08/language/Lua/</url>
       <content type="html"><![CDATA[
 
 
@@ -6169,7 +7303,7 @@ PrintBoolCheck({})
     
     <entry>
       <title><![CDATA[Unity Note]]></title>
-      <url>http://wolfand11.coding.me/2016/10/28/unity/UnityNote/</url>
+      <url>http://wolfand11.coding.me/2016/10/27/unity/UnityNote/</url>
       <content type="html"><![CDATA[
 
 
@@ -8681,7 +9815,7 @@ GameObject.Destroy(com)<br>
     
     <entry>
       <title><![CDATA[VIM]]></title>
-      <url>http://wolfand11.coding.me/2016/09/29/tools/vim/</url>
+      <url>http://wolfand11.coding.me/2016/09/28/tools/vim/</url>
       <content type="html"><![CDATA[
 
 
@@ -8929,7 +10063,7 @@ osx    下配置放置在 ~/.vimrc<br>
     
     <entry>
       <title><![CDATA[Game Dev Tools]]></title>
-      <url>http://wolfand11.coding.me/2016/09/28/tools/GameDevTools/</url>
+      <url>http://wolfand11.coding.me/2016/09/27/tools/GameDevTools/</url>
       <content type="html"><![CDATA[
 
 
@@ -9005,7 +10139,7 @@ SQLiteExpert 个人免费 <a href="http://www.sqliteexpert.com/" target="_blank"
     
     <entry>
       <title><![CDATA[Programing in CSharp]]></title>
-      <url>http://wolfand11.coding.me/2016/09/27/language/CSharp/</url>
+      <url>http://wolfand11.coding.me/2016/09/26/language/CSharp/</url>
       <content type="html"><![CDATA[
 
 
@@ -11988,7 +13122,7 @@ overwrite 表示重新实现从父类派生而来的方法，需要关键字 new
     
     <entry>
       <title><![CDATA[Special Folders]]></title>
-      <url>http://wolfand11.coding.me/2016/09/24/unity/UnityDoc-SpecialFolders/</url>
+      <url>http://wolfand11.coding.me/2016/09/23/unity/UnityDoc-SpecialFolders/</url>
       <content type="html"><![CDATA[
 
 <p>
@@ -12316,7 +13450,7 @@ brew install ctags
 <span style="color: #ff0000;"># </span><span style="color: #ff0000;">step 2 check ctags version</span>
 ctags --version
 <span style="color: #ff0000;"># </span><span style="color: #ff0000;">==&gt; Exuberant Ctags 5.8, Copyright (C) 1996-2009 Darren Hiebert</span>
-<span style="color: #b0c4de;">which</span> ctags
+which ctags
 <span style="color: #ff0000;"># </span><span style="color: #ff0000;">==&gt; /opt/local/bin/ctags</span>
 </pre>
 </div>
@@ -12356,7 +13490,7 @@ brew install global
 <span style="color: #ff0000;"># </span><span style="color: #ff0000;">step 2 check global version</span>
 global --version
 <span style="color: #ff0000;"># </span><span style="color: #ff0000;">==&gt; global (GNU GLOBAL) 6.5.4</span>
-<span style="color: #b0c4de;">which</span> global
+which global
 <span style="color: #ff0000;"># </span><span style="color: #ff0000;">==&gt; /usr/local/bin/global</span>
 </pre>
 </div>
@@ -12940,7 +14074,6 @@ cp dot.ideavimrc /cygdrive/c/Users/Administrator/.ideavimrc
 </div>
 </div>
 
-
 <div id="outline-container-orgheadline74" class="outline-2">
 <h2 id="orgheadline74"><span class="section-number-2">6</span> Shell Tools</h2>
 <div class="outline-text-2" id="text-6">
@@ -12981,7 +14114,6 @@ cp Soliah.zsh-theme ~/.oh-my-zsh/themes/Soliah.zsh-theme
 </div>
 </div>
 </div>
-
 <div id="outline-container-orgheadline75" class="outline-2">
 <h2 id="orgheadline75"><span class="section-number-2">7</span> SSH Config</h2>
 <div class="outline-text-2" id="text-7">
@@ -13001,6 +14133,15 @@ ssh -vT git@github.com
 ssh -vT git@git.coding.net
 </pre>
 </div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline76" class="outline-2">
+<h2 id="orgheadline76"><span class="section-number-2">8</span> InitZeroBrane</h2>
+<div class="outline-text-2" id="text-8">
+<p>
+在菜单栏中选择 Edit/Preference/Settings: User 会打开配置文件 user.lua，将自己的配置内容 copy 到打开的配置文件中就可以了。<br>
+</p>
 </div>
 </div>
 ]]></content>
@@ -13024,7 +14165,7 @@ ssh -vT git@git.coding.net
     
     <entry>
       <title><![CDATA[Loading Resources at Runtime]]></title>
-      <url>http://wolfand11.coding.me/2016/08/24/unity/UnityDoc-LoadingResourcesatRuntime/</url>
+      <url>http://wolfand11.coding.me/2016/08/23/unity/UnityDoc-LoadingResourcesatRuntime/</url>
       <content type="html"><![CDATA[
 
 <p>
@@ -15410,7 +16551,7 @@ Deferred Pass 用来渲染光照计算需要的所有的信息（在内置 shade
 </div></li>
 <li><a id="orgheadline46"></a>Requirements<br><div class="outline-text-5" id="text-1-7-3-2">
 <p>
-延迟渲染需要图形卡包含 Multiple Render Targets，Shader Model 3.0 或者更高，支持深度贴图以及双面的模板缓冲区。大多数 PC2005 年以后的向卡支持延迟渲染，包括 GeForce6 以及更高，RadeonX1300 以及更高，InterG45+以及更高。在移动设备中，由于 MRT 使用的格式延迟渲染支持很有限（一些支持多个渲染目标的 GPUs 仍然只支持很有限的位数）。<br>
+延迟渲染需要图形卡包含 Multiple Render Targets，Shader Model 3.0 或者更高，支持深度贴图以及双面的模板缓冲区。大多数 PC2005 年以后的显卡支持延迟渲染，包括 GeForce6 以及更高，RadeonX1300 以及更高，InterG45+以及更高。在移动设备中，由于 MRT 使用的格式延迟渲染支持很有限（一些支持多个渲染目标的 GPUs 仍然只支持很有限的位数）。<br>
 注意：在使用正交投影时，不支持延迟渲染。如果摄像机的投影模式被设置为正交投影，这些数值将被覆盖，并且摄像机将总是使用 Forward Rendering。<br>
 </p>
 </div></li>
@@ -15425,19 +16566,7 @@ Deferred Pass 用来渲染光照计算需要的所有的信息（在内置 shade
 </div></li>
 <li><a id="orgheadline48"></a>Implementation Details<br><div class="outline-text-5" id="text-1-7-3-4">
 <p>
-当使用延迟渲染时，Unity 中的渲染处理在发生在下面两个 Passes 中：<br>
-</p>
-
-<p>
-G-buffer Pass: 渲染物体来产生屏幕空间的 buffers，这些 buffers 中存储了漫反射颜色，镜面光颜色，平滑度，世界空间法线，发射颜色以及深度值。<br>
-</p>
-
-<p>
-Lighting Pass: 前面 Pass 产生的 buffers 在这里被使用，添加光照到 emission 缓存区。<br>
-</p>
-
-<p>
-在上面的处理过程结束后，物体包含的不能处理延迟渲染 shaders，将使用 Forward Rendering 来渲染。<br>
+物体的不支持延迟渲染的 shaders，将在延迟渲染结束后，使用 Forward Rendering 方式来渲染。<br>
 </p>
 
 <p>
@@ -15929,8 +17058,8 @@ UnpackNormal 的作用是将 0-1 范围的数值(法线贴图存储的颜色值)
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline87" class="outline-2">
-<h2 id="orgheadline87"><span class="section-number-2">8</span> Q&amp;A</h2>
+<div id="outline-container-orgheadline97" class="outline-2">
+<h2 id="orgheadline97"><span class="section-number-2">8</span> Q&amp;A</h2>
 <div class="outline-text-2" id="text-8">
 </div><div id="outline-container-orgheadline83" class="outline-3">
 <h3 id="orgheadline83"><span class="section-number-3">8.1</span> unity 坐标系是左手还是右手？</h3>
@@ -15942,20 +17071,139 @@ OpenGL 为右手坐标系<br>
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline84" class="outline-3">
-<h3 id="orgheadline84"><span class="section-number-3">8.2</span> 为什么 Unity 中 skybox 是在所有不透明物体和所有透明物体之间被绘制的？</h3>
+<div id="outline-container-orgheadline88" class="outline-3">
+<h3 id="orgheadline88"><span class="section-number-3">8.2</span> SurfaceShader 中 如何定义多个 Pass，它们的执行与否，以及执行顺序？</h3>
 <div class="outline-text-3" id="text-8-2">
+</div><div id="outline-container-orgheadline84" class="outline-4">
+<h4 id="orgheadline84"><span class="section-number-4">8.2.1</span> 定义多个 Pass</h4>
+<div class="outline-text-4" id="text-8-2-1">
+<p>
+定义多个 Pass 的方法，参考如下开源项目：<br>
+<a href="https://github.com/inbgche/ShaderMixingSample" target="_blank" rel="external">https://github.com/inbgche/ShaderMixingSample</a><br>
+为了防止项目被 delete，我 fork 了一份，地址如下：<br>
+<a href="https://github.com/wolfand11/ShaderMixingSample" target="_blank" rel="external">https://github.com/wolfand11/ShaderMixingSample</a><br>
+</p>
+
+<p>
+Rules for Multi-pass Shaders in Unity (原文不存在时，可去有道云笔记中寻找备份)<br>
+<a href="https://albertshih.blogspot.jp/2014/11/rules-for-multi-pass-shaders-in-unity.html" target="_blank" rel="external">https://albertshih.blogspot.jp/2014/11/rules-for-multi-pass-shaders-in-unity.html</a><br>
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline85" class="outline-4">
+<h4 id="orgheadline85"><span class="section-number-4">8.2.2</span> Pass 是否执行</h4>
+<div class="outline-text-4" id="text-8-2-2">
+<p>
+可以通过配制每个 pass 的 LightMode Tag，来选择具体执行哪些 pass。<br>
+以 surface shader 举例说明：<br>
+surface shader 展开来后，可以看到如下 pass。<br>
+pass{ Tags{"LightMode"="Vertex"} }<br>
+pass{ Tags{"LightMode"="ForwardBass"} }<br>
+pass{ Tags{"LightMode"="Deferred"} }<br>
+这三个 pass 是相互排斥的，永远只可能执行其中一个 pass。<br>
+那 unity 是根据什么来选择执行哪个 pass 的呢？<br>
+unity 通过摄像机下的 Rendering path 来选择相应的 pass。<br>
+Rendering path= Legacy Vertex Lit 时，选择"LightMode"="Vertex"的 pass。ForwardBass 与 Deferred 将不会被执行。<br>
+Rendering path= ForwardBass 时，优先选择"LightMode"="ForwardBass"的 pass，ForwardBass 不存在时，选择 Vertex。Deferred 将不会被执行。<br>
+Rendering path= Deferred 时，优先选择"LightMode"="Deferred"的 pass，Deferred 不存在时，选择 ForwardBass，ForwardBass 不存在时选择 Vertex。<br>
+</p>
+
+<p>
+<a href="https://zhidao.baidu.com/question/459788806667126965.html" target="_blank" rel="external">https://zhidao.baidu.com/question/459788806667126965.html</a><br>
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline86" class="outline-4">
+<h4 id="orgheadline86"><span class="section-number-4">8.2.3</span> Pass 的执行顺序</h4>
+<div class="outline-text-4" id="text-8-2-3">
+<p>
+多个 Pass 的执行顺序是，从上到下依次进行的<br>
+参考上面的 ShaderMixingSample 可以深入了解<br>
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline87" class="outline-4">
+<h4 id="orgheadline87"><span class="section-number-4">8.2.4</span> Tips</h4>
+<div class="outline-text-4" id="text-8-2-4">
+<ul class="org-ul">
+<li>需要注意的是，SurfaceShader 中定义多个 Pass 时，不需要写 Pass{}，因为 SurfaceShader 编译时，会自动添加 Pass{}.具体信息可以参考如下链接：<br></li>
+</ul>
+<p>
+<a href="http://www.cnblogs.com/wantnon/p/4456787.html" target="_blank" rel="external">http://www.cnblogs.com/wantnon/p/4456787.html</a><br>
+<a href="https://forum.unity.com/threads/achieving-a-multi-pass-effect-with-a-surface-shader.96393/" target="_blank" rel="external">https://forum.unity.com/threads/achieving-a-multi-pass-effect-with-a-surface-shader.96393/</a><br>
+</p>
+<ul class="org-ul">
+<li>需要注意的是，SurfaceShader 中 LightMode Tag 会被忽略，LightMode Tag 只能在 Pass 中使用，SurfaceShader 编译时，会自动添加 Pass{}<br></li>
+</ul>
+<p>
+<a href="https://forum.unity.com/threads/lightmode-always-not-ignore-lighting-in-surface-shader.446692/" target="_blank" rel="external">https://forum.unity.com/threads/lightmode-always-not-ignore-lighting-in-surface-shader.446692/</a><br>
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline93" class="outline-3">
+<h3 id="orgheadline93"><span class="section-number-3">8.3</span> Deferred Renderring，Deferred Shading，Deferred Lighting 是什么关系？</h3>
+<div class="outline-text-3" id="text-8-3">
+</div><div id="outline-container-orgheadline89" class="outline-4">
+<h4 id="orgheadline89"><span class="section-number-4">8.3.1</span> Deferred Rendering</h4>
+<div class="outline-text-4" id="text-8-3-1">
+<p>
+Deferred Rendering 只是延迟渲染算法的统称。延迟渲染分很多不同类型，Deferred Shading 和 Deferred Lighting 等才是具体的延迟渲染算法。<br>
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline90" class="outline-4">
+<h4 id="orgheadline90"><span class="section-number-4">8.3.2</span> Deferred Shading</h4>
+<div class="outline-text-4" id="text-8-3-2">
+<p>
+在 3D 计算机图形学领域中，延迟着色是一种屏幕空间着色技术。之所以被称作延迟的是因为在第一阶段的 vertex 和 pixel 着色器中并没有真正执行渲染，渲染被延迟到了第二个阶段。<br>
+延迟着色第一个阶段的渲染，只是将着色计算需要的数据进行收集。通过渲染到贴图这种方式，将 Positions，normals 以及每个表面的材质等信息被渲染到 G-buffer 中。<br>
+延迟着色第二个阶段的渲染，在一个 pixel 着色器中，利用前一阶段生成的 G-buffer，在屏幕空间中，来计算每个像素的直接和间接光照。<br>
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline91" class="outline-4">
+<h4 id="orgheadline91"><span class="section-number-4">8.3.3</span> Deferred Lighting</h4>
+<div class="outline-text-4" id="text-8-3-3">
+<p>
+Deferred lighting 是对 Deferred Shading 的一种修改。该技术使用了三个阶段来代替延迟着色中的两个阶段。<br>
+延迟光照第一阶段的渲染，只有计算每个像素光照所必须的属性会被写入 G-Buffer.<br>
+延迟光照第二阶段的渲染，在屏幕空间中，该延迟渲染阶段只输出漫反射和镜面反射光照数据(将这些数据写入到 L-Buffer)<br>
+延迟光照第三阶段的渲染，在 L-Buffer 的基础上重新渲染场景并进行最终的渲染<br>
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline92" class="outline-4">
+<h4 id="orgheadline92"><span class="section-number-4">8.3.4</span> 参考资料</h4>
+<div class="outline-text-4" id="text-8-3-4">
+<p>
+<a href="http://chengkehan.github.io/DeferredRendering.html" target="_blank" rel="external">http://chengkehan.github.io/DeferredRendering.html</a><br>
+<a href="http://blog.csdn.net/bugrunner/article/details/7436600" target="_blank" rel="external">http://blog.csdn.net/bugrunner/article/details/7436600</a><br>
+<a href="https://en.wikipedia.org/wiki/Deferred_shading" target="_blank" rel="external">https://en.wikipedia.org/wiki/Deferred_shading</a><br>
+</p>
+
+<p>
+Deferred Shading   <a href="https://docs.unity3d.com/Manual/RenderTech-DeferredShading.html" target="_blank" rel="external">https://docs.unity3d.com/Manual/RenderTech-DeferredShading.html</a><br>
+Deferred Lighting  <a href="https://docs.unity3d.com/Manual/RenderTech-DeferredLighting.html" target="_blank" rel="external">https://docs.unity3d.com/Manual/RenderTech-DeferredLighting.html</a><br>
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline94" class="outline-3">
+<h3 id="orgheadline94"><span class="section-number-3">8.4</span> 为什么 Unity 中 skybox 是在所有不透明物体和所有透明物体之间被绘制的？</h3>
+<div class="outline-text-3" id="text-8-4">
 <p>
 一般来讲 skybox 可以在 background 渲染队列中进行渲染，但是，这样会导致像素的 OverDraw，因此在不透明物体后再绘制 Skybox 可以减少这种 OverDraw。<br>
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline85" class="outline-3">
-<h3 id="orgheadline85"><span class="section-number-3">8.3</span> <span class="todo TODO">TODO</span> 为什么光照和表面的交互用乘法？</h3>
+<div id="outline-container-orgheadline95" class="outline-3">
+<h3 id="orgheadline95"><span class="section-number-3">8.5</span> <span class="todo TODO">TODO</span> 为什么光照和表面的交互用乘法？</h3>
 </div>
-<div id="outline-container-orgheadline86" class="outline-3">
-<h3 id="orgheadline86"><span class="section-number-3">8.4</span> 为什么光的衰减和离光源的距离的平方成反比？</h3>
-<div class="outline-text-3" id="text-8-4">
+<div id="outline-container-orgheadline96" class="outline-3">
+<h3 id="orgheadline96"><span class="section-number-3">8.6</span> 为什么光的衰减和离光源的距离的平方成反比？</h3>
+<div class="outline-text-3" id="text-8-6">
 <p>
 在点光源，聚光灯等模拟中，通常会为光照添加衰减，这个衰减系数和光源距离的平方相关，具体原因查看下面文章。<br>
 基于物理着色：BRDF <a href="https://zhuanlan.zhihu.com/p/21376124" target="_blank" rel="external">https://zhuanlan.zhihu.com/p/21376124</a><br>
@@ -15963,36 +17211,36 @@ OpenGL 为右手坐标系<br>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline95" class="outline-2">
-<h2 id="orgheadline95"><span class="section-number-2">9</span> Error</h2>
+<div id="outline-container-orgheadline104" class="outline-2">
+<h2 id="orgheadline104"><span class="section-number-2">9</span> Error</h2>
 <div class="outline-text-2" id="text-9">
-</div><div id="outline-container-orgheadline88" class="outline-4">
-<h4 id="orgheadline88"><span class="section-number-4">9.0.1</span> Shader error in Too many texture interpolators would be used for ForwardBase pass (11 out of max 10)</h4>
+</div><div id="outline-container-orgheadline98" class="outline-4">
+<h4 id="orgheadline98"><span class="section-number-4">9.0.1</span> Shader error in Too many texture interpolators would be used for ForwardBase pass (11 out of max 10)</h4>
 <div class="outline-text-4" id="text-9-0-1">
 <p>
 将 #pragma target 3.0 变为 #pragma target 4.0 可解决问题<br>
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline90" class="outline-4">
-<h4 id="orgheadline90"><span class="section-number-4">9.0.2</span> 如果发现颜色部分正确部分不正确</h4>
+<div id="outline-container-orgheadline100" class="outline-4">
+<h4 id="orgheadline100"><span class="section-number-4">9.0.2</span> 如果发现颜色部分正确部分不正确</h4>
 <div class="outline-text-4" id="text-9-0-2">
-</div><ol class="org-ol"><li><a id="orgheadline89"></a>检查 Input 中 viewDir lightDir 是否使用的是 float3.<br><div class="outline-text-5" id="text-9-0-2-1">
+</div><ol class="org-ol"><li><a id="orgheadline99"></a>检查 Input 中 viewDir lightDir 是否使用的是 float3.<br><div class="outline-text-5" id="text-9-0-2-1">
 <p>
 使用 float 会造成 yz 分量的缺失，导致 yz 分量不为 0 时，显示错误。<br>
 </p>
 </div></li></ol>
 </div>
-<div id="outline-container-orgheadline91" class="outline-4">
-<h4 id="orgheadline91"><span class="section-number-4">9.0.3</span> Unity 渲染半透明物体，Editor 下 Scene 中可见，在 Game 中不可见</h4>
+<div id="outline-container-orgheadline101" class="outline-4">
+<h4 id="orgheadline101"><span class="section-number-4">9.0.3</span> Unity 渲染半透明物体，Editor 下 Scene 中可见，在 Game 中不可见</h4>
 <div class="outline-text-4" id="text-9-0-3">
 <p>
 是因为被 Skybox 遮挡住了。Skybox 的深度值为 1，如果被渲染物体的深度值大于 1 肯定会被遮挡；如果被渲染的物体深度值等于 1，而且物体的渲染顺序在 Skybox 之前，物体也会被遮挡。<br>
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline92" class="outline-4">
-<h4 id="orgheadline92"><span class="section-number-4">9.0.4</span> vert': output parameter 'o' not completely initialized</h4>
+<div id="outline-container-orgheadline102" class="outline-4">
+<h4 id="orgheadline102"><span class="section-number-4">9.0.4</span> vert': output parameter 'o' not completely initialized</h4>
 <div class="outline-text-4" id="text-9-0-4">
 <div class="org-src-container">
 
@@ -16005,20 +17253,17 @@ OpenGL 为右手坐标系<br>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline93" class="outline-4">
-<h4 id="orgheadline93"><span class="section-number-4">9.0.5</span> 在写屏幕特效的时候，发现屏幕不刷新了</h4>
+<div id="outline-container-orgheadline103" class="outline-4">
+<h4 id="orgheadline103"><span class="section-number-4">9.0.5</span> 在写屏幕特效的时候，发现屏幕不刷新了</h4>
 <div class="outline-text-4" id="text-9-0-5">
 <p>
 请检查 OnRenderImage 中是不是总是调用了 Graphics.Blit(srcTex,desTex)，或者 Graphic.Blit(srcTex,desTex,CurMaterial)<br>
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline94" class="outline-4">
-<h4 id="orgheadline94"><span class="section-number-4">9.0.6</span> </h4>
 </div>
-</div>
-<div id="outline-container-orgheadline96" class="outline-2">
-<h2 id="orgheadline96"><span class="section-number-2">10</span> 参考资料</h2>
+<div id="outline-container-orgheadline105" class="outline-2">
+<h2 id="orgheadline105"><span class="section-number-2">10</span> 参考资料</h2>
 <div class="outline-text-2" id="text-10">
 <p>
 <a href="https://onevcat.com/2013/07/shader-tutorial-1/" target="_blank" rel="external">https://onevcat.com/2013/07/shader-tutorial-1/</a><br>
@@ -16046,7 +17291,7 @@ OpenGL 为右手坐标系<br>
     
     <entry>
       <title><![CDATA[Unity 5 Lighting Cookbook]]></title>
-      <url>http://wolfand11.coding.me/2016/08/20/unity/Unity5LightingCookbook/</url>
+      <url>http://wolfand11.coding.me/2016/08/19/unity/Unity5LightingCookbook/</url>
       <content type="html"><![CDATA[
 
 <p>
@@ -16255,7 +17500,7 @@ General GI 部分的 Directional Mode 和 Atlas Size 参数会影响光照贴图
     
     <entry>
       <title><![CDATA[Git Github]]></title>
-      <url>http://wolfand11.coding.me/2016/08/14/tools/GitAndGithub/</url>
+      <url>http://wolfand11.coding.me/2016/08/13/tools/GitAndGithub/</url>
       <content type="html"><![CDATA[
 
 
@@ -16431,833 +17676,8 @@ Fork 出来的代码
     </entry>
     
     <entry>
-      <title><![CDATA[Init My PC]]></title>
-      <url>http://wolfand11.coding.me/2016/08/14/tools/InitPC/</url>
-      <content type="html"><![CDATA[
-
-<div id="outline-container-orgheadline2" class="outline-2">
-<h2 id="orgheadline2"><span class="section-number-2">1</span> InitMyPC</h2>
-<div class="outline-text-2" id="text-1">
-<a id="more"></a>
-</div>
-
-<div id="outline-container-orgheadline1" class="outline-3">
-<h3 id="orgheadline1"><span class="section-number-3">1.1</span> 目录结构</h3>
-<div class="outline-text-3" id="text-1-1">
-<pre class="example">
-0 级目录
---0--guodong
-
-1 级目录
---1--.emacs.d
---1--.oh-my-zsh (window 系统无该目录)
---1--Applications
---1--Desktop
---1--Documents
---1--Downloads
---1--Movie
---1--Music
---1--Pictures        
-
-2 级目录
-Documents
---2--MyCloud
---2--MyResource
---2--MyProject
---2--MyCore
---2--MyToolkit (this is a microsoft CodePlex svn project)
---2--MyGTD (this is a bitbucket git project)
-
-3 级目录
-Documents--MyCloud
---3--360Cloud
---3--百度云同步盘
---3--快盘
---3--SkyDrive
-Documents--MyProject
---3--Public
---3--Private
---3--SDK
-Documents--MyCore
---3--Config
---3--Resource
---3--Document
-
-4 级目录
-Documents--MyProject--Public
---4--wolfand11 [github-blog]
---4--cocos2d (cocos2d-x_develop CocosBuilder_develop)
---4--OpenSourceGame
-Documents--MyCloud--360Cloud
---4--MyTestProject
---4--MyResource
-</pre>
-</div>
-</div>
-</div>
-
-<div id="outline-container-orgheadline31" class="outline-2">
-<h2 id="orgheadline31"><span class="section-number-2">2</span> Cross Platform tools</h2>
-<div class="outline-text-2" id="text-2">
-<p>
-当前主流的操作系统:windows、linux、osx，对于多平台用户来说在不同的平台使用不同的工具太麻烦了，通常更青睐跨平台的工具。下面是我使用的一些跨平台的工具,有些工具在平常很少用到，作为备份资料也记录下来方便使用的时候查看。<br>
-</p>
-</div>
-<div id="outline-container-orgheadline8" class="outline-3">
-<h3 id="orgheadline8"><span class="section-number-3">2.1</span> 程序开发相关</h3>
-<div class="outline-text-3" id="text-2-1">
-</div><div id="outline-container-orgheadline3" class="outline-4">
-<h4 id="orgheadline3"><span class="section-number-4">2.1.1</span> 编辑器</h4>
-<div class="outline-text-4" id="text-2-1-1">
-<p>
-Emacs 绝对是跨平台编辑器中的王者。<br>
-</p>
-</div>
-</div>
-<div id="outline-container-orgheadline4" class="outline-4">
-<h4 id="orgheadline4"><span class="section-number-4">2.1.2</span> C++跨平台开发框架</h4>
-<div class="outline-text-4" id="text-2-1-2">
-<p>
-Qt 是我所熟悉的 C++跨平台框架。SDK 使用很方便，文档易懂。<br>
-Qt 在 Windows 系统上进行编译，需要在安装 VisualStudio 时选中安装 Visual C++；<br>
-Qt 在 Windows 系统上进行调试，需要按照 Debugging Tools for Windows/CDB 插件，该插件需要从 Windows 官网下载。<br>
-</p>
-</div>
-</div>
-
-<div id="outline-container-orgheadline5" class="outline-4">
-<h4 id="orgheadline5"><span class="section-number-4">2.1.3</span> 流程图、UML 图工具</h4>
-<div class="outline-text-4" id="text-2-1-3">
-<p>
-Dia 是一款比较全面的作图工具。<br>
-Graphviz 用来做数据结构图，流程图，状态图等比较方便。<br>
-</p>
-</div>
-</div>
-<div id="outline-container-orgheadline6" class="outline-4">
-<h4 id="orgheadline6"><span class="section-number-4">2.1.4</span> 思维导图工具</h4>
-<div class="outline-text-4" id="text-2-1-4">
-<p>
-XMind 是用 Java 实现的跨平台思维导图工具，还有一款开源的 freemind 工具也是跨平台的。<br>
-</p>
-</div>
-</div>
-
-<div id="outline-container-orgheadline7" class="outline-4">
-<h4 id="orgheadline7"><span class="section-number-4">2.1.5</span> Web 服务器搭建</h4>
-<div class="outline-text-4" id="text-2-1-5">
-<p>
-xampp 可用来搭建 web 服务器。<br>
-</p>
-<ul class="org-ul">
-<li><p>
-修改默认的 Web 容器路径的方法<br>
-打开 xampp\apache\conf\httpd.conf 文件，进行如下修改<br>
-</p>
-<pre class="example">
-#DocumentRoot "C:/xampp/htdocs"
-#&lt;Directory "C:/xampp/htdocs"&gt;
-DocumentRoot "D:\Documents\MyWeb"
-&lt;Directory "D:/Documents/MyWeb"&gt;
-</pre></li>
-</ul>
-</div>
-</div>
-</div>
-<div id="outline-container-orgheadline23" class="outline-3">
-<h3 id="orgheadline23"><span class="section-number-3">2.2</span> 常用工具</h3>
-<div class="outline-text-3" id="text-2-2">
-</div><div id="outline-container-orgheadline11" class="outline-4">
-<h4 id="orgheadline11"><span class="section-number-4">2.2.1</span> 音乐播放器</h4>
-<div class="outline-text-4" id="text-2-2-1">
-</div><ol class="org-ol"><li><a id="orgheadline9"></a>clementine<br><div class="outline-text-5" id="text-2-2-1-1">
-<p>
-作为程序员怎么能少 Music 呢?clementine 是使用 Qt 开发的一款跨平台音乐播放器，该软件一直有更新，界面风格越来越漂亮了，对于我来讲很方便了。<br>
-</p>
-</div></li>
-<li><a id="orgheadline10"></a>xiami<br><div class="outline-text-5" id="text-2-2-1-2">
-<p>
-虾米的精选集还是很给力的。<br>
-</p>
-</div></li></ol>
-</div>
-
-<div id="outline-container-orgheadline14" class="outline-4">
-<h4 id="orgheadline14"><span class="section-number-4">2.2.2</span> 电子书管理软件</h4>
-<div class="outline-text-4" id="text-2-2-2">
-</div><ol class="org-ol"><li><a id="orgheadline12"></a>calibre<br><div class="outline-text-5" id="text-2-2-2-1">
-<p>
-calibre 是一款开源的跨平台电子书管理软件，支持 epud 格式的电子书。该工具转换格式很慢，目前已经不用该工具了。<br>
-</p>
-</div></li>
-<li><a id="orgheadline13"></a>Send To Kindle<br><div class="outline-text-5" id="text-2-2-2-2">
-<p>
-这款工具的是由亚马逊提供的，发送文档到 kindle。支持文件格式的转换。而且是跨平台的。<br>
-</p>
-</div></li></ol>
-</div>
-<div id="outline-container-orgheadline22" class="outline-4">
-<h4 id="orgheadline22"><span class="section-number-4">2.2.3</span> 文档格式转换软件</h4>
-<div class="outline-text-4" id="text-2-2-3">
-</div><ol class="org-ol"><li><a id="orgheadline21"></a>Pandoc<br><div class="outline-text-5" id="text-2-2-3-1">
-<p>
-<a href="http://pandoc.org/" target="_blank" rel="external">http://pandoc.org/</a><br>
-</p>
-</div>
-<ol class="org-ol"><li><a id="orgheadline15"></a>使用方法<br><div class="outline-text-6" id="text-2-2-3-1-1">
-<div class="org-src-container">
-
-<pre class="src src-shell">pandoc tmp.org -o tmp.md
-</pre>
-</div>
-</div></li>
-<li><a id="orgheadline16"></a>pandoc.exe: Cannot decode byte '\xcd': Data.Text.Internal.Encoding.Fusion.streamUtf8: Invalid UTF-8 stream<br><div class="outline-text-6" id="text-2-2-3-1-2">
-<p>
-将文件转化为 utf-8 格式后再进行处理。<br>
-</p>
-</div></li>
-<li><a id="orgheadline20"></a>pandoc.exe 导出中文 md 为 pdf<br><ol class="org-ol"><li><a id="orgheadline17"></a>! Package inputenc Error: Unicode char 目 (U+76EE)<br><div class="outline-text-7" id="text-2-2-3-1-3-1">
-<div class="org-src-container">
-
-<pre class="src src-shell">pandoc &#25340;&#30028;&#38754;&#25991;&#26723;.md -o &#25340;&#30028;&#38754;&#25991;&#26723;.pdf --latex-engine=xelatex
-</pre>
-</div>
-</div></li>
-<li><a id="orgheadline18"></a>导出文件中中文不显示<br><div class="outline-text-7" id="text-2-2-3-1-3-2">
-<div class="org-src-container">
-
-<pre class="src src-shell">pandoc &#25340;&#30028;&#38754;&#25991;&#26723;.md -o &#25340;&#30028;&#38754;&#25991;&#26723;.pdf --latex-engine=xelatex --variable <span style="color: #eedd82;">mainfont</span>=<span style="color: #ffa07a;">"&#24494;&#36719;&#38597;&#40657;"</span>
-</pre>
-</div>
-</div></li>
-<li><a id="orgheadline19"></a>导出文件中部分中文不显示<br><div class="outline-text-7" id="text-2-2-3-1-3-3">
-<div class="org-src-container">
-
-<pre class="src src-shell">pandoc &#25340;&#30028;&#38754;&#25991;&#26723;.md -o &#25340;&#30028;&#38754;&#25991;&#26723;.pdf --latex-engine=xelatex --variable <span style="color: #eedd82;">mainfont</span>=<span style="color: #ffa07a;">"&#24494;&#36719;&#38597;&#40657;"</span> --variable <span style="color: #eedd82;">sansfont</span>=<span style="color: #ffa07a;">"&#24494;&#36719;&#38597;&#40657;"</span> --variable <span style="color: #eedd82;">monofont</span>=<span style="color: #ffa07a;">"&#24494;&#36719;&#38597;&#40657;"</span>
-</pre>
-</div>
-</div></li></ol></li></ol></li></ol>
-</div>
-</div>
-
-<div id="outline-container-orgheadline25" class="outline-3">
-<h3 id="orgheadline25"><span class="section-number-3">2.3</span> 系统安装</h3>
-<div class="outline-text-3" id="text-2-3">
-</div><div id="outline-container-orgheadline24" class="outline-4">
-<h4 id="orgheadline24"><span class="section-number-4">2.3.1</span> U 盘启动盘制作工具</h4>
-<div class="outline-text-4" id="text-2-3-1">
-<p>
-UNetbootin 是一款跨平台的 U 盘制作工具。这种类型(安装系统)的工具一定要选跨平台啊!<br>
-</p>
-</div>
-</div>
-</div>
-
-<div id="outline-container-orgheadline30" class="outline-3">
-<h3 id="orgheadline30"><span class="section-number-3">2.4</span> 系统工具</h3>
-<div class="outline-text-3" id="text-2-4">
-</div><div id="outline-container-orgheadline28" class="outline-4">
-<h4 id="orgheadline28"><span class="section-number-4">2.4.1</span> 鼠标键盘控制</h4>
-<div class="outline-text-4" id="text-2-4-1">
-<p>
-synergy 使用一个鼠标键盘控制多台电脑。<br>
-synergy 配置方法<br>
-<img src="synergy_config.jpg"><br>
-<a href="https://superuser.com/questions/575096/synergy-1-4-10-unrecognised-client-name-apnanll3m4335-check-server-config" target="_blank" rel="external">https://superuser.com/questions/575096/synergy-1-4-10-unrecognised-client-name-apnanll3m4335-check-server-config</a><br>
-</p>
-</div>
-<ol class="org-ol"><li><a id="orgheadline27"></a>错误修改<br><ol class="org-ol"><li><a id="orgheadline26"></a>Lock Cursor to Screen:off<br><div class="outline-text-6" id="text-2-4-1-1-1">
-<p>
-因为不小心按了键盘上的 Scroll Lock 按键导致，再按一次就可以了<br>
-</p>
-</div></li></ol></li></ol>
-</div>
-<div id="outline-container-orgheadline29" class="outline-4">
-<h4 id="orgheadline29"><span class="section-number-4">2.4.2</span> 护眼软件</h4>
-<div class="outline-text-4" id="text-2-4-2">
-<p>
-<a href="http://www.huyanapp.com/portal.php" target="_blank" rel="external">http://www.huyanapp.com/portal.php</a><br>
-</p>
-</div>
-</div>
-</div>
-</div>
-
-<div id="outline-container-orgheadline47" class="outline-2">
-<h2 id="orgheadline47"><span class="section-number-2">3</span> Init Mac</h2>
-<div class="outline-text-2" id="text-3">
-<p>
-OSX 系统还是比较傻瓜的，基本上和 windows 差不多，尤其是 appstore 推出以后，基本上不需要<br>
-对系统进行什么配置。下面记录下来我所使用的一些软件等等<br>
-</p>
-</div>
-<div id="outline-container-orgheadline43" class="outline-3">
-<h3 id="orgheadline43"><span class="section-number-3">3.1</span> 工具</h3>
-<div class="outline-text-3" id="text-3-1">
-</div><div id="outline-container-orgheadline33" class="outline-4">
-<h4 id="orgheadline33"><span class="section-number-4">3.1.1</span> NTFS 磁盘工具</h4>
-<div class="outline-text-4" id="text-3-1-1">
-<p>
-默认情况下，在 mac 系统中，不能直接对 ntfs 文件系统进行写操作，[[link]OSXFuse]是一款开<br>
-源的免费工具，用来打破这种限制。<br>
-</p>
-</div>
-<ol class="org-ol"><li><a id="orgheadline32"></a>diskutil 工具使用<br><div class="outline-text-5" id="text-3-1-1-1">
-<div class="org-src-container">
-
-<pre class="src src-shell"><span style="color: #ff0000;"># </span><span style="color: #ff0000;">&#21015;&#20986;&#31995;&#32479;&#30340;&#30913;&#30424;&#20449;&#24687;</span>
-$ diskutil list
-<span style="color: #ff0000;"># </span><span style="color: #ff0000;">&#21015;&#20986;&#25903;&#25345;&#30340;&#25991;&#20214;&#31995;&#32479;&#26684;&#24335;</span>
-$ diskutil listFilesystems
-<span style="color: #ff0000;"># </span><span style="color: #ff0000;">&#26684;&#24335;&#21270;&#25351;&#23450;&#30913;&#30424;</span>
-$ diskutil eraseDisk <span style="color: #ffa07a;">"Tuxera NTFS"</span> GuoDong /dev/disk2
-</pre>
-</div>
-</div></li></ol>
-</div>
-<div id="outline-container-orgheadline34" class="outline-4">
-<h4 id="orgheadline34"><span class="section-number-4">3.1.2</span> EverNote</h4>
-<div class="outline-text-4" id="text-3-1-2">
-<p>
-最近一直在使用 EverNote，这是一款多平台(硬件平台、操作系统平台)的笔记软件，所以使用比<br>
-较方便。我主要用 EverNote 来做下面这些事情:<br>
-</p>
-<ul class="org-ul">
-<li>记录自己偶然想到的问题<br></li>
-<li>记录自己最近想思考的问题，随后会在空闲的时间把零碎的思考写下来，为要思考的问题列出<br></li>
-</ul>
-<p>
-一个提纲来。等自己的思考成熟以后再将该问题写成博客，系统地记录下来。<br>
-</p>
-</div>
-</div>
-
-<div id="outline-container-orgheadline35" class="outline-4">
-<h4 id="orgheadline35"><span class="section-number-4">3.1.3</span> GitHub</h4>
-<div class="outline-text-4" id="text-3-1-3">
-<p>
-使用 GitHub 来方便的在多台设备上访问自己的文档。我的计划是将自己常用的文档放在 GitHub<br>
-上面，比如:工具使用文档，操作系统配置文档。<br>
-</p>
-</div>
-</div>
-
-<div id="outline-container-orgheadline36" class="outline-4">
-<h4 id="orgheadline36"><span class="section-number-4">3.1.4</span> SourceTree</h4>
-<div class="outline-text-4" id="text-3-1-4">
-<p>
-版本管理的客户端，支持 svn、git、mercurial。<br>
-</p>
-</div>
-</div>
-
-<div id="outline-container-orgheadline37" class="outline-4">
-<h4 id="orgheadline37"><span class="section-number-4">3.1.5</span> MacPorts</h4>
-<div class="outline-text-4" id="text-3-1-5">
-<p>
-之前用 ubuntu 一直用 apt-get 觉得很方便，到了 mac 下以后很多软件包的安装、管理很麻烦。MacPorts<br>
-就是我要找的 mac 下的 apt-get<br>
-</p>
-<pre class="example">
-注意:
-安装完毕以后，如果发现 port 命令不存在，请修改 PATH 环境变量如下:
-export PATH=$PATH:/opt/local/bin:/opt/local/sbin
-</pre>
-</div>
-</div>
-<div id="outline-container-orgheadline38" class="outline-4">
-<h4 id="orgheadline38"><span class="section-number-4">3.1.6</span> brew</h4>
-<div class="outline-text-4" id="text-3-1-6">
-<p>
-brew 和 MacPorts 功能一样。<br>
-brew 项目地址：<a href="https://github.com/Homebrew/brew/" target="_blank" rel="external">https://github.com/Homebrew/brew/</a><br>
-</p>
-</div>
-</div>
-
-<div id="outline-container-orgheadline39" class="outline-4">
-<h4 id="orgheadline39"><span class="section-number-4">3.1.7</span> Mac 下的远程桌面</h4>
-<div class="outline-text-4" id="text-3-1-7">
-<p>
-TeamViewer 可用来远程桌面。<br>
-</p>
-</div>
-</div>
-<div id="outline-container-orgheadline40" class="outline-4">
-<h4 id="orgheadline40"><span class="section-number-4">3.1.8</span> 键盘改键</h4>
-<div class="outline-text-4" id="text-3-1-8">
-<p>
-Karabiner<br>
-<a href="https://pqrs.org/osx/karabiner/index.html.en" target="_blank" rel="external">https://pqrs.org/osx/karabiner/index.html.en</a><br>
-Seil: change CapsLock key<br>
-<a href="https://pqrs.org/osx/karabiner/seil.html" target="_blank" rel="external">https://pqrs.org/osx/karabiner/seil.html</a><br>
-OSX 系统改键<br>
-SystemPreferences-&gt;Keyboard-&gt;ModifyKeys<br>
-</p>
-</div>
-</div>
-<div id="outline-container-orgheadline41" class="outline-4">
-<h4 id="orgheadline41"><span class="section-number-4">3.1.9</span> Alfred</h4>
-<div class="outline-text-4" id="text-3-1-9">
-<p>
-和 windows 下的 Listary 功能类似<br>
-</p>
-</div>
-</div>
-<div id="outline-container-orgheadline42" class="outline-4">
-<h4 id="orgheadline42"><span class="section-number-4">3.1.10</span> OSX FTP 服务使用</h4>
-<div class="outline-text-4" id="text-3-1-10">
-<div class="org-src-container">
-
-<pre class="src src-shell"><span style="color: #ff0000;"># </span><span style="color: #ff0000;">&#24320;&#21551; ftp &#26381;&#21153;</span>
-sudo -s launchctl load -w /System/Library/LaunchDaemons/ftp.plist
-<span style="color: #ff0000;"># </span><span style="color: #ff0000;">&#20851;&#38381; ftp &#26381;&#21153;</span>
-sudo -s launchctl unload -w /System/Library/LaunchDaemons/ftp.plist
-<span style="color: #ff0000;"># </span><span style="color: #ff0000;">ftp &#30340;&#29992;&#25143;&#21517;&#21644;&#23494;&#30721;&#20026; &#30005;&#33041;&#30340;&#29992;&#25143;&#21517;&#21644;&#23494;&#30721;</span>
-<span style="color: #ff0000;"># </span><span style="color: #ff0000;">ftp &#37197;&#32622;&#26041;&#27861;</span>
-https://stackoverflow.com/questions/31093733/ftp-service-in-os-x-yosemite
-</pre>
-</div>
-</div>
-</div>
-</div>
-<div id="outline-container-orgheadline46" class="outline-3">
-<h3 id="orgheadline46"><span class="section-number-3">3.2</span> OSX 配置</h3>
-<div class="outline-text-3" id="text-3-2">
-</div><div id="outline-container-orgheadline44" class="outline-4">
-<h4 id="orgheadline44"><span class="section-number-4">3.2.1</span> 开启关闭 ipv6</h4>
-<div class="outline-text-4" id="text-3-2-1">
-<div class="org-src-container">
-
-<pre class="src src-shell"><span style="color: #ff0000;"># </span><span style="color: #ff0000;">&#20851;&#38381; ipv6</span>
-networksetup -setv6off Ethernet &amp;&amp; networksetup -setv6off Wi-Fi
-<span style="color: #ff0000;"># </span><span style="color: #ff0000;">&#24320;&#21551; ipv6</span>
-networksetup -setv6automatic Wi-Fi &amp;&amp; networksetup -setv6automatic Ethernet
-</pre>
-</div>
-</div>
-</div>
-<div id="outline-container-orgheadline45" class="outline-4">
-<h4 id="orgheadline45"><span class="section-number-4">3.2.2</span> 通过 host 名称访问 pc 失败</h4>
-<div class="outline-text-4" id="text-3-2-2">
-<p>
-<a href="#orgtarget1">4.2.2</a><br>
-</p>
-</div>
-</div>
-</div>
-</div>
-<div id="outline-container-orgheadline61" class="outline-2">
-<h2 id="orgheadline61"><span class="section-number-2">4</span> Init Windows</h2>
-<div class="outline-text-2" id="text-4">
-</div><div id="outline-container-orgheadline54" class="outline-3">
-<h3 id="orgheadline54"><span class="section-number-3">4.1</span> 工具</h3>
-<div class="outline-text-3" id="text-4-1">
-</div><div id="outline-container-orgheadline48" class="outline-4">
-<h4 id="orgheadline48"><span class="section-number-4">4.1.1</span> 键盘改键</h4>
-<div class="outline-text-4" id="text-4-1-1">
-<p>
-AutoHotkey<br>
-<a href="http://www.autohotkey.com/" target="_blank" rel="external">http://www.autohotkey.com/</a><br>
-</p>
-</div>
-</div>
-<div id="outline-container-orgheadline49" class="outline-4">
-<h4 id="orgheadline49"><span class="section-number-4">4.1.2</span> Listary</h4>
-<div class="outline-text-4" id="text-4-1-2">
-<p>
-和 osx 下的 Alfred 功能类似<br>
-Ctrl-Ctrl invoke Lisary<br>
-</p>
-</div>
-</div>
-<div id="outline-container-orgheadline50" class="outline-4">
-<h4 id="orgheadline50"><span class="section-number-4">4.1.3</span> Task 切换</h4>
-<div class="outline-text-4" id="text-4-1-3">
-<p>
-<a href="http://www.ntwind.com/software/vistaswitcher.html" target="_blank" rel="external">http://www.ntwind.com/software/vistaswitcher.html</a><br>
-</p>
-</div>
-</div>
-<div id="outline-container-orgheadline53" class="outline-4">
-<h4 id="orgheadline53"><span class="section-number-4">4.1.4</span> windows shell</h4>
-<div class="outline-text-4" id="text-4-1-4">
-<p>
-该工具集成了 cygwin，oh-my-shell<br>
-<a href="http://babun.github.io/" target="_blank" rel="external">http://babun.github.io/</a><br>
-安装方法：<br>
-下载安装包解压，执行下面命令，/t 表示安装路径。<br>
-install.bat /t "D:\target_folder"<br>
-</p>
-</div>
-<ol class="org-ol"><li><a id="orgheadline52"></a>ErrorFixed<br><ol class="org-ol"><li><a id="orgheadline51"></a>babun 命令自动提示不管用<br><div class="outline-text-6" id="text-4-1-4-1-1">
-<div class="org-src-container">
-
-<pre class="src src-shell"><span style="color: #ff0000;"># </span><span style="color: #ff0000;">&#25191;&#34892;&#19979;&#38754;&#21629;&#20196;&#21487;&#20197;&#20462;&#22797;&#35813;&#38382;&#39064;</span>
-<span style="color: #ff0000;"># </span><span style="color: #ff0000;">compinit &#20026; zsh &#25552;&#20379;&#30340;&#33258;&#21160;&#34917;&#20840;&#21151;&#33021;</span>
-compinit
-cp .zcompdump .zcompdump-$<span style="color: #eedd82;">HOSTNAME</span>-$<span style="color: #eedd82;">ZSH_VERSION</span>
-</pre>
-</div>
-<p>
-参考链接：<a href="https://github.com/babun/babun/issues/159" target="_blank" rel="external">https://github.com/babun/babun/issues/159</a><br>
-</p>
-</div></li></ol></li></ol>
-</div>
-</div>
-
-<div id="outline-container-orgheadline60" class="outline-3">
-<h3 id="orgheadline60"><span class="section-number-3">4.2</span> Windows 配置</h3>
-<div class="outline-text-3" id="text-4-2">
-</div><div id="outline-container-orgheadline57" class="outline-4">
-<h4 id="orgheadline57"><span class="section-number-4">4.2.1</span> 加速 windows</h4>
-<div class="outline-text-4" id="text-4-2-1">
-</div><ol class="org-ol"><li><a id="orgheadline56"></a>关闭不必要的服务<br><div class="outline-text-5" id="text-4-2-1-1">
-<p>
-计算机-&gt;管理-&gt;服务和应用程序-&gt;服务<br>
-禁用下面的服务：<br>
-Superfetch<br>
-Routing and Remote Access<br>
-Windows Update<br>
-</p>
-</div>
-<ol class="org-ol"><li><a id="orgheadline55"></a>查看进程使用的服务<br><div class="outline-text-6" id="text-4-2-1-1-1">
-<p>
-任务管理器中，选中进程右键点击"转到服务"<br>
-</p>
-</div></li></ol></li></ol>
-</div>
-<div id="outline-container-orgheadline58" class="outline-4">
-<h4 id="orgheadline58"><span class="section-number-4">4.2.2</span> 通过 host 名称访问 pc 失败</h4>
-<div class="outline-text-4" id="text-4-2-2">
-<p>
-<a id="orgtarget1"></a><br>
-</p>
-<pre class="example">
-ping your-host-name 如果发现 ping 到的 ip 地址为 ipv6，那么可以将 pc 的 ipv6 协议禁止来解决该问题。
-注意：
-在 windows 下 your-host-name 不需要包含.local 后缀
-在 osx 下 your-host-name 需要包含.local 后缀
-</pre>
-</div>
-</div>
-<div id="outline-container-orgheadline59" class="outline-4">
-<h4 id="orgheadline59"><span class="section-number-4">4.2.3</span> ping host</h4>
-<div class="outline-text-4" id="text-4-2-3">
-<div class="org-src-container">
-
-<pre class="src src-shell"><span style="color: #ff0000;"># </span><span style="color: #ff0000;">ping host &#36820;&#22238; ipv4</span>
-ping my-pc -4
-<span style="color: #ff0000;"># </span><span style="color: #ff0000;">ping host &#36820;&#22238; ipv6</span>
-ping my-pc -6
-</pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div id="outline-container-orgheadline82" class="outline-2">
-<h2 id="orgheadline82"><span class="section-number-2">5</span> Init Ubuntu</h2>
-<div class="outline-text-2" id="text-5">
-<p>
-重新安装 Ubuntu 以后 该做的 事情。(这个文档是大学那会儿[2006-2010]写的，估计现在有很多都变了吧)<br>
-</p>
-</div>
-<div id="outline-container-orgheadline64" class="outline-3">
-<h3 id="orgheadline64"><span class="section-number-3">5.1</span> 最重要的事情</h3>
-<div class="outline-text-3" id="text-5-1">
-</div><div id="outline-container-orgheadline62" class="outline-4">
-<h4 id="orgheadline62"><span class="section-number-4">5.1.1</span> 首先：</h4>
-<div class="outline-text-4" id="text-5-1-1">
-<p>
-自动挂载 Resourse 分区(就是你存储资源的那个分区)。挂载方法参看下面文中所介绍的方法：<br>
-《ununtu 自动挂载分区》 <a href="http://hi.baidu.com/wolfand11/blog/item/a2629eee6e9ff5f1b3fb9597.html" target="_blank" rel="external">http://hi.baidu.com/wolfand11/blog/item/a2629eee6e9ff5f1b3fb9597.html</a><br>
-一般，我会在自己的用户目录下创建一个 Resourse 目录，然后将分区挂载在该目录下。<br>
-（ /dev/sda6    /home/smile/Resource    ext4   defaults   0   0）<br>
-</p>
-</div>
-</div>
-<div id="outline-container-orgheadline63" class="outline-4">
-<h4 id="orgheadline63"><span class="section-number-4">5.1.2</span> 其次：</h4>
-<div class="outline-text-4" id="text-5-1-2">
-<p>
-设置桌面等的路径，设置方法看下面文中所介绍的方法：<br>
-</p>
-
-<p>
-《转》改变 Ubuntu 桌面所在文件夹 <a href="http://hi.baidu.com/wolfand11/blog/item/b4bbe21f7a6659c4a68669cb.html" target="_blank" rel="external">http://hi.baidu.com/wolfand11/blog/item/b4bbe21f7a6659c4a68669cb.html</a><br>
-</p>
-
-<p>
-一般，我自己的资源分区中都会创建 Desktop、Documents、Downloads、Music、Pictures、Public、Templates、Videos<br>
-</p>
-
-<p>
-等目录，我会将系统默认的路径改为 Resourse 下面的对应的路径。（我为什么要这么做呢？:-) 有一次忘记备份桌面的资料，就<br>
-</p>
-
-<p>
-重新装系统了，后果可想而知。如果修改这些默认路径，就会将资料都保存在我的 Resourse 分区中了）。下面是我的设置代码：<br>
-</p>
-
-<p>
-XDG_DESKTOP_DIR="$HOME/Resource/Desktop/"<br>
-</p>
-
-<p>
-XDG_DOCUMENTS_DIR="$HOME/Resource/Documents"<br>
-</p>
-
-<p>
-XDG_DOWNLOAD_DIR="$HOME/Resource/Downloads/"<br>
-</p>
-
-<p>
-XDG_MUSIC_DIR="$HOME/Resource/Music"<br>
-</p>
-
-<p>
-XDG_PICTURES_DIR="$HOME/Resource/Pictures"<br>
-</p>
-
-<p>
-XDG_PUBLICSHARE_DIR="$HOME/Resource/Public"<br>
-</p>
-
-<p>
-XDG_TEMPLATES_DIR="$HOME/Resource/Templates"<br>
-</p>
-
-<p>
-XDG_VIDEOS_DIR="$HOME/Resource/Videos"<br>
-</p>
-</div>
-</div>
-</div>
-
-<div id="outline-container-orgheadline81" class="outline-3">
-<h3 id="orgheadline81"><span class="section-number-3">5.2</span> 环境配置软件安装</h3>
-<div class="outline-text-3" id="text-5-2">
-</div><div id="outline-container-orgheadline65" class="outline-4">
-<h4 id="orgheadline65"><span class="section-number-4">5.2.1</span> 安装、配置编译环境</h4>
-<div class="outline-text-4" id="text-5-2-1">
-<p>
-刚装好的系统中已经有 GCC 了，但是这个 GCC 什么文件都不能编译，因为没有一些必须的头文件，所以要安装 build-essential 这个软件 包，安装了这个包会自动安装上 g++,libc6-dev,l inux -libc-dev,libstdc++6-4.1-dev 等一些必须的软件和头文件的库。可以在新立得里面搜索 build-essential<br>
-</p>
-</div>
-</div>
-<div id="outline-container-orgheadline66" class="outline-4">
-<h4 id="orgheadline66"><span class="section-number-4">5.2.2</span> 配置 Terminal</h4>
-<div class="outline-text-4" id="text-5-2-2">
-<p>
-使其符合自己使用习惯<br>
-参考左边链接配置方法：<a href="http://hi.baidu.com/wolfand11/blog/item/bde7741b85ff6c158718bfd5.html" target="_blank" rel="external">http://hi.baidu.com/wolfand11/blog/item/bde7741b85ff6c158718bfd5.html</a><br>
-</p>
-</div>
-</div>
-
-<div id="outline-container-orgheadline67" class="outline-4">
-<h4 id="orgheadline67"><span class="section-number-4">5.2.3</span> 安装配置 QtCreator</h4>
-<div class="outline-text-4" id="text-5-2-3">
-<p>
-直接在 Ubuntu Software Center 中搜索安装<br>
-（1）、设置代码自动补全快捷键为 Shift+f；<br>
-</p>
-
-<p>
-在 QtCreator 进入 Tool 菜单中 Option，选择 Environment/Keyboard,在右边对话框中找到<br>
-</p>
-
-<p>
-TextEditor.CompleteThis 选项进行设置。<br>
-</p>
-
-<p>
-（2）、设置字体大小（对眼睛有好处）；<br>
-</p>
-
-<p>
-（3）、修改 Qt 中 example 文件夹的访问权限，sudo chmod -R 777 examples<br>
-</p>
-</div>
-</div>
-
-<div id="outline-container-orgheadline68" class="outline-4">
-<h4 id="orgheadline68"><span class="section-number-4">5.2.4</span> 安装配置 BoUML（UML 工具）</h4>
-<div class="outline-text-4" id="text-5-2-4">
-<p>
-直接在 Ubuntu Software Center 中搜索安装<br>
-</p>
-</div>
-</div>
-
-<div id="outline-container-orgheadline69" class="outline-4">
-<h4 id="orgheadline69"><span class="section-number-4">5.2.5</span> 安装 Amaya</h4>
-<div class="outline-text-4" id="text-5-2-5">
-<p>
-<a href="http://www.w3.org/Amaya/Overview.html%EF%BC%88Amaya" target="_blank" rel="external">http://www.w3.org/Amaya/Overview.html%EF%BC%88Amaya</a> 官网）<br>
-</p>
-
-<p>
-Amaya 是 一个具有浏览功能的 WEB 开发工具，是由万维网协会（W3C）成员开发的一个网络浏览器，同时也可以作为对 W3C 成果的测试工具。Amaya 包括了一个 HTML 编辑器和浏览器，用户可以免费到 W3C 的网站下载它，在 linux 和 windows 下都有对应的版本。Amaya 起初只支持 HTML 和 CSS 的编 缉，现在已经添加了对 XML、XHTML、MathML、SVG 等的支持。<br>
-</p>
-</div>
-</div>
-
-<div id="outline-container-orgheadline70" class="outline-4">
-<h4 id="orgheadline70"><span class="section-number-4">5.2.6</span> 安装 VirtualBox（虚拟机）</h4>
-<div class="outline-text-4" id="text-5-2-6">
-<p>
-直接在 Ubuntu Software Center 中搜索安装<br>
-</p>
-</div>
-</div>
-
-<div id="outline-container-orgheadline71" class="outline-4">
-<h4 id="orgheadline71"><span class="section-number-4">5.2.7</span> 安装 StarDict（Linux 下的金山词霸）</h4>
-<div class="outline-text-4" id="text-5-2-7">
-<p>
-直接在 Ubuntu Software Center 中搜索安装<br>
-</p>
-</div>
-</div>
-
-<div id="outline-container-orgheadline72" class="outline-4">
-<h4 id="orgheadline72"><span class="section-number-4">5.2.8</span> 安装 iptux（linux 下的飞鸽）</h4>
-<div class="outline-text-4" id="text-5-2-8">
-<p>
-直接在 Ubuntu Software Center 中搜索安装<br>
-</p>
-</div>
-</div>
-
-<div id="outline-container-orgheadline73" class="outline-4">
-<h4 id="orgheadline73"><span class="section-number-4">5.2.9</span> 安装 libfetion</h4>
-<div class="outline-text-4" id="text-5-2-9">
-<p>
-（Linux 下的飞信）<a href="http://www.libfetion.org/" target="_blank" rel="external">http://www.libfetion.org/</a><br>
-</p>
-</div>
-</div>
-
-<div id="outline-container-orgheadline74" class="outline-4">
-<h4 id="orgheadline74"><span class="section-number-4">5.2.10</span> 安装 Kchmiewer</h4>
-<div class="outline-text-4" id="text-5-2-10">
-<p>
-这个是 kde 下出色一个 chm 阅读器，相比较于 chmsee 出现中文乱马的情况而言，这个可以说是完美了。<br>
-安装：sudo apt-get install kchmviewer<br>
-</p>
-</div>
-</div>
-
-<div id="outline-container-orgheadline75" class="outline-4">
-<h4 id="orgheadline75"><span class="section-number-4">5.2.11</span> 安装 XMind</h4>
-<div class="outline-text-4" id="text-5-2-11">
-<p>
-XMIND 是一款非常实用的商业思维导图（Mindmap）软件，应用全球最先进 的 Eclipse RCP 软件架构，全力打造易用、高效的可视化思维软件，强调软件的可扩展、跨平台、稳定性和性能，致力于使用先进的软件技术帮助用户真正意义上提高生产率。<br>
-</p>
-</div>
-</div>
-
-<div id="outline-container-orgheadline76" class="outline-4">
-<h4 id="orgheadline76"><span class="section-number-4">5.2.12</span> 修改最大化、最小化、关闭按钮的位置。</h4>
-<div class="outline-text-4" id="text-5-2-12">
-<p>
-请参考&lt;转&gt;如何将 Ubuntu 10.04 LTS 的窗口控制按钮从左上角调整到右上角<br>
-<a href="http://hi.baidu.com/wolfand11/blog/item/1adac00879b1983ce82488e8.html" target="_blank" rel="external">http://hi.baidu.com/wolfand11/blog/item/1adac00879b1983ce82488e8.html</a><br>
-</p>
-</div>
-</div>
-
-<div id="outline-container-orgheadline77" class="outline-4">
-<h4 id="orgheadline77"><span class="section-number-4">5.2.13</span> 设置 Ibus</h4>
-<div class="outline-text-4" id="text-5-2-13">
-<p>
-如果你是 KUbuntu 那么你要安装 ibus-gtk,这样才能在 Gnome 的软件中输入中文。<br>
-</p>
-
-<p>
-如果你是 Ubuntu 那么你要安装 ibus-qt4，这样你才能在 KDE 的软件中输入中文。<br>
-</p>
-
-<p>
-设置 ibus 启动项，System &#x2013;&gt; Perference &#x2013;&gt; Startup Applications &#x2013;&gt; add &#x2014;&gt; Name: ibus-daemon Command : /usr/bin/ibus-daemon -d &#x2013;&gt; Save<br>
-</p>
-</div>
-</div>
-
-<div id="outline-container-orgheadline78" class="outline-4">
-<h4 id="orgheadline78"><span class="section-number-4">5.2.14</span> 设置桌面图标</h4>
-<div class="outline-text-4" id="text-5-2-14">
-<p>
-ubuntu 如何让桌面显示“我的电脑”及去掉桌面上的“磁盘图标”<br>
-<a href="http://hi.baidu.com/wolfand11/blog/item/4f1ab1097a86afbe2fddd4d3.html?timeStamp=1290957426596" target="_blank" rel="external">http://hi.baidu.com/wolfand11/blog/item/4f1ab1097a86afbe2fddd4d3.html?timeStamp=1290957426596</a><br>
-</p>
-</div>
-</div>
-
-<div id="outline-container-orgheadline79" class="outline-4">
-<h4 id="orgheadline79"><span class="section-number-4">5.2.15</span> rar 软件</h4>
-<div class="outline-text-4" id="text-5-2-15">
-<p>
-ubuntu 压缩文件为 rar 格式与解压 rar 格式文件<br>
-</p>
-<ul class="org-ul">
-<li>安装 rar 与 unrar 方法：<br>
-sudo apt-get install rar<br>
-sudo apt-get install unrar<br></li>
-<li>简单的使用方法：<br>
-<ul class="org-ul">
-<li><p>
-压缩文件为 rar 格式<br>
-</p>
-<pre class="example">
-例:rar a test.rar file1.txt 若 test.rar 文件不存在，则打包 file1.txt 文件成 test.rar
-例:rar a test.rar file2.txt 若 test.rar 文件已经存在，则添加 file2.txt 文件到 test.rar 中
-</pre></li>
-<li><p>
-解压 rar 文件<br>
-</p>
-<pre class="example">
-例：unrar x -o- -y  test.rar   /home/test/    将 test.rar 解压到/home/test/ 目录下。
-例：unrar  e-o- -y test.rar                   将 test.rar 解压到当前目录下。
-</pre></li>
-</ul></li>
-</ul>
-</div>
-</div>
-<div id="outline-container-orgheadline80" class="outline-4">
-<h4 id="orgheadline80"><span class="section-number-4">5.2.16</span> 跨平台的音乐播放器</h4>
-<div class="outline-text-4" id="text-5-2-16">
-<p>
-<a href="http://www.clementine-player.org/" target="_blank" rel="external">http://www.clementine-player.org/</a><br>
-</p>
-</div>
-</div>
-</div>
-</div>
-]]></content>
-      
-        <categories>
-            
-            <category> tools </category>
-            
-        </categories>
-        
-        
-        <tags>
-            
-            <tag> tools </tag>
-            
-            <tag> InitPC </tag>
-            
-        </tags>
-        
-    </entry>
-    
-    <entry>
       <title><![CDATA[Emacs]]></title>
-      <url>http://wolfand11.coding.me/2016/08/14/tools/Emacs/</url>
+      <url>http://wolfand11.coding.me/2016/08/13/tools/Emacs/</url>
       <content type="html"><![CDATA[
 
 
@@ -19437,7 +19857,7 @@ H       Display current process
     
     <entry>
       <title><![CDATA[Programing in Elisp]]></title>
-      <url>http://wolfand11.coding.me/2016/08/14/language/Elisp/</url>
+      <url>http://wolfand11.coding.me/2016/08/13/language/Elisp/</url>
       <content type="html"><![CDATA[
 
 
@@ -19622,7 +20042,7 @@ C-h v
     
     <entry>
       <title><![CDATA[Shell]]></title>
-      <url>http://wolfand11.coding.me/2016/08/14/language/Shell/</url>
+      <url>http://wolfand11.coding.me/2016/08/13/language/Shell/</url>
       <content type="html"><![CDATA[
 
 
@@ -19810,8 +20230,833 @@ service network restart
     </entry>
     
     <entry>
+      <title><![CDATA[Init My PC]]></title>
+      <url>http://wolfand11.coding.me/2016/08/13/tools/InitPC/</url>
+      <content type="html"><![CDATA[
+
+<div id="outline-container-orgheadline2" class="outline-2">
+<h2 id="orgheadline2"><span class="section-number-2">1</span> InitMyPC</h2>
+<div class="outline-text-2" id="text-1">
+<a id="more"></a>
+</div>
+
+<div id="outline-container-orgheadline1" class="outline-3">
+<h3 id="orgheadline1"><span class="section-number-3">1.1</span> 目录结构</h3>
+<div class="outline-text-3" id="text-1-1">
+<pre class="example">
+0 级目录
+--0--guodong
+
+1 级目录
+--1--.emacs.d
+--1--.oh-my-zsh (window 系统无该目录)
+--1--Applications
+--1--Desktop
+--1--Documents
+--1--Downloads
+--1--Movie
+--1--Music
+--1--Pictures        
+
+2 级目录
+Documents
+--2--MyCloud
+--2--MyResource
+--2--MyProject
+--2--MyCore
+--2--MyToolkit (this is a microsoft CodePlex svn project)
+--2--MyGTD (this is a bitbucket git project)
+
+3 级目录
+Documents--MyCloud
+--3--360Cloud
+--3--百度云同步盘
+--3--快盘
+--3--SkyDrive
+Documents--MyProject
+--3--Public
+--3--Private
+--3--SDK
+Documents--MyCore
+--3--Config
+--3--Resource
+--3--Document
+
+4 级目录
+Documents--MyProject--Public
+--4--wolfand11 [github-blog]
+--4--cocos2d (cocos2d-x_develop CocosBuilder_develop)
+--4--OpenSourceGame
+Documents--MyCloud--360Cloud
+--4--MyTestProject
+--4--MyResource
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline31" class="outline-2">
+<h2 id="orgheadline31"><span class="section-number-2">2</span> Cross Platform tools</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+当前主流的操作系统:windows、linux、osx，对于多平台用户来说在不同的平台使用不同的工具太麻烦了，通常更青睐跨平台的工具。下面是我使用的一些跨平台的工具,有些工具在平常很少用到，作为备份资料也记录下来方便使用的时候查看。<br>
+</p>
+</div>
+<div id="outline-container-orgheadline8" class="outline-3">
+<h3 id="orgheadline8"><span class="section-number-3">2.1</span> 程序开发相关</h3>
+<div class="outline-text-3" id="text-2-1">
+</div><div id="outline-container-orgheadline3" class="outline-4">
+<h4 id="orgheadline3"><span class="section-number-4">2.1.1</span> 编辑器</h4>
+<div class="outline-text-4" id="text-2-1-1">
+<p>
+Emacs 绝对是跨平台编辑器中的王者。<br>
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline4" class="outline-4">
+<h4 id="orgheadline4"><span class="section-number-4">2.1.2</span> C++跨平台开发框架</h4>
+<div class="outline-text-4" id="text-2-1-2">
+<p>
+Qt 是我所熟悉的 C++跨平台框架。SDK 使用很方便，文档易懂。<br>
+Qt 在 Windows 系统上进行编译，需要在安装 VisualStudio 时选中安装 Visual C++；<br>
+Qt 在 Windows 系统上进行调试，需要按照 Debugging Tools for Windows/CDB 插件，该插件需要从 Windows 官网下载。<br>
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline5" class="outline-4">
+<h4 id="orgheadline5"><span class="section-number-4">2.1.3</span> 流程图、UML 图工具</h4>
+<div class="outline-text-4" id="text-2-1-3">
+<p>
+Dia 是一款比较全面的作图工具。<br>
+Graphviz 用来做数据结构图，流程图，状态图等比较方便。<br>
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline6" class="outline-4">
+<h4 id="orgheadline6"><span class="section-number-4">2.1.4</span> 思维导图工具</h4>
+<div class="outline-text-4" id="text-2-1-4">
+<p>
+XMind 是用 Java 实现的跨平台思维导图工具，还有一款开源的 freemind 工具也是跨平台的。<br>
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline7" class="outline-4">
+<h4 id="orgheadline7"><span class="section-number-4">2.1.5</span> Web 服务器搭建</h4>
+<div class="outline-text-4" id="text-2-1-5">
+<p>
+xampp 可用来搭建 web 服务器。<br>
+</p>
+<ul class="org-ul">
+<li><p>
+修改默认的 Web 容器路径的方法<br>
+打开 xampp\apache\conf\httpd.conf 文件，进行如下修改<br>
+</p>
+<pre class="example">
+#DocumentRoot "C:/xampp/htdocs"
+#&lt;Directory "C:/xampp/htdocs"&gt;
+DocumentRoot "D:\Documents\MyWeb"
+&lt;Directory "D:/Documents/MyWeb"&gt;
+</pre></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline23" class="outline-3">
+<h3 id="orgheadline23"><span class="section-number-3">2.2</span> 常用工具</h3>
+<div class="outline-text-3" id="text-2-2">
+</div><div id="outline-container-orgheadline11" class="outline-4">
+<h4 id="orgheadline11"><span class="section-number-4">2.2.1</span> 音乐播放器</h4>
+<div class="outline-text-4" id="text-2-2-1">
+</div><ol class="org-ol"><li><a id="orgheadline9"></a>clementine<br><div class="outline-text-5" id="text-2-2-1-1">
+<p>
+作为程序员怎么能少 Music 呢?clementine 是使用 Qt 开发的一款跨平台音乐播放器，该软件一直有更新，界面风格越来越漂亮了，对于我来讲很方便了。<br>
+</p>
+</div></li>
+<li><a id="orgheadline10"></a>xiami<br><div class="outline-text-5" id="text-2-2-1-2">
+<p>
+虾米的精选集还是很给力的。<br>
+</p>
+</div></li></ol>
+</div>
+
+<div id="outline-container-orgheadline14" class="outline-4">
+<h4 id="orgheadline14"><span class="section-number-4">2.2.2</span> 电子书管理软件</h4>
+<div class="outline-text-4" id="text-2-2-2">
+</div><ol class="org-ol"><li><a id="orgheadline12"></a>calibre<br><div class="outline-text-5" id="text-2-2-2-1">
+<p>
+calibre 是一款开源的跨平台电子书管理软件，支持 epud 格式的电子书。该工具转换格式很慢，目前已经不用该工具了。<br>
+</p>
+</div></li>
+<li><a id="orgheadline13"></a>Send To Kindle<br><div class="outline-text-5" id="text-2-2-2-2">
+<p>
+这款工具的是由亚马逊提供的，发送文档到 kindle。支持文件格式的转换。而且是跨平台的。<br>
+</p>
+</div></li></ol>
+</div>
+<div id="outline-container-orgheadline22" class="outline-4">
+<h4 id="orgheadline22"><span class="section-number-4">2.2.3</span> 文档格式转换软件</h4>
+<div class="outline-text-4" id="text-2-2-3">
+</div><ol class="org-ol"><li><a id="orgheadline21"></a>Pandoc<br><div class="outline-text-5" id="text-2-2-3-1">
+<p>
+<a href="http://pandoc.org/" target="_blank" rel="external">http://pandoc.org/</a><br>
+</p>
+</div>
+<ol class="org-ol"><li><a id="orgheadline15"></a>使用方法<br><div class="outline-text-6" id="text-2-2-3-1-1">
+<div class="org-src-container">
+
+<pre class="src src-shell">pandoc tmp.org -o tmp.md
+</pre>
+</div>
+</div></li>
+<li><a id="orgheadline16"></a>pandoc.exe: Cannot decode byte '\xcd': Data.Text.Internal.Encoding.Fusion.streamUtf8: Invalid UTF-8 stream<br><div class="outline-text-6" id="text-2-2-3-1-2">
+<p>
+将文件转化为 utf-8 格式后再进行处理。<br>
+</p>
+</div></li>
+<li><a id="orgheadline20"></a>pandoc.exe 导出中文 md 为 pdf<br><ol class="org-ol"><li><a id="orgheadline17"></a>! Package inputenc Error: Unicode char 目 (U+76EE)<br><div class="outline-text-7" id="text-2-2-3-1-3-1">
+<div class="org-src-container">
+
+<pre class="src src-shell">pandoc &#25340;&#30028;&#38754;&#25991;&#26723;.md -o &#25340;&#30028;&#38754;&#25991;&#26723;.pdf --latex-engine=xelatex
+</pre>
+</div>
+</div></li>
+<li><a id="orgheadline18"></a>导出文件中中文不显示<br><div class="outline-text-7" id="text-2-2-3-1-3-2">
+<div class="org-src-container">
+
+<pre class="src src-shell">pandoc &#25340;&#30028;&#38754;&#25991;&#26723;.md -o &#25340;&#30028;&#38754;&#25991;&#26723;.pdf --latex-engine=xelatex --variable <span style="color: #eedd82;">mainfont</span>=<span style="color: #ffa07a;">"&#24494;&#36719;&#38597;&#40657;"</span>
+</pre>
+</div>
+</div></li>
+<li><a id="orgheadline19"></a>导出文件中部分中文不显示<br><div class="outline-text-7" id="text-2-2-3-1-3-3">
+<div class="org-src-container">
+
+<pre class="src src-shell">pandoc &#25340;&#30028;&#38754;&#25991;&#26723;.md -o &#25340;&#30028;&#38754;&#25991;&#26723;.pdf --latex-engine=xelatex --variable <span style="color: #eedd82;">mainfont</span>=<span style="color: #ffa07a;">"&#24494;&#36719;&#38597;&#40657;"</span> --variable <span style="color: #eedd82;">sansfont</span>=<span style="color: #ffa07a;">"&#24494;&#36719;&#38597;&#40657;"</span> --variable <span style="color: #eedd82;">monofont</span>=<span style="color: #ffa07a;">"&#24494;&#36719;&#38597;&#40657;"</span>
+</pre>
+</div>
+</div></li></ol></li></ol></li></ol>
+</div>
+</div>
+
+<div id="outline-container-orgheadline25" class="outline-3">
+<h3 id="orgheadline25"><span class="section-number-3">2.3</span> 系统安装</h3>
+<div class="outline-text-3" id="text-2-3">
+</div><div id="outline-container-orgheadline24" class="outline-4">
+<h4 id="orgheadline24"><span class="section-number-4">2.3.1</span> U 盘启动盘制作工具</h4>
+<div class="outline-text-4" id="text-2-3-1">
+<p>
+UNetbootin 是一款跨平台的 U 盘制作工具。这种类型(安装系统)的工具一定要选跨平台啊!<br>
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline30" class="outline-3">
+<h3 id="orgheadline30"><span class="section-number-3">2.4</span> 系统工具</h3>
+<div class="outline-text-3" id="text-2-4">
+</div><div id="outline-container-orgheadline28" class="outline-4">
+<h4 id="orgheadline28"><span class="section-number-4">2.4.1</span> 鼠标键盘控制</h4>
+<div class="outline-text-4" id="text-2-4-1">
+<p>
+synergy 使用一个鼠标键盘控制多台电脑。<br>
+synergy 配置方法<br>
+<img src="synergy_config.jpg"><br>
+<a href="https://superuser.com/questions/575096/synergy-1-4-10-unrecognised-client-name-apnanll3m4335-check-server-config" target="_blank" rel="external">https://superuser.com/questions/575096/synergy-1-4-10-unrecognised-client-name-apnanll3m4335-check-server-config</a><br>
+</p>
+</div>
+<ol class="org-ol"><li><a id="orgheadline27"></a>错误修改<br><ol class="org-ol"><li><a id="orgheadline26"></a>Lock Cursor to Screen:off<br><div class="outline-text-6" id="text-2-4-1-1-1">
+<p>
+因为不小心按了键盘上的 Scroll Lock 按键导致，再按一次就可以了<br>
+</p>
+</div></li></ol></li></ol>
+</div>
+<div id="outline-container-orgheadline29" class="outline-4">
+<h4 id="orgheadline29"><span class="section-number-4">2.4.2</span> 护眼软件</h4>
+<div class="outline-text-4" id="text-2-4-2">
+<p>
+<a href="http://www.huyanapp.com/portal.php" target="_blank" rel="external">http://www.huyanapp.com/portal.php</a><br>
+</p>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline47" class="outline-2">
+<h2 id="orgheadline47"><span class="section-number-2">3</span> Init Mac</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+OSX 系统还是比较傻瓜的，基本上和 windows 差不多，尤其是 appstore 推出以后，基本上不需要<br>
+对系统进行什么配置。下面记录下来我所使用的一些软件等等<br>
+</p>
+</div>
+<div id="outline-container-orgheadline43" class="outline-3">
+<h3 id="orgheadline43"><span class="section-number-3">3.1</span> 工具</h3>
+<div class="outline-text-3" id="text-3-1">
+</div><div id="outline-container-orgheadline33" class="outline-4">
+<h4 id="orgheadline33"><span class="section-number-4">3.1.1</span> NTFS 磁盘工具</h4>
+<div class="outline-text-4" id="text-3-1-1">
+<p>
+默认情况下，在 mac 系统中，不能直接对 ntfs 文件系统进行写操作，[[link]OSXFuse]是一款开<br>
+源的免费工具，用来打破这种限制。<br>
+</p>
+</div>
+<ol class="org-ol"><li><a id="orgheadline32"></a>diskutil 工具使用<br><div class="outline-text-5" id="text-3-1-1-1">
+<div class="org-src-container">
+
+<pre class="src src-shell"><span style="color: #ff0000;"># </span><span style="color: #ff0000;">&#21015;&#20986;&#31995;&#32479;&#30340;&#30913;&#30424;&#20449;&#24687;</span>
+$ diskutil list
+<span style="color: #ff0000;"># </span><span style="color: #ff0000;">&#21015;&#20986;&#25903;&#25345;&#30340;&#25991;&#20214;&#31995;&#32479;&#26684;&#24335;</span>
+$ diskutil listFilesystems
+<span style="color: #ff0000;"># </span><span style="color: #ff0000;">&#26684;&#24335;&#21270;&#25351;&#23450;&#30913;&#30424;</span>
+$ diskutil eraseDisk <span style="color: #ffa07a;">"Tuxera NTFS"</span> GuoDong /dev/disk2
+</pre>
+</div>
+</div></li></ol>
+</div>
+<div id="outline-container-orgheadline34" class="outline-4">
+<h4 id="orgheadline34"><span class="section-number-4">3.1.2</span> EverNote</h4>
+<div class="outline-text-4" id="text-3-1-2">
+<p>
+最近一直在使用 EverNote，这是一款多平台(硬件平台、操作系统平台)的笔记软件，所以使用比<br>
+较方便。我主要用 EverNote 来做下面这些事情:<br>
+</p>
+<ul class="org-ul">
+<li>记录自己偶然想到的问题<br></li>
+<li>记录自己最近想思考的问题，随后会在空闲的时间把零碎的思考写下来，为要思考的问题列出<br></li>
+</ul>
+<p>
+一个提纲来。等自己的思考成熟以后再将该问题写成博客，系统地记录下来。<br>
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline35" class="outline-4">
+<h4 id="orgheadline35"><span class="section-number-4">3.1.3</span> GitHub</h4>
+<div class="outline-text-4" id="text-3-1-3">
+<p>
+使用 GitHub 来方便的在多台设备上访问自己的文档。我的计划是将自己常用的文档放在 GitHub<br>
+上面，比如:工具使用文档，操作系统配置文档。<br>
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline36" class="outline-4">
+<h4 id="orgheadline36"><span class="section-number-4">3.1.4</span> SourceTree</h4>
+<div class="outline-text-4" id="text-3-1-4">
+<p>
+版本管理的客户端，支持 svn、git、mercurial。<br>
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline37" class="outline-4">
+<h4 id="orgheadline37"><span class="section-number-4">3.1.5</span> MacPorts</h4>
+<div class="outline-text-4" id="text-3-1-5">
+<p>
+之前用 ubuntu 一直用 apt-get 觉得很方便，到了 mac 下以后很多软件包的安装、管理很麻烦。MacPorts<br>
+就是我要找的 mac 下的 apt-get<br>
+</p>
+<pre class="example">
+注意:
+安装完毕以后，如果发现 port 命令不存在，请修改 PATH 环境变量如下:
+export PATH=$PATH:/opt/local/bin:/opt/local/sbin
+</pre>
+</div>
+</div>
+<div id="outline-container-orgheadline38" class="outline-4">
+<h4 id="orgheadline38"><span class="section-number-4">3.1.6</span> brew</h4>
+<div class="outline-text-4" id="text-3-1-6">
+<p>
+brew 和 MacPorts 功能一样。<br>
+brew 项目地址：<a href="https://github.com/Homebrew/brew/" target="_blank" rel="external">https://github.com/Homebrew/brew/</a><br>
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline39" class="outline-4">
+<h4 id="orgheadline39"><span class="section-number-4">3.1.7</span> Mac 下的远程桌面</h4>
+<div class="outline-text-4" id="text-3-1-7">
+<p>
+TeamViewer 可用来远程桌面。<br>
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline40" class="outline-4">
+<h4 id="orgheadline40"><span class="section-number-4">3.1.8</span> 键盘改键</h4>
+<div class="outline-text-4" id="text-3-1-8">
+<p>
+Karabiner<br>
+<a href="https://pqrs.org/osx/karabiner/index.html.en" target="_blank" rel="external">https://pqrs.org/osx/karabiner/index.html.en</a><br>
+Seil: change CapsLock key<br>
+<a href="https://pqrs.org/osx/karabiner/seil.html" target="_blank" rel="external">https://pqrs.org/osx/karabiner/seil.html</a><br>
+OSX 系统改键<br>
+SystemPreferences-&gt;Keyboard-&gt;ModifyKeys<br>
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline41" class="outline-4">
+<h4 id="orgheadline41"><span class="section-number-4">3.1.9</span> Alfred</h4>
+<div class="outline-text-4" id="text-3-1-9">
+<p>
+和 windows 下的 Listary 功能类似<br>
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline42" class="outline-4">
+<h4 id="orgheadline42"><span class="section-number-4">3.1.10</span> OSX FTP 服务使用</h4>
+<div class="outline-text-4" id="text-3-1-10">
+<div class="org-src-container">
+
+<pre class="src src-shell"><span style="color: #ff0000;"># </span><span style="color: #ff0000;">&#24320;&#21551; ftp &#26381;&#21153;</span>
+sudo -s launchctl load -w /System/Library/LaunchDaemons/ftp.plist
+<span style="color: #ff0000;"># </span><span style="color: #ff0000;">&#20851;&#38381; ftp &#26381;&#21153;</span>
+sudo -s launchctl unload -w /System/Library/LaunchDaemons/ftp.plist
+<span style="color: #ff0000;"># </span><span style="color: #ff0000;">ftp &#30340;&#29992;&#25143;&#21517;&#21644;&#23494;&#30721;&#20026; &#30005;&#33041;&#30340;&#29992;&#25143;&#21517;&#21644;&#23494;&#30721;</span>
+<span style="color: #ff0000;"># </span><span style="color: #ff0000;">ftp &#37197;&#32622;&#26041;&#27861;</span>
+https://stackoverflow.com/questions/31093733/ftp-service-in-os-x-yosemite
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline46" class="outline-3">
+<h3 id="orgheadline46"><span class="section-number-3">3.2</span> OSX 配置</h3>
+<div class="outline-text-3" id="text-3-2">
+</div><div id="outline-container-orgheadline44" class="outline-4">
+<h4 id="orgheadline44"><span class="section-number-4">3.2.1</span> 开启关闭 ipv6</h4>
+<div class="outline-text-4" id="text-3-2-1">
+<div class="org-src-container">
+
+<pre class="src src-shell"><span style="color: #ff0000;"># </span><span style="color: #ff0000;">&#20851;&#38381; ipv6</span>
+networksetup -setv6off Ethernet &amp;&amp; networksetup -setv6off Wi-Fi
+<span style="color: #ff0000;"># </span><span style="color: #ff0000;">&#24320;&#21551; ipv6</span>
+networksetup -setv6automatic Wi-Fi &amp;&amp; networksetup -setv6automatic Ethernet
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline45" class="outline-4">
+<h4 id="orgheadline45"><span class="section-number-4">3.2.2</span> 通过 host 名称访问 pc 失败</h4>
+<div class="outline-text-4" id="text-3-2-2">
+<p>
+<a href="#orgtarget1">4.2.2</a><br>
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline61" class="outline-2">
+<h2 id="orgheadline61"><span class="section-number-2">4</span> Init Windows</h2>
+<div class="outline-text-2" id="text-4">
+</div><div id="outline-container-orgheadline54" class="outline-3">
+<h3 id="orgheadline54"><span class="section-number-3">4.1</span> 工具</h3>
+<div class="outline-text-3" id="text-4-1">
+</div><div id="outline-container-orgheadline48" class="outline-4">
+<h4 id="orgheadline48"><span class="section-number-4">4.1.1</span> 键盘改键</h4>
+<div class="outline-text-4" id="text-4-1-1">
+<p>
+AutoHotkey<br>
+<a href="http://www.autohotkey.com/" target="_blank" rel="external">http://www.autohotkey.com/</a><br>
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline49" class="outline-4">
+<h4 id="orgheadline49"><span class="section-number-4">4.1.2</span> Listary</h4>
+<div class="outline-text-4" id="text-4-1-2">
+<p>
+和 osx 下的 Alfred 功能类似<br>
+Ctrl-Ctrl invoke Lisary<br>
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline50" class="outline-4">
+<h4 id="orgheadline50"><span class="section-number-4">4.1.3</span> Task 切换</h4>
+<div class="outline-text-4" id="text-4-1-3">
+<p>
+<a href="http://www.ntwind.com/software/vistaswitcher.html" target="_blank" rel="external">http://www.ntwind.com/software/vistaswitcher.html</a><br>
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline53" class="outline-4">
+<h4 id="orgheadline53"><span class="section-number-4">4.1.4</span> windows shell</h4>
+<div class="outline-text-4" id="text-4-1-4">
+<p>
+该工具集成了 cygwin，oh-my-shell<br>
+<a href="http://babun.github.io/" target="_blank" rel="external">http://babun.github.io/</a><br>
+安装方法：<br>
+下载安装包解压，执行下面命令，/t 表示安装路径。<br>
+install.bat /t "D:\target_folder"<br>
+</p>
+</div>
+<ol class="org-ol"><li><a id="orgheadline52"></a>ErrorFixed<br><ol class="org-ol"><li><a id="orgheadline51"></a>babun 命令自动提示不管用<br><div class="outline-text-6" id="text-4-1-4-1-1">
+<div class="org-src-container">
+
+<pre class="src src-shell"><span style="color: #ff0000;"># </span><span style="color: #ff0000;">&#25191;&#34892;&#19979;&#38754;&#21629;&#20196;&#21487;&#20197;&#20462;&#22797;&#35813;&#38382;&#39064;</span>
+<span style="color: #ff0000;"># </span><span style="color: #ff0000;">compinit &#20026; zsh &#25552;&#20379;&#30340;&#33258;&#21160;&#34917;&#20840;&#21151;&#33021;</span>
+compinit
+cp .zcompdump .zcompdump-$<span style="color: #eedd82;">HOSTNAME</span>-$<span style="color: #eedd82;">ZSH_VERSION</span>
+</pre>
+</div>
+<p>
+参考链接：<a href="https://github.com/babun/babun/issues/159" target="_blank" rel="external">https://github.com/babun/babun/issues/159</a><br>
+</p>
+</div></li></ol></li></ol>
+</div>
+</div>
+
+<div id="outline-container-orgheadline60" class="outline-3">
+<h3 id="orgheadline60"><span class="section-number-3">4.2</span> Windows 配置</h3>
+<div class="outline-text-3" id="text-4-2">
+</div><div id="outline-container-orgheadline57" class="outline-4">
+<h4 id="orgheadline57"><span class="section-number-4">4.2.1</span> 加速 windows</h4>
+<div class="outline-text-4" id="text-4-2-1">
+</div><ol class="org-ol"><li><a id="orgheadline56"></a>关闭不必要的服务<br><div class="outline-text-5" id="text-4-2-1-1">
+<p>
+计算机-&gt;管理-&gt;服务和应用程序-&gt;服务<br>
+禁用下面的服务：<br>
+Superfetch<br>
+Routing and Remote Access<br>
+Windows Update<br>
+</p>
+</div>
+<ol class="org-ol"><li><a id="orgheadline55"></a>查看进程使用的服务<br><div class="outline-text-6" id="text-4-2-1-1-1">
+<p>
+任务管理器中，选中进程右键点击"转到服务"<br>
+</p>
+</div></li></ol></li></ol>
+</div>
+<div id="outline-container-orgheadline58" class="outline-4">
+<h4 id="orgheadline58"><span class="section-number-4">4.2.2</span> 通过 host 名称访问 pc 失败</h4>
+<div class="outline-text-4" id="text-4-2-2">
+<p>
+<a id="orgtarget1"></a><br>
+</p>
+<pre class="example">
+ping your-host-name 如果发现 ping 到的 ip 地址为 ipv6，那么可以将 pc 的 ipv6 协议禁止来解决该问题。
+注意：
+在 windows 下 your-host-name 不需要包含.local 后缀
+在 osx 下 your-host-name 需要包含.local 后缀
+</pre>
+</div>
+</div>
+<div id="outline-container-orgheadline59" class="outline-4">
+<h4 id="orgheadline59"><span class="section-number-4">4.2.3</span> ping host</h4>
+<div class="outline-text-4" id="text-4-2-3">
+<div class="org-src-container">
+
+<pre class="src src-shell"><span style="color: #ff0000;"># </span><span style="color: #ff0000;">ping host &#36820;&#22238; ipv4</span>
+ping my-pc -4
+<span style="color: #ff0000;"># </span><span style="color: #ff0000;">ping host &#36820;&#22238; ipv6</span>
+ping my-pc -6
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline82" class="outline-2">
+<h2 id="orgheadline82"><span class="section-number-2">5</span> Init Ubuntu</h2>
+<div class="outline-text-2" id="text-5">
+<p>
+重新安装 Ubuntu 以后 该做的 事情。(这个文档是大学那会儿[2006-2010]写的，估计现在有很多都变了吧)<br>
+</p>
+</div>
+<div id="outline-container-orgheadline64" class="outline-3">
+<h3 id="orgheadline64"><span class="section-number-3">5.1</span> 最重要的事情</h3>
+<div class="outline-text-3" id="text-5-1">
+</div><div id="outline-container-orgheadline62" class="outline-4">
+<h4 id="orgheadline62"><span class="section-number-4">5.1.1</span> 首先：</h4>
+<div class="outline-text-4" id="text-5-1-1">
+<p>
+自动挂载 Resourse 分区(就是你存储资源的那个分区)。挂载方法参看下面文中所介绍的方法：<br>
+《ununtu 自动挂载分区》 <a href="http://hi.baidu.com/wolfand11/blog/item/a2629eee6e9ff5f1b3fb9597.html" target="_blank" rel="external">http://hi.baidu.com/wolfand11/blog/item/a2629eee6e9ff5f1b3fb9597.html</a><br>
+一般，我会在自己的用户目录下创建一个 Resourse 目录，然后将分区挂载在该目录下。<br>
+（ /dev/sda6    /home/smile/Resource    ext4   defaults   0   0）<br>
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline63" class="outline-4">
+<h4 id="orgheadline63"><span class="section-number-4">5.1.2</span> 其次：</h4>
+<div class="outline-text-4" id="text-5-1-2">
+<p>
+设置桌面等的路径，设置方法看下面文中所介绍的方法：<br>
+</p>
+
+<p>
+《转》改变 Ubuntu 桌面所在文件夹 <a href="http://hi.baidu.com/wolfand11/blog/item/b4bbe21f7a6659c4a68669cb.html" target="_blank" rel="external">http://hi.baidu.com/wolfand11/blog/item/b4bbe21f7a6659c4a68669cb.html</a><br>
+</p>
+
+<p>
+一般，我自己的资源分区中都会创建 Desktop、Documents、Downloads、Music、Pictures、Public、Templates、Videos<br>
+</p>
+
+<p>
+等目录，我会将系统默认的路径改为 Resourse 下面的对应的路径。（我为什么要这么做呢？:-) 有一次忘记备份桌面的资料，就<br>
+</p>
+
+<p>
+重新装系统了，后果可想而知。如果修改这些默认路径，就会将资料都保存在我的 Resourse 分区中了）。下面是我的设置代码：<br>
+</p>
+
+<p>
+XDG_DESKTOP_DIR="$HOME/Resource/Desktop/"<br>
+</p>
+
+<p>
+XDG_DOCUMENTS_DIR="$HOME/Resource/Documents"<br>
+</p>
+
+<p>
+XDG_DOWNLOAD_DIR="$HOME/Resource/Downloads/"<br>
+</p>
+
+<p>
+XDG_MUSIC_DIR="$HOME/Resource/Music"<br>
+</p>
+
+<p>
+XDG_PICTURES_DIR="$HOME/Resource/Pictures"<br>
+</p>
+
+<p>
+XDG_PUBLICSHARE_DIR="$HOME/Resource/Public"<br>
+</p>
+
+<p>
+XDG_TEMPLATES_DIR="$HOME/Resource/Templates"<br>
+</p>
+
+<p>
+XDG_VIDEOS_DIR="$HOME/Resource/Videos"<br>
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline81" class="outline-3">
+<h3 id="orgheadline81"><span class="section-number-3">5.2</span> 环境配置软件安装</h3>
+<div class="outline-text-3" id="text-5-2">
+</div><div id="outline-container-orgheadline65" class="outline-4">
+<h4 id="orgheadline65"><span class="section-number-4">5.2.1</span> 安装、配置编译环境</h4>
+<div class="outline-text-4" id="text-5-2-1">
+<p>
+刚装好的系统中已经有 GCC 了，但是这个 GCC 什么文件都不能编译，因为没有一些必须的头文件，所以要安装 build-essential 这个软件 包，安装了这个包会自动安装上 g++,libc6-dev,l inux -libc-dev,libstdc++6-4.1-dev 等一些必须的软件和头文件的库。可以在新立得里面搜索 build-essential<br>
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline66" class="outline-4">
+<h4 id="orgheadline66"><span class="section-number-4">5.2.2</span> 配置 Terminal</h4>
+<div class="outline-text-4" id="text-5-2-2">
+<p>
+使其符合自己使用习惯<br>
+参考左边链接配置方法：<a href="http://hi.baidu.com/wolfand11/blog/item/bde7741b85ff6c158718bfd5.html" target="_blank" rel="external">http://hi.baidu.com/wolfand11/blog/item/bde7741b85ff6c158718bfd5.html</a><br>
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline67" class="outline-4">
+<h4 id="orgheadline67"><span class="section-number-4">5.2.3</span> 安装配置 QtCreator</h4>
+<div class="outline-text-4" id="text-5-2-3">
+<p>
+直接在 Ubuntu Software Center 中搜索安装<br>
+（1）、设置代码自动补全快捷键为 Shift+f；<br>
+</p>
+
+<p>
+在 QtCreator 进入 Tool 菜单中 Option，选择 Environment/Keyboard,在右边对话框中找到<br>
+</p>
+
+<p>
+TextEditor.CompleteThis 选项进行设置。<br>
+</p>
+
+<p>
+（2）、设置字体大小（对眼睛有好处）；<br>
+</p>
+
+<p>
+（3）、修改 Qt 中 example 文件夹的访问权限，sudo chmod -R 777 examples<br>
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline68" class="outline-4">
+<h4 id="orgheadline68"><span class="section-number-4">5.2.4</span> 安装配置 BoUML（UML 工具）</h4>
+<div class="outline-text-4" id="text-5-2-4">
+<p>
+直接在 Ubuntu Software Center 中搜索安装<br>
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline69" class="outline-4">
+<h4 id="orgheadline69"><span class="section-number-4">5.2.5</span> 安装 Amaya</h4>
+<div class="outline-text-4" id="text-5-2-5">
+<p>
+<a href="http://www.w3.org/Amaya/Overview.html%EF%BC%88Amaya" target="_blank" rel="external">http://www.w3.org/Amaya/Overview.html%EF%BC%88Amaya</a> 官网）<br>
+</p>
+
+<p>
+Amaya 是 一个具有浏览功能的 WEB 开发工具，是由万维网协会（W3C）成员开发的一个网络浏览器，同时也可以作为对 W3C 成果的测试工具。Amaya 包括了一个 HTML 编辑器和浏览器，用户可以免费到 W3C 的网站下载它，在 linux 和 windows 下都有对应的版本。Amaya 起初只支持 HTML 和 CSS 的编 缉，现在已经添加了对 XML、XHTML、MathML、SVG 等的支持。<br>
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline70" class="outline-4">
+<h4 id="orgheadline70"><span class="section-number-4">5.2.6</span> 安装 VirtualBox（虚拟机）</h4>
+<div class="outline-text-4" id="text-5-2-6">
+<p>
+直接在 Ubuntu Software Center 中搜索安装<br>
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline71" class="outline-4">
+<h4 id="orgheadline71"><span class="section-number-4">5.2.7</span> 安装 StarDict（Linux 下的金山词霸）</h4>
+<div class="outline-text-4" id="text-5-2-7">
+<p>
+直接在 Ubuntu Software Center 中搜索安装<br>
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline72" class="outline-4">
+<h4 id="orgheadline72"><span class="section-number-4">5.2.8</span> 安装 iptux（linux 下的飞鸽）</h4>
+<div class="outline-text-4" id="text-5-2-8">
+<p>
+直接在 Ubuntu Software Center 中搜索安装<br>
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline73" class="outline-4">
+<h4 id="orgheadline73"><span class="section-number-4">5.2.9</span> 安装 libfetion</h4>
+<div class="outline-text-4" id="text-5-2-9">
+<p>
+（Linux 下的飞信）<a href="http://www.libfetion.org/" target="_blank" rel="external">http://www.libfetion.org/</a><br>
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline74" class="outline-4">
+<h4 id="orgheadline74"><span class="section-number-4">5.2.10</span> 安装 Kchmiewer</h4>
+<div class="outline-text-4" id="text-5-2-10">
+<p>
+这个是 kde 下出色一个 chm 阅读器，相比较于 chmsee 出现中文乱马的情况而言，这个可以说是完美了。<br>
+安装：sudo apt-get install kchmviewer<br>
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline75" class="outline-4">
+<h4 id="orgheadline75"><span class="section-number-4">5.2.11</span> 安装 XMind</h4>
+<div class="outline-text-4" id="text-5-2-11">
+<p>
+XMIND 是一款非常实用的商业思维导图（Mindmap）软件，应用全球最先进 的 Eclipse RCP 软件架构，全力打造易用、高效的可视化思维软件，强调软件的可扩展、跨平台、稳定性和性能，致力于使用先进的软件技术帮助用户真正意义上提高生产率。<br>
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline76" class="outline-4">
+<h4 id="orgheadline76"><span class="section-number-4">5.2.12</span> 修改最大化、最小化、关闭按钮的位置。</h4>
+<div class="outline-text-4" id="text-5-2-12">
+<p>
+请参考&lt;转&gt;如何将 Ubuntu 10.04 LTS 的窗口控制按钮从左上角调整到右上角<br>
+<a href="http://hi.baidu.com/wolfand11/blog/item/1adac00879b1983ce82488e8.html" target="_blank" rel="external">http://hi.baidu.com/wolfand11/blog/item/1adac00879b1983ce82488e8.html</a><br>
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline77" class="outline-4">
+<h4 id="orgheadline77"><span class="section-number-4">5.2.13</span> 设置 Ibus</h4>
+<div class="outline-text-4" id="text-5-2-13">
+<p>
+如果你是 KUbuntu 那么你要安装 ibus-gtk,这样才能在 Gnome 的软件中输入中文。<br>
+</p>
+
+<p>
+如果你是 Ubuntu 那么你要安装 ibus-qt4，这样你才能在 KDE 的软件中输入中文。<br>
+</p>
+
+<p>
+设置 ibus 启动项，System &#x2013;&gt; Perference &#x2013;&gt; Startup Applications &#x2013;&gt; add &#x2014;&gt; Name: ibus-daemon Command : /usr/bin/ibus-daemon -d &#x2013;&gt; Save<br>
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline78" class="outline-4">
+<h4 id="orgheadline78"><span class="section-number-4">5.2.14</span> 设置桌面图标</h4>
+<div class="outline-text-4" id="text-5-2-14">
+<p>
+ubuntu 如何让桌面显示“我的电脑”及去掉桌面上的“磁盘图标”<br>
+<a href="http://hi.baidu.com/wolfand11/blog/item/4f1ab1097a86afbe2fddd4d3.html?timeStamp=1290957426596" target="_blank" rel="external">http://hi.baidu.com/wolfand11/blog/item/4f1ab1097a86afbe2fddd4d3.html?timeStamp=1290957426596</a><br>
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline79" class="outline-4">
+<h4 id="orgheadline79"><span class="section-number-4">5.2.15</span> rar 软件</h4>
+<div class="outline-text-4" id="text-5-2-15">
+<p>
+ubuntu 压缩文件为 rar 格式与解压 rar 格式文件<br>
+</p>
+<ul class="org-ul">
+<li>安装 rar 与 unrar 方法：<br>
+sudo apt-get install rar<br>
+sudo apt-get install unrar<br></li>
+<li>简单的使用方法：<br>
+<ul class="org-ul">
+<li><p>
+压缩文件为 rar 格式<br>
+</p>
+<pre class="example">
+例:rar a test.rar file1.txt 若 test.rar 文件不存在，则打包 file1.txt 文件成 test.rar
+例:rar a test.rar file2.txt 若 test.rar 文件已经存在，则添加 file2.txt 文件到 test.rar 中
+</pre></li>
+<li><p>
+解压 rar 文件<br>
+</p>
+<pre class="example">
+例：unrar x -o- -y  test.rar   /home/test/    将 test.rar 解压到/home/test/ 目录下。
+例：unrar  e-o- -y test.rar                   将 test.rar 解压到当前目录下。
+</pre></li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgheadline80" class="outline-4">
+<h4 id="orgheadline80"><span class="section-number-4">5.2.16</span> 跨平台的音乐播放器</h4>
+<div class="outline-text-4" id="text-5-2-16">
+<p>
+<a href="http://www.clementine-player.org/" target="_blank" rel="external">http://www.clementine-player.org/</a><br>
+</p>
+</div>
+</div>
+</div>
+</div>
+]]></content>
+      
+        <categories>
+            
+            <category> tools </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> tools </tag>
+            
+            <tag> InitPC </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[Create Blog With Jeykll]]></title>
-      <url>http://wolfand11.coding.me/2016/08/12/tools/CreateBlogWithJeykll/</url>
+      <url>http://wolfand11.coding.me/2016/08/11/tools/CreateBlogWithJeykll/</url>
       <content type="html"><![CDATA[
 
 <div id="outline-container-orgheadline1" class="outline-2">
@@ -19911,7 +21156,7 @@ http://orgmode.org/worg/org-tutorials/org-jekyll.html
     
     <entry>
       <title><![CDATA[Create Blog With Hexo]]></title>
-      <url>http://wolfand11.coding.me/2016/08/12/tools/CreateBlogWithHexo/</url>
+      <url>http://wolfand11.coding.me/2016/08/11/tools/CreateBlogWithHexo/</url>
       <content type="html"><![CDATA[
 
 <div id="outline-container-orgheadline2" class="outline-2">
@@ -20729,7 +21974,7 @@ npm config set msvs_version=2015 &#x2013;global<br>
     
     <entry>
       <title><![CDATA[GameModules]]></title>
-      <url>http://wolfand11.coding.me/2016/07/16/architecture/GameModules/</url>
+      <url>http://wolfand11.coding.me/2016/07/15/architecture/GameModules/</url>
       <content type="html"><![CDATA[
 
 
@@ -20771,8 +22016,8 @@ npm config set msvs_version=2015 &#x2013;global<br>
 这篇主要是算法导论相关的笔记。<br>
 </p>
 <a id="more"></a>
-<div id="outline-container-orgheadline14" class="outline-2">
-<h2 id="orgheadline14"><span class="section-number-2">1</span> Foundations</h2>
+<div id="outline-container-orgheadline20" class="outline-2">
+<h2 id="orgheadline20"><span class="section-number-2">1</span> Foundations</h2>
 <div class="outline-text-2" id="text-1">
 </div><div id="outline-container-orgheadline7" class="outline-3">
 <h3 id="orgheadline7"><span class="section-number-3">1.1</span> 函数的增长</h3>
@@ -20788,7 +22033,7 @@ npm config set msvs_version=2015 &#x2013;global<br>
 <div class="outline-text-4" id="text-1-1-1">
 <p>
 对于一个给定函数 \(g(n)\) ,用 \(\Theta(g(n))\) 来表示函数集合：<br>
-\(\Theta(g(n)) = \{f(n):存在常数 c_1,c_2 和 n_0，使对所有的 n \geq n_0 ,有 0 \leq c_1g(n) \leq f(n) \leq c_2g(n)\} \quad 也就是说，对于任一函数 f(n),若存在正常数 c_1,c_2,使当 n 充分大时，f(n)能被夹在 c_1g(n)和 c_2g(n)中间，则 f(n)属于集合 Theta(g(n))\)<br>
+\(\Theta(g(n)) = \{f(n):存在常数 c_1,c_2 和 n_0，使对所有的 n \geq n_0 ,有 0 \leq c_1g(n) \leq f(n) \leq c_2g(n)\} \quad 也就是说，对于任一函数 f(n),若存在正常数 c_1,c_2,使当 n 充分大时，f(n)能被夹在 c_1g(n)和 c_2g(n)中间，则 f(n)属于集合 \Theta(g(n))\)<br>
 \(\Theta 记号 给出了函数 f(n)的上下界\)<br>
 </p>
 </div>
@@ -20818,7 +22063,7 @@ npm config set msvs_version=2015 &#x2013;global<br>
 <div class="outline-text-4" id="text-1-1-4">
 <p>
 对于一个给定函数 \(g(n)\) ,用 \(o(g(n))\) 来表示函数集合：<br>
-\(o(g(n)) = \{f(n):存在常数 c ,存在常数 n_0 > 0，使对所有的 n \geq n_0 ,有 0 \leq  f(n) < cg(n)\}\)<br>
+\(o(g(n)) = \{f(n):对任意正常数 c ,存在常数 n_0 > 0，使对所有的 n \geq n_0 ,有 0 \leq  f(n) < cg(n)\}\)<br>
 \(o 记号 给出了函数 f(n)的非渐近紧确上界\)<br>
 </p>
 </div>
@@ -20828,7 +22073,7 @@ npm config set msvs_version=2015 &#x2013;global<br>
 <div class="outline-text-4" id="text-1-1-5">
 <p>
 对于一个给定函数 \(g(n)\) ,用 \(\omega(g(n))\) 来表示函数集合：<br>
-\(\omega(g(n)) = \{f(n):存在常数 c ,存在常数 n_0 > 0，使对所有的 n \geq n_0 ,有 0 \leq cg(n) < f(n) \}\)<br>
+\(\omega(g(n)) = \{f(n):对任意正常数 c ,存在常数 n_0 > 0，使对所有的 n \geq n_0 ,有 0 \leq cg(n) < f(n) \}\)<br>
 \(\omega 记号 给出了函数 f(n)的非渐近紧确下界\)<br>
 </p>
 </div>
@@ -20856,10 +22101,18 @@ npm config set msvs_version=2015 &#x2013;global<br>
 <li>用数学归纳法找出使解真正有效的常数。<br></li>
 </ol></li>
 <li>使用数学归纳法进行证明的步骤<br>
+<ul class="org-ul">
+<li>数学归纳法第一种形式<br>
 <ol class="org-ol">
 <li>证明当 m=1 时命题成立。<br></li>
 <li>假设 m=n 时命题成立，推导出在 m=n+1 时命题也成立。（n 代表任意自然数）<br></li>
 </ol></li>
+<li>数学归纳法第二种形式<br>
+<ol class="org-ol">
+<li>证明当 m=1 时命题成立<br></li>
+<li>假设 m&lt;n 时命题成立，推导出在 m=n 时命题也成立。（n 代表任意自然数）<br></li>
+</ol></li>
+</ul></li>
 </ul>
 </div>
 <ol class="org-ol"><li><a id="orgheadline8"></a>实例<br><div class="outline-text-5" id="text-1-2-1-1">
@@ -20867,18 +22120,18 @@ npm config set msvs_version=2015 &#x2013;global<br>
 <li><p>
 求递归式 \(T(n) = 2T(\biggl\lfloor \frac{n}{2} \biggr\rfloor) + n\)<br>
 </p>
-\begin{align}  
+\begin{align}
 &-\quad Step 1\, 猜测解的形式        \nonumber\\ 
 &猜测\quad T(n) = O(nlgn),即存在常数 c 和 n_0 使得 T(n)的值都在 nlgn 之下 \nonumber\\ 
 &-\quad Step 2\, 使用数学归纳法证明    \nonumber\\ 
 &-\quad Step 2.1\, 证明 m=2,3 时成立 \nonumber\\ 
-&n=1 时，T(1) = 2*0 + 1 > clg1 = 0     \, &(无论 c 取何值都不成立)    \nonumber\\ 
-&n=2 时，T(2) = 2*1 + 2 = 4 \leq 2c    \, &(c\geq2 时成立) \nonumber\\ 
-&n=3 时，T(3) = 2*1 + 3 = 5 \leq 3clg3 \, &(c\geq2 时成立) \nonumber\\ 
-&-\quad Step 2.2\, 假设 n=\frac{k}{2}成立，证明 n = k 时也成立 \nonumber\\ 
-&依据假设有 T(\frac{k}{2}) \leq c\frac{k}{2}lg\frac{k}{2}           \nonumber\\
-&T(k) = 2T(\biggl\lfloor \frac{k}{2} \biggr\rfloor) + k \leq 2c\frac{k}{2}lg\frac{k}{2} + k \nonumber\\
-&T(k) \leq cklg\frac{k}{2} + k = cklgk - ck + k <= 1="" 2="" cklgk="" \quad="" (c\geq="" 时成立)="" \nonumber\\="" &所以，当取="" c="" \geq="" 时，t(n)="" \leq="" cnlgn。即="" t(n)="O(nlgn)" \end{align}<="" li="">
+&n=1 时，T(1) = 2*0 + 1 = 1 > c1lg1=0   \, &(无论 c 取何值都不成立)    \nonumber\\ 
+&n=2 时，T(2) = 2*1 + 2 = 4 \leq c2lg2  \, &(c\geq2 时成立) \nonumber\\ 
+&n=3 时，T(3) = 2*1 + 3 = 5 \leq c3lg3  \, &(c\geq2 时成立) \nonumber\\ 
+&-\quad Step 2.2\, 假设 m < n 成立，证明 m=n 时也成立 \nonumber\\
+&依据假设有 m < n 成立，所以对于 m=\frac{n}{2} 时，有 T(\frac{n}{2}) \leq c\frac{n}{2}lg\frac{n}{2}           \nonumber\\
+&T(n) = 2T(\biggl\lfloor \frac{n}{2} \biggr\rfloor) + n \leq 2c\frac{n}{2}lg\frac{n}{2} + n \nonumber\\
+&T(n) \leq cnlg\frac{n}{2} + n = cnlgn - cn + n <= 1="" 2="" cnlgn="" \quad="" (c\geq="" 时成立)="" \nonumber\\="" &-\quad="" step="" 2.3\,="" 依据数学归纳法可以可出结论="" &所以，当取="" c="" \geq="" 时，t(n)="" \leq="" cnlgn。即="" t(n)="O(nlgn)" \end{align}<="" li="">
 <li><p>
 求递归式 \(T(n) = 2T(n-1) + 1 \quad (n>0) \quad T(0) = 0\)<br>
 </p>
@@ -20904,11 +22157,11 @@ npm config set msvs_version=2015 &#x2013;global<br>
 <h4 id="orgheadline10"><span class="section-number-4">1.2.2</span> 递归树方法</h4>
 <div class="outline-text-4" id="text-1-2-2">
 <p>
-如下图利用递归树方法求解 \(T(n) = 2T(n/4) + c n ^2\)<br>
+如下图利用递归树方法求解 \(T(n) = 3T(n/4) + c n ^2\)<br>
 <img src="Img_recursion_tree.jpg"><br>
 </p>
 \begin{align}  
-T(n) &= cn^2 + \frac{3}{16}cn^2 + {\frac{3}{16}}^2cn^2 + \ldots + {\frac{3}{16}}^{log_4(n-1)}cn^2 + \Theta(n^{log_43}) \nonumber\\ 
+T(n) &= cn^2 + \frac{3}{16}cn^2 + ({\frac{3}{16}})^2cn^2 + \ldots + ({\frac{3}{16}})^{log_4(n-1)}cn^2 + \Theta(n^{log_43}) \nonumber\\ 
 & = \sum_{i=0}^{log_4n-1}(\frac{3}{16})^icn^2 + \Theta(n^{log_43})\nonumber\\ 
 & = \frac{(3/16)^{log_4n}-1}{(3/16)-1}cn^2+\Theta(n^{log_43})     \nonumber\\ 
 T(n) & < \sum_{i=0}^{\infty}(\frac{3}{16})^icn^2 + \Theta(n^{log_43})\nonumber\\ 
@@ -20933,15 +22186,61 @@ T(n) & < \sum_{i=0}^{\infty}(\frac{3}{16})^icn^2 + \Theta(n^{log_43})\nonumber\\
 &(3) \; 若对于某常数\epsilon >0,有 f(n)=\Omega(n^{log_ba+\epsilon}),且对常数 c<1 与足够大的="" n="" 有="" af(n="" b)="" \leq="" cf(n),则="" t(n)="\Theta(f(n))\nonumber" \\="" \end{align}="" <="" div="">
 </1></div>
 </div>
-<div id="outline-container-orgheadline13" class="outline-3">
-<h3 id="orgheadline13"><span class="section-number-3">1.3</span> 概率分析和随机算法</h3>
+<div id="outline-container-orgheadline19" class="outline-3">
+<h3 id="orgheadline19"><span class="section-number-3">1.3</span> 概率分析和随机算法</h3>
+<div class="outline-text-3" id="text-1-3">
+</div><div id="outline-container-orgheadline13" class="outline-4">
+<h4 id="orgheadline13"><span class="section-number-4">1.3.1</span> 随机排列数组</h4>
+<div class="outline-text-4" id="text-1-3-1">
+<div class="org-src-container">
+
+<pre class="src src-lua"><span style="color: #00ffff;">function</span> <span style="color: #87cefa;">PermuteBySorting</span>(lst)
+    <span style="color: #00ffff;">local</span> <span style="color: #eedd82;">priority</span> = {}
+    <span style="color: #00ffff;">local</span> <span style="color: #eedd82;">len</span> = #lst
+    <span style="color: #00ffff;">local</span> <span style="color: #eedd82;">max_random</span> = len*len*len
+    <span style="color: #00ffff;">for</span> <span style="color: #eedd82;">i</span>=1,len <span style="color: #00ffff;">do</span>
+        priority[i] = random(1, max_random)
+    <span style="color: #00ffff;">end</span>
+
+    <span style="color: #ff0000;">-- </span><span style="color: #ff0000;">sort list with priority</span>
+    sort(lst, priority)
+<span style="color: #00ffff;">end</span>
+
+<span style="color: #00ffff;">function</span> <span style="color: #87cefa;">RandomInPlace</span>(lst)
+    <span style="color: #00ffff;">local</span> <span style="color: #eedd82;">len</span> = #lst
+    <span style="color: #00ffff;">for</span> <span style="color: #eedd82;">i</span>=1,len <span style="color: #00ffff;">do</span>
+        <span style="color: #00ffff;">local</span> <span style="color: #eedd82;">random_idx</span> = random(i, len)
+        <span style="color: #00ffff;">local</span> <span style="color: #eedd82;">tmp</span> = lst[i]
+        lst[i] = lst[random_idx]
+        lst[random_idx] = tmp
+    <span style="color: #00ffff;">end</span>
+<span style="color: #00ffff;">end</span>
+</pre>
 </div>
 </div>
-<div id="outline-container-orgheadline29" class="outline-2">
-<h2 id="orgheadline29"><span class="section-number-2">2</span> Sorting and Order Statistics</h2>
+</div>
+<div id="outline-container-orgheadline14" class="outline-4">
+<h4 id="orgheadline14"><span class="section-number-4">1.3.2</span> 雇佣问题</h4>
+</div>
+<div id="outline-container-orgheadline15" class="outline-4">
+<h4 id="orgheadline15"><span class="section-number-4">1.3.3</span> 生日悖论</h4>
+</div>
+<div id="outline-container-orgheadline16" class="outline-4">
+<h4 id="orgheadline16"><span class="section-number-4">1.3.4</span> 球与盒子</h4>
+</div>
+<div id="outline-container-orgheadline17" class="outline-4">
+<h4 id="orgheadline17"><span class="section-number-4">1.3.5</span> 序列</h4>
+</div>
+<div id="outline-container-orgheadline18" class="outline-4">
+<h4 id="orgheadline18"><span class="section-number-4">1.3.6</span> 在线雇佣问题</h4>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline35" class="outline-2">
+<h2 id="orgheadline35"><span class="section-number-2">2</span> Sorting and Order Statistics</h2>
 <div class="outline-text-2" id="text-2">
-</div><div id="outline-container-orgheadline15" class="outline-3">
-<h3 id="orgheadline15"><span class="section-number-3">2.1</span> 堆排序</h3>
+</div><div id="outline-container-orgheadline21" class="outline-3">
+<h3 id="orgheadline21"><span class="section-number-3">2.1</span> 堆排序</h3>
 <div class="outline-text-3" id="text-2-1">
 <p>
 二叉堆在数组中构建的二叉树结构。其主要操作以及对应的时间复杂度如下：<br>
@@ -21000,16 +22299,16 @@ T(n) & < \sum_{i=0}^{\infty}(\frac{3}{16})^icn^2 + \Theta(n^{log_43})\nonumber\\
 </div>
 </div>
 
-<div id="outline-container-orgheadline21" class="outline-3">
-<h3 id="orgheadline21"><span class="section-number-3">2.2</span> 快速排序</h3>
+<div id="outline-container-orgheadline27" class="outline-3">
+<h3 id="orgheadline27"><span class="section-number-3">2.2</span> 快速排序</h3>
 <div class="outline-text-3" id="text-2-2">
 <ul class="org-ul">
 <li>快速排序采用了分治法<br></li>
 <li>快速排序是一种原地排序，不需要额外空间<br></li>
 </ul>
 </div>
-<div id="outline-container-orgheadline16" class="outline-4">
-<h4 id="orgheadline16"><span class="section-number-4">2.2.1</span> 快速排序分析</h4>
+<div id="outline-container-orgheadline22" class="outline-4">
+<h4 id="orgheadline22"><span class="section-number-4">2.2.1</span> 快速排序分析</h4>
 <div class="outline-text-4" id="text-2-2-1">
 <ul class="org-ul">
 <li><p>
@@ -21051,8 +22350,8 @@ T(n) &= 2T(n/2)  \nonumber \\
 </ul>
 </div>
 </div>
-<div id="outline-container-orgheadline17" class="outline-4">
-<h4 id="orgheadline17"><span class="section-number-4">2.2.2</span> 快速排序实现</h4>
+<div id="outline-container-orgheadline23" class="outline-4">
+<h4 id="orgheadline23"><span class="section-number-4">2.2.2</span> 快速排序实现</h4>
 <div class="outline-text-4" id="text-2-2-2">
 <div class="org-src-container">
 
@@ -21080,21 +22379,21 @@ T(n) &= 2T(n/2)  \nonumber \\
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline19" class="outline-4">
-<h4 id="orgheadline19"><span class="section-number-4">2.2.3</span> 随机快速排序</h4>
+<div id="outline-container-orgheadline25" class="outline-4">
+<h4 id="orgheadline25"><span class="section-number-4">2.2.3</span> 随机快速排序</h4>
 <div class="outline-text-4" id="text-2-2-3">
 <p>
 每一次划分之前，将主元素和一个随机的元素交换。<br>
 </p>
 </div>
-<ol class="org-ol"><li><a id="orgheadline18"></a>随机快速排序分析<br><div class="outline-text-5" id="text-2-2-3-1">
+<ol class="org-ol"><li><a id="orgheadline24"></a>随机快速排序分析<br><div class="outline-text-5" id="text-2-2-3-1">
 <p>
 随机快速排序的时间复杂度为 \(O(nlogn)\)<br>
 </p>
 </div></li></ol>
 </div>
-<div id="outline-container-orgheadline20" class="outline-4">
-<h4 id="orgheadline20"><span class="section-number-4">2.2.4</span> 随机快速排序实现</h4>
+<div id="outline-container-orgheadline26" class="outline-4">
+<h4 id="orgheadline26"><span class="section-number-4">2.2.4</span> 随机快速排序实现</h4>
 <div class="outline-text-4" id="text-2-2-4">
 <div class="org-src-container">
 
@@ -21124,27 +22423,27 @@ T(n) &= 2T(n/2)  \nonumber \\
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline26" class="outline-3">
-<h3 id="orgheadline26"><span class="section-number-3">2.3</span> 线性时间排序</h3>
+<div id="outline-container-orgheadline32" class="outline-3">
+<h3 id="orgheadline32"><span class="section-number-3">2.3</span> 线性时间排序</h3>
 <div class="outline-text-3" id="text-2-3">
-</div><div id="outline-container-orgheadline22" class="outline-4">
-<h4 id="orgheadline22"><span class="section-number-4">2.3.1</span> 比较排序的下界</h4>
+</div><div id="outline-container-orgheadline28" class="outline-4">
+<h4 id="orgheadline28"><span class="section-number-4">2.3.1</span> 比较排序的下界</h4>
 </div>
-<div id="outline-container-orgheadline23" class="outline-4">
-<h4 id="orgheadline23"><span class="section-number-4">2.3.2</span> 计数排序</h4>
+<div id="outline-container-orgheadline29" class="outline-4">
+<h4 id="orgheadline29"><span class="section-number-4">2.3.2</span> 计数排序</h4>
 </div>
-<div id="outline-container-orgheadline24" class="outline-4">
-<h4 id="orgheadline24"><span class="section-number-4">2.3.3</span> 基数排序</h4>
+<div id="outline-container-orgheadline30" class="outline-4">
+<h4 id="orgheadline30"><span class="section-number-4">2.3.3</span> 基数排序</h4>
 </div>
-<div id="outline-container-orgheadline25" class="outline-4">
-<h4 id="orgheadline25"><span class="section-number-4">2.3.4</span> 桶排序</h4>
+<div id="outline-container-orgheadline31" class="outline-4">
+<h4 id="orgheadline31"><span class="section-number-4">2.3.4</span> 桶排序</h4>
 </div>
 </div>
-<div id="outline-container-orgheadline27" class="outline-3">
-<h3 id="orgheadline27"><span class="section-number-3">2.4</span> 中位数和顺序统计</h3>
+<div id="outline-container-orgheadline33" class="outline-3">
+<h3 id="orgheadline33"><span class="section-number-3">2.4</span> 中位数和顺序统计</h3>
 </div>
-<div id="outline-container-orgheadline28" class="outline-3">
-<h3 id="orgheadline28"><span class="section-number-3">2.5</span> Sorting implement</h3>
+<div id="outline-container-orgheadline34" class="outline-3">
+<h3 id="orgheadline34"><span class="section-number-3">2.5</span> Sorting implement</h3>
 <div class="outline-text-3" id="text-2-5">
 <p>
 关于各种排序相关算法的实现，可以参考如下文件：<br>
@@ -21154,11 +22453,11 @@ T(n) &= 2T(n/2)  \nonumber \\
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline71" class="outline-2">
-<h2 id="orgheadline71"><span class="section-number-2">3</span> DataStructure</h2>
+<div id="outline-container-orgheadline77" class="outline-2">
+<h2 id="orgheadline77"><span class="section-number-2">3</span> DataStructure</h2>
 <div class="outline-text-2" id="text-3">
-</div><div id="outline-container-orgheadline30" class="outline-3">
-<h3 id="orgheadline30"><span class="section-number-3">3.1</span> Stack Queue</h3>
+</div><div id="outline-container-orgheadline36" class="outline-3">
+<h3 id="orgheadline36"><span class="section-number-3">3.1</span> Stack Queue</h3>
 <div class="outline-text-3" id="text-3-1">
 <p>
 栈                后进先出<br>
@@ -21166,11 +22465,11 @@ T(n) &= 2T(n/2)  \nonumber \\
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline32" class="outline-3">
-<h3 id="orgheadline32"><span class="section-number-3">3.2</span> LinkList</h3>
+<div id="outline-container-orgheadline38" class="outline-3">
+<h3 id="orgheadline38"><span class="section-number-3">3.2</span> LinkList</h3>
 <div class="outline-text-3" id="text-3-2">
-</div><div id="outline-container-orgheadline31" class="outline-4">
-<h4 id="orgheadline31"><span class="section-number-4">3.2.1</span> 单链表倒序</h4>
+</div><div id="outline-container-orgheadline37" class="outline-4">
+<h4 id="orgheadline37"><span class="section-number-4">3.2.1</span> 单链表倒序</h4>
 <div class="outline-text-4" id="text-3-2-1">
 <div class="org-src-container">
 
@@ -21191,11 +22490,11 @@ T(n) &= 2T(n/2)  \nonumber \\
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline37" class="outline-3">
-<h3 id="orgheadline37"><span class="section-number-3">3.3</span> SkipList</h3>
+<div id="outline-container-orgheadline43" class="outline-3">
+<h3 id="orgheadline43"><span class="section-number-3">3.3</span> SkipList</h3>
 <div class="outline-text-3" id="text-3-3">
-</div><div id="outline-container-orgheadline34" class="outline-4">
-<h4 id="orgheadline34"><span class="section-number-4">3.3.1</span> SkipList 时间复杂度分析</h4>
+</div><div id="outline-container-orgheadline40" class="outline-4">
+<h4 id="orgheadline40"><span class="section-number-4">3.3.1</span> SkipList 时间复杂度分析</h4>
 <div class="outline-text-4" id="text-3-3-1">
 <ul class="org-ul">
 <li>两层的 SkipList<br>
@@ -21206,14 +22505,14 @@ T(n) &= 2T(n/2)  \nonumber \\
 当 SkipList 取 \(log_2n\) 层时，SkipList 最优。此时时间消耗为 \(T(n) = log_2n\sqrt[log_2n]{n} = 2log_2n\)<br></li>
 </ul>
 </div>
-<ol class="org-ol"><li><a id="orgheadline33"></a>SkipList 高概率最优<br><div class="outline-text-5" id="text-3-3-1-1">
+<ol class="org-ol"><li><a id="orgheadline39"></a>SkipList 高概率最优<br><div class="outline-text-5" id="text-3-3-1-1">
 <p>
 对于 n 个节点的 SkipList，每次查找元素的时间消耗高概率为 \(O(lgn)\)<br>
 </p>
 </div></li></ol>
 </div>
-<div id="outline-container-orgheadline35" class="outline-4">
-<h4 id="orgheadline35"><span class="section-number-4">3.3.2</span> SkipList 高度分析</h4>
+<div id="outline-container-orgheadline41" class="outline-4">
+<h4 id="orgheadline41"><span class="section-number-4">3.3.2</span> SkipList 高度分析</h4>
 <div class="outline-text-4" id="text-3-3-2">
 <p>
 对每层来说，一个节点会向上增长的概率为 \(\frac{1}{2}\) ，则第 m 层向上增长的概率为 \(\frac{1}{2^m}\)<br>
@@ -21223,8 +22522,8 @@ T(n) &= 2T(n/2)  \nonumber \\
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline36" class="outline-4">
-<h4 id="orgheadline36"><span class="section-number-4">3.3.3</span> SkipList Maintain</h4>
+<div id="outline-container-orgheadline42" class="outline-4">
+<h4 id="orgheadline42"><span class="section-number-4">3.3.3</span> SkipList Maintain</h4>
 <div class="outline-text-4" id="text-3-3-3">
 <ul class="org-ul">
 <li>插入节点<br>
@@ -21235,8 +22534,8 @@ T(n) &= 2T(n/2)  \nonumber \\
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline38" class="outline-3">
-<h3 id="orgheadline38"><span class="section-number-3">3.4</span> Tree</h3>
+<div id="outline-container-orgheadline44" class="outline-3">
+<h3 id="orgheadline44"><span class="section-number-3">3.4</span> Tree</h3>
 <div class="outline-text-3" id="text-3-4">
 <ul class="org-ul">
 <li>对于二叉树，每一个树的节点用 p,l,r,data 分别表示 指向父亲节点的指针， 指向左孩子的指针，指向右孩子的指针，节点的数据。<br></li>
@@ -21245,11 +22544,11 @@ T(n) &= 2T(n/2)  \nonumber \\
 </ul>
 </div>
 </div>
-<div id="outline-container-orgheadline57" class="outline-3">
-<h3 id="orgheadline57"><span class="section-number-3">3.5</span> Hash Table</h3>
+<div id="outline-container-orgheadline63" class="outline-3">
+<h3 id="orgheadline63"><span class="section-number-3">3.5</span> Hash Table</h3>
 <div class="outline-text-3" id="text-3-5">
-</div><div id="outline-container-orgheadline39" class="outline-4">
-<h4 id="orgheadline39"><span class="section-number-4">3.5.1</span> 直接寻址表 Direct-address table</h4>
+</div><div id="outline-container-orgheadline45" class="outline-4">
+<h4 id="orgheadline45"><span class="section-number-4">3.5.1</span> 直接寻址表 Direct-address table</h4>
 <div class="outline-text-4" id="text-3-5-1">
 <p>
 <img src="Img_direct-address-table.jpg"><br>
@@ -21261,8 +22560,8 @@ T(n) &= 2T(n/2)  \nonumber \\
 </ul>
 </div>
 </div>
-<div id="outline-container-orgheadline42" class="outline-4">
-<h4 id="orgheadline42"><span class="section-number-4">3.5.2</span> 散列表 Hash table</h4>
+<div id="outline-container-orgheadline48" class="outline-4">
+<h4 id="orgheadline48"><span class="section-number-4">3.5.2</span> 散列表 Hash table</h4>
 <div class="outline-text-4" id="text-3-5-2">
 <p>
 散列函数 h 将关键字 k 散列到一个小范围域内，从而减弱直接寻址表缺点的影响。<br>
@@ -21271,7 +22570,7 @@ T(n) &= 2T(n/2)  \nonumber \\
 有可能不同的关键字会被 h 函数散列到同一槽上。这种情况被称为发生了碰撞。<br>
 </p>
 </div>
-<ol class="org-ol"><li><a id="orgheadline41"></a>链接法解决碰撞<br><div class="outline-text-5" id="text-3-5-2-1">
+<ol class="org-ol"><li><a id="orgheadline47"></a>链接法解决碰撞<br><div class="outline-text-5" id="text-3-5-2-1">
 <p>
 这种方法将 hash 值相同的元素，用链表存储。<br>
 通过 hash 表查找某个元素 ki 的算法如下：<br>
@@ -21295,26 +22594,26 @@ T(n) &= 2T(n/2)  \nonumber \\
 </pre>
 </div>
 </div>
-<ol class="org-ol"><li><a id="orgheadline40"></a>装载因子<br><div class="outline-text-6" id="text-3-5-2-1-1">
+<ol class="org-ol"><li><a id="orgheadline46"></a>装载因子<br><div class="outline-text-6" id="text-3-5-2-1-1">
 <p>
 给定一个能存放 n 个元素的、具有 m 个槽位的散列表 T，定义 T 的装载因子 \(\alpha\) 为 n/m，即一个链中平均存储的元素数。<br>
 </p>
 </div></li></ol></li></ol>
 </div>
-<div id="outline-container-orgheadline51" class="outline-4">
-<h4 id="orgheadline51"><span class="section-number-4">3.5.3</span> 散列函数</h4>
+<div id="outline-container-orgheadline57" class="outline-4">
+<h4 id="orgheadline57"><span class="section-number-4">3.5.3</span> 散列函数</h4>
 <div class="outline-text-4" id="text-3-5-3">
-</div><ol class="org-ol"><li><a id="orgheadline43"></a>好的散列函数的特点<br><div class="outline-text-5" id="text-3-5-3-1">
+</div><ol class="org-ol"><li><a id="orgheadline49"></a>好的散列函数的特点<br><div class="outline-text-5" id="text-3-5-3-1">
 <p>
 散列函数应该尽可能让关键字平均分配到不同的槽上，这样可以保证碰撞发生的概率最小。<br>
 </p>
 </div></li>
-<li><a id="orgheadline44"></a>将关键字解释为自然数<br><div class="outline-text-5" id="text-3-5-3-2">
+<li><a id="orgheadline50"></a>将关键字解释为自然数<br><div class="outline-text-5" id="text-3-5-3-2">
 <p>
 例如，一个字符串关键字可以被解释为按适当的基数几号表示的整数。pt 可以被解释为十进制整数对(112,116),因为 ASCII 字符集中，p 为 112，t 为 116。按照 128 为基数来表示，pt = 112*128+126 = 14452；<br>
 </p>
 </div></li>
-<li><a id="orgheadline45"></a>除法散列法<br><div class="outline-text-5" id="text-3-5-3-3">
+<li><a id="orgheadline51"></a>除法散列法<br><div class="outline-text-5" id="text-3-5-3-3">
 \begin{equation}  
 h(k) = k\ mod\ m;
 \end{equation}
@@ -21394,7 +22693,7 @@ h(k) = k\ mod\ m;
 m 通常选为和 2 的整数幂不太接近的指数。<br>
 </p>
 </div></li>
-<li><a id="orgheadline46"></a>乘法散列法<br><div class="outline-text-5" id="text-3-5-3-4">
+<li><a id="orgheadline52"></a>乘法散列法<br><div class="outline-text-5" id="text-3-5-3-4">
 \begin{align}  
 h(k) = \biggl\lfloor m(kA\: \: mod \:\:  1) \biggr\rfloor \quad (0\,< A\,< 1)
 \end{align}  
@@ -21402,14 +22701,14 @@ h(k) = \biggl\lfloor m(kA\: \: mod \:\:  1) \biggr\rfloor \quad (0\,< A\,< 1)
 乘法散列的优点是，它对 m 的选择没有特别的要求。但是，一般会选择 \(m=2^p\) ，因为这样方便实现散列函数。<br>
 </p>
 </div></li>
-<li><a id="orgheadline50"></a>全域散列 Universal hashing<br><ol class="org-ol"><li><a id="orgheadline47"></a>定义<br><div class="outline-text-6" id="text-3-5-3-5-1">
+<li><a id="orgheadline56"></a>全域散列 Universal hashing<br><ol class="org-ol"><li><a id="orgheadline53"></a>定义<br><div class="outline-text-6" id="text-3-5-3-5-1">
 <p>
 随机地选择散列函数，使之独立于要存储的关键字，这种方法被称作全域散列。严格的定义如下：<br>
 设 H 为有限的一组散列函数，它将给定的关键字域 U 映射到{0,1,&#x2026;&#x2026;,m-1}中。如果对于每一个不同的关键字 \(k,l \in U\) ，满足 \(h(k)=h(l)\) 的散列函数 \(h \in H\) 的个数至多为 \(|H| / m\) 。那么就称这样的一个函数组是全域的。<br>
 \(|H|\) 为集合 H 中函数的个数。上面定义的另一种解释是，如果从 H 中随机取一个散列函数，当关键字 \(k \neq l\) 时，两者发生碰撞的概率 \(P(h(k)=h(l)) \leq \frac{|H|/m}{|H|}\) ， \(\frac{|H|/m}{|H|} = \frac{1}{m}\) 。<br>
 </p>
 </div></li>
-<li><a id="orgheadline48"></a>定理 1<br><div class="outline-text-6" id="text-3-5-3-5-2">
+<li><a id="orgheadline54"></a>定理 1<br><div class="outline-text-6" id="text-3-5-3-5-2">
 <p>
 如果 h 选自一组全域的散列函数，并用于将 n 个关键字散列到一个大小为 m 的用链接法解决碰撞的表 T 中。如果关键字 k 不在链表中，k 被散列至其中的链表的期望长度 \(E(n_{h(k)}) \leq \alpha=\frac{n}{m}\) (说明： \(n_{h(k)}\) 为链表 T[h(k)]的长度)。如果关键字 k 在链表中，则包含关键字 k 的链表的期望长度 \(E(n_{h(k)}) \leq 1+\alpha = 1+\frac{n}{m}\) <br>
 也就是说使用全域的散列函数，可以将 key 均匀地散列到各个链表中。<br>
@@ -21441,7 +22740,7 @@ E[C_k] = E[\sum_{l \in T \, l \neq k}c_{kl}] = \sum_{l \in T \, l \neq k}E[c_{kl
 \end{equation}</li>
 </ul>
 </div></li>
-<li><a id="orgheadline49"></a>构造一种全域哈希的一种方案<br><div class="outline-text-6" id="text-3-5-3-5-3">
+<li><a id="orgheadline55"></a>构造一种全域哈希的一种方案<br><div class="outline-text-6" id="text-3-5-3-5-3">
 <p>
 设定 m 为素数，用 m 将关键字 k 分解为 r+1 位数字，即用 m 进制来表示关键字 k。<br>
 \(k = \{k_0\,k_1\,k_2\, \ldots \,k_r\}\) 其中 \(0 \leq k_i \leq m-1\)<br>
@@ -21477,14 +22776,14 @@ h_a(k) = (\sum_{i=0}^{r}a_i k_i) mod m
 </ul>
 </div></li></ol></li></ol>
 </div>
-<div id="outline-container-orgheadline55" class="outline-4">
-<h4 id="orgheadline55"><span class="section-number-4">3.5.4</span> 开放寻址法</h4>
+<div id="outline-container-orgheadline61" class="outline-4">
+<h4 id="orgheadline61"><span class="section-number-4">3.5.4</span> 开放寻址法</h4>
 <div class="outline-text-4" id="text-3-5-4">
 <p>
 在开放寻址法中，所有元素都存储在散列表中。即，每个表项中或存储一个元素，或存储 NIL 值表示不存储任何元素。<br>
 </p>
 </div>
-<ol class="org-ol"><li><a id="orgheadline52"></a>线性探查<br><div class="outline-text-5" id="text-3-5-4-1">
+<ol class="org-ol"><li><a id="orgheadline58"></a>线性探查<br><div class="outline-text-5" id="text-3-5-4-1">
 <p>
 给定一个散列函数 h': U-&gt;{0,1,&#x2026;,m-1} （该函数被称为辅助散列函数），线性探查使用的散列函数为：<br>
 </p>
@@ -21499,7 +22798,7 @@ h(k,i) = (h'(k)+i) \, mod \, m \quad i = 0,1,2 \ldots , m-1
 线性探查存在一次群集问题。随着时间推移，连续被占用的槽不断增加，平均查找时间也不断随着增加。<br></li>
 </ul>
 </div></li>
-<li><a id="orgheadline53"></a>二次探查<br><div class="outline-text-5" id="text-3-5-4-2">
+<li><a id="orgheadline59"></a>二次探查<br><div class="outline-text-5" id="text-3-5-4-2">
 <p>
 二次探查使用的散列函数为：<br>
 </p>
@@ -21516,7 +22815,7 @@ h(k,i) = (h'(k)+i) \, mod \, m \quad i = 0,1,2 \ldots , m-1
 </ul>
 </div></li>
 
-<li><a id="orgheadline54"></a>双重散列<br><div class="outline-text-5" id="text-3-5-4-3">
+<li><a id="orgheadline60"></a>双重散列<br><div class="outline-text-5" id="text-3-5-4-3">
 <p>
 双重散列是用于开放寻址法的最好的方法之一，它使用的散列函数为：<br>
 </p>
@@ -21538,8 +22837,8 @@ h(k,i) = (h'(k)+i) \, mod \, m \quad i = 0,1,2 \ldots , m-1
 \end{align}
 </div></li></ol>
 </div>
-<div id="outline-container-orgheadline56" class="outline-4">
-<h4 id="orgheadline56"><span class="section-number-4">3.5.5</span> 完全散列 Perfect Hashing</h4>
+<div id="outline-container-orgheadline62" class="outline-4">
+<h4 id="orgheadline62"><span class="section-number-4">3.5.5</span> 完全散列 Perfect Hashing</h4>
 <div class="outline-text-4" id="text-3-5-5">
 <p>
 给定 n 个关键字，构造一个静态的 hash 表，该表的大小 \(m=O(n)\) ，在最坏的情况下，查询某个关键字的时间复杂度为 \(O(1)\) ，构造出满足这些条件的哈希被称为完全哈希或完美哈希 Perfect Hashing。<br>
@@ -21568,16 +22867,16 @@ h(k,i) = (h'(k)+i) \, mod \, m \quad i = 0,1,2 \ldots , m-1
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline60" class="outline-3">
-<h3 id="orgheadline60"><span class="section-number-3">3.6</span> Binary Search Trees</h3>
+<div id="outline-container-orgheadline66" class="outline-3">
+<h3 id="orgheadline66"><span class="section-number-3">3.6</span> Binary Search Trees</h3>
 <div class="outline-text-3" id="text-3-6">
 <p>
 二叉查找树中关键字的存储方式满足以下性质：<br>
 设 x 为二叉查找树中的节点。如果 y 是 x 的左子树中的节点，则 key[y]&lt;=key[x]。如果 y 是 x 右子树中的节点，则 key[x]&lt;=key[y]。<br>
 </p>
 </div>
-<div id="outline-container-orgheadline58" class="outline-4">
-<h4 id="orgheadline58"><span class="section-number-4">3.6.1</span> 二叉查找树的操作</h4>
+<div id="outline-container-orgheadline64" class="outline-4">
+<h4 id="orgheadline64"><span class="section-number-4">3.6.1</span> 二叉查找树的操作</h4>
 <div class="outline-text-4" id="text-3-6-1">
 <p>
 遍历 查找 最大关键字元素和最小关键字元素 前驱和后继 插入和删除<br>
@@ -21586,8 +22885,8 @@ h(k,i) = (h'(k)+i) \, mod \, m \quad i = 0,1,2 \ldots , m-1
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline59" class="outline-4">
-<h4 id="orgheadline59"><span class="section-number-4">3.6.2</span> 随机构造的二叉查找树</h4>
+<div id="outline-container-orgheadline65" class="outline-4">
+<h4 id="orgheadline65"><span class="section-number-4">3.6.2</span> 随机构造的二叉查找树</h4>
 <div class="outline-text-4" id="text-3-6-2">
 <p>
 随机二叉查找树高度的期望值为 \(log_2n\)<br>
@@ -21610,8 +22909,8 @@ step4- 证明结论<br>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline61" class="outline-3">
-<h3 id="orgheadline61"><span class="section-number-3">3.7</span> Balance Search Trees</h3>
+<div id="outline-container-orgheadline67" class="outline-3">
+<h3 id="orgheadline67"><span class="section-number-3">3.7</span> Balance Search Trees</h3>
 <div class="outline-text-3" id="text-3-7">
 <p>
 平衡搜索树的数据结构维护一个 n 个元素的动态集的时间为 \(log_2n\) ，树的高度为 \(O(log_2n)\)<br>
@@ -21628,8 +22927,8 @@ step4- 证明结论<br>
 </ul>
 </div>
 </div>
-<div id="outline-container-orgheadline66" class="outline-3">
-<h3 id="orgheadline66"><span class="section-number-3">3.8</span> Red-Black Trees</h3>
+<div id="outline-container-orgheadline72" class="outline-3">
+<h3 id="orgheadline72"><span class="section-number-3">3.8</span> Red-Black Trees</h3>
 <div class="outline-text-3" id="text-3-8">
 <p>
 红黑树是一种二叉搜索树，其中每个节点包含一个 color 属性，并且每个节点满足下面的条件<br>
@@ -21641,8 +22940,8 @@ step4- 证明结论<br>
 <li>对于每个节点，从该节点到其子孙节点(叶子节点)的所有路径上包含相同数目的黑节点<br></li>
 </ul>
 </div>
-<div id="outline-container-orgheadline62" class="outline-4">
-<h4 id="orgheadline62"><span class="section-number-4">3.8.1</span> RBTree 的高度</h4>
+<div id="outline-container-orgheadline68" class="outline-4">
+<h4 id="orgheadline68"><span class="section-number-4">3.8.1</span> RBTree 的高度</h4>
 <div class="outline-text-4" id="text-3-8-1">
 <p>
 包含 n 个关键字(内节点)的红黑树，它的高度满足 \(h \leq 2log_2(n+1) = O(log_2n)\)<br>
@@ -21669,8 +22968,8 @@ step4- 证明结论<br>
 </ul>
 </div>
 </div>
-<div id="outline-container-orgheadline63" class="outline-4">
-<h4 id="orgheadline63"><span class="section-number-4">3.8.2</span> RBTree Insert</h4>
+<div id="outline-container-orgheadline69" class="outline-4">
+<h4 id="orgheadline69"><span class="section-number-4">3.8.2</span> RBTree Insert</h4>
 <div class="outline-text-4" id="text-3-8-2">
 <div class="org-src-container">
 
@@ -21704,8 +23003,8 @@ step4- 证明结论<br>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline64" class="outline-4">
-<h4 id="orgheadline64"><span class="section-number-4">3.8.3</span> <span class="todo TODO">TODO</span> RBTree Delete</h4>
+<div id="outline-container-orgheadline70" class="outline-4">
+<h4 id="orgheadline70"><span class="section-number-4">3.8.3</span> <span class="todo TODO">TODO</span> RBTree Delete</h4>
 <div class="outline-text-4" id="text-3-8-3">
 <div class="org-src-container">
 
@@ -21715,8 +23014,8 @@ step4- 证明结论<br>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline65" class="outline-4">
-<h4 id="orgheadline65"><span class="section-number-4">3.8.4</span> Red-Black Tree 实现</h4>
+<div id="outline-container-orgheadline71" class="outline-4">
+<h4 id="orgheadline71"><span class="section-number-4">3.8.4</span> Red-Black Tree 实现</h4>
 <div class="outline-text-4" id="text-3-8-4">
 <p>
 具体实现参考下面文件：<br>
@@ -21725,19 +23024,19 @@ step4- 证明结论<br>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline70" class="outline-3">
-<h3 id="orgheadline70"><span class="section-number-3">3.9</span> Augmenting Data Structures</h3>
+<div id="outline-container-orgheadline76" class="outline-3">
+<h3 id="orgheadline76"><span class="section-number-3">3.9</span> Augmenting Data Structures</h3>
 <div class="outline-text-3" id="text-3-9">
-</div><div id="outline-container-orgheadline67" class="outline-4">
-<h4 id="orgheadline67"><span class="section-number-4">3.9.1</span> 动态顺序统计</h4>
+</div><div id="outline-container-orgheadline73" class="outline-4">
+<h4 id="orgheadline73"><span class="section-number-4">3.9.1</span> 动态顺序统计</h4>
 <div class="outline-text-4" id="text-3-9-1">
 <p>
 用扩展的红黑树来实现动态顺序统计，OS-Select 和 OS-Rank 的时间复杂度为 \(lg(n)\) .<br>
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline68" class="outline-4">
-<h4 id="orgheadline68"><span class="section-number-4">3.9.2</span> 为什么不在红黑树中直接记录节点的秩？</h4>
+<div id="outline-container-orgheadline74" class="outline-4">
+<h4 id="orgheadline74"><span class="section-number-4">3.9.2</span> 为什么不在红黑树中直接记录节点的秩？</h4>
 <div class="outline-text-4" id="text-3-9-2">
 <p>
 秩 即为元素在序列中的顺序值。<br>
@@ -21745,8 +23044,8 @@ step4- 证明结论<br>
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline69" class="outline-4">
-<h4 id="orgheadline69"><span class="section-number-4">3.9.3</span> 数据结构扩展</h4>
+<div id="outline-container-orgheadline75" class="outline-4">
+<h4 id="orgheadline75"><span class="section-number-4">3.9.3</span> 数据结构扩展</h4>
 <div class="outline-text-4" id="text-3-9-3">
 <p>
 数据结构扩展的 4 个步骤：<br>
@@ -21783,14 +23082,14 @@ step4- 证明结论<br>
 </div>
 </div>
 
-<div id="outline-container-orgheadline85" class="outline-2">
-<h2 id="orgheadline85"><span class="section-number-2">4</span> Advanced Design And Analysis Techniques</h2>
+<div id="outline-container-orgheadline91" class="outline-2">
+<h2 id="orgheadline91"><span class="section-number-2">4</span> Advanced Design And Analysis Techniques</h2>
 <div class="outline-text-2" id="text-4">
-</div><div id="outline-container-orgheadline78" class="outline-3">
-<h3 id="orgheadline78"><span class="section-number-3">4.1</span> 动态规划法</h3>
+</div><div id="outline-container-orgheadline84" class="outline-3">
+<h3 id="orgheadline84"><span class="section-number-3">4.1</span> 动态规划法</h3>
 <div class="outline-text-3" id="text-4-1">
-</div><div id="outline-container-orgheadline72" class="outline-4">
-<h4 id="orgheadline72"><span class="section-number-4">4.1.1</span> 动态规划的特征</h4>
+</div><div id="outline-container-orgheadline78" class="outline-4">
+<h4 id="orgheadline78"><span class="section-number-4">4.1.1</span> 动态规划的特征</h4>
 <div class="outline-text-4" id="text-4-1-1">
 <ul class="org-ul">
 <li>最优子结构<br>
@@ -21801,8 +23100,8 @@ step4- 证明结论<br>
 </ul>
 </div>
 </div>
-<div id="outline-container-orgheadline73" class="outline-4">
-<h4 id="orgheadline73"><span class="section-number-4">4.1.2</span> 找寻最优子结构的模式</h4>
+<div id="outline-container-orgheadline79" class="outline-4">
+<h4 id="orgheadline79"><span class="section-number-4">4.1.2</span> 找寻最优子结构的模式</h4>
 <div class="outline-text-4" id="text-4-1-2">
 <ol class="org-ol">
 <li>问题的一个解可以是做一个选择。做这种选择会得到一个或多个有待解决的子问题。<br></li>
@@ -21815,8 +23114,8 @@ step4- 证明结论<br>
 </ol>
 </div>
 </div>
-<div id="outline-container-orgheadline74" class="outline-4">
-<h4 id="orgheadline74"><span class="section-number-4">4.1.3</span> 动态规划算法的设计步骤</h4>
+<div id="outline-container-orgheadline80" class="outline-4">
+<h4 id="orgheadline80"><span class="section-number-4">4.1.3</span> 动态规划算法的设计步骤</h4>
 <div class="outline-text-4" id="text-4-1-3">
 <ol class="org-ol">
 <li>描述最优解的结构。即寻找最优子结构，利用子问题的最优解来构造原问题的一个最优解。<br></li>
@@ -21826,14 +23125,14 @@ step4- 证明结论<br>
 </ol>
 </div>
 </div>
-<div id="outline-container-orgheadline77" class="outline-4">
-<h4 id="orgheadline77"><span class="section-number-4">4.1.4</span> 最长公共子序列</h4>
+<div id="outline-container-orgheadline83" class="outline-4">
+<h4 id="orgheadline83"><span class="section-number-4">4.1.4</span> 最长公共子序列</h4>
 <div class="outline-text-4" id="text-4-1-4">
 <p>
 有两个序列 x[1&#x2026;m] y[1&#x2026;n], (1) 求这两个序列的最长公共子序列之一的长度 (2) 输出所有最长公共子序列<br>
 </p>
 </div>
-<ol class="org-ol"><li><a id="orgheadline75"></a>穷举法<br><div class="outline-text-5" id="text-4-1-4-1">
+<ol class="org-ol"><li><a id="orgheadline81"></a>穷举法<br><div class="outline-text-5" id="text-4-1-4-1">
 <p>
 取 x[1&#x2026;m]的所有子序列，分别遍历 y[1&#x2026;n]来查看是否该子序列是公共子序列，记录下当前最长的所有公共子序列。遍历完之后，依次输出。<br>
 </p>
@@ -21842,7 +23141,7 @@ step4- 证明结论<br>
 每次遍历 y[1&#x2026;n]的消耗为 n，x[1&#x2026;m]一共有 \(2^m\) 个子序列，所以总的时间消耗为 \(n2^m\)<br></li>
 </ul>
 </div></li>
-<li><a id="orgheadline76"></a>动态规划法<br><div class="outline-text-5" id="text-4-1-4-2">
+<li><a id="orgheadline82"></a>动态规划法<br><div class="outline-text-5" id="text-4-1-4-2">
 <p>
 定义 \(LCS(x,y)\) 为序列 x 和 y 的最长公共子序列之一<br>
 定义 \(|S|\) 为 \(S\) 序列的长度<br>
@@ -21866,11 +23165,11 @@ LCS 问题的子问题空间包含 \(m*n\) 个独立的子问题(c[i,j]一共有
 </div></li></ol>
 </div>
 </div>
-<div id="outline-container-orgheadline80" class="outline-3">
-<h3 id="orgheadline80"><span class="section-number-3">4.2</span> 贪心算法</h3>
+<div id="outline-container-orgheadline86" class="outline-3">
+<h3 id="orgheadline86"><span class="section-number-3">4.2</span> 贪心算法</h3>
 <div class="outline-text-3" id="text-4-2">
-</div><div id="outline-container-orgheadline79" class="outline-4">
-<h4 id="orgheadline79"><span class="section-number-4">4.2.1</span> 贪心算法的特征</h4>
+</div><div id="outline-container-orgheadline85" class="outline-4">
+<h4 id="orgheadline85"><span class="section-number-4">4.2.1</span> 贪心算法的特征</h4>
 <div class="outline-text-4" id="text-4-2-1">
 <ul class="org-ul">
 <li>一个全局最优解可以通过局部最优选择来达到。换句话说就是，当我们考虑做选择时，我们只考虑对当前问题最佳的选择而不考虑子问题的结果。<br></li>
@@ -21879,15 +23178,15 @@ LCS 问题的子问题空间包含 \(m*n\) 个独立的子问题(c[i,j]一共有
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline84" class="outline-3">
-<h3 id="orgheadline84"><span class="section-number-3">4.3</span> 平摊分析</h3>
+<div id="outline-container-orgheadline90" class="outline-3">
+<h3 id="orgheadline90"><span class="section-number-3">4.3</span> 平摊分析</h3>
 <div class="outline-text-3" id="text-4-3">
 <p>
 平摊分析是分析一系列数据结构操作的平均时间消耗。即，n 个操作总的时间消耗为 \(C\) ，则一个操作的的时间消耗为 \(\frac{C}{n}\) 。<br>
 </p>
 </div>
-<div id="outline-container-orgheadline81" class="outline-4">
-<h4 id="orgheadline81"><span class="section-number-4">4.3.1</span> 聚集分析</h4>
+<div id="outline-container-orgheadline87" class="outline-4">
+<h4 id="orgheadline87"><span class="section-number-4">4.3.1</span> 聚集分析</h4>
 <div class="outline-text-4" id="text-4-3-1">
 <p>
 通过求总的时间消耗 \(C\) ，然后除以操作数目 \(n\) 得出每个操作的平摊代价。<br>
@@ -21895,8 +23194,8 @@ LCS 问题的子问题空间包含 \(m*n\) 个独立的子问题(c[i,j]一共有
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline82" class="outline-4">
-<h4 id="orgheadline82"><span class="section-number-4">4.3.2</span> 记账方法</h4>
+<div id="outline-container-orgheadline88" class="outline-4">
+<h4 id="orgheadline88"><span class="section-number-4">4.3.2</span> 记账方法</h4>
 <div class="outline-text-4" id="text-4-3-2">
 <p>
 通过为不同的操作收取不同的费用，操作没有花费掉的费用存入银行，用总价格 \(P\) 减去银行的存款 \(B\) 然后再除以总的操作数 $n$。<br>
@@ -21906,8 +23205,8 @@ LCS 问题的子问题空间包含 \(m*n\) 个独立的子问题(c[i,j]一共有
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline83" class="outline-4">
-<h4 id="orgheadline83"><span class="section-number-4">4.3.3</span> 势能方法</h4>
+<div id="outline-container-orgheadline89" class="outline-4">
+<h4 id="orgheadline89"><span class="section-number-4">4.3.3</span> 势能方法</h4>
 <div class="outline-text-4" id="text-4-3-3">
 <p>
 势能方法中不是将已预付的工作作为存储在数据结构特定对象中的存款来表示，而是表示成一种“势能”或“势”，它在需要时可以释放出来，以支付后面的操作。势是与整个数据结构而不是其中的个别对象发生联系的。<br>
@@ -21919,14 +23218,14 @@ LCS 问题的子问题空间包含 \(m*n\) 个独立的子问题(c[i,j]一共有
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline95" class="outline-2">
-<h2 id="orgheadline95"><span class="section-number-2">5</span> Graph Algorithms</h2>
+<div id="outline-container-orgheadline101" class="outline-2">
+<h2 id="orgheadline101"><span class="section-number-2">5</span> Graph Algorithms</h2>
 <div class="outline-text-2" id="text-5">
-</div><div id="outline-container-orgheadline89" class="outline-3">
-<h3 id="orgheadline89"><span class="section-number-3">5.1</span> 图的基本算法</h3>
+</div><div id="outline-container-orgheadline95" class="outline-3">
+<h3 id="orgheadline95"><span class="section-number-3">5.1</span> 图的基本算法</h3>
 <div class="outline-text-3" id="text-5-1">
-</div><div id="outline-container-orgheadline86" class="outline-4">
-<h4 id="orgheadline86"><span class="section-number-4">5.1.1</span> 图的表示</h4>
+</div><div id="outline-container-orgheadline92" class="outline-4">
+<h4 id="orgheadline92"><span class="section-number-4">5.1.1</span> 图的表示</h4>
 <div class="outline-text-4" id="text-5-1-1">
 <ul class="org-ul">
 <li>图的数学描述<br>
@@ -21942,8 +23241,8 @@ G=(V,E) 表示拥有顶点集合 V 和边集合 E 的图 G。|V|表示顶点的�
 </ul>
 </div>
 </div>
-<div id="outline-container-orgheadline87" class="outline-4">
-<h4 id="orgheadline87"><span class="section-number-4">5.1.2</span> 广度优先搜索</h4>
+<div id="outline-container-orgheadline93" class="outline-4">
+<h4 id="orgheadline93"><span class="section-number-4">5.1.2</span> 广度优先搜索</h4>
 <div class="outline-text-4" id="text-5-1-2">
 <p>
 广度优先搜索的时间复杂度为 \(O(V+E)\)<br>
@@ -21952,8 +23251,8 @@ G=(V,E) 表示拥有顶点集合 V 和边集合 E 的图 G。|V|表示顶点的�
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline88" class="outline-4">
-<h4 id="orgheadline88"><span class="section-number-4">5.1.3</span> 深度优先搜索</h4>
+<div id="outline-container-orgheadline94" class="outline-4">
+<h4 id="orgheadline94"><span class="section-number-4">5.1.3</span> 深度优先搜索</h4>
 <div class="outline-text-4" id="text-5-1-3">
 <p>
 深度优先搜索的时间复杂度为 \(O(V+E)\)<br>
@@ -21963,8 +23262,8 @@ G=(V,E) 表示拥有顶点集合 V 和边集合 E 的图 G。|V|表示顶点的�
 </div>
 </div>
 
-<div id="outline-container-orgheadline91" class="outline-3">
-<h3 id="orgheadline91"><span class="section-number-3">5.2</span> 最小权生成树</h3>
+<div id="outline-container-orgheadline97" class="outline-3">
+<h3 id="orgheadline97"><span class="section-number-3">5.2</span> 最小权生成树</h3>
 <div class="outline-text-3" id="text-5-2">
 <p>
 Minimum Spanning Trees<br>
@@ -22003,8 +23302,8 @@ Prim_MST 的时间复杂度如下：<br>
 </tbody>
 </table>
 </div>
-<div id="outline-container-orgheadline90" class="outline-4">
-<h4 id="orgheadline90"><span class="section-number-4">5.2.1</span> 应用</h4>
+<div id="outline-container-orgheadline96" class="outline-4">
+<h4 id="orgheadline96"><span class="section-number-4">5.2.1</span> 应用</h4>
 <div class="outline-text-4" id="text-5-2-1">
 <p>
 最小生成树可以用来解决整体耗费最小的问题。如下面所述问题<br>
@@ -22018,11 +23317,11 @@ N 个城市都得连接，但是要总的电缆使用最少。<br></li>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline93" class="outline-3">
-<h3 id="orgheadline93"><span class="section-number-3">5.3</span> 最短路径问题</h3>
+<div id="outline-container-orgheadline99" class="outline-3">
+<h3 id="orgheadline99"><span class="section-number-3">5.3</span> 最短路径问题</h3>
 <div class="outline-text-3" id="text-5-3">
-</div><div id="outline-container-orgheadline92" class="outline-4">
-<h4 id="orgheadline92"><span class="section-number-4">5.3.1</span> 单源最短路径</h4>
+</div><div id="outline-container-orgheadline98" class="outline-4">
+<h4 id="orgheadline98"><span class="section-number-4">5.3.1</span> 单源最短路径</h4>
 <div class="outline-text-4" id="text-5-3-1">
 <p>
 单源最短路径 Dijkstra 的思路为 维护一个集合 \(S\) ,让该集合内的所有元素到源点 \(s\) 的距离为最短距离, 然后不断扩大这个集合让其包含所有的顶点。为了保证新加入集合 \(S\) 的元素符合条件，必须取 \(V-S\) 中距离 \(S\) 最小的元素。具体操作是，从源点开始对图进行广度优先遍历，判断当前顶点的邻接顶点到源点的距离是否比之前记录的距离短，如果是则更新邻接顶点的父节点和其到源点的距离，选出离源点最近的节点进行下次循环操作。<br>
@@ -22063,8 +23362,8 @@ Dijkstra_SingleSourceShortestPath 的时间复杂度如下：<br>
 </div>
 </div>
 
-<div id="outline-container-orgheadline94" class="outline-3">
-<h3 id="orgheadline94"><span class="section-number-3">5.4</span> Graph Implement</h3>
+<div id="outline-container-orgheadline100" class="outline-3">
+<h3 id="orgheadline100"><span class="section-number-3">5.4</span> Graph Implement</h3>
 <div class="outline-text-3" id="text-5-4">
 <p>
 关于图的各种基础算法的实现，可以参考如下文件：<br>
@@ -22073,11 +23372,11 @@ Dijkstra_SingleSourceShortestPath 的时间复杂度如下：<br>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline105" class="outline-2">
-<h2 id="orgheadline105"><span class="section-number-2">6</span> 数学概念</h2>
+<div id="outline-container-orgheadline111" class="outline-2">
+<h2 id="orgheadline111"><span class="section-number-2">6</span> 数学概念</h2>
 <div class="outline-text-2" id="text-6">
-</div><div id="outline-container-orgheadline96" class="outline-3">
-<h3 id="orgheadline96"><span class="section-number-3">6.1</span> 对数</h3>
+</div><div id="outline-container-orgheadline102" class="outline-3">
+<h3 id="orgheadline102"><span class="section-number-3">6.1</span> 对数</h3>
 <div class="outline-text-3" id="text-6-1">
 <p>
 对数的性质<br>
@@ -22106,11 +23405,11 @@ Dijkstra_SingleSourceShortestPath 的时间复杂度如下：<br>
 \end{align}
 </div>
 </div>
-<div id="outline-container-orgheadline102" class="outline-3">
-<h3 id="orgheadline102"><span class="section-number-3">6.2</span> 概率论</h3>
+<div id="outline-container-orgheadline108" class="outline-3">
+<h3 id="orgheadline108"><span class="section-number-3">6.2</span> 概率论</h3>
 <div class="outline-text-3" id="text-6-2">
-</div><div id="outline-container-orgheadline97" class="outline-4">
-<h4 id="orgheadline97"><span class="section-number-4">6.2.1</span> 随机试验</h4>
+</div><div id="outline-container-orgheadline103" class="outline-4">
+<h4 id="orgheadline103"><span class="section-number-4">6.2.1</span> 随机试验</h4>
 <div class="outline-text-4" id="text-6-2-1">
 <p>
 在概率论中把符合下面三个特点的试验叫做随机试验：<br>
@@ -22122,8 +23421,8 @@ Dijkstra_SingleSourceShortestPath 的时间复杂度如下：<br>
 </ol>
 </div>
 </div>
-<div id="outline-container-orgheadline98" class="outline-4">
-<h4 id="orgheadline98"><span class="section-number-4">6.2.2</span> 随机变量</h4>
+<div id="outline-container-orgheadline104" class="outline-4">
+<h4 id="orgheadline104"><span class="section-number-4">6.2.2</span> 随机变量</h4>
 <div class="outline-text-4" id="text-6-2-2">
 <p>
 设 E 是一个随机试验，其样本空间为 S，若对每一个样本点 \(e \in S\) ，都有唯一确定的实数 X(e) 与之对应，则称 S 上的实值函数 X(e) 是一个随机变量（简记为 X）。<br>
@@ -22136,8 +23435,8 @@ Dijkstra_SingleSourceShortestPath 的时间复杂度如下：<br>
 </ul>
 </div>
 </div>
-<div id="outline-container-orgheadline99" class="outline-4">
-<h4 id="orgheadline99"><span class="section-number-4">6.2.3</span> 指示器随机变量</h4>
+<div id="outline-container-orgheadline105" class="outline-4">
+<h4 id="orgheadline105"><span class="section-number-4">6.2.3</span> 指示器随机变量</h4>
 <div class="outline-text-4" id="text-6-2-3">
 <p>
 给定一个样本空间 S 和事件 A，那么事件 A 对应的指示器随机变量：<br>
@@ -22152,8 +23451,8 @@ X_{a} =
 \end{eqnarray}
 </div>
 </div>
-<div id="outline-container-orgheadline100" class="outline-4">
-<h4 id="orgheadline100"><span class="section-number-4">6.2.4</span> 期望</h4>
+<div id="outline-container-orgheadline106" class="outline-4">
+<h4 id="orgheadline106"><span class="section-number-4">6.2.4</span> 期望</h4>
 <div class="outline-text-4" id="text-6-2-4">
 <p>
 离散型随机变量的一切可能的取值 xi 与对应的概率 Pi(=xi)之积的和称为该离散型随机变量的数学期望（设级数绝对收敛），记为 E（x）。<br>
@@ -22162,8 +23461,8 @@ X_{a} =
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline101" class="outline-4">
-<h4 id="orgheadline101"><span class="section-number-4">6.2.5</span> 马尔可夫不等式证明</h4>
+<div id="outline-container-orgheadline107" class="outline-4">
+<h4 id="orgheadline107"><span class="section-number-4">6.2.5</span> 马尔可夫不等式证明</h4>
 <div class="outline-text-4" id="text-6-2-5">
 \begin{align}
 &结论： 对于随机变量 X \geq 0, \quad Pr\{X \geq t\} \leq \frac{E[X]}{t} \nonumber \\
@@ -22176,19 +23475,19 @@ E[X] &= \sum_{x=0}^{\infty} x \cdot P_r\{X=x\} \nonumber \\
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline104" class="outline-3">
-<h3 id="orgheadline104"><span class="section-number-3">6.3</span> 组合数学</h3>
+<div id="outline-container-orgheadline110" class="outline-3">
+<h3 id="orgheadline110"><span class="section-number-3">6.3</span> 组合数学</h3>
 <div class="outline-text-3" id="text-6-3">
-</div><div id="outline-container-orgheadline103" class="outline-4">
-<h4 id="orgheadline103"><span class="section-number-4">6.3.1</span> <span class="todo TODO">TODO</span> 卡特兰数</h4>
+</div><div id="outline-container-orgheadline109" class="outline-4">
+<h4 id="orgheadline109"><span class="section-number-4">6.3.1</span> <span class="todo TODO">TODO</span> 卡特兰数</h4>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline108" class="outline-2">
-<h2 id="orgheadline108"><span class="section-number-2">7</span> Q&amp;A</h2>
+<div id="outline-container-orgheadline114" class="outline-2">
+<h2 id="orgheadline114"><span class="section-number-2">7</span> Q&amp;A</h2>
 <div class="outline-text-2" id="text-7">
-</div><div id="outline-container-orgheadline106" class="outline-3">
-<h3 id="orgheadline106"><span class="section-number-3">7.1</span> 为什么 cocos2d-x js 和 c++对象的映射采用 hash table 而不使用 dictionary 呢？</h3>
+</div><div id="outline-container-orgheadline112" class="outline-3">
+<h3 id="orgheadline112"><span class="section-number-3">7.1</span> 为什么 cocos2d-x js 和 c++对象的映射采用 hash table 而不使用 dictionary 呢？</h3>
 <div class="outline-text-3" id="text-7-1">
 <p>
 hash table 的查询效率更高，而 c++和 javascript 交互的时候，需要对该表进行大量查询。<br>
@@ -22199,8 +23498,8 @@ dictionary 的平均查询效率为 h=log(n) 。<br>
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline107" class="outline-3">
-<h3 id="orgheadline107"><span class="section-number-3">7.2</span> 关于 std::unordered_map</h3>
+<div id="outline-container-orgheadline113" class="outline-3">
+<h3 id="orgheadline113"><span class="section-number-3">7.2</span> 关于 std::unordered_map</h3>
 <div class="outline-text-3" id="text-7-2">
 <p>
 标准库的 std::unordered_map 内部实现为 hash 表，并且该哈希表的默认最大装载因子 max_load_factor 为 1，当哈希表的装载因子 load_factor 大于等于 max_load_factor 时，会触发 rehash 方法，增大 bucket_count 数目，重新生成 hash 表。<br>
@@ -22215,8 +23514,8 @@ cpp 官方文档 <a href="http://www.cplusplus.com/reference/unordered_map/unord
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline109" class="outline-2">
-<h2 id="orgheadline109"><span class="section-number-2">8</span> 参考资料</h2>
+<div id="outline-container-orgheadline115" class="outline-2">
+<h2 id="orgheadline115"><span class="section-number-2">8</span> 参考资料</h2>
 <div class="outline-text-2" id="text-8">
 <ul class="org-ul">
 <li>对数公开课<br>
@@ -22233,6 +23532,9 @@ MIT 官网视频<br>
 <a href="https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-851-advanced-data-structures-spring-2012/lecture-videos/" target="_blank" rel="external">https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-851-advanced-data-structures-spring-2012/lecture-videos/</a><br>
 Bilibili 视频<br>
       <a href="http://www.bilibili.com/video/av3372873/" target="_blank" rel="external">http://www.bilibili.com/video/av3372873/</a><br></li>
+<li>算法导论习题答案<br>
+<a href="https://ita.skanev.com/index.html" target="_blank" rel="external">https://ita.skanev.com/index.html</a><br>
+<a href="https://yinyanghu.github.io/files/clrs_prev.pdf" target="_blank" rel="external">https://yinyanghu.github.io/files/clrs_prev.pdf</a><br></li>
 </ul>
 </div>
 </div>

@@ -1,0 +1,1949 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="wolfand11" />
+
+
+
+<meta name="description" content="这是一篇译文，原文地址：http://docs.unity3d.com/Manual/LoadingResourcesatRuntime.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Loading Resources at Runtime">
+<meta property="og:url" content="http://wolfand11.coding.me/2016/08/24/unity/UnityDoc-LoadingResourcesatRuntime/index.html">
+<meta property="og:site_name" content="wolfand11's blog">
+<meta property="og:description" content="这是一篇译文，原文地址：http://docs.unity3d.com/Manual/LoadingResourcesatRuntime.html">
+<meta property="og:image" content="http://wolfand11.coding.me/AssetBundle_Illustration.jpg">
+<meta property="og:image" content="http://wolfand11.coding.me/AssetBundleMemery.png">
+<meta property="og:updated_time" content="2017-08-06T11:15:16.488Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Loading Resources at Runtime">
+<meta name="twitter:description" content="这是一篇译文，原文地址：http://docs.unity3d.com/Manual/LoadingResourcesatRuntime.html">
+<meta name="twitter:image" content="http://wolfand11.coding.me/AssetBundle_Illustration.jpg">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="wolfand11&#39;s blog" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/favicon.png">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>Loading Resources at Runtime | wolfand11&#39;s blog</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: true
+    }
+</script>
+
+
+    <script> yiliaConfig.jquery_ui = [false]; </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/images/m_lambda-320.png" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">wolfand11</a></h1>
+        </hgroup>
+
+        
+
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" href="https://github.com/wolfand11" title="GitHub"></a>
+                            
+                                <a class="fa 豆瓣" href="https://www.douban.com/people/wolfand11" title="豆瓣"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/InitPC/">InitPC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ai/">ai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/algorithm/">algorithm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/animation/">animation</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/architecture/">architecture</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/art/">art</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/artist/">artist</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/behaviortree/">behaviortree</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blog/">blog</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/book/">book</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cmd/">cmd</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/compiler/">compiler</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cryptology/">cryptology</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/csharp/">csharp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/decode/">decode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/elisp/">elisp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/emacs/">emacs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/encode/">encode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/framework/">framework</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fsm/">fsm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/game/">game</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/game-engine/">game engine</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gameplay/">gameplay</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/graphics/">graphics</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gui/">gui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hot-update/">hot-update</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/htn/">htn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/language/">language</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/lua/">lua</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/math/">math</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/matlab/">matlab</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mvc/">mvc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/network/">network</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ngui/">ngui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/resource/">resource</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/script/">script</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/slua/">slua</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/software-architecture/">software architecture</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spacemacs/">spacemacs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/theory/">theory</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tools/">tools</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ugui/">ugui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/unity/">unity</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/unity-doc/">unity-doc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/working-in-unity/">working-in-unity</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a class="main-nav-link switch-friends-link" href="http://xtutu.me/">xtutu</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">wolfand11</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/images/m_lambda-320.png" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">wolfand11</a></h1>
+            </hgroup>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/wolfand11" title="GitHub"></a>
+                            
+                                <a class="fa 豆瓣" target="_blank" href="https://www.douban.com/people/wolfand11" title="豆瓣"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-unity/UnityDoc-LoadingResourcesatRuntime" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/08/24/unity/UnityDoc-LoadingResourcesatRuntime/" class="article-date">
+      <time datetime="2016-08-23T16:00:00.000Z" itemprop="datePublished">2016-08-24</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Loading Resources at Runtime
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/unity/">unity</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/unity/">unity</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/unity-doc/">unity-doc</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/working-in-unity/">working-in-unity</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        
+
+<p>
+这是一篇译文，原文地址：<a href="http://docs.unity3d.com/Manual/LoadingResourcesatRuntime.html" target="_blank" rel="external">http://docs.unity3d.com/Manual/LoadingResourcesatRuntime.html</a><br>
+</p>
+
+<a id="more"></a>
+<p>
+在有些情况下，对于项目来讲将一个资源不作为场景的一部分进行加载是很有用的。例如，一个角色或其他对象它可以出现在游戏中的任何场景中，但是它不会被经常使用（它可能是一个秘密特性，一个错误消息或一个高分弹窗）。更进一步，你可能想从另一个文件或 URL 来加载资源，从而减低初始化下载时间或允许更换游戏内容。<br>
+</p>
+
+<p>
+Unity 在项目中支持 Resource 文件夹来允许未被加载的内容在主游戏文件中被应用，直到请求的时候才加载该游戏内容。你也可以创建自己的资源打包(Asset Bundles)。这些是完全和主游戏文件分开的，它们包含的资源会被游戏从一个文件或 URL 按需访问。<br>
+</p>
+
+<div id="outline-container-orgheadline2" class="outline-2">
+<h2 id="orgheadline2"><span class="section-number-2">1</span> Asset Bundles</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+一个资源打包（Asset Bundle）是一个外部的资源集合。你可以有很多个资源打包因此有多个不同的外部资源集合。这些文件存在于内置 Unity player 之外，通常放置在一个 web 服务器上，用于让终端用户动态地访问。<br>
+</p>
+
+<p>
+为了创建一个资源打包，你可以在编辑器脚本中调用 BuildPipeline.BuildAssetBundle()。在参数中你指定了一个对象数组，他们将被包含在创建的文件中，另外还有一些其他的参数选项。这样创建的文件，你可以通过调用 AssetBundle.LoadAsset(),在随后运行时来动态加载。<br>
+</p>
+
+<p>
+<a id="orgtarget1"></a><br>
+</p>
+<div class="org-src-container">
+
+<pre class="src src-csharp"><span style="color: #ff0000;">// </span><span style="color: #ff0000;">&#19979;&#38754;&#26159; BuildPipeline.BuildAssetBundle() </span>
+<span style="color: #ff0000;">// </span><span style="color: #ff0000;">&#20381;&#25454;&#22312; Editor &#20013;&#37197;&#32622;&#26500;&#24314;&#25152;&#26377;&#36164;&#28304;&#21253;</span>
+<span style="color: #00ffff;">public</span> <span style="color: #00ffff;">static</span> <span style="color: #98fb98;">AssetBundleManifest</span> <span style="color: #87cefa;">BuildAssetBundles</span>(
+        <span style="color: #98fb98;">string</span> <span style="color: #eedd82;">outputPath</span>,                           <span style="color: #ff0000;">// </span><span style="color: #ff0000;">AssetBundles &#36755;&#20986;&#36335;&#24452;</span>
+  <span style="color: #98fb98;">BuildAssetBundleOptions</span> <span style="color: #eedd82;">assetBundleOptions</span>,  <span style="color: #ff0000;">// </span><span style="color: #ff0000;">AssetBundle &#25171;&#21253;&#36873;&#39033;</span>
+  BuildTarget targetPlatform                   <span style="color: #ff0000;">// </span><span style="color: #ff0000;">&#36873;&#25321;&#37096;&#32626;&#30340;&#30446;&#26631;&#24179;&#21488;(Windows Standalone, Android, iOS, etc));</span>
+<span style="color: #ff0000;">// </span><span style="color: #ff0000;">&#20381;&#25454;&#19968;&#20010;&#36164;&#28304;&#22320;&#22270;&#26469;&#26500;&#24314;&#36164;&#28304;&#21253;</span>
+<span style="color: #00ffff;">public</span> <span style="color: #00ffff;">static</span> <span style="color: #98fb98;">AssetBundleManifest</span> <span style="color: #87cefa;">BuildAssetBundles</span>(
+        <span style="color: #98fb98;">string</span> <span style="color: #eedd82;">outputPath</span>, 
+  <span style="color: #98fb98;">AssetBundleBuild</span>[] <span style="color: #eedd82;">builds</span>,                   <span style="color: #ff0000;">// </span><span style="color: #ff0000;">&#36164;&#28304;&#25171;&#21253;&#22320;&#22270;</span>
+  <span style="color: #98fb98;">BuildAssetBundleOptions</span> <span style="color: #eedd82;">assetBundleOptions</span>, 
+  <span style="color: #98fb98;">BuildTarget</span> <span style="color: #eedd82;">targetPlatform</span>
+);
+
+<span style="color: #ff0000;">// </span><span style="color: #ff0000;">Create an AssetBundle for Windows.</span>
+[<span style="color: #98fb98;">MenuItem</span>( <span style="color: #ffa07a;">"Example/Build Asset Bundles"</span> )]
+<span style="color: #00ffff;">static</span> <span style="color: #98fb98;">void</span> BuildABs( )
+{
+  <span style="color: #ff0000;">// </span><span style="color: #ff0000;">Put the bundles in a folder called "ABs" within the Assets folder.</span>
+  BuildPipeline.BuildAssetBundles( <span style="color: #ffa07a;">"Assets/ABs"</span>, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows );
+}
+
+[<span style="color: #98fb98;">MenuItem</span>( <span style="color: #ffa07a;">"Example/Build Asset Bundles Using BuildMap"</span> )]
+<span style="color: #00ffff;">static</span> <span style="color: #98fb98;">void</span> BuildMapABs( )
+{
+  <span style="color: #ff0000;">// </span><span style="color: #ff0000;">Create the array of bundle build details.</span>
+  <span style="color: #98fb98;">AssetBundleBuild</span>[] <span style="color: #eedd82;">buildMap</span> = <span style="color: #00ffff;">new</span> <span style="color: #98fb98;">AssetBundleBuild</span>[2];
+
+  buildMap[0].assetBundleName = <span style="color: #ffa07a;">"enemybundle"</span>;
+  <span style="color: #98fb98;">string</span>[] <span style="color: #eedd82;">enemyAssets</span> = <span style="color: #00ffff;">new</span> <span style="color: #98fb98;">string</span>[2];
+  enemyAssets[0] = <span style="color: #ffa07a;">"Assets/Textures/char_enemy_alienShip.jpg"</span>;
+  enemyAssets[1] = <span style="color: #ffa07a;">"Assets/Textures/char_enemy_alienShip-damaged.jpg"</span>;
+  buildMap[0].assetNames = enemyAssets;
+
+  buildMap[1].assetBundleName = <span style="color: #ffa07a;">"herobundle"</span>;
+  <span style="color: #98fb98;">string</span>[] <span style="color: #eedd82;">heroAssets</span> = <span style="color: #00ffff;">new</span> <span style="color: #98fb98;">string</span>[1];
+  heroAssets[0] = <span style="color: #ffa07a;">"char_hero_beanMan"</span>;
+  buildMap[1].assetNames = heroAssets;
+
+  BuildPipeline.BuildAssetBundles( <span style="color: #ffa07a;">"Assets/ABs"</span>, buildMap, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows );
+}
+</pre>
+</div>
+<div class="org-src-container">
+
+<pre class="src src-csharp"><span style="color: #ff0000;">// </span><span style="color: #ff0000;">&#19979;&#38754;&#26159; AssetBundle.LoadAsset()</span>
+<span style="color: #ff0000;">// </span><span style="color: #ff0000;">&#20174;&#36164;&#28304;&#21253;&#20013;&#21152;&#36733;&#21517;&#31216;&#20026; name &#30340;&#36164;&#28304;</span>
+<span style="color: #00ffff;">public</span> <span style="color: #98fb98;">Object</span> <span style="color: #87cefa;">LoadAsset</span>(<span style="color: #98fb98;">string</span> <span style="color: #eedd82;">name</span>);
+<span style="color: #ff0000;">// </span><span style="color: #ff0000;">&#20174;&#36164;&#28304;&#21253;&#20013;&#21152;&#36733;&#21517;&#31216;&#20026; name &#31867;&#22411;&#20026; type &#30340;&#36164;&#28304;</span>
+<span style="color: #00ffff;">public</span> <span style="color: #98fb98;">Object</span> <span style="color: #87cefa;">LoadAsset</span>(<span style="color: #98fb98;">string</span> <span style="color: #eedd82;">name</span>, <span style="color: #98fb98;">Type</span> <span style="color: #eedd82;">type</span>);
+</pre>
+</div>
+</div>
+<div id="outline-container-orgheadline1" class="outline-3">
+<h3 id="orgheadline1"><span class="section-number-3">1.1</span> Tips:</h3>
+<div class="outline-text-3" id="text-1-1">
+<ul class="org-ul">
+<li>Resources.Load 方法传入的资源路径需是从 Resources 文件夹下一级开始的相对路径且不能包含扩展名；<br></li>
+<li>AssetBundle.LoadAsset 方法传入的资源名需是从 Assets 文件开始的全路径且要包含扩展名。<br>
+路径不区分大小写，建议全用小写，因为 AssetBundle.GetAllAssetNames 方法返回的资源名都是小写的。<br></li>
+<li>Unity 中的所有资源名称和路径都使用正斜杠，反斜杠会出错。<br></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline4" class="outline-2">
+<h2 id="orgheadline4"><span class="section-number-2">2</span> Resource Folders</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+Resource Folders 是很多个资源集合，在内置 Unity Player 中会包含他们。但是却不需要在 Inspector 中将他们和任何 GameObject 连接。<br>
+</p>
+
+<p>
+为了将任何东西放入 Resource Folder，你只需要在项目视图中创建一个新的文件夹，并且将其命名为“Resources”。在你的项目中，你可以有多个组织不同的资源文件夹。当你想从其中一个文件夹中加载资源时，可以调用 Resources.Load().<br>
+</p>
+<div class="org-src-container">
+
+<pre class="src src-c#">// 加载指定目录下的内容
+public static Object Load(string path);
+public static Object Load(string path, Type systemTypeInstance);
+// path 为目标文件夹。 当使用空字符串“”时，会加载 Resources 目录下的所有内容。
+// systemTypeInstance 指定返回对象的类型
+
+mainTexture = Resources.Load("glass") as Texture;
+gameObj = Resources.Load("enemy", typeof(GameObject));
+
+// 加载指定目录下类型为 T 的内容
+public static T Load(string path);
+</pre>
+</div>
+</div>
+<div id="outline-container-orgheadline3" class="outline-3">
+<h3 id="orgheadline3"><span class="section-number-3">2.1</span> 注意：</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+所有 Resources 目录下的资源，以及他们之间的依赖关系被存储在一个叫做 resources.assets 的文件中。如果一个资源已经被另一个关卡使用，会为该关卡将其保存在.sharedAssets 文件中。Player Setting（Edit-&gt;Project Settings-&gt;Player） 下，First Streamed Level 的设置决定了 resources.assets 会在哪个关卡中收集资源，并将其在构建中包含在内。<br>
+</p>
+
+<p>
+如果一个关卡在“First streamed Level”之前包含了一个在 Resource 文件夹中的资源，这个资源将被存储在那个关卡的资源中。如果这个资源是在“First streamed Level”之后被包含的，那么那个关卡将从 resources.assets 文件中引用该资源。<br>
+</p>
+
+<p>
+只有在 Resources 文件夹下的资源可以通过 Resources.Load()来访问。然而，因为他们的依赖关系，更多的资源可能最终被包含在 resources.assets 文件中。（例如：一个 Resources 目录下的材质可以引用一个 Resources 文件夹外的 Texture）<br>
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline5" class="outline-2">
+<h2 id="orgheadline5"><span class="section-number-2">3</span> Resource Unloading</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+你可以通过调用 AssetBundle.Unload()来卸载一个 AssetBundle 的资源。如果你为 unloadAllLoadedObjects 参数传递 true，AssetBundle 内部保持的对象和使用 AssetBundle.LoadAsset()从 AssetBundle 加载的对象都会被销毁并且资源包使用的内存会被释放。<br>
+</p>
+
+<p>
+有时候你更喜欢加载 AssetBundle，实例化需要的对象并且释放打包用过的内存同时保持实例化的对象。这样做的好处是可以释放更多的内存为其他任务使用，例如：加载另一个 AssetBundle。在这种情况下你应该传递 false 作为参数值。当 bundle 被销毁后，你将不能再从其中加载对象。<br>
+</p>
+
+<p>
+如果你想在加载另一个关卡之前，销毁一个使用 Resources.Load()方式加载的场景对象，在这些对象上调用 Object.Destory()。为了释放资源，使用 Resources.UnloadUnusedAssets().<br>
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline43" class="outline-2">
+<h2 id="orgheadline43"><span class="section-number-2">4</span> Scripts</h2>
+<div class="outline-text-2" id="text-4">
+</div><div id="outline-container-orgheadline24" class="outline-3">
+<h3 id="orgheadline24"><span class="section-number-3">4.1</span> UnityEngine Class</h3>
+<div class="outline-text-3" id="text-4-1">
+</div><div id="outline-container-orgheadline14" class="outline-4">
+<h4 id="orgheadline14"><span class="section-number-4">4.1.1</span> AssetBundle</h4>
+<div class="outline-text-4" id="text-4-1-1">
+<p>
+<a href="https://docs.unity3d.com/ScriptReference/AssetBundle.html" target="_blank" rel="external">https://docs.unity3d.com/ScriptReference/AssetBundle.html</a><br>
+AssetBundle 继承自 Object 类<br>
+AssetBundles 让你可以通过 WWW 类来以流化额外的资源，并且在运行时实例化他们。AssetBundles 是通过 BuildPipeline.BuildAssetBundle 来创建的。<br>
+需要注意的是包在不同平台是不兼容的。为 windows 创建的包只能在 windows 上被加载，而不能在其他平台使用。因为不同平台的 shader 不同，贴图也不同。<br>
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-csharp"><span style="color: #98fb98;">IEnumerator</span> <span style="color: #87cefa;">Start</span> () {
+        <span style="color: #98fb98;">WWW</span> <span style="color: #eedd82;">www</span> = <span style="color: #00ffff;">new</span> <span style="color: #98fb98;">WWW</span>(<span style="color: #ffa07a;">"http://myserver/myBundle.unity3d"</span>);
+        <span style="color: #00ffff;">yield</span> <span style="color: #00ffff;">return</span> www;
+
+        <span style="color: #ff0000;">// </span><span style="color: #ff0000;">Get the designated main asset and instantiate it.</span>
+        Instantiate(www.assetBundle.mainAsset);
+}
+</pre>
+</div>
+</div>
+
+<ol class="org-ol"><li><a id="orgheadline6"></a>Variables<br><div class="outline-text-5" id="text-4-1-1-1">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col class="org-left">
+
+<col class="org-left">
+
+<col class="org-left">
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">isStreamedSceneAssetBundle</td>
+<td class="org-left">Return true if the AssetBundle is a streamed scene AssetBundle.</td>
+<td class="org-left">如果该 AssetBundle 是一个流化的场景则返回 true</td>
+</tr>
+
+<tr>
+<td class="org-left">mainAsset</td>
+<td class="org-left">Main asset that was supplied when building the asset bundle (Read Only).</td>
+<td class="org-left">创建该资源包时提供的主资源</td>
+</tr>
+</tbody>
+</table>
+</div></li>
+
+<li><a id="orgheadline7"></a>Public Functions<br><div class="outline-text-5" id="text-4-1-1-2">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col class="org-left">
+
+<col class="org-left">
+
+<col class="org-left">
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">Contains</td>
+<td class="org-left">Check if an AssetBundle contains a specific object.</td>
+<td class="org-left">判断 AssetBundle 是否包含一个特定的对象</td>
+</tr>
+
+<tr>
+<td class="org-left">GetAllAssetNames</td>
+<td class="org-left">Return all asset names in the AssetBundle.</td>
+<td class="org-left">获取 AssetBundle 中的所有资源名称</td>
+</tr>
+
+<tr>
+<td class="org-left">GetAllScenePaths</td>
+<td class="org-left">Return all the scene asset paths (paths to *.unity assets) in the AssetBundle.</td>
+<td class="org-left">获取 AssetBundle 中所有场景资源的路径（~*~.unity 资源文件的路径）</td>
+</tr>
+
+<tr>
+<td class="org-left">LoadAllAssets</td>
+<td class="org-left">Loads all assets contained in the asset bundle that inherit from type.</td>
+<td class="org-left">加载 AssetBundle 中包含的所有资源</td>
+</tr>
+
+<tr>
+<td class="org-left">LoadAllAssetsAsync</td>
+<td class="org-left">Loads all assets contained in the asset bundle asynchronously.</td>
+<td class="org-left">异步加载 AssetBundle 中包含的所有资源</td>
+</tr>
+
+<tr>
+<td class="org-left">LoadAsset</td>
+<td class="org-left">Loads asset with name from the bundle.</td>
+<td class="org-left">从 AssetBundle 中加载指定名称的资源</td>
+</tr>
+
+<tr>
+<td class="org-left">LoadAssetAsync</td>
+<td class="org-left">Asynchronously loads asset with name from the bundle.</td>
+<td class="org-left">从 AssetBundle 中异步加载指定名称的资源</td>
+</tr>
+
+<tr>
+<td class="org-left">LoadAssetWithSubAssets</td>
+<td class="org-left">Loads asset and sub assets with name from the bundle.</td>
+<td class="org-left">从 AssetBundle 中加载指定名称的资源和子资源</td>
+</tr>
+
+<tr>
+<td class="org-left">LoadAssetWithSubAssetsAsync</td>
+<td class="org-left">Loads asset with sub assets with name from the bundle asynchronously.</td>
+<td class="org-left">从 AssetBundle 中异步加载指定名称的资源和子资源</td>
+</tr>
+
+<tr>
+<td class="org-left">Unload</td>
+<td class="org-left">Unloads all assets in the bundle.</td>
+<td class="org-left">卸载 AssetBundle 中的所有资源</td>
+</tr>
+</tbody>
+</table>
+</div></li>
+<li><a id="orgheadline8"></a>Static Functions<br><div class="outline-text-5" id="text-4-1-1-3">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col class="org-left">
+
+<col class="org-left">
+
+<col class="org-left">
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">LoadFromFile</td>
+<td class="org-left">Synchronously loads an AssetBundle from a file on disk.</td>
+<td class="org-left">从磁盘同步加载一个 AssetBundle</td>
+</tr>
+
+<tr>
+<td class="org-left">LoadFromFileAsync</td>
+<td class="org-left">Asynchronously loads an AssetBundle from a file on disk.</td>
+<td class="org-left">从磁盘异步加载一个 AssetBundle</td>
+</tr>
+
+<tr>
+<td class="org-left">LoadFromMemory</td>
+<td class="org-left">Synchronously create an AssetBundle from a memory region.</td>
+<td class="org-left">同步从内存中创建一个 AssetBundle</td>
+</tr>
+
+<tr>
+<td class="org-left">LoadFromMemoryAsync</td>
+<td class="org-left">Asynchronously create an AssetBundle from a memory region.</td>
+<td class="org-left">异步从内存中创建一个 AssetBundle</td>
+</tr>
+</tbody>
+</table>
+</div></li>
+
+<li><a id="orgheadline13"></a>Usage<br><ol class="org-ol"><li><a id="orgheadline9"></a>从文件创建 AssetBundle<br><div class="outline-text-6" id="text-4-1-1-4-1">
+<div class="org-src-container">
+
+<pre class="src src-csharp"><span style="color: #ff0000;">// </span><span style="color: #ff0000;">------- &#21516;&#27493;&#21152;&#36733;</span>
+<span style="color: #00ffff;">using</span> <span style="color: #7fffd4;">UnityEngine</span>;
+<span style="color: #00ffff;">using</span> <span style="color: #7fffd4;">System.Collections</span>;
+<span style="color: #00ffff;">public</span> <span style="color: #00ffff;">class</span> <span style="color: #98fb98;">LoadFromFileExample</span> : <span style="color: #98fb98;">MonoBehaviour</span>
+{
+    <span style="color: #98fb98;">void</span> <span style="color: #87cefa;">Start</span> ()
+    {
+        <span style="color: #00ffff;">var</span> <span style="color: #eedd82;">myLoadedAssetBundle</span> = AssetBundle.LoadFromFile(Path.Combine(Application.streamingAssetsPath, <span style="color: #ffa07a;">"myassetBundle"</span>));
+        <span style="color: #00ffff;">if</span> (myLoadedAssetBundle == <span style="color: #7fffd4;">null</span>)
+        {
+            Debug.Log(<span style="color: #ffa07a;">"Failed to load AssetBundle!"</span>);
+            <span style="color: #00ffff;">return</span>;
+        }
+
+        <span style="color: #00ffff;">var</span> <span style="color: #eedd82;">prefab</span> = myLoadedAssetBundle.LoadAsset&lt;GameObject&gt;(<span style="color: #ffa07a;">"MyObject"</span>);
+        Instantiate(prefab);
+
+        myLoadedAssetBundle.Unload(<span style="color: #7fffd4;">false</span>);
+    }
+}
+
+<span style="color: #ff0000;">// </span><span style="color: #ff0000;">------- &#24322;&#27493;&#21152;&#36733;</span>
+<span style="color: #00ffff;">using</span> <span style="color: #7fffd4;">UnityEngine</span>;
+<span style="color: #00ffff;">using</span> <span style="color: #7fffd4;">System.Collections</span>;
+<span style="color: #00ffff;">public</span> <span style="color: #00ffff;">class</span> <span style="color: #98fb98;">LoadFromFileAsyncExample</span> : <span style="color: #98fb98;">MonoBehaviour</span>
+{
+    <span style="color: #98fb98;">IEnumerator</span> <span style="color: #87cefa;">Start</span> ()
+    {
+        <span style="color: #00ffff;">var</span> <span style="color: #eedd82;">bundleLoadRequest</span> = AssetBundle.LoadFromFileAsync(Path.Combine(Application.streamingAssetsPath, <span style="color: #ffa07a;">"myassetBundle"</span>));
+        <span style="color: #00ffff;">yield</span> <span style="color: #00ffff;">return</span> bundleLoadRequest;
+        <span style="color: #00ffff;">var</span> <span style="color: #eedd82;">myLoadedAssetBundle</span> = bundleLoadRequest.assetBundle;
+        <span style="color: #00ffff;">if</span> (myLoadedAssetBundle == <span style="color: #7fffd4;">null</span>)
+        {
+            Debug.Log(<span style="color: #ffa07a;">"Failed to load AssetBundle!"</span>);
+            <span style="color: #00ffff;">yield</span> <span style="color: #00ffff;">break</span>;
+        }
+
+        <span style="color: #00ffff;">var</span> <span style="color: #eedd82;">assetLoadRequest</span> = myLoadedAssetBundle.LoadAssetAsync&lt;GameObject&gt;(<span style="color: #ffa07a;">"MyObject"</span>);
+        <span style="color: #00ffff;">yield</span> <span style="color: #00ffff;">return</span> assetLoadRequest;
+
+        <span style="color: #98fb98;">GameObject</span> <span style="color: #eedd82;">prefab</span> = assetLoadRequest.asset <span style="color: #00ffff;">as</span> <span style="color: #98fb98;">GameObject</span>;
+        Instantiate(prefab);
+
+        myLoadedAssetBundle.Unload(<span style="color: #7fffd4;">false</span>);
+    }
+}
+</pre>
+</div>
+</div></li>
+<li><a id="orgheadline10"></a>从内存数据创建 AssetBundle<br><div class="outline-text-6" id="text-4-1-1-4-2">
+<div class="org-src-container">
+
+<pre class="src src-csharp"><span style="color: #00ffff;">using</span> <span style="color: #7fffd4;">UnityEngine</span>;
+<span style="color: #00ffff;">using</span> <span style="color: #7fffd4;">System.Collections</span>;
+
+<span style="color: #00ffff;">public</span> <span style="color: #00ffff;">class</span> <span style="color: #98fb98;">ExampleClass</span> : <span style="color: #98fb98;">MonoBehaviour</span> {
+    <span style="color: #98fb98;">byte</span>[] <span style="color: #87cefa;">MyDecription</span>(<span style="color: #98fb98;">byte</span>[] <span style="color: #eedd82;">binary</span>) {
+        <span style="color: #98fb98;">byte</span>[] <span style="color: #eedd82;">decrypted</span>;
+        <span style="color: #00ffff;">return</span> decrypted;
+    }
+    <span style="color: #98fb98;">IEnumerator</span> <span style="color: #87cefa;">Start</span>() {
+        <span style="color: #98fb98;">WWW</span> <span style="color: #eedd82;">www</span> = <span style="color: #00ffff;">new</span> <span style="color: #98fb98;">WWW</span>(<span style="color: #ffa07a;">"http://myserver/myBundle.unity3d"</span>);
+        <span style="color: #00ffff;">yield</span> <span style="color: #00ffff;">return</span> www;
+        <span style="color: #98fb98;">byte</span>[] <span style="color: #eedd82;">decryptedBytes</span> = MyDecription(www.bytes);
+        <span style="color: #98fb98;">AssetBundle</span> <span style="color: #eedd82;">assetBundle</span> = AssetBundle.LoadFromMemory(decryptedBytes);
+    }
+}
+</pre>
+</div>
+</div></li>
+<li><a id="orgheadline11"></a>AssetBundle 图解<br><div class="outline-text-6" id="text-4-1-1-4-3">
+<p>
+<img src="AssetBundle_Illustration.jpg"><br>
+<img src="AssetBundleMemery.png"><br>
+</p>
+</div></li>
+<li><a id="orgheadline12"></a>参考文章<br><div class="outline-text-6" id="text-4-1-1-4-4">
+<ul class="org-ul">
+<li>AssetBundle 系列文章总目录<br>
+<ul class="org-ul">
+<li>英文 <a href="https://unity3d.com/cn/learn/tutorials/topics/best-practices/guide-assetbundles-and-resources" target="_blank" rel="external">https://unity3d.com/cn/learn/tutorials/topics/best-practices/guide-assetbundles-and-resources</a><br></li>
+<li>中文 <a href="http://blog.shuiguzi.com/2016/12/15/GuideToABAndRes/" target="_blank" rel="external">http://blog.shuiguzi.com/2016/12/15/GuideToABAndRes/</a><br></li>
+<li>AssetBundle 管理机制 <a href="https://blog.uwa4d.com/archives/ABTheory.html" target="_blank" rel="external">https://blog.uwa4d.com/archives/ABTheory.html</a><br></li>
+</ul></li>
+</ul>
+</div></li></ol></li></ol>
+</div>
+<div id="outline-container-orgheadline16" class="outline-4">
+<h4 id="orgheadline16"><span class="section-number-4">4.1.2</span> Resources</h4>
+<div class="outline-text-4" id="text-4-1-2">
+<p>
+class in UnityEngine<br>
+<a href="https://docs.unity3d.com/ScriptReference/Resources.html" target="_blank" rel="external">https://docs.unity3d.com/ScriptReference/Resources.html</a><br>
+Resources 类允许你查找和访问其中包含的资源。<br>
+在编辑器中，Resources.FindObjectsOfTypeAll 可以用来定位资源和场景对象。<br>
+Assets 目录下的 Resources 文件夹下的所有资源都可以通过 Resources.Load 函数来访问。可能存在多个“Resources”文件夹，当加载多个对象时，每个 Resources 都会被检查。<br>
+在 Unity 中你通常不需要使用路径名称来访问资源，你可以声明一个成员变量来暴露一个到资源的引用，然后在 Inspector 界面给这个引用赋值。当使用了这项技术后，Unity 可以自动计算哪个资源被使用了。这从根本上将你的播放器尺寸减低为你在创建游戏中实际使用资源的尺寸。当你将资源放到 Resources 目录下时，自动计算将不会被使用，这样的话，Resources 文件夹中的所有资源都会在构建中被包含。<br>
+使用路径名称的另一个确定时，它降低了代码的复用性，因为脚本对于资源放置在何处有特定的硬编码需求。另一方面使用暴露的引用也时一种自描述文档，可以让脚本的使用者立刻明白。<br>
+但是，有很多时候通过资源名称来获取资源比在 Inspector 连接资源更方便。更重要的是有时候无法通过 Inspector 来给一个引用赋值。例如，当你从脚本中以程序的方式创建一个对象，又比如你想将一个贴图赋值为一个程序生成的 mesh。<br>
+一些加载的资源，最需要注意的是纹理资源，即使是场景中没有实例存在也会占用着内存。可以通过调用 Resources.UnloadUnusedAssets 来回收这部分内存。<br>
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-csharp"><span style="color: #00ffff;">using</span> <span style="color: #7fffd4;">UnityEngine</span>;
+<span style="color: #00ffff;">using</span> <span style="color: #7fffd4;">System.Collections</span>;
+
+<span style="color: #00ffff;">public</span> <span style="color: #00ffff;">class</span> <span style="color: #98fb98;">ExampleClass</span> : <span style="color: #98fb98;">MonoBehaviour</span> {
+        <span style="color: #98fb98;">void</span> <span style="color: #87cefa;">Start</span>() {
+                <span style="color: #98fb98;">GameObject</span> <span style="color: #eedd82;">go</span> = GameObject.CreatePrimitive(PrimitiveType.Plane);
+                <span style="color: #98fb98;">Renderer</span> <span style="color: #eedd82;">rend</span> = go.GetComponent&lt;<span style="color: #98fb98;">Renderer</span>&gt;();
+                rend.material.mainTexture = Resources.Load(<span style="color: #ffa07a;">"glass"</span>) <span style="color: #00ffff;">as</span> <span style="color: #98fb98;">Texture</span>;
+        }
+}
+</pre>
+</div>
+</div>
+
+<ol class="org-ol"><li><a id="orgheadline15"></a>Static Functions<br><div class="outline-text-5" id="text-4-1-2-1">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col class="org-left">
+
+<col class="org-left">
+
+<col class="org-left">
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">FindObjectsOfTypeAll</td>
+<td class="org-left">Returns a list of all objects of Type type.</td>
+<td class="org-left">返回一个列表包含所有 type 类型的对象</td>
+</tr>
+
+<tr>
+<td class="org-left">Load</td>
+<td class="org-left">Loads an asset stored at path in a Resources folder.</td>
+<td class="org-left">加载一个 Resources 文件夹下路径为 path 的资源</td>
+</tr>
+
+<tr>
+<td class="org-left">LoadAll</td>
+<td class="org-left">Loads all assets in a folder or file at path in a Resources folder.</td>
+<td class="org-left">加载所有 Resources 文件下路径在 path 下的资源</td>
+</tr>
+
+<tr>
+<td class="org-left">LoadAsync</td>
+<td class="org-left">Asynchronously loads an asset stored at path in a Resources folder.</td>
+<td class="org-left">异步加载一个 Resources 文件夹下路径为 path 的资源</td>
+</tr>
+
+<tr>
+<td class="org-left">UnloadAsset</td>
+<td class="org-left">Unloads assetToUnload from memory.</td>
+<td class="org-left">从内存中卸载某个资源</td>
+</tr>
+
+<tr>
+<td class="org-left">UnloadUnusedAssets</td>
+<td class="org-left">Unloads assets that are not used.</td>
+<td class="org-left">卸载所有不在被使用的资源</td>
+</tr>
+</tbody>
+</table>
+</div></li></ol>
+</div>
+<div id="outline-container-orgheadline23" class="outline-4">
+<h4 id="orgheadline23"><span class="section-number-4">4.1.3</span> WWW</h4>
+<div class="outline-text-4" id="text-4-1-3">
+<p>
+class in UnityEngine<br>
+Description<br>
+</p>
+
+<p>
+被用来简单地访问网页。<br>
+</p>
+
+<p>
+这是一个小的功能模块用来获取 URLs 的内容。<br>
+</p>
+
+<p>
+你可以通过调用 WWW(url) 在后台开启一个下载，它会返回一个新的 WWW 对象。<br>
+</p>
+
+<p>
+你可以通过检查 isDone 属性来看下载是否完成，或者 yield 下载对象来自动等待它完成（这样不会阻塞游戏的其他部分）。<br>
+</p>
+
+<p>
+如果你想从一个 web 服务器获取数据来集成到游戏中，例如获取一个高分列表或调用主页。也可以使用从 web 上下载下来的图片创建纹理，或者是流化并加载新的 web 播放器数据文件。<br>
+</p>
+
+<p>
+WWW 类可以用于向服务器发送 GET 和 POST 请求。默认情况下使用 GET 方式，如果你提供了一个 postData 参数则使用 POST 方式。<br>
+</p>
+
+<p>
+WWWForm 用于为 postData 参数创建可用表单数据。<br>
+</p>
+</div>
+
+<ol class="org-ol"><li><a id="orgheadline17"></a>Tips<br><div class="outline-text-5" id="text-4-1-3-1">
+<ol class="org-ol">
+<li>传递给 WWW 类的 URLs 必须被"%"转义。<br></li>
+<li><a href="http://" target="_blank" rel="external">http://</a>, <a href="https://" target="_blank" rel="external">https://</a> 以及 <a href="file:" target="_blank" rel="external">file:</a> 协议在 iPhone 上是支持的。<a href="ftp://" target="_blank" rel="external">ftp://</a> 协议的支持限定在匿名下载中。其他协议都是不可用的。<br></li>
+<li>当在 Windows 和 Windows 应用商店中使用文件协议访问本地文件时，你必须指定使用 <a href="file:d:" target="_blank" rel="external">file:d:<a> (必须使用三个斜杠)<br></a></a></li>
+</ol>
+
+<div class="org-src-container">
+
+<pre class="src src-csharp"><span style="color: #ff0000;">// </span><span style="color: #ff0000;">Get the latest webcam shot from outside "Friday's" in Times Square</span>
+<span style="color: #00ffff;">using</span> <span style="color: #7fffd4;">UnityEngine</span>;
+<span style="color: #00ffff;">using</span> <span style="color: #7fffd4;">System.Collections</span>;
+
+<span style="color: #00ffff;">public</span> <span style="color: #00ffff;">class</span> <span style="color: #98fb98;">ExampleClass</span> : <span style="color: #98fb98;">MonoBehaviour</span> {
+    <span style="color: #00ffff;">public</span> <span style="color: #98fb98;">string</span> <span style="color: #eedd82;">url</span> = <span style="color: #ffa07a;">"http://images.earthcam.com/ec_metros/ourcams/fridays.jpg"</span>;
+    <span style="color: #98fb98;">IEnumerator</span> <span style="color: #87cefa;">Start</span>() {
+        <span style="color: #98fb98;">WWW</span> <span style="color: #eedd82;">www</span> = <span style="color: #00ffff;">new</span> <span style="color: #98fb98;">WWW</span>(url);
+        <span style="color: #00ffff;">yield</span> <span style="color: #00ffff;">return</span> www;
+        <span style="color: #00ffff;">if</span>(<span style="color: #98fb98;">string</span>.IsNullOrEmpty(www.error) == <span style="color: #7fffd4;">false</span>)
+        {
+            Debug.Log (url + <span style="color: #ffa07a;">"  "</span> + www.error);
+            result(<span style="color: #7fffd4;">null</span>);
+            <span style="color: #00ffff;">yield</span> <span style="color: #00ffff;">break</span>;
+        }
+        <span style="color: #98fb98;">Renderer</span> <span style="color: #eedd82;">renderer</span> = GetComponent&lt;<span style="color: #98fb98;">Renderer</span>&gt;();
+        renderer.material.mainTexture = www.texture;
+    }
+}
+</pre>
+</div>
+</div></li>
+
+<li><a id="orgheadline18"></a>Variables<br><div class="outline-text-5" id="text-4-1-3-2">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col class="org-left">
+
+<col class="org-left">
+
+<col class="org-left">
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">assetBundle</td>
+<td class="org-left">Streams an AssetBundle that can contain any kind of asset from the project folder.</td>
+<td class="org-left">流化一个 AssetBundle，其中可以包含项目文件夹中的任何类型的资源</td>
+</tr>
+
+<tr>
+<td class="org-left">audioClip</td>
+<td class="org-left">Returns a AudioClip generated from the downloaded data (Read Only).</td>
+<td class="org-left">返回一个 AudioClip，该 AudioClip 是通过下载得到的数据生成的 （只读）</td>
+</tr>
+
+<tr>
+<td class="org-left">bytes</td>
+<td class="org-left">Returns the contents of the fetched web page as a byte array (Read Only).</td>
+<td class="org-left">以字节数组的形式返回获取到的网页内容 （只读）</td>
+</tr>
+
+<tr>
+<td class="org-left">bytesDownloaded</td>
+<td class="org-left">The number of bytes downloaded by this WWW query (read only).</td>
+<td class="org-left">通过 WWW 请求已经下载到的字节数 （只读）</td>
+</tr>
+
+<tr>
+<td class="org-left">error</td>
+<td class="org-left">Returns an error message if there was an error during the download (Read Only).</td>
+<td class="org-left">返回错误消息，如果在下载过程中出现错误的话。（只读）</td>
+</tr>
+
+<tr>
+<td class="org-left">isDone</td>
+<td class="org-left">Is the download already finished? (Read Only)</td>
+<td class="org-left">判断下载是否完成 （只读）</td>
+</tr>
+
+<tr>
+<td class="org-left">movie</td>
+<td class="org-left">Returns a MovieTexture generated from the downloaded data (Read Only).</td>
+<td class="org-left">返回一个 MovieTexture，该 MovieTexture 是通过下载得到的数据生成的 （只读）</td>
+</tr>
+
+<tr>
+<td class="org-left">progress</td>
+<td class="org-left">How far has the download progressed (Read Only).</td>
+<td class="org-left">下载的进度。 （只读）</td>
+</tr>
+
+<tr>
+<td class="org-left">responseHeaders</td>
+<td class="org-left">Dictionary of headers returned by the request.</td>
+<td class="org-left">由请求所返回的头信息字典</td>
+</tr>
+
+<tr>
+<td class="org-left">text</td>
+<td class="org-left">Returns the contents of the fetched web page as a string (Read Only).</td>
+<td class="org-left">以字符串形式返回获取到的网页内容 （只读）</td>
+</tr>
+
+<tr>
+<td class="org-left">texture</td>
+<td class="org-left">Returns a Texture2D generated from the downloaded data (Read Only).</td>
+<td class="org-left">返回一个 Texture2D，该对象是通过下载得到的数据生成的 （只读）</td>
+</tr>
+
+<tr>
+<td class="org-left">textureNonReadable</td>
+<td class="org-left">Returns a non-readable Texture2D generated from the downloaded data (Read Only).</td>
+<td class="org-left">返回一个不可读的 Texture2D， 该对象是通过下载得到的数据生成的 （只读）</td>
+</tr>
+
+<tr>
+<td class="org-left">threadPriority</td>
+<td class="org-left">Priority of AssetBundle decompression thread.</td>
+<td class="org-left">AssetBundle 解压缩线程的优先级</td>
+</tr>
+
+<tr>
+<td class="org-left">uploadProgress</td>
+<td class="org-left">How far has the upload progressed (Read Only).</td>
+<td class="org-left">上传精度。（只读）</td>
+</tr>
+
+<tr>
+<td class="org-left">url</td>
+<td class="org-left">The URL of this WWW request (Read Only).</td>
+<td class="org-left">WWW 请求的 URL（只读）</td>
+</tr>
+</tbody>
+</table>
+</div></li>
+
+<li><a id="orgheadline19"></a>Constructors<br><div class="outline-text-5" id="text-4-1-3-3">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col class="org-left">
+
+<col class="org-left">
+
+<col class="org-left">
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">WWW</td>
+<td class="org-left">Creates a WWW request with the given URL.</td>
+<td class="org-left">使用给定的 URL 创建一个 WWW 请求</td>
+</tr>
+</tbody>
+</table>
+</div></li>
+
+<li><a id="orgheadline20"></a>Public Functions<br><div class="outline-text-5" id="text-4-1-3-4">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col class="org-left">
+
+<col class="org-left">
+
+<col class="org-left">
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">Dispose</td>
+<td class="org-left">Disposes of an existing WWW object.</td>
+<td class="org-left">释放一个已经存在的 WWW 对象</td>
+</tr>
+
+<tr>
+<td class="org-left">GetAudioClip</td>
+<td class="org-left">Returns an AudioClip generated from the downloaded data (Read Only).</td>
+<td class="org-left">获取 AudioClip</td>
+</tr>
+
+<tr>
+<td class="org-left">GetAudioClipCompressed</td>
+<td class="org-left">Returns an AudioClip generated from the downloaded data that is compressed in memory (Read Only).</td>
+<td class="org-left">获取一个 AudioClip，它是通过下载得到的数据生成的，这些数据在内存中以压缩形式存在</td>
+</tr>
+
+<tr>
+<td class="org-left">LoadImageIntoTexture</td>
+<td class="org-left">Replaces the contents of an existing Texture2D with an image from the downloaded data.</td>
+<td class="org-left">使用下载到的图片替换一个 Texture2D 对象的内容</td>
+</tr>
+</tbody>
+</table>
+</div></li>
+<li><a id="orgheadline21"></a>Static Functions<br><div class="outline-text-5" id="text-4-1-3-5">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col class="org-left">
+
+<col class="org-left">
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">EscapeURL</td>
+<td class="org-left">对字符串中的字符进行转码，使他们是 URL 友好的.</td>
+</tr>
+
+<tr>
+<td class="org-left">LoadFromCacheOrDownload</td>
+<td class="org-left">从 cache 中加载指定版本的 AssetBundle。如果 AssetBundle 没有被缓存下来，它将会自动被下载并保存到缓存，以备将来从本地存储中获取</td>
+</tr>
+
+<tr>
+<td class="org-left">UnEscapeURL</td>
+<td class="org-left">将 URL 友好型转换为普通文本</td>
+</tr>
+</tbody>
+</table>
+</div></li>
+<li><a id="orgheadline22"></a>ERROR Process<br><div class="outline-text-5" id="text-4-1-3-6">
+<ul class="org-ul">
+<li><p>
+Windows 平台 "Could not resolve host: D"<br>
+</p>
+<div class="org-src-container">
+
+<pre class="src src-csharp"><span style="color: #98fb98;">WWW</span> <span style="color: #eedd82;">loader</span> = <span style="color: #00ffff;">new</span> <span style="color: #98fb98;">WWW</span>(Application.streamingAssetsPath + <span style="color: #ffa07a;">"/Table/"</span> + name);
+<span style="color: #ff0000;">// </span><span style="color: #ff0000;">&#35299;&#20915;&#26041;&#27861;&#20026;&#23558;&#19978;&#19968;&#34892;&#20195;&#30721;&#20462;&#25913;&#20026;&#19979;&#19968;&#34892;&#20195;&#30721;</span>
+<span style="color: #98fb98;">WWW</span> <span style="color: #eedd82;">loader</span> = <span style="color: #00ffff;">new</span> <span style="color: #98fb98;">WWW</span>(<span style="color: #ffa07a;">"file://"</span> + Application.streamingAssetsPath + <span style="color: #ffa07a;">"/Table/"</span> + name);
+</pre>
+</div></li>
+</ul>
+</div></li></ol>
+</div>
+</div>
+
+<div id="outline-container-orgheadline42" class="outline-3">
+<h3 id="orgheadline42"><span class="section-number-3">4.2</span> UnityEditor Class</h3>
+<div class="outline-text-3" id="text-4-2">
+</div><div id="outline-container-orgheadline27" class="outline-4">
+<h4 id="orgheadline27"><span class="section-number-4">4.2.1</span> BuildPipeline</h4>
+<div class="outline-text-4" id="text-4-2-1">
+<p>
+class in UnityEditor<br>
+</p>
+
+<p>
+让你可以通过编程的方式来构建播放器或 AssetBundles，可以从 web 服务器来加载这些元素。<br>
+<a href="#orgtarget1">1</a><br>
+</p>
+</div>
+<ol class="org-ol"><li><a id="orgheadline25"></a>Static Variables<br><div class="outline-text-5" id="text-4-2-1-1">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col class="org-left">
+
+<col class="org-left">
+
+<col class="org-left">
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">isBuildingPlayer</td>
+<td class="org-left">Is a player currently being built?</td>
+<td class="org-left">当前是否在构建一个播放器</td>
+</tr>
+</tbody>
+</table>
+</div></li>
+<li><a id="orgheadline26"></a>Static Functions<br><div class="outline-text-5" id="text-4-2-1-2">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col class="org-left">
+
+<col class="org-left">
+
+<col class="org-left">
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">BuildAssetBundles</td>
+<td class="org-left">Build all AssetBundles specified in the editor.</td>
+<td class="org-left">构建在 Editor 中指定的所有 AssetBundles</td>
+</tr>
+
+<tr>
+<td class="org-left">BuildPlayer</td>
+<td class="org-left">Builds a player.</td>
+<td class="org-left">构建一个播放器</td>
+</tr>
+
+<tr>
+<td class="org-left">GetCRCForAssetBundle</td>
+<td class="org-left">Extract the crc checksum for the given AssetBundle.</td>
+<td class="org-left">获取给定 AssetBundle 的校验码</td>
+</tr>
+
+<tr>
+<td class="org-left">GetHashForAssetBundle</td>
+<td class="org-left">Extract the hash for the given AssetBundle.</td>
+<td class="org-left">获取给定 AssetBundle 的哈希值</td>
+</tr>
+</tbody>
+</table>
+</div></li></ol>
+</div>
+
+<div id="outline-container-orgheadline29" class="outline-4">
+<h4 id="orgheadline29"><span class="section-number-4">4.2.2</span> AssetBundleBuild</h4>
+<div class="outline-text-4" id="text-4-2-2">
+<p>
+struct in UnityEditor<br>
+</p>
+
+<p>
+AssetBundle 构建地图的一个条目。<br>
+该类和 BuildPipeline.BuildAssetBundles 一起使用来指定一个包的名称，以及该包中所含所有资源的名称。被传递给函数的 AssetBundleBuild 数组被称为构建地图，这是基于编辑器指定包内容方式的另一种选择。<br>
+</p>
+</div>
+<ol class="org-ol"><li><a id="orgheadline28"></a>Variables<br><div class="outline-text-5" id="text-4-2-2-1">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col class="org-left">
+
+<col class="org-left">
+
+<col class="org-left">
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">assetBundleName</td>
+<td class="org-left">AssetBundle name.</td>
+<td class="org-left">AssetBundle 名称</td>
+</tr>
+
+<tr>
+<td class="org-left">assetBundleVariant</td>
+<td class="org-left">AssetBundle variant.</td>
+<td class="org-left">AssetBundle 变量</td>
+</tr>
+
+<tr>
+<td class="org-left">assetNames</td>
+<td class="org-left">Asset names which belong to the given AssetBundle.</td>
+<td class="org-left">属于该 AssetBundle 的所有资源的名称</td>
+</tr>
+</tbody>
+</table>
+</div></li></ol>
+</div>
+
+<div id="outline-container-orgheadline32" class="outline-4">
+<h4 id="orgheadline32"><span class="section-number-4">4.2.3</span> AssetDatabase</h4>
+<div class="outline-text-4" id="text-4-2-3">
+<p>
+class in UnityEditor<br>
+</p>
+
+<p>
+访问资源并对资源进行操作的接口<br>
+</p>
+</div>
+<ol class="org-ol"><li><a id="orgheadline30"></a>Static Functions<br><div class="outline-text-5" id="text-4-2-3-1">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col class="org-left">
+
+<col class="org-left">
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">AddObjectToAsset</td>
+<td class="org-left">将 objectToAdd 添加到一个已经存在的资源路径下</td>
+</tr>
+
+<tr>
+<td class="org-left">AssetPathToGUID</td>
+<td class="org-left">获取指定路径资源的 GUID</td>
+</tr>
+
+<tr>
+<td class="org-left">ClearLabels</td>
+<td class="org-left">移除挂载到资源的所有标签</td>
+</tr>
+
+<tr>
+<td class="org-left">Contains</td>
+<td class="org-left">对象是否是一个资源？</td>
+</tr>
+
+<tr>
+<td class="org-left">CopyAsset</td>
+<td class="org-left">复制 path 路径下的资源到新的路径 newPath 下</td>
+</tr>
+
+<tr>
+<td class="org-left">CreateAsset</td>
+<td class="org-left">在 path 路径下创建一个新的资源</td>
+</tr>
+
+<tr>
+<td class="org-left">CreateFolder</td>
+<td class="org-left">创建一个新的文件夹</td>
+</tr>
+
+<tr>
+<td class="org-left">DeleteAsset</td>
+<td class="org-left">删除 path 目录下的资源文件下</td>
+</tr>
+
+<tr>
+<td class="org-left">ExportPackage</td>
+<td class="org-left">Exports the assets identified by assetPathNames to a unitypackage file in fileName.</td>
+</tr>
+
+<tr>
+<td class="org-left">FindAssets</td>
+<td class="org-left">Search the asset database using a search filter string.</td>
+</tr>
+
+<tr>
+<td class="org-left">GenerateUniqueAssetPath</td>
+<td class="org-left">Creates a new unique path for an asset.</td>
+</tr>
+
+<tr>
+<td class="org-left">GetAllAssetBundleNames</td>
+<td class="org-left">Return all the AssetBundle names in the asset database.</td>
+</tr>
+
+<tr>
+<td class="org-left">GetAssetBundleDependencies</td>
+<td class="org-left">Given an assetBundleName, returns the list of AssetBundles that it depends on.</td>
+</tr>
+
+<tr>
+<td class="org-left">GetAssetDependencyHash</td>
+<td class="org-left">Returns the hash of all the dependencies of an asset.</td>
+</tr>
+
+<tr>
+<td class="org-left">GetAssetOrScenePath</td>
+<td class="org-left">Returns the path name relative to the project folder where the asset is stored.</td>
+</tr>
+
+<tr>
+<td class="org-left">GetAssetPath</td>
+<td class="org-left">Returns the path name relative to the project folder where the asset is stored.</td>
+</tr>
+
+<tr>
+<td class="org-left">GetAssetPathFromTextMetaFilePath</td>
+<td class="org-left">Gets the path to the asset file associated with a text .meta file.</td>
+</tr>
+
+<tr>
+<td class="org-left">GetAssetPathsFromAssetBundle</td>
+<td class="org-left">Get the paths of the assets which have been marked with the given assetBundle name.</td>
+</tr>
+
+<tr>
+<td class="org-left">GetAssetPathsFromAssetBundleAndAssetName</td>
+<td class="org-left">Get the asset paths from the given assetBundle name and asset name.</td>
+</tr>
+
+<tr>
+<td class="org-left">GetCachedIcon</td>
+<td class="org-left">Retrieves an icon for the asset at the given asset path.</td>
+</tr>
+
+<tr>
+<td class="org-left">GetDependencies</td>
+<td class="org-left">Given a pathName, returns the list of all assets that it depends on.</td>
+</tr>
+
+<tr>
+<td class="org-left">GetLabels</td>
+<td class="org-left">Returns all labels attached to a given asset.</td>
+</tr>
+
+<tr>
+<td class="org-left">GetMainAssetTypeAtPath</td>
+<td class="org-left">Returns the type of the main asset object at assetPath.</td>
+</tr>
+
+<tr>
+<td class="org-left">GetSubFolders</td>
+<td class="org-left">Given an absolute path to a directory, this method will return an array of all it's subdirectories.</td>
+</tr>
+
+<tr>
+<td class="org-left">GetTextMetaFilePathFromAssetPath</td>
+<td class="org-left">Gets the path to the text .meta file associated with an asset.</td>
+</tr>
+
+<tr>
+<td class="org-left">GetUnusedAssetBundleNames</td>
+<td class="org-left">Return all the unused assetBundle names in the asset database.</td>
+</tr>
+
+<tr>
+<td class="org-left">GUIDToAssetPath</td>
+<td class="org-left">Translate a GUID to its current asset path.</td>
+</tr>
+
+<tr>
+<td class="org-left">ImportAsset</td>
+<td class="org-left">Import asset at path.</td>
+</tr>
+
+<tr>
+<td class="org-left">ImportPackage</td>
+<td class="org-left">Imports package at packagePath into the current project.</td>
+</tr>
+
+<tr>
+<td class="org-left">IsForeignAsset</td>
+<td class="org-left">Is asset a foreign asset?</td>
+</tr>
+
+<tr>
+<td class="org-left">IsMainAsset</td>
+<td class="org-left">Is asset a main asset in the project window?</td>
+</tr>
+
+<tr>
+<td class="org-left">IsMainAssetAtPathLoaded</td>
+<td class="org-left">Returns true if the main asset object at assetPath is loaded in memory.</td>
+</tr>
+
+<tr>
+<td class="org-left">IsNativeAsset</td>
+<td class="org-left">Is asset a native asset?</td>
+</tr>
+
+<tr>
+<td class="org-left">IsOpenForEdit</td>
+<td class="org-left">Use IsOpenForEdit to determine if the asset is open for edit by the version control.</td>
+</tr>
+
+<tr>
+<td class="org-left">IsSubAsset</td>
+<td class="org-left">Does the asset form part of another asset?</td>
+</tr>
+
+<tr>
+<td class="org-left">IsValidFolder</td>
+<td class="org-left">Given an absolute path to a folder, returns true if it exists, false otherwise.</td>
+</tr>
+
+<tr>
+<td class="org-left">LoadAllAssetRepresentationsAtPath</td>
+<td class="org-left">Returns all asset representations at assetPath.</td>
+</tr>
+
+<tr>
+<td class="org-left">LoadAllAssetsAtPath</td>
+<td class="org-left">Returns an array of all asset objects at assetPath.</td>
+</tr>
+
+<tr>
+<td class="org-left">LoadAssetAtPath</td>
+<td class="org-left">Returns the first asset object of type type at given path assetPath.</td>
+</tr>
+
+<tr>
+<td class="org-left">LoadMainAssetAtPath</td>
+<td class="org-left">Returns the main asset object at assetPath.</td>
+</tr>
+
+<tr>
+<td class="org-left">MoveAsset</td>
+<td class="org-left">Move an asset file from one folder to another.</td>
+</tr>
+
+<tr>
+<td class="org-left">MoveAssetToTrash</td>
+<td class="org-left">Moves the asset at path to the trash.</td>
+</tr>
+
+<tr>
+<td class="org-left">OpenAsset</td>
+<td class="org-left">Opens the asset with associated application.</td>
+</tr>
+
+<tr>
+<td class="org-left">Refresh</td>
+<td class="org-left">Import any changed assets.</td>
+</tr>
+
+<tr>
+<td class="org-left">RemoveAssetBundleName</td>
+<td class="org-left">Remove the assetBundle name from the asset database. The forceRemove flag is used to indicate if you want to remove it even it's in use.</td>
+</tr>
+
+<tr>
+<td class="org-left">RemoveUnusedAssetBundleNames</td>
+<td class="org-left">Remove all the unused assetBundle names in the asset database.</td>
+</tr>
+
+<tr>
+<td class="org-left">RenameAsset</td>
+<td class="org-left">Rename an asset file.</td>
+</tr>
+
+<tr>
+<td class="org-left">SaveAssets</td>
+<td class="org-left">Writes all unsaved asset changes to disk.</td>
+</tr>
+
+<tr>
+<td class="org-left">SetLabels</td>
+<td class="org-left">Replaces that list of labels on an asset.</td>
+</tr>
+
+<tr>
+<td class="org-left">StartAssetEditing</td>
+<td class="org-left">Begin Asset importing. This lets you group several asset imports together into one larger import.</td>
+</tr>
+
+<tr>
+<td class="org-left">StopAssetEditing</td>
+<td class="org-left">Stop Asset importing. This lets you group several asset imports together into one larger import.</td>
+</tr>
+
+<tr>
+<td class="org-left">ValidateMoveAsset</td>
+<td class="org-left">Checks if an asset file can be moved from one folder to another. (Without actually moving the file).</td>
+</tr>
+
+<tr>
+<td class="org-left">WriteImportSettingsIfDirty</td>
+<td class="org-left">Writes the import settings to disk.</td>
+</tr>
+</tbody>
+</table>
+</div></li>
+
+<li><a id="orgheadline31"></a>Delegates<br><div class="outline-text-5" id="text-4-2-3-2">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col class="org-left">
+
+<col class="org-left">
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">ImportPackageCallback</td>
+<td class="org-left">从 AssetDatabase.ImportPackage 回调函数调用的代理。packageName 是引起回调的 package 的名称</td>
+</tr>
+
+<tr>
+<td class="org-left">ImportPackageFailedCallback</td>
+<td class="org-left">从 AssetDatabase.ImportPackage 回调函数调用的代理。packageName 是引起回调的 package 的名称。errorMessage 是引起失败的原因</td>
+</tr>
+</tbody>
+</table>
+</div></li></ol>
+</div>
+<div id="outline-container-orgheadline41" class="outline-4">
+<h4 id="orgheadline41"><span class="section-number-4">4.2.4</span> AssetImporter</h4>
+<div class="outline-text-4" id="text-4-2-4">
+<p>
+class in UnityEditor/Inherits from:Object<br>
+</p>
+
+<p>
+特地资源类型导入器的父类<br>
+</p>
+</div>
+<ol class="org-ol"><li><a id="orgheadline33"></a>Variables<br><div class="outline-text-5" id="text-4-2-4-1">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col class="org-left">
+
+<col class="org-left">
+
+<col class="org-left">
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">assetBundleName</td>
+<td class="org-left">Get or set the AssetBundle name.</td>
+<td class="org-left">获取或设置 AssetBundle 的名称</td>
+</tr>
+
+<tr>
+<td class="org-left">assetBundleVariant</td>
+<td class="org-left">Get or set the AssetBundle variant.</td>
+<td class="org-left">获取或设置 AssetBundle 的变量</td>
+</tr>
+
+<tr>
+<td class="org-left">assetPath</td>
+<td class="org-left">The path name of the asset for this importer. (Read Only)</td>
+<td class="org-left">该导入器处理的资源的路径名称 （只读）</td>
+</tr>
+
+<tr>
+<td class="org-left">userData</td>
+<td class="org-left">Get or set any user data.</td>
+<td class="org-left">获取或设置任何用户数据</td>
+</tr>
+</tbody>
+</table>
+</div></li>
+<li><a id="orgheadline34"></a>Public Functions<br><div class="outline-text-5" id="text-4-2-4-2">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col class="org-left">
+
+<col class="org-left">
+
+<col class="org-left">
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">SaveAndReimport</td>
+<td class="org-left">Save asset importer settings if asset importer is dirty.</td>
+<td class="org-left">如果资源导入设置被修改了，保存资源导入设置</td>
+</tr>
+
+<tr>
+<td class="org-left">SetAssetBundleNameAndVariant</td>
+<td class="org-left">Set the AssetBundle name and variant.</td>
+<td class="org-left">设置 AssetBundle 的名称和变量</td>
+</tr>
+</tbody>
+</table>
+</div></li>
+<li><a id="orgheadline35"></a>Static Functions<br><div class="outline-text-5" id="text-4-2-4-3">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col class="org-left">
+
+<col class="org-left">
+
+<col class="org-left">
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">GetAtPath</td>
+<td class="org-left">Retrieves the asset importer for the asset at path.</td>
+<td class="org-left">获取 path 路径下资源的导入器</td>
+</tr>
+</tbody>
+</table>
+</div></li>
+<li><a id="orgheadline40"></a>Inherited members<br><ol class="org-ol"><li><a id="orgheadline36"></a>Variables<br><div class="outline-text-6" id="text-4-2-4-4-1">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col class="org-left">
+
+<col class="org-left">
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">hideFlags</td>
+<td class="org-left">Should the object be hidden, saved with the scene or modifiable by the user?</td>
+</tr>
+
+<tr>
+<td class="org-left">name</td>
+<td class="org-left">The name of the object.</td>
+</tr>
+</tbody>
+</table>
+</div></li>
+<li><a id="orgheadline37"></a>Public Functions<br><div class="outline-text-6" id="text-4-2-4-4-2">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col class="org-left">
+
+<col class="org-left">
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">GetInstanceID</td>
+<td class="org-left">Returns the instance id of the object.</td>
+</tr>
+
+<tr>
+<td class="org-left">ToString</td>
+<td class="org-left">Returns the name of the game object.</td>
+</tr>
+</tbody>
+</table>
+</div></li>
+<li><a id="orgheadline38"></a>Static Functions<br><div class="outline-text-6" id="text-4-2-4-4-3">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col class="org-left">
+
+<col class="org-left">
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">Destroy</td>
+<td class="org-left">Removes a gameobject, component or asset.</td>
+</tr>
+
+<tr>
+<td class="org-left">DestroyImmediate</td>
+<td class="org-left">Destroys the object obj immediately.</td>
+</tr>
+
+<tr>
+<td class="org-left">DontDestroyOnLoad</td>
+<td class="org-left">Makes the object target not be destroyed automatically when loading a new scene.</td>
+</tr>
+
+<tr>
+<td class="org-left">FindObjectOfType</td>
+<td class="org-left">Returns the first active loaded object of Type type.</td>
+</tr>
+
+<tr>
+<td class="org-left">FindObjectsOfType</td>
+<td class="org-left">Returns a list of all active loaded objects of Type type.</td>
+</tr>
+
+<tr>
+<td class="org-left">Instantiate</td>
+<td class="org-left">Clones the object original and returns the clone.</td>
+</tr>
+</tbody>
+</table>
+</div></li>
+<li><a id="orgheadline39"></a>Operators<br><div class="outline-text-6" id="text-4-2-4-4-4">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col class="org-left">
+
+<col class="org-left">
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">bool</td>
+<td class="org-left">Does the object exist?</td>
+</tr>
+
+<tr>
+<td class="org-left">operator !=</td>
+<td class="org-left">Compares if two objects refer to a different object.</td>
+</tr>
+
+<tr>
+<td class="org-left">operator ==</td>
+<td class="org-left">Compares two object references to see if they refer to the same object.</td>
+</tr>
+</tbody>
+</table>
+</div></li></ol></li></ol>
+</div>
+</div>
+</div>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2016/08/24/unity/UnityDoc-LoadingResourcesatRuntime/">Loading Resources at Runtime</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">wolfand11</a></p>
+        <p><span>发布时间:</span>2016-08-24, 00:00:00</p>
+        <p><span>最后更新:</span>2017-08-06, 19:15:16</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2016/08/24/unity/UnityDoc-LoadingResourcesatRuntime/" title="Loading Resources at Runtime">http://wolfand11.coding.me/2016/08/24/unity/UnityDoc-LoadingResourcesatRuntime/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://wolfand11.coding.me/2016/08/24/unity/UnityDoc-LoadingResourcesatRuntime/　　作者: wolfand11" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2016/09/08/tools/InitMyCore/">
+                    Init My Core
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2016/08/20/unity/Unity5LightingCookbook/">
+                    Unity 5 Lighting Cookbook
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">文章目录</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#orgheadline2"><span class="toc-number">1.</span> <span class="toc-text">1 Asset Bundles</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline1"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 Tips:</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#orgheadline4"><span class="toc-number">2.</span> <span class="toc-text">2 Resource Folders</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline3"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 注意：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#orgheadline5"><span class="toc-number">3.</span> <span class="toc-text">3 Resource Unloading</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#orgheadline43"><span class="toc-number">4.</span> <span class="toc-text">4 Scripts</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline24"><span class="toc-number">4.1.</span> <span class="toc-text">4.1 UnityEngine Class</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline14"><span class="toc-number">4.1.1.</span> <span class="toc-text">4.1.1 AssetBundle</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline16"><span class="toc-number">4.1.2.</span> <span class="toc-text">4.1.2 Resources</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline23"><span class="toc-number">4.1.3.</span> <span class="toc-text">4.1.3 WWW</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline42"><span class="toc-number">4.2.</span> <span class="toc-text">4.2 UnityEditor Class</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline27"><span class="toc-number">4.2.1.</span> <span class="toc-text">4.2.1 BuildPipeline</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline29"><span class="toc-number">4.2.2.</span> <span class="toc-text">4.2.2 AssetBundleBuild</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline32"><span class="toc-number">4.2.3.</span> <span class="toc-text">4.2.3 AssetDatabase</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline41"><span class="toc-number">4.2.4.</span> <span class="toc-text">4.2.4 AssetImporter</span></a></li></ol></li></ol></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+    <script>
+        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"Loading Resources at Runtime　| wolfand11's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+        <section id="comments">
+    <style> aside.comment-bar { margin: auto 30px; }</style>
+    <div id="disqus_thread"></div>
+    <script>
+        var disqus_config = function(){
+            this.page.url = 'http://wolfand11.coding.me/2016/08/24/unity/UnityDoc-LoadingResourcesatRuntime/';
+            this.page.identifier = '2016/08/24/unity/UnityDoc-LoadingResourcesatRuntime/';
+        };
+        var loadComment = function(){
+            var d = document, s = d.createElement('script');
+            s.src = '//wolfand11.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        }
+    </script>
+    
+    <script> loadComment(); </script>
+
+</section>
+
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2016/09/08/tools/InitMyCore/" title="上一篇: Init My Core">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2016/08/20/unity/Unity5LightingCookbook/" title="下一篇: Unity 5 Lighting Cookbook">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/09/26/algorithm/AlgorithmIntroduceExercises/">AlgorithmIntroduceExercises</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/09/14/architecture/Cryptology/">Cryptology</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/09/14/architecture/Compiler/">Compiler</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/09/04/architecture/GameEngineArchitecture/">Game Engine Architecture</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/29/tools/ArtTools/">ArtTools</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/18/language/Python/">Python Note</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/05/16/gameplay/GameAI/">GameAI</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/05/01/unity/DOTween/">DOTween</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/20/tools/Matlab/">Matlab</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/08/architecture/KSFrameworkNote/">KSFramework Note</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/26/unity/UnityHotUpdate/">Unity Hot Update</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/13/architecture/ActionScriptDeveloperGuideToPureMVC/">Action Script Developer Guide To PureMVC</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/01/06/gameplay/MoveSync/">Move Sync</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/01/01/unity/UnityGUI/">Unity GUI</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/12/23/unity/UnityDoc-AnimationFromExternalSources/">Animation From External Sources</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/12/22/unity/UnityDoc-AnimationClips/">Animation Clips</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/12/12/unity/UnityDoc-AnimationSystemOverview/">Animation System Overview</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/11/09/language/Lua/">Programming in Lua</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/10/28/unity/UnityNote/">Unity Note</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/29/tools/vim/">VIM</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/28/tools/GameDevTools/">Game Dev Tools</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/27/language/CSharp/">Programing in CSharp</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/24/unity/UnityDoc-SpecialFolders/">Special Folders</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/08/tools/InitMyCore/">Init My Core</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/08/24/unity/UnityDoc-LoadingResourcesatRuntime/">Loading Resources at Runtime</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/08/20/unity/Unity5LightingCookbook/">Unity 5 Lighting Cookbook</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/08/20/unity/UnityShaderAndEffectCookbook/">UnityShaderAndEffectCookbook</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/08/14/tools/Emacs/">Emacs</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/08/14/tools/GitAndGithub/">Git Github</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/08/14/tools/InitPC/">Init My PC</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/08/14/language/Shell/">Shell</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/08/14/language/Elisp/">Programing in Elisp</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/08/12/tools/CreateBlogWithHexo/">Create Blog With Hexo</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/08/12/tools/CreateBlogWithJeykll/">Create Blog With Jeykll</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/16/architecture/GameModules/">GameModules</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/01/algorithm/AlgorithmIntroduce/">AlgorithmIntroduce</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2016-2017 wolfand11
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题  v3.5">Yelee</a> by MOxFIVE <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" title="本站到访数"><i class="fa fa-user" aria-hidden="true"></i><span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>| </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit"  title="本页阅读量"><i class="fa fa-eye animated infinite pulse" aria-hidden="true"></i><span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+            
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+             miniArchives: "a.post-list-link", 
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+</body>
+</html>

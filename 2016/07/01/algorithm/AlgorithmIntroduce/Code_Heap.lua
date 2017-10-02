@@ -2,136 +2,97 @@
 ---- @author Dong Guo
 ---- @email  smile_guodong@163.com
 ------------------------------------------------------------------------------------------------
-function Heapify(h, hSize, i, isMaxPriority)
-    if i<1 or i>#h then
-        print("ERROR index out of range")
-        return
+function PrintArr(arr, msg)
+    if not msg then
+        msg = ""
     end
-    local pIdx = nil
-    local choosed = nil
-    local isChoosedL = nil
-    local lIdx = nil
-    local rIdx = nil
-    if i<hSize then
-        lIdx = 2*i
-        if lIdx>hSize then
-            return
-        end
-        rIdx = lIdx+1
-        if rIdx>hSize then
-            rIdx = nil
-        end
-        choosed = h[lIdx]
-        isChoosedL = true
-        if rIdx then
-            if isMaxPriority then
-                if h[lIdx]<h[rIdx] then
-                    choosed = h[rIdx]
-                    isChoosedL = false
-                end
-            else
-                if h[lIdx]>h[rIdx] then
-                    choosed = h[rIdx]
-                    isChoosedL = false
-                end
-            end
+
+    for i=1,#arr do
+        msg = msg .. arr[i] .. " "
+    end
+    print(msg)
+end
+
+function HeapBuild(arr, is_max)
+    for i=math.floor(#arr/2),1,-1 do
+        Heapify(arr, i, #arr, is_max)
+    end
+end
+
+function Heapify(arr, root_idx, end_idx, is_max)
+    local l_idx = root_idx*2
+    local r_idx = l_idx + 1
+    local max_or_min_idx
+    local tmp
+    if l_idx<=end_idx then
+        if r_idx>end_idx then
+            r_idx = l_idx
         end
 
-        local isNeedProcess = false
-        if isMaxPriority then
-            isNeedProcess = h[i]<choosed
-        else
-            isNeedProcess = h[i]>choosed
+        max_or_min_idx = r_idx
+        if arr[r_idx] < arr[l_idx] == is_max then
+            max_or_min_idx = l_idx
         end
-        if isNeedProcess then
-            if isChoosedL then
-                h[lIdx] = h[i]
-                h[i] = choosed
-                i = lIdx
-            else
-                h[rIdx] = h[i]
-				h[i] = choosed
-                i = rIdx
-            end
-            Heapify(h, hSize, i, isMaxPriority)
+        if arr[max_or_min_idx] > arr[root_idx] == is_max then
+            tmp = arr[max_or_min_idx]
+            arr[max_or_min_idx] = arr[root_idx]
+            arr[root_idx] = tmp
+
+            Heapify(arr, max_or_min_idx, end_idx, is_max)
         end
     end
 end
 
-function HeapInsert(h, v, isMaxPriority)
-    if h then
-        table.insert(h,v)
-        local idx = #h
-        local pIdx = nil
-        local isNeedProcess = false
-        local temp = nil
-        while idx > 1 do
-            pIdx = math.floor(idx/2)
-            if isMaxPriority then
-                isNeedProcess = h[pIdx]<h[idx]
-            else
-                isNeedProcess = h[pIdx]>h[idx]
-            end
-            if isNeedProcess then
-                temp = h[idx]
-                h[idx] = h[pIdx]
-                h[pIdx] = temp
-                idx = pIdx
-            else
-                break
-            end
-        end
+function HeapSort(arr, is_min_to_max)
+    HeapBuild(arr, is_min_to_max)
+
+    local tmp
+    local i = #arr
+    while i > 1 do
+        tmp = arr[1]
+        arr[1] = arr[i]
+        arr[i] = tmp
+
+        i = i-1
+        Heapify(arr, 1, i, is_min_to_max)
     end
 end
 
-function HeapDelete(h, i, isMaxPriority)
-    if h and i>0 and i<=#h then
-        local v = h[i]
-        if i<#h then
-            h[i] = h[#h]
-            table.remove(h,#h)
-            Heapify(h, #h, i, isMaxPriority)
-        else
-            table.remove(h,#h)
-        end
-        return v
+function HeapInsert(arr, v, is_max)
+    table.insert(arr, v)
+    local i=math.floor(#arr/2)
+    while i>0 do
+        Heapify(arr, i, #arr, is_max)
+        i = math.floor(i/2)
+    end
+end
+
+function HeapDelete(arr, idx, is_max)
+    if idx>0 and idx<=#arr then
+        local deleted_v = arr[idx]
+        arr[idx] = arr[#arr]
+        table.remove(arr,#arr)
+        Heapify(arr, idx, #arr, is_max)
+        return deleted_v
     else
-        print("ERROR - heap is empty")
+        print("idx(%s) out of rang(1,%s)!", idx, #arr)
     end
 end
 
-function HeapExtract(h,isMaxPriority)
-    return HeapDelete(h,1,isMaxPriority)
+function HeapExtract(arr, is_max)
+    return HeapDelete(arr, 1, is_max)
 end
 
-function HeapBuild(arr, isMaxPriority)
-    if arr and #arr>1 then
-        local startIdx = math.ceil(#arr/2)
-        for i=startIdx,1,-1 do
-            Heapify(arr, #arr, i, isMaxPriority)
-        end
-    end
-end
-
-function HeapSort(arr, isReverse)
-    HeapBuild(arr, not isReverse)
-    local hSize = #arr
-    local temp = nil
-    while hSize>1 do
-        temp = arr[1]
-        arr[1]=arr[hSize]
-        arr[hSize] = temp
-        hSize = hSize-1
-        Heapify(arr, hSize, 1, not isReverse)
-    end
-end
-
-function HeapPrint(h)
-    for i=1,#h do
-        print(h[i])
-    end
-end
-
-local arr = {10,2,6,1,4}
-HeapSort(arr,true)
-HeapPrint(arr)
+--local arr = {2,1,7,3,9,2,1,7,3,9,2,1,7,3,9}
+local arr = {2,1,7,3,9}
+PrintArr(arr, "raw arr      : ")
+HeapBuild(arr, true)
+PrintArr(arr, "heap build   : ")
+HeapInsert(arr, 10, true)
+PrintArr(arr, "heap insert  : ")
+HeapDelete(arr,2,true)
+PrintArr(arr, "heap delete  : ")
+HeapExtract(arr,true)
+PrintArr(arr, "heap extract : ")
+HeapSort(arr, true)
+PrintArr(arr, "heap sort    : ")

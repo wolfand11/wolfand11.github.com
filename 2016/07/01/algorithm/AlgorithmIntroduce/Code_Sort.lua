@@ -2,7 +2,6 @@
 ---- @author Dong Guo
 ---- @email  smile_guodong@163.com
 ------------------------------------------------------------------------------------------------
-
 function PrintArr(arr, msg)
     if not msg then
         msg = ""
@@ -180,8 +179,194 @@ function QuickSort(arr, is_min_to_max, parting_func, start_idx, end_idx)
     return arr
 end
 
-local arr = {2,1,7,3,9,2,1,7,3,9,2,1,7,3,9}
+------------------------------------------------------------------------------------------------
+-- CountingSort
+function CountingSort1(arr, is_min_to_max)
+    local max=arr[1]
+    local space = {}
+    for i=1,#arr do
+        if max<arr[i] then
+            max=arr[i]
+        end
+        if not space[arr[i]] then
+            space[arr[i]] = 1
+        else
+            space[arr[i]] = space[arr[i]] + 1
+        end
+    end
+
+    local start_idx
+    local end_idx
+    local step
+    if is_min_to_max then
+        start_idx = 1
+        end_idx = max
+        step = 1
+    else
+        start_idx = max
+        end_idx = 1
+        step = -1
+    end
+
+    local idx = 1
+    for i=start_idx,end_idx,step do
+        while space[i] and space[i]>0 do
+            arr[idx] = i
+            space[i] = space[i] - 1
+            idx = idx+1
+        end
+    end
+    return arr
+end
+
+-- CountingSort2 是稳定的
+function CountingSort2(arr, is_min_to_max)
+    local max=arr[1]
+    local space = {}
+    for i=1,#arr do
+        if max<arr[i] then
+            max=arr[i]
+        end
+        if not space[arr[i]] then
+            space[arr[i]] = 1
+        else
+            space[arr[i]] = space[arr[i]] + 1
+        end
+    end
+
+    local tmp = 0
+    for i=1,max do
+        if space[i] then
+            space[i] = tmp + space[i]
+            tmp = space[i]
+        end
+    end
+
+    local result = {}
+--    for i=#arr,1,-1 do
+--        result[space[arr[i]]] = arr[i]
+--        space[arr[i]] = space[arr[i]] - 1
+--    end
+    for i=1,#arr do
+        result[space[arr[i]]] = arr[i]
+        space[arr[i]] = space[arr[i]] - 1
+    end
+
+    for i=1,#result do
+        if is_min_to_max then
+            arr[i] = result[i]
+        else
+            arr[i] = result[#result+1-i]
+        end
+    end
+    return arr
+end
+
+------------------------------------------------------------------------------------------------
+-- RadixSort
+function RadixSort(arr, max_digit_number, max_one_digit, is_min_to_max)
+    local result = {}
+    local tmp
+    local counter = {}
+    for i=0,max_digit_number-1 do
+        for j=1,max_one_digit do
+            counter[j] = 0
+        end
+
+        for j=1,#arr do
+            tmp = math.floor(arr[j] / math.pow(max_one_digit,i))%max_one_digit+1
+            counter[tmp] = counter[tmp] + 1
+        end
+
+        tmp = 0
+        for j=1,max_one_digit do
+            if counter[j]>0 then
+                counter[j] = counter[j]+tmp
+                tmp = counter[j]
+            end
+        end
+
+        --不能采用注释掉的循环遍历方法，如果元素中包含相同元素时，该循环会破坏元素之间的先后顺序
+        --for j=1,#arr do
+        for j=#arr,1,-1 do
+            tmp = math.floor(arr[j] / math.pow(max_one_digit,i))%max_one_digit+1
+            result[counter[tmp]] = arr[j]
+            counter[tmp] = counter[tmp]-1
+        end
+
+        for j=1,#result do
+            arr[j] = result[j]
+        end
+    end
+
+    if not is_min_to_max then
+        for i=1,#result do
+            arr[i] = result[#result+1-i]
+        end
+    end
+
+    return arr
+end
+
+------------------------------------------------------------------------------------------------
+--BucketSort
+function BucketSort(arr, bucket_size, is_min_to_max)
+    local max=arr[1]
+    local buckets = {}
+    for i=1,#arr do
+        if max<arr[i] then
+            max=arr[i]
+        end
+    end
+
+    local tmp
+    local bucket_idx
+    for i=1,#arr do
+        tmp = arr[i]/max
+        for j=1,bucket_size do
+            bucket_idx_l = math.floor(j/bucket_size*100)*0.01
+            bucket_idx_r = math.floor((j+1)/bucket_size*100)*0.01
+            if tmp>=bucket_idx_l and tmp < bucket_idx_r then
+                if not buckets[bucket_idx_l] then
+                    buckets[bucket_idx_l] = {}
+                end
+                table.insert(buckets[bucket_idx_l],arr[i])
+            end
+        end
+    end
+
+    for k,v in pairs(buckets) do
+        table.sort(v)
+    end
+
+    tmp = 1
+    for i=1,bucket_size do
+        bucket_idx = math.floor(i/bucket_size*100)*0.01
+        if buckets[bucket_idx] then
+            for j=1,#(buckets[bucket_idx]) do
+                arr[tmp] = buckets[bucket_idx][j]
+                tmp = tmp + 1
+            end
+        end
+    end
+
+    if not is_min_to_max then
+        local head = 1
+        local tail = #arr
+        while head<tail do
+            tmp = arr[head]
+            arr[head] = tail
+            arr[tail] = tmp
+            head = head+1
+            tail = tail-1
+        end
+    end
+    return arr
+end
+
+--local arr = {2,1,7,3,9,2,1,7,3,9,2,1,7,3,9}
 --local arr = {2,1,7,3,9}
+local arr = {329,457,657,839,436,720,355,329,457,657,839,436,720,355}
 PrintArr(BubbleSort(arr, true),                         "bubble sort  : ")
 PrintArr(InsertSort(arr, false),                        "insert sort  : ")
 PrintArr(MergeSort(arr, true),                          "merge sort   : ")
@@ -189,3 +374,7 @@ PrintArr(QuickSort(arr, false, GetParting1Func()),      "quick sort1  : ")
 PrintArr(QuickSort(arr, true,  GetParting1Func(true)),  "quick sortR1 : ")
 PrintArr(QuickSort(arr, false, GetParting2Func()),      "quick sort2  : ")
 PrintArr(QuickSort(arr, true,  GetParting2Func(true)),  "quick sortR2 : ")
+PrintArr(CountingSort1(arr, false),                     "count sort1  : ")
+PrintArr(CountingSort2(arr, true),                      "count sort2  : ")
+PrintArr(RadixSort(arr, 3, 10, false),                  "radix sort   : ")
+PrintArr(BucketSort(arr, 10, true),                     "backet sort  : ")

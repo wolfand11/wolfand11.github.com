@@ -15,19 +15,91 @@
 
 
 
-<meta name="description" content="本来只是一篇读书笔记，后来把 unity shader 相关的东西都加进来了。">
+<meta name="description" content="本来只是一篇读书笔记，后来把 unity shader 相关的东西都加进来了。
+
+
+1 Basic
+
+
+1.1 SurfaceShader 工作流程图
+
+
+
+
+
+
+
+
+
+1.2 Properties
+
+
+通过 Properties，可以将 shader 的一些参数暴露给编辑器进行设置。
+
+
+
+Properties {
+    _MyFlo">
 <meta property="og:type" content="article">
 <meta property="og:title" content="UnityShaderAndEffectCookbook">
 <meta property="og:url" content="http://wolfand11.coding.me/2016/08/20/unity/UnityShaderAndEffectCookbook/index.html">
 <meta property="og:site_name" content="wolfand11's blog">
-<meta property="og:description" content="本来只是一篇读书笔记，后来把 unity shader 相关的东西都加进来了。">
+<meta property="og:description" content="本来只是一篇读书笔记，后来把 unity shader 相关的东西都加进来了。
+
+
+1 Basic
+
+
+1.1 SurfaceShader 工作流程图
+
+
+
+
+
+
+
+
+
+1.2 Properties
+
+
+通过 Properties，可以将 shader 的一些参数暴露给编辑器进行设置。
+
+
+
+Properties {
+    _MyFlo">
 <meta property="og:image" content="http://wolfand11.coding.me/SurfaceShaderFlow.jpg">
 <meta property="og:image" content="http://wolfand11.coding.me/1ForwardLightsExample.png">
 <meta property="og:image" content="http://wolfand11.coding.me/2ForwardLightsClassify.png">
-<meta property="og:updated_time" content="2017-09-21T13:56:48.750Z">
+<meta property="og:updated_time" content="2017-10-10T11:30:27.524Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="UnityShaderAndEffectCookbook">
-<meta name="twitter:description" content="本来只是一篇读书笔记，后来把 unity shader 相关的东西都加进来了。">
+<meta name="twitter:description" content="本来只是一篇读书笔记，后来把 unity shader 相关的东西都加进来了。
+
+
+1 Basic
+
+
+1.1 SurfaceShader 工作流程图
+
+
+
+
+
+
+
+
+
+1.2 Properties
+
+
+通过 Properties，可以将 shader 的一些参数暴露给编辑器进行设置。
+
+
+
+Properties {
+    _MyFlo">
 <meta name="twitter:image" content="http://wolfand11.coding.me/SurfaceShaderFlow.jpg">
 
 <link rel="apple-touch-icon" href= "/apple-touch-icon.png">
@@ -295,9 +367,8 @@
 <p>
 本来只是一篇读书笔记，后来把 unity shader 相关的东西都加进来了。<br>
 </p>
-<a id="more"></a>
-<div id="outline-container-orgheadline56" class="outline-2">
-<h2 id="orgheadline56"><span class="section-number-2">1</span> Basic</h2>
+<div id="outline-container-orgheadline57" class="outline-2">
+<h2 id="orgheadline57"><span class="section-number-2">1</span> Basic</h2>
 <div class="outline-text-2" id="text-1">
 </div><div id="outline-container-orgheadline1" class="outline-3">
 <h3 id="orgheadline1"><span class="section-number-3">1.1</span> SurfaceShader 工作流程图</h3>
@@ -455,9 +526,13 @@ Tips:
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline31" class="outline-3">
-<h3 id="orgheadline31"><span class="section-number-3">1.5</span> shader 的代码结构</h3>
+<div id="outline-container-orgheadline32" class="outline-3">
+<h3 id="orgheadline32"><span class="section-number-3">1.5</span> shader 的代码结构</h3>
 <div class="outline-text-3" id="text-1-5">
+<p>
+<a href="https://docs.unity3d.com/Manual/SL-Reference.html" target="_blank" rel="external">https://docs.unity3d.com/Manual/SL-Reference.html</a><br>
+<a href="https://docs.unity3d.com/Manual/SL-Shader.html" target="_blank" rel="external">https://docs.unity3d.com/Manual/SL-Shader.html</a><br>
+</p>
 <div class="org-src-container">
 
 <pre class="src src-shader"><span style="color: #00ffff;">Shader</span> <span style="color: #ffa07a;">"GroupName/SubGroupName/ShaderName"</span>
@@ -470,14 +545,30 @@ Tips:
     {
         <span style="color: #00ffff;">Tags</span> { <span style="color: #ffa07a;">"Queue"</span> = <span style="color: #ffa07a;">"Transparent"</span> <span style="color: #ffa07a;">"RenderType"</span>=<span style="color: #ffa07a;">"Opaque"</span>}
         <span style="color: #00ffff;">ZWrite</span> Off <span style="color: #00ffff;">ColorMask</span> RGB
+
+        <span style="color: #ff0000;">// fixed functionality</span>
+        <span style="color: #00ffff;">Pass</span> {
+            <span style="color: #00ffff;">Name</span> <span style="color: #ffa07a;">"RedObj"</span>
+            <span style="color: #00ffff;">Color</span> (1, 0, 0, 1)
+        }
+
+        <span style="color: #ff0000;">// surface shader - surface shader &#19981;&#33021;&#25918;&#22312; Pass &#20013;</span>
+        <span style="color: #ff0000;">// unity &#20250;&#20026; surface shader &#33258;&#21160;&#29983;&#25104; pass</span>
         <span style="color: #00ffff;">CGPROGRAM</span>
 <span style="color: #b0c4de;">        #pragma</span> surface surf Lambert alpha:fade
         <span style="color: #ff0000;">/** surface shader **/</span>
         <span style="color: #00ffff;">ENDCG</span>
+
         <span style="color: #00ffff;">Pass</span> {
             <span style="color: #00ffff;">Name</span> <span style="color: #ffa07a;">"FORWARD"</span>
             <span style="color: #00ffff;">Tags</span> { <span style="color: #ffa07a;">"LightMode"</span> = <span style="color: #ffa07a;">"ForwardBase"</span> }
-<span style="color: #b0c4de;">            #pragma</span> surface surf Lambert alpha:fade
+            <span style="color: #ff0000;">// ......</span>
+        }
+        <span style="color: #00ffff;">GrabPass</span> {
+            <span style="color: #ffa07a;">"TextureName"</span>
+            <span style="color: #00ffff;">Name</span> <span style="color: #ffa07a;">""</span>
+            <span style="color: #00ffff;">Tags</span> {}
+            <span style="color: #ff0000;">//......</span>
         }
         <span style="color: #00ffff;">Pass</span> {
             <span style="color: #ff0000;">//......</span>
@@ -876,8 +967,8 @@ Parallax Specular = 600<br>
 </p>
 </div></li></ol>
 </div>
-<div id="outline-container-orgheadline30" class="outline-4">
-<h4 id="orgheadline30"><span class="section-number-4">1.5.3</span> Pass</h4>
+<div id="outline-container-orgheadline31" class="outline-4">
+<h4 id="orgheadline31"><span class="section-number-4">1.5.3</span> Pass</h4>
 <div class="outline-text-4" id="text-1-5-3">
 </div><ol class="org-ol"><li><a id="orgheadline25"></a>Name<br><div class="outline-text-5" id="text-1-5-3-1">
 <p>
@@ -885,12 +976,28 @@ Parallax Specular = 600<br>
 UsePass "VertexLit/SHADOWCASTER"<br>
 </p>
 </div></li>
-<li><a id="orgheadline28"></a>Tags<br><div class="outline-text-5" id="text-1-5-3-2">
+<li><a id="orgheadline26"></a>GrabPass<br><div class="outline-text-5" id="text-1-5-3-2">
+<p>
+GrabPass 是一种特殊的 pass 类型。当物体将要被绘制时，它可以获取屏幕的内容并将其绘制到一张贴图中。这张贴图可以在后续 pass 中使用，来实现高级的基于图片的特效。<br>
+</p>
+<div class="org-src-container">
+
+<pre class="src src-shader"><span style="color: #ff0000;">// &#19979;&#38754;&#30340;&#26041;&#24335;&#20250;&#65292;&#23558;&#23631;&#24149;&#20869;&#23481;&#20445;&#23384;&#21040;_GrabTexture &#36148;&#22270;&#23545;&#35937;&#20013;&#12290;&#36825;&#31181;&#26041;&#24335;&#20250;&#20026;&#27599;&#20010;&#20351;&#29992;&#35813; shader &#30340;&#23545;&#35937;&#65292;&#25191;&#34892;&#19968;&#27425;&#23631;&#24149;&#25235;&#21462;.</span>
+<span style="color: #00ffff;">GrabPass</span>{
+}
+<span style="color: #ff0000;">// &#19979;&#38754;&#30340;&#26041;&#24335;&#20250;&#65292;&#23558;&#23631;&#24149;&#20869;&#23481;&#20445;&#23384;&#21040; MyGrabTex &#36148;&#22270;&#23545;&#35937;&#20013;&#12290;&#36825;&#31181;&#26041;&#24335;&#22312;&#19968;&#24103;&#20869;&#65292;&#21482;&#20026;&#25191;&#34892;&#19968;&#27425;&#23631;&#24149;&#25235;&#21462;&#12290;</span>
+<span style="color: #00ffff;">GrabPass</span>{
+    <span style="color: #ffa07a;">"MyGrabTex"</span>
+}
+</pre>
+</div>
+</div></li>
+<li><a id="orgheadline29"></a>Tags<br><div class="outline-text-5" id="text-1-5-3-3">
 <p>
 Pass 使用 Tags 来告诉渲染引擎，什么时候、如何被渲染。<br>
 </p>
 </div>
-<ol class="org-ol"><li><a id="orgheadline26"></a>LightMode<br><div class="outline-text-6" id="text-1-5-3-2-1">
+<ol class="org-ol"><li><a id="orgheadline27"></a>LightMode<br><div class="outline-text-6" id="text-1-5-3-3-1">
 <p>
 LightMode tag 定义了 Pass 在光照管线中的角色。这些 tags 很少手动指定。<br>
 </p>
@@ -966,7 +1073,7 @@ LightMode tag 定义了 Pass 在光照管线中的角色。这些 tags 很少手
 </pre>
 </div>
 </div></li>
-<li><a id="orgheadline27"></a>RequireOptions<br><div class="outline-text-6" id="text-1-5-3-2-2">
+<li><a id="orgheadline28"></a>RequireOptions<br><div class="outline-text-6" id="text-1-5-3-3-2">
 <p>
 指定 Pass 在满足某些外部条件时才被渲染。<br>
 </p>
@@ -992,7 +1099,7 @@ LightMode tag 定义了 Pass 在光照管线中的角色。这些 tags 很少手
 </tbody>
 </table>
 </div></li></ol></li>
-<li><a id="orgheadline29"></a>Render State Setup<br><div class="outline-text-5" id="text-1-5-3-3">
+<li><a id="orgheadline30"></a>Render State Setup<br><div class="outline-text-5" id="text-1-5-3-4">
 <p>
 Pass 可以设置图形硬件的渲染状态。<br>
 </p>
@@ -1050,11 +1157,11 @@ Pass 可以设置图形硬件的渲染状态。<br>
 </div></li></ol>
 </div>
 </div>
-<div id="outline-container-orgheadline34" class="outline-3">
-<h3 id="orgheadline34"><span class="section-number-3">1.6</span> 贴图</h3>
+<div id="outline-container-orgheadline35" class="outline-3">
+<h3 id="orgheadline35"><span class="section-number-3">1.6</span> 贴图</h3>
 <div class="outline-text-3" id="text-1-6">
-</div><div id="outline-container-orgheadline32" class="outline-4">
-<h4 id="orgheadline32"><span class="section-number-4">1.6.1</span> 贴图过滤模式</h4>
+</div><div id="outline-container-orgheadline33" class="outline-4">
+<h4 id="orgheadline33"><span class="section-number-4">1.6.1</span> 贴图过滤模式</h4>
 <div class="outline-text-4" id="text-1-6-1">
 <ol class="org-ol">
 <li>Bilinear 对于大多数应用，双线性过滤可以耗费不大，而且可以有效平滑贴图。<br></li>
@@ -1062,8 +1169,8 @@ Pass 可以设置图形硬件的渲染状态。<br>
 </ol>
 </div>
 </div>
-<div id="outline-container-orgheadline33" class="outline-4">
-<h4 id="orgheadline33"><span class="section-number-4">1.6.2</span> Aniso Level</h4>
+<div id="outline-container-orgheadline34" class="outline-4">
+<h4 id="orgheadline34"><span class="section-number-4">1.6.2</span> Aniso Level</h4>
 <div class="outline-text-4" id="text-1-6-2">
 <p>
 当从一个很陡峭的角度看贴图，贴图采样很可能会产生锯齿。你可以将 AnisoLevel 设置的更高来减低锯齿。这通常对于地面和屋顶贴图很有效。<br>
@@ -1071,8 +1178,8 @@ Pass 可以设置图形硬件的渲染状态。<br>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline54" class="outline-3">
-<h3 id="orgheadline54"><span class="section-number-3">1.7</span> Unity's Rendering Pipline</h3>
+<div id="outline-container-orgheadline55" class="outline-3">
+<h3 id="orgheadline55"><span class="section-number-3">1.7</span> Unity's Rendering Pipline</h3>
 <div class="outline-text-3" id="text-1-7">
 <p>
 Shaders 定义了一个物体看起来是怎样的，以及这个物体如何和光照交互。因为光照计算必须在 shader 中进行，并且可能有很多种类型的光照和阴影，所以编写高质量的可用的 shaders 将是一个复杂的任务。为了让这项工作变的简单，Unity 提供了 Surface Shaders，其中所有的光照、阴影、光照贴图，正向渲染、延迟渲染等事情都被自动化管理。<br>
@@ -1084,8 +1191,8 @@ RenderTech-ForwardRendering.html
 RenderTech-DeferredShading.html
 </pre>
 </div>
-<div id="outline-container-orgheadline35" class="outline-4">
-<h4 id="orgheadline35"><span class="section-number-4">1.7.1</span> Rendering Path</h4>
+<div id="outline-container-orgheadline36" class="outline-4">
+<h4 id="orgheadline36"><span class="section-number-4">1.7.1</span> Rendering Path</h4>
 <div class="outline-text-4" id="text-1-7-1">
 <p>
 光照是如何被应用以及 shader 的哪些 Passes 被使用都依赖于使用了哪种 Rendering Path. shader 中的每个 Pass 通过 Pass Tags 来传达它的光照类型。<br>
@@ -1131,8 +1238,8 @@ RenderTech-DeferredShading.html
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline44" class="outline-4">
-<h4 id="orgheadline44"><span class="section-number-4">1.7.2</span> Forward Rendering path</h4>
+<div id="outline-container-orgheadline45" class="outline-4">
+<h4 id="orgheadline45"><span class="section-number-4">1.7.2</span> Forward Rendering path</h4>
 <div class="outline-text-4" id="text-1-7-2">
 <p>
 ForwardBase pass 用于一次性渲染环境光，光照贴图，主要的定向光以及不重要的光照(Spherical Harmonics)。<br>
@@ -1146,12 +1253,12 @@ ForwardAdd pass 用于任何附加的基于像素的光照。被该光照照明�
 如果 Forward Rendering 被使用，但是 shader 中没有合适的 Passes（没有 ForwardBase 或 ForwardAdd 存在），则物体会被按照 Vertex Lit path 的方式渲染。<br>
 </p>
 </div>
-<ol class="org-ol"><li><a id="orgheadline36"></a>Forward Rendering Detail<br><div class="outline-text-5" id="text-1-7-2-1">
+<ol class="org-ol"><li><a id="orgheadline37"></a>Forward Rendering Detail<br><div class="outline-text-5" id="text-1-7-2-1">
 <p>
 依据光照对物体的影响，Forward Rendering path 使用一个或多个 Pass 来渲染这个物体。依据每个光照的不同设置和亮度，Forward Rendering 会对光照有不同的处理。<br>
 </p>
 </div></li>
-<li><a id="orgheadline39"></a>Implementation Detail<br><div class="outline-text-5" id="text-1-7-2-2">
+<li><a id="orgheadline40"></a>Implementation Detail<br><div class="outline-text-5" id="text-1-7-2-2">
 <p>
 在正向渲染中，一些影响到每个物体的最亮的光照会基于每个像素来计算。然后，最多有 4 个点光照被基于每个顶点来计算。剩余的光照按照 Spherical Harmonics 方式来计算，该方法速度比较快，但是只是一种近似计算。<br>
 </p>
@@ -1186,40 +1293,40 @@ Base Pass 应用于 per-pixel 方式的方向光照 和 所有 per-vertex/Spheri
 <img src="2ForwardLightsClassify.png"><br>
 </p>
 </div>
-<ol class="org-ol"><li><a id="orgheadline37"></a>Base Pass<br><div class="outline-text-6" id="text-1-7-2-2-1">
+<ol class="org-ol"><li><a id="orgheadline38"></a>Base Pass<br><div class="outline-text-6" id="text-1-7-2-2-1">
 <p>
 Base pass 使用一个 per-pixel 方式计算的方向光照和所有的 SH 方式计算的光照渲染物体。这个阶段也会添加任何光照贴图，环境光<br>
 和发射光到 shader 中。该 Pass 中的方向光可以有阴影。注意光照贴图的物体不会从 SH 方式计算的光照中获得照明。<br>
 </p>
 </div></li>
-<li><a id="orgheadline38"></a>Additional Passes<br><div class="outline-text-6" id="text-1-7-2-2-2">
+<li><a id="orgheadline39"></a>Additional Passes<br><div class="outline-text-6" id="text-1-7-2-2-2">
 <p>
 Additional Passes 用来渲染影响到物体的每个额外的 per-pixel 方式计算的光照。在该 Pass 计算的光照不能有阴影效果。<br>
 （所以 Forward Rendering 只支持一个方向光有阴影）<br>
 </p>
 </div></li></ol></li>
-<li><a id="orgheadline43"></a>Performance Considerations<br><div class="outline-text-5" id="text-1-7-2-3">
+<li><a id="orgheadline44"></a>Performance Considerations<br><div class="outline-text-5" id="text-1-7-2-3">
 <p>
 Spherical Harmonics 方式计算的光照渲染速度非常快。他们消耗很少的 CPU 资源，并且对于 GPU 基本是无消耗的（也就是说，Base Passes 总是计算 SH 方式计算的光照，但是，基于 SH 的工作方式，无论有多少光照按照 SH 方式计算，其消耗都是一样的）。<br>
 SH 方式计算光照的缺点有：<br>
 </p>
 </div>
-<ol class="org-ol"><li><a id="orgheadline40"></a>SH 是基于物体顶点的，而不是基于片段的。这意味着他们不支持光照的 Cookies 或法线贴图。<br></li>
-<li><a id="orgheadline41"></a>SH 是非常低频率的。你不能对 SH 方式计算的光照有有尖锐的光照变换。他们只会影响漫反射光照（对于镜面光来说频率太低了）<br></li>
-<li><a id="orgheadline42"></a>SH 是非局部的。点光源、聚光灯使用 SH 方式计算时，若靠近某些表面时看起来会是错误的。<br><div class="outline-text-7" id="text-1-7-2-3-0-3">
+<ol class="org-ol"><li><a id="orgheadline41"></a>SH 是基于物体顶点的，而不是基于片段的。这意味着他们不支持光照的 Cookies 或法线贴图。<br></li>
+<li><a id="orgheadline42"></a>SH 是非常低频率的。你不能对 SH 方式计算的光照有有尖锐的光照变换。他们只会影响漫反射光照（对于镜面光来说频率太低了）<br></li>
+<li><a id="orgheadline43"></a>SH 是非局部的。点光源、聚光灯使用 SH 方式计算时，若靠近某些表面时看起来会是错误的。<br><div class="outline-text-7" id="text-1-7-2-3-0-3">
 <p>
 总的来说，SH 方式计算光照对于低动态的物体来说通常是效果很好的。<br>
 </p>
 </div></li></ol></li></ol>
 </div>
-<div id="outline-container-orgheadline51" class="outline-4">
-<h4 id="orgheadline51"><span class="section-number-4">1.7.3</span> Deferred Shading path</h4>
+<div id="outline-container-orgheadline52" class="outline-4">
+<h4 id="orgheadline52"><span class="section-number-4">1.7.3</span> Deferred Shading path</h4>
 <div class="outline-text-4" id="text-1-7-3">
 <p>
 Deferred Pass 用来渲染光照计算需要的所有的信息（在内置 shaders 中会渲染：diffuse color, specular color, smoothness, world space normal, emission）。它还会添加光照贴图，反射探针以及环境光照到 emission 通道。<br>
 </p>
 </div>
-<ol class="org-ol"><li><a id="orgheadline45"></a>Overview<br><div class="outline-text-5" id="text-1-7-3-1">
+<ol class="org-ol"><li><a id="orgheadline46"></a>Overview<br><div class="outline-text-5" id="text-1-7-3-1">
 <p>
 当使用延迟渲染时，对于可以影响一个物体的光照数量没有限制。所有的光照都是按照 per-pixel 方式计算的,这就意味着他们都可以正确地和法线贴图交互。另外所有的光照都可以有 cookies 和阴影。<br>
 </p>
@@ -1232,13 +1339,13 @@ Deferred Pass 用来渲染光照计算需要的所有的信息（在内置 shade
 延迟渲染的缺点是，对于反锯齿没有真正的支持，并且不能够处理半透明的物体（这类物体需要通过 Forward Rendering 来渲染）。不支持 Mesh Render 的 Receive Shadows 标记，对于剔除层 masks 的支持也很有限。你只能使用最多 4 个剔除 masks。也就是说，你的剔除层 mask 必须至少包含所有的层减去任意的 4 个层，所以 32 个层中的 28 个层必须被设置。否则你将会得到变花的图像。<br>
 </p>
 </div></li>
-<li><a id="orgheadline46"></a>Requirements<br><div class="outline-text-5" id="text-1-7-3-2">
+<li><a id="orgheadline47"></a>Requirements<br><div class="outline-text-5" id="text-1-7-3-2">
 <p>
 延迟渲染需要图形卡包含 Multiple Render Targets，Shader Model 3.0 或者更高，支持深度贴图以及双面的模板缓冲区。大多数 PC2005 年以后的显卡支持延迟渲染，包括 GeForce6 以及更高，RadeonX1300 以及更高，InterG45+以及更高。在移动设备中，由于 MRT 使用的格式延迟渲染支持很有限（一些支持多个渲染目标的 GPUs 仍然只支持很有限的位数）。<br>
 注意：在使用正交投影时，不支持延迟渲染。如果摄像机的投影模式被设置为正交投影，这些数值将被覆盖，并且摄像机将总是使用 Forward Rendering。<br>
 </p>
 </div></li>
-<li><a id="orgheadline47"></a>Performance Considerations<br><div class="outline-text-5" id="text-1-7-3-3">
+<li><a id="orgheadline48"></a>Performance Considerations<br><div class="outline-text-5" id="text-1-7-3-3">
 <p>
 在延迟渲染中渲染实时光照的开销和被照明的像素数量成比例，而和场景的复杂程度无关。所以小的点光源或聚光灯开销非常小，如果场景中的物体将它们整个或部分遮挡，渲染它们的开销将更小。<br>
 </p>
@@ -1247,7 +1354,7 @@ Deferred Pass 用来渲染光照计算需要的所有的信息（在内置 shade
 当然，带阴影的光照会比没有阴影的光照开销更大。在延迟渲染中，对于每个产生阴影的光照，产生阴影的物体仍然需要被渲染一次或多次。此外，应用阴影的光照着色器比阴影关闭的有更高的渲染开销。<br>
 </p>
 </div></li>
-<li><a id="orgheadline48"></a>Implementation Details<br><div class="outline-text-5" id="text-1-7-3-4">
+<li><a id="orgheadline49"></a>Implementation Details<br><div class="outline-text-5" id="text-1-7-3-4">
 <p>
 物体的不支持延迟渲染的 shaders，将在延迟渲染结束后，使用 Forward Rendering 方式来渲染。<br>
 </p>
@@ -1322,12 +1429,12 @@ Deferred Pass 用来渲染光照计算需要的所有的信息（在内置 shade
 当 camera 使用 HDR 渲染时，如果没有为 Emission+lighting buffer（RT3）创建独立的渲染对象，替代的渲染目标将被用作 RT3，camera 将会渲染到替代的渲染目标中。<br>
 </p>
 </div></li>
-<li><a id="orgheadline49"></a>G-Buffer Pass<br><div class="outline-text-5" id="text-1-7-3-5">
+<li><a id="orgheadline50"></a>G-Buffer Pass<br><div class="outline-text-5" id="text-1-7-3-5">
 <p>
 G-Buffer Pass 为每个物体渲染一次。漫反射和镜面颜色，表面平滑度，世界空间的法线，发射+环境+反射+光照贴图都被渲染到 g-buffer 贴图中。g-buffer 贴图被设置为全局的着色器属性，从而在可以被着色器在后面阶段访问(名称为 CameraGBufferTexture0 &#x2026; CameraGBufferTexture3)<br>
 </p>
 </div></li>
-<li><a id="orgheadline50"></a>Lighting Pass<br><div class="outline-text-5" id="text-1-7-3-6">
+<li><a id="orgheadline51"></a>Lighting Pass<br><div class="outline-text-5" id="text-1-7-3-6">
 <p>
 这个光照阶段会基于 g-buffer 和深度来计算光照。光照是在屏幕空间中计算的，所以光照花费的时间独立于场景的复杂度。光照被添加到发射缓冲区中。当对于场景的 Z buffer 测试开启时，和摄像机近平面没有相交的点光源和聚光灯会被当做 3D 形状来渲染。这使得部分或全部被遮挡的点光源或聚光灯的渲染开销很小。方向光和点光源聚光灯和近平面相交时，被当做全屏的方形面片来渲染。<br>
 </p>
@@ -1341,8 +1448,8 @@ G-Buffer Pass 为每个物体渲染一次。漫反射和镜面颜色，表面平
 </p>
 </div></li></ol>
 </div>
-<div id="outline-container-orgheadline52" class="outline-4">
-<h4 id="orgheadline52"><span class="section-number-4">1.7.4</span> Legacy Deferred Lighting path</h4>
+<div id="outline-container-orgheadline53" class="outline-4">
+<h4 id="orgheadline53"><span class="section-number-4">1.7.4</span> Legacy Deferred Lighting path</h4>
 <div class="outline-text-4" id="text-1-7-4">
 <p>
 官方都要遗弃了，就不用了解了。<br>
@@ -1357,8 +1464,8 @@ PrepassFinal pass 将贴图、光照和发射材质属性组合起来渲染最�
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline53" class="outline-4">
-<h4 id="orgheadline53"><span class="section-number-4">1.7.5</span> Legacy Vertex Lit Rendering path</h4>
+<div id="outline-container-orgheadline54" class="outline-4">
+<h4 id="orgheadline54"><span class="section-number-4">1.7.5</span> Legacy Vertex Lit Rendering path</h4>
 <div class="outline-text-4" id="text-1-7-5">
 <p>
 因为顶点光照通常在不支持可编程渲染的平台上，Unity 无法创建多个 shader 变量来处理有光照贴图和没光照贴图的情况。所以为了处理有光照贴图和无光照贴图的物体，必须显式地写多个 Pass。<br>
@@ -1378,8 +1485,8 @@ VertexLMM Pass 用于有光照贴图的物体，光照贴图按照 double-LDR �
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline55" class="outline-3">
-<h3 id="orgheadline55"><span class="section-number-3">1.8</span> RenderQueue And z-depth</h3>
+<div id="outline-container-orgheadline56" class="outline-3">
+<h3 id="orgheadline56"><span class="section-number-3">1.8</span> RenderQueue And z-depth</h3>
 <div class="outline-text-3" id="text-1-8">
 <p>
 RenderQueue 是用来控制渲染顺序的。系统内置了下面的渲染队列 Background(1000) Geometry(2000) AlphaTest(2450) Transparent(3000) Overlay(4000)。索引值小的队列先渲染。<br>
@@ -1388,11 +1495,11 @@ z-depth 是表示被渲染的片段离摄像机的距离。渲染的时候会依
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline61" class="outline-2">
-<h2 id="orgheadline61"><span class="section-number-2">2</span> Reflecting your world</h2>
+<div id="outline-container-orgheadline62" class="outline-2">
+<h2 id="orgheadline62"><span class="section-number-2">2</span> Reflecting your world</h2>
 <div class="outline-text-2" id="text-2">
-</div><div id="outline-container-orgheadline57" class="outline-3">
-<h3 id="orgheadline57"><span class="section-number-3">2.1</span> 光学基础</h3>
+</div><div id="outline-container-orgheadline58" class="outline-3">
+<h3 id="orgheadline58"><span class="section-number-3">2.1</span> 光学基础</h3>
 <div class="outline-text-3" id="text-2-1">
 <p>
 反射：当光在两种物质分界面上改变传播方向又返回原来物质中的现象，叫做光的反射。<br>
@@ -1407,8 +1514,8 @@ z-depth 是表示被渲染的片段离摄像机的距离。渲染的时候会依
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline60" class="outline-3">
-<h3 id="orgheadline60"><span class="section-number-3">2.2</span> Fresnel reflection</h3>
+<div id="outline-container-orgheadline61" class="outline-3">
+<h3 id="orgheadline61"><span class="section-number-3">2.2</span> Fresnel reflection</h3>
 <div class="outline-text-3" id="text-2-2">
 <p>
 菲涅尔反射<br>
@@ -1418,8 +1525,8 @@ z-depth 是表示被渲染的片段离摄像机的距离。渲染的时候会依
 所谓菲涅尔反射就是用波动的理论来解释光的反射。 主要包括一些电磁场的边界传输条件，比如 P 矢量和 S 矢量的反射，菲涅尔用波动学说第一次从本质上解释了光的传播，而之前人们只能从宏观上进行试验，无法从微观的理论上获得支持。然而缺少微观理论支持的定律总是空虚的，随时都可能被推翻的。<br>
 </p>
 </div>
-<div id="outline-container-orgheadline58" class="outline-4">
-<h4 id="orgheadline58"><span class="section-number-4">2.2.1</span> 如何模拟菲涅尔效应效果？</h4>
+<div id="outline-container-orgheadline59" class="outline-4">
+<h4 id="orgheadline59"><span class="section-number-4">2.2.1</span> 如何模拟菲涅尔效应效果？</h4>
 <div class="outline-text-4" id="text-2-2-1">
 <div class="org-src-container">
 
@@ -1436,8 +1543,8 @@ o.<span style="color: #00ffff;">Specular</span> = <span style="color: #eedd82;">
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline59" class="outline-4">
-<h4 id="orgheadline59"><span class="section-number-4">2.2.2</span> 参考资料</h4>
+<div id="outline-container-orgheadline60" class="outline-4">
+<h4 id="orgheadline60"><span class="section-number-4">2.2.2</span> 参考资料</h4>
 <div class="outline-text-4" id="text-2-2-2">
 <p>
 菲涅耳反射 互动百科:<br>
@@ -1449,11 +1556,11 @@ o.<span style="color: #00ffff;">Specular</span> = <span style="color: #eedd82;">
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline68" class="outline-2">
-<h2 id="orgheadline68"><span class="section-number-2">3</span> Shader Optimize</h2>
+<div id="outline-container-orgheadline69" class="outline-2">
+<h2 id="orgheadline69"><span class="section-number-2">3</span> Shader Optimize</h2>
 <div class="outline-text-2" id="text-3">
-</div><div id="outline-container-orgheadline62" class="outline-3">
-<h3 id="orgheadline62"><span class="section-number-3">3.1</span> 数据类型</h3>
+</div><div id="outline-container-orgheadline63" class="outline-3">
+<h3 id="orgheadline63"><span class="section-number-3">3.1</span> 数据类型</h3>
 <div class="outline-text-3" id="text-3-1">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
@@ -1503,8 +1610,8 @@ o.<span style="color: #00ffff;">Specular</span> = <span style="color: #eedd82;">
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline63" class="outline-3">
-<h3 id="orgheadline63"><span class="section-number-3">3.2</span> noforwardadd</h3>
+<div id="outline-container-orgheadline64" class="outline-3">
+<h3 id="orgheadline64"><span class="section-number-3">3.2</span> noforwardadd</h3>
 <div class="outline-text-3" id="text-3-2">
 <p>
 该选项基于一个开关来自动告诉 Unity，任何采用该着色器的物体只从一个单一的方向光接收每个像素的光照。该着色器计算的其他光照将使用 SH 方式计算。<br>
@@ -1516,8 +1623,8 @@ o.<span style="color: #00ffff;">Specular</span> = <span style="color: #eedd82;">
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline64" class="outline-3">
-<h3 id="orgheadline64"><span class="section-number-3">3.3</span> exclude_path</h3>
+<div id="outline-container-orgheadline65" class="outline-3">
+<h3 id="orgheadline65"><span class="section-number-3">3.3</span> exclude_path</h3>
 <div class="outline-text-3" id="text-3-3">
 <p>
 exclude_path:deferred, exclude_path:forward, exclude_path:prepass<br>
@@ -1530,8 +1637,8 @@ exclude_path:deferred, exclude_path:forward, exclude_path:prepass<br>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline65" class="outline-3">
-<h3 id="orgheadline65"><span class="section-number-3">3.4</span> nolightmap</h3>
+<div id="outline-container-orgheadline66" class="outline-3">
+<h3 id="orgheadline66"><span class="section-number-3">3.4</span> nolightmap</h3>
 <div class="outline-text-3" id="text-3-4">
 <p>
 关闭该 shader 的所有光照贴图支持。<br>
@@ -1543,16 +1650,16 @@ exclude_path:deferred, exclude_path:forward, exclude_path:prepass<br>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline66" class="outline-3">
-<h3 id="orgheadline66"><span class="section-number-3">3.5</span> halfasview</h3>
+<div id="outline-container-orgheadline67" class="outline-3">
+<h3 id="orgheadline67"><span class="section-number-3">3.5</span> halfasview</h3>
 <div class="outline-text-3" id="text-3-5">
 <p>
 用 halfDir 代替 viewDir 作为光照函数的参数传入 shader。<br>
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline67" class="outline-3">
-<h3 id="orgheadline67"><span class="section-number-3">3.6</span> 参考资料</h3>
+<div id="outline-container-orgheadline68" class="outline-3">
+<h3 id="orgheadline68"><span class="section-number-3">3.6</span> 参考资料</h3>
 <div class="outline-text-3" id="text-3-6">
 <p>
 <a href="https://docs.unity3d.com/Manual/SL-SurfaceShaders.html" target="_blank" rel="external">Shader 编译指令</a><br>
@@ -1561,11 +1668,11 @@ exclude_path:deferred, exclude_path:forward, exclude_path:prepass<br>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline75" class="outline-2">
-<h2 id="orgheadline75"><span class="section-number-2">4</span> LightingModel</h2>
+<div id="outline-container-orgheadline76" class="outline-2">
+<h2 id="orgheadline76"><span class="section-number-2">4</span> LightingModel</h2>
 <div class="outline-text-2" id="text-4">
-</div><div id="outline-container-orgheadline69" class="outline-3">
-<h3 id="orgheadline69"><span class="section-number-3">4.1</span> Lambert</h3>
+</div><div id="outline-container-orgheadline70" class="outline-3">
+<h3 id="orgheadline70"><span class="section-number-3">4.1</span> Lambert</h3>
 <div class="outline-text-3" id="text-4-1">
 <p>
 只考虑环境光和漫反射的光照模型。<br>
@@ -1576,8 +1683,8 @@ exclude_path:deferred, exclude_path:forward, exclude_path:prepass<br>
 \end{align}  
 </div>
 </div>
-<div id="outline-container-orgheadline71" class="outline-3">
-<h3 id="orgheadline71"><span class="section-number-3">4.2</span> Phong</h3>
+<div id="outline-container-orgheadline72" class="outline-3">
+<h3 id="orgheadline72"><span class="section-number-3">4.2</span> Phong</h3>
 <div class="outline-text-3" id="text-4-2">
 <p>
 考虑环境光，漫反射光，镜面反射光的光照模型。其中镜面反射按照视角和反射光夹角来计算。<br>
@@ -1591,8 +1698,8 @@ shininess 为反光度<br>
 &color = objColor \cdot (ambientFactor + diffuseFactor) \cdot lightColor) + specularFactor \cdot lightColor 
 \end{align}
 </div>
-<div id="outline-container-orgheadline70" class="outline-4">
-<h4 id="orgheadline70"><span class="section-number-4">4.2.1</span> 缺点</h4>
+<div id="outline-container-orgheadline71" class="outline-4">
+<h4 id="orgheadline71"><span class="section-number-4">4.2.1</span> 缺点</h4>
 <div class="outline-text-4" id="text-4-2-1">
 <ol class="org-ol">
 <li>当放射光方向和视角夹角大于 90 度时，specular 被设置为 0，当反光度比较小时，镜面半径会比较大，而 specular 被设置为 0 导致，镜面光照突然就消失了。<br>
@@ -1608,8 +1715,8 @@ refectLightDir = 2 (lightDir \cdot objNormal) \cdot objNormal - lightDir
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline72" class="outline-3">
-<h3 id="orgheadline72"><span class="section-number-3">4.3</span> BlinnPhong</h3>
+<div id="outline-container-orgheadline73" class="outline-3">
+<h3 id="orgheadline73"><span class="section-number-3">4.3</span> BlinnPhong</h3>
 <div class="outline-text-3" id="text-4-3">
 <p>
 考虑环境光，漫反射光，镜面反射光的光照模型。反射光方向取视线和光照方向的中心线，镜面反射按照中心线和法线的夹角来计算。<br>
@@ -1626,11 +1733,11 @@ refectLightDir = 2 (lightDir \cdot objNormal) \cdot objNormal - lightDir
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline74" class="outline-3">
-<h3 id="orgheadline74"><span class="section-number-3">4.4</span> PBR</h3>
+<div id="outline-container-orgheadline75" class="outline-3">
+<h3 id="orgheadline75"><span class="section-number-3">4.4</span> PBR</h3>
 <div class="outline-text-3" id="text-4-4">
-</div><div id="outline-container-orgheadline73" class="outline-4">
-<h4 id="orgheadline73"><span class="section-number-4">4.4.1</span> Cook-Torrance 模型</h4>
+</div><div id="outline-container-orgheadline74" class="outline-4">
+<h4 id="orgheadline74"><span class="section-number-4">4.4.1</span> Cook-Torrance 模型</h4>
 <div class="outline-text-4" id="text-4-4-1">
 <p>
 下面是计算机图形学引入的 BRDF 模型，又叫做 Cook-Torrance 模型.<br>
@@ -1651,11 +1758,11 @@ v 表示视觉方向<br>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline79" class="outline-2">
-<h2 id="orgheadline79"><span class="section-number-2">5</span> Screen Effect</h2>
+<div id="outline-container-orgheadline80" class="outline-2">
+<h2 id="orgheadline80"><span class="section-number-2">5</span> Screen Effect</h2>
 <div class="outline-text-2" id="text-5">
-</div><div id="outline-container-orgheadline76" class="outline-3">
-<h3 id="orgheadline76"><span class="section-number-3">5.1</span> 概述</h3>
+</div><div id="outline-container-orgheadline77" class="outline-3">
+<h3 id="orgheadline77"><span class="section-number-3">5.1</span> 概述</h3>
 <div class="outline-text-3" id="text-5-1">
 <p>
 屏幕特效特效就相当于对最终显示图片到显示器之前的图片进行 PS 处理。具体处理每个像素的过程会通过一个 Shader 来进行，进行处理的时机是 Camera.OnRenderImage 被触发的时候，而 Graphics.Blit 可以将处理结果生效。<br>
@@ -1672,8 +1779,8 @@ v 表示视觉方向<br>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline77" class="outline-3">
-<h3 id="orgheadline77"><span class="section-number-3">5.2</span> 明度 亮度 饱和度 对比度</h3>
+<div id="outline-container-orgheadline78" class="outline-3">
+<h3 id="orgheadline78"><span class="section-number-3">5.2</span> 明度 亮度 饱和度 对比度</h3>
 <div class="outline-text-3" id="text-5-2">
 <p>
 明度（Brightness）是眼睛对光源和物体表面的明暗程度的感觉，主要是由光线强弱决定的一种视觉经验。<br>
@@ -1683,8 +1790,8 @@ v 表示视觉方向<br>
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline78" class="outline-3">
-<h3 id="orgheadline78"><span class="section-number-3">5.3</span> MotionBlur 的实现</h3>
+<div id="outline-container-orgheadline79" class="outline-3">
+<h3 id="orgheadline79"><span class="section-number-3">5.3</span> MotionBlur 的实现</h3>
 <div class="outline-text-3" id="text-5-3">
 <p>
 运动模糊产生的原因是 一个视觉信息采集周期内，同一个采集点接收到了多个信息，这些信息在同一个运动方向上依次排列。<br>
@@ -1713,24 +1820,24 @@ v 表示视觉方向<br>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline80" class="outline-2">
-<h2 id="orgheadline80"><span class="section-number-2">6</span> Skin Shader</h2>
+<div id="outline-container-orgheadline81" class="outline-2">
+<h2 id="orgheadline81"><span class="section-number-2">6</span> Skin Shader</h2>
 <div class="outline-text-2" id="text-6">
 <p>
 <a href="http://ten24.info/skin-shading-in-unity/" target="_blank" rel="external">http://ten24.info/skin-shading-in-unity/</a><br>
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline82" class="outline-2">
-<h2 id="orgheadline82"><span class="section-number-2">7</span> Normal Map</h2>
+<div id="outline-container-orgheadline83" class="outline-2">
+<h2 id="orgheadline83"><span class="section-number-2">7</span> Normal Map</h2>
 <div class="outline-text-2" id="text-7">
 <p>
 Normal Map 又叫 Ramp Map，其实就是法线贴图。<br>
 UnpackNormal 的作用是将 0-1 范围的数值(法线贴图存储的颜色值)映射为-1-1 范围的数值（法线向量）。<br>
 </p>
 </div>
-<div id="outline-container-orgheadline81" class="outline-4">
-<h4 id="orgheadline81"><span class="section-number-4">7.0.1</span> 参考资料</h4>
+<div id="outline-container-orgheadline82" class="outline-4">
+<h4 id="orgheadline82"><span class="section-number-4">7.0.1</span> 参考资料</h4>
 <div class="outline-text-4" id="text-7-0-1">
 <p>
 <a href="http://www.songho.ca/opengl/gl_normaltransform.html" target="_blank" rel="external">Normal 变换矩阵推导</a><br>
@@ -1741,11 +1848,11 @@ UnpackNormal 的作用是将 0-1 范围的数值(法线贴图存储的颜色值)
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline97" class="outline-2">
-<h2 id="orgheadline97"><span class="section-number-2">8</span> Q&amp;A</h2>
+<div id="outline-container-orgheadline98" class="outline-2">
+<h2 id="orgheadline98"><span class="section-number-2">8</span> Q&amp;A</h2>
 <div class="outline-text-2" id="text-8">
-</div><div id="outline-container-orgheadline83" class="outline-3">
-<h3 id="orgheadline83"><span class="section-number-3">8.1</span> unity 坐标系是左手还是右手？</h3>
+</div><div id="outline-container-orgheadline84" class="outline-3">
+<h3 id="orgheadline84"><span class="section-number-3">8.1</span> unity 坐标系是左手还是右手？</h3>
 <div class="outline-text-3" id="text-8-1">
 <p>
 unity 为左手坐标系<br>
@@ -1754,11 +1861,11 @@ OpenGL 为右手坐标系<br>
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline88" class="outline-3">
-<h3 id="orgheadline88"><span class="section-number-3">8.2</span> SurfaceShader 中 如何定义多个 Pass，它们的执行与否，以及执行顺序？</h3>
+<div id="outline-container-orgheadline89" class="outline-3">
+<h3 id="orgheadline89"><span class="section-number-3">8.2</span> SurfaceShader 中 如何定义多个 Pass，它们的执行与否，以及执行顺序？</h3>
 <div class="outline-text-3" id="text-8-2">
-</div><div id="outline-container-orgheadline84" class="outline-4">
-<h4 id="orgheadline84"><span class="section-number-4">8.2.1</span> 定义多个 Pass</h4>
+</div><div id="outline-container-orgheadline85" class="outline-4">
+<h4 id="orgheadline85"><span class="section-number-4">8.2.1</span> 定义多个 Pass</h4>
 <div class="outline-text-4" id="text-8-2-1">
 <p>
 定义多个 Pass 的方法，参考如下开源项目：<br>
@@ -1773,8 +1880,8 @@ Rules for Multi-pass Shaders in Unity (原文不存在时，可去有道云笔�
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline85" class="outline-4">
-<h4 id="orgheadline85"><span class="section-number-4">8.2.2</span> Pass 是否执行</h4>
+<div id="outline-container-orgheadline86" class="outline-4">
+<h4 id="orgheadline86"><span class="section-number-4">8.2.2</span> Pass 是否执行</h4>
 <div class="outline-text-4" id="text-8-2-2">
 <p>
 可以通过配制每个 pass 的 LightMode Tag，来选择具体执行哪些 pass。<br>
@@ -1796,8 +1903,8 @@ Rendering path= Deferred 时，优先选择"LightMode"="Deferred"的 pass，Defe
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline86" class="outline-4">
-<h4 id="orgheadline86"><span class="section-number-4">8.2.3</span> Pass 的执行顺序</h4>
+<div id="outline-container-orgheadline87" class="outline-4">
+<h4 id="orgheadline87"><span class="section-number-4">8.2.3</span> Pass 的执行顺序</h4>
 <div class="outline-text-4" id="text-8-2-3">
 <p>
 多个 Pass 的执行顺序是，从上到下依次进行的<br>
@@ -1806,8 +1913,8 @@ Rendering path= Deferred 时，优先选择"LightMode"="Deferred"的 pass，Defe
 </div>
 </div>
 
-<div id="outline-container-orgheadline87" class="outline-4">
-<h4 id="orgheadline87"><span class="section-number-4">8.2.4</span> Tips</h4>
+<div id="outline-container-orgheadline88" class="outline-4">
+<h4 id="orgheadline88"><span class="section-number-4">8.2.4</span> Tips</h4>
 <div class="outline-text-4" id="text-8-2-4">
 <ul class="org-ul">
 <li>需要注意的是，SurfaceShader 中定义多个 Pass 时，不需要写 Pass{}，因为 SurfaceShader 编译时，会自动添加 Pass{}.具体信息可以参考如下链接：<br></li>
@@ -1825,19 +1932,19 @@ Rendering path= Deferred 时，优先选择"LightMode"="Deferred"的 pass，Defe
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline93" class="outline-3">
-<h3 id="orgheadline93"><span class="section-number-3">8.3</span> Deferred Renderring，Deferred Shading，Deferred Lighting 是什么关系？</h3>
+<div id="outline-container-orgheadline94" class="outline-3">
+<h3 id="orgheadline94"><span class="section-number-3">8.3</span> Deferred Renderring，Deferred Shading，Deferred Lighting 是什么关系？</h3>
 <div class="outline-text-3" id="text-8-3">
-</div><div id="outline-container-orgheadline89" class="outline-4">
-<h4 id="orgheadline89"><span class="section-number-4">8.3.1</span> Deferred Rendering</h4>
+</div><div id="outline-container-orgheadline90" class="outline-4">
+<h4 id="orgheadline90"><span class="section-number-4">8.3.1</span> Deferred Rendering</h4>
 <div class="outline-text-4" id="text-8-3-1">
 <p>
 Deferred Rendering 只是延迟渲染算法的统称。延迟渲染分很多不同类型，Deferred Shading 和 Deferred Lighting 等才是具体的延迟渲染算法。<br>
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline90" class="outline-4">
-<h4 id="orgheadline90"><span class="section-number-4">8.3.2</span> Deferred Shading</h4>
+<div id="outline-container-orgheadline91" class="outline-4">
+<h4 id="orgheadline91"><span class="section-number-4">8.3.2</span> Deferred Shading</h4>
 <div class="outline-text-4" id="text-8-3-2">
 <p>
 在 3D 计算机图形学领域中，延迟着色是一种屏幕空间着色技术。之所以被称作延迟的是因为在第一阶段的 vertex 和 pixel 着色器中并没有真正执行渲染，渲染被延迟到了第二个阶段。<br>
@@ -1846,8 +1953,8 @@ Deferred Rendering 只是延迟渲染算法的统称。延迟渲染分很多不�
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline91" class="outline-4">
-<h4 id="orgheadline91"><span class="section-number-4">8.3.3</span> Deferred Lighting</h4>
+<div id="outline-container-orgheadline92" class="outline-4">
+<h4 id="orgheadline92"><span class="section-number-4">8.3.3</span> Deferred Lighting</h4>
 <div class="outline-text-4" id="text-8-3-3">
 <p>
 Deferred lighting 是对 Deferred Shading 的一种修改。该技术使用了三个阶段来代替延迟着色中的两个阶段。<br>
@@ -1857,8 +1964,8 @@ Deferred lighting 是对 Deferred Shading 的一种修改。该技术使用了�
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline92" class="outline-4">
-<h4 id="orgheadline92"><span class="section-number-4">8.3.4</span> 参考资料</h4>
+<div id="outline-container-orgheadline93" class="outline-4">
+<h4 id="orgheadline93"><span class="section-number-4">8.3.4</span> 参考资料</h4>
 <div class="outline-text-4" id="text-8-3-4">
 <p>
 <a href="http://chengkehan.github.io/DeferredRendering.html" target="_blank" rel="external">http://chengkehan.github.io/DeferredRendering.html</a><br>
@@ -1873,19 +1980,19 @@ Deferred Lighting  <a href="https://docs.unity3d.com/Manual/RenderTech-DeferredL
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline94" class="outline-3">
-<h3 id="orgheadline94"><span class="section-number-3">8.4</span> 为什么 Unity 中 skybox 是在所有不透明物体和所有透明物体之间被绘制的？</h3>
+<div id="outline-container-orgheadline95" class="outline-3">
+<h3 id="orgheadline95"><span class="section-number-3">8.4</span> 为什么 Unity 中 skybox 是在所有不透明物体和所有透明物体之间被绘制的？</h3>
 <div class="outline-text-3" id="text-8-4">
 <p>
 一般来讲 skybox 可以在 background 渲染队列中进行渲染，但是，这样会导致像素的 OverDraw，因此在不透明物体后再绘制 Skybox 可以减少这种 OverDraw。<br>
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline95" class="outline-3">
-<h3 id="orgheadline95"><span class="section-number-3">8.5</span> <span class="todo TODO">TODO</span> 为什么光照和表面的交互用乘法？</h3>
-</div>
 <div id="outline-container-orgheadline96" class="outline-3">
-<h3 id="orgheadline96"><span class="section-number-3">8.6</span> 为什么光的衰减和离光源的距离的平方成反比？</h3>
+<h3 id="orgheadline96"><span class="section-number-3">8.5</span> <span class="todo TODO">TODO</span> 为什么光照和表面的交互用乘法？</h3>
+</div>
+<div id="outline-container-orgheadline97" class="outline-3">
+<h3 id="orgheadline97"><span class="section-number-3">8.6</span> 为什么光的衰减和离光源的距离的平方成反比？</h3>
 <div class="outline-text-3" id="text-8-6">
 <p>
 在点光源，聚光灯等模拟中，通常会为光照添加衰减，这个衰减系数和光源距离的平方相关，具体原因查看下面文章。<br>
@@ -1894,36 +2001,36 @@ Deferred Lighting  <a href="https://docs.unity3d.com/Manual/RenderTech-DeferredL
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline104" class="outline-2">
-<h2 id="orgheadline104"><span class="section-number-2">9</span> Error</h2>
+<div id="outline-container-orgheadline105" class="outline-2">
+<h2 id="orgheadline105"><span class="section-number-2">9</span> Error</h2>
 <div class="outline-text-2" id="text-9">
-</div><div id="outline-container-orgheadline98" class="outline-4">
-<h4 id="orgheadline98"><span class="section-number-4">9.0.1</span> Shader error in Too many texture interpolators would be used for ForwardBase pass (11 out of max 10)</h4>
+</div><div id="outline-container-orgheadline99" class="outline-4">
+<h4 id="orgheadline99"><span class="section-number-4">9.0.1</span> Shader error in Too many texture interpolators would be used for ForwardBase pass (11 out of max 10)</h4>
 <div class="outline-text-4" id="text-9-0-1">
 <p>
 将 #pragma target 3.0 变为 #pragma target 4.0 可解决问题<br>
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline100" class="outline-4">
-<h4 id="orgheadline100"><span class="section-number-4">9.0.2</span> 如果发现颜色部分正确部分不正确</h4>
+<div id="outline-container-orgheadline101" class="outline-4">
+<h4 id="orgheadline101"><span class="section-number-4">9.0.2</span> 如果发现颜色部分正确部分不正确</h4>
 <div class="outline-text-4" id="text-9-0-2">
-</div><ol class="org-ol"><li><a id="orgheadline99"></a>检查 Input 中 viewDir lightDir 是否使用的是 float3.<br><div class="outline-text-5" id="text-9-0-2-1">
+</div><ol class="org-ol"><li><a id="orgheadline100"></a>检查 Input 中 viewDir lightDir 是否使用的是 float3.<br><div class="outline-text-5" id="text-9-0-2-1">
 <p>
 使用 float 会造成 yz 分量的缺失，导致 yz 分量不为 0 时，显示错误。<br>
 </p>
 </div></li></ol>
 </div>
-<div id="outline-container-orgheadline101" class="outline-4">
-<h4 id="orgheadline101"><span class="section-number-4">9.0.3</span> Unity 渲染半透明物体，Editor 下 Scene 中可见，在 Game 中不可见</h4>
+<div id="outline-container-orgheadline102" class="outline-4">
+<h4 id="orgheadline102"><span class="section-number-4">9.0.3</span> Unity 渲染半透明物体，Editor 下 Scene 中可见，在 Game 中不可见</h4>
 <div class="outline-text-4" id="text-9-0-3">
 <p>
 是因为被 Skybox 遮挡住了。Skybox 的深度值为 1，如果被渲染物体的深度值大于 1 肯定会被遮挡；如果被渲染的物体深度值等于 1，而且物体的渲染顺序在 Skybox 之前，物体也会被遮挡。<br>
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline102" class="outline-4">
-<h4 id="orgheadline102"><span class="section-number-4">9.0.4</span> vert': output parameter 'o' not completely initialized</h4>
+<div id="outline-container-orgheadline103" class="outline-4">
+<h4 id="orgheadline103"><span class="section-number-4">9.0.4</span> vert': output parameter 'o' not completely initialized</h4>
 <div class="outline-text-4" id="text-9-0-4">
 <div class="org-src-container">
 
@@ -1936,8 +2043,8 @@ Deferred Lighting  <a href="https://docs.unity3d.com/Manual/RenderTech-DeferredL
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline103" class="outline-4">
-<h4 id="orgheadline103"><span class="section-number-4">9.0.5</span> 在写屏幕特效的时候，发现屏幕不刷新了</h4>
+<div id="outline-container-orgheadline104" class="outline-4">
+<h4 id="orgheadline104"><span class="section-number-4">9.0.5</span> 在写屏幕特效的时候，发现屏幕不刷新了</h4>
 <div class="outline-text-4" id="text-9-0-5">
 <p>
 请检查 OnRenderImage 中是不是总是调用了 Graphics.Blit(srcTex,desTex)，或者 Graphic.Blit(srcTex,desTex,CurMaterial)<br>
@@ -1945,8 +2052,8 @@ Deferred Lighting  <a href="https://docs.unity3d.com/Manual/RenderTech-DeferredL
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline105" class="outline-2">
-<h2 id="orgheadline105"><span class="section-number-2">10</span> 参考资料</h2>
+<div id="outline-container-orgheadline106" class="outline-2">
+<h2 id="orgheadline106"><span class="section-number-2">10</span> 参考资料</h2>
 <div class="outline-text-2" id="text-10">
 <p>
 <a href="https://onevcat.com/2013/07/shader-tutorial-1/" target="_blank" rel="external">https://onevcat.com/2013/07/shader-tutorial-1/</a><br>
@@ -1964,7 +2071,7 @@ Deferred Lighting  <a href="https://docs.unity3d.com/Manual/RenderTech-DeferredL
         <p><span>本文标题:</span><a href="/2016/08/20/unity/UnityShaderAndEffectCookbook/">UnityShaderAndEffectCookbook</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">wolfand11</a></p>
         <p><span>发布时间:</span>2016-08-20, 00:00:00</p>
-        <p><span>最后更新:</span>2017-09-21, 21:56:48</p>
+        <p><span>最后更新:</span>2017-10-10, 19:30:27</p>
         <p>
             <span>原始链接:</span><a class="post-url" href="/2016/08/20/unity/UnityShaderAndEffectCookbook/" title="UnityShaderAndEffectCookbook">http://wolfand11.coding.me/2016/08/20/unity/UnityShaderAndEffectCookbook/</a>
             <span class="copy-path" data-clipboard-text="原文: http://wolfand11.coding.me/2016/08/20/unity/UnityShaderAndEffectCookbook/　　作者: wolfand11" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
@@ -2000,7 +2107,7 @@ Deferred Lighting  <a href="https://docs.unity3d.com/Manual/RenderTech-DeferredL
     <div id="toc" class="toc-article">
         <strong class="toc-title">文章目录</strong>
         
-            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#orgheadline56"><span class="toc-number">1.</span> <span class="toc-text">1 Basic</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline1"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 SurfaceShader 工作流程图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline2"><span class="toc-number">1.2.</span> <span class="toc-text">1.2 Properties</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline3"><span class="toc-number">1.3.</span> <span class="toc-text">1.3 SurfaceOutput</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline4"><span class="toc-number">1.4.</span> <span class="toc-text">1.4 Input</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline31"><span class="toc-number">1.5.</span> <span class="toc-text">1.5 shader 的代码结构</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline5"><span class="toc-number">1.5.1.</span> <span class="toc-text">1.5.1 Properties</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline24"><span class="toc-number">1.5.2.</span> <span class="toc-text">1.5.2 SubShader</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline30"><span class="toc-number">1.5.3.</span> <span class="toc-text">1.5.3 Pass</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline34"><span class="toc-number">1.6.</span> <span class="toc-text">1.6 贴图</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline32"><span class="toc-number">1.6.1.</span> <span class="toc-text">1.6.1 贴图过滤模式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline33"><span class="toc-number">1.6.2.</span> <span class="toc-text">1.6.2 Aniso Level</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline54"><span class="toc-number">1.7.</span> <span class="toc-text">1.7 Unity's Rendering Pipline</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline35"><span class="toc-number">1.7.1.</span> <span class="toc-text">1.7.1 Rendering Path</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline44"><span class="toc-number">1.7.2.</span> <span class="toc-text">1.7.2 Forward Rendering path</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline51"><span class="toc-number">1.7.3.</span> <span class="toc-text">1.7.3 Deferred Shading path</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline52"><span class="toc-number">1.7.4.</span> <span class="toc-text">1.7.4 Legacy Deferred Lighting path</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline53"><span class="toc-number">1.7.5.</span> <span class="toc-text">1.7.5 Legacy Vertex Lit Rendering path</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline55"><span class="toc-number">1.8.</span> <span class="toc-text">1.8 RenderQueue And z-depth</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#orgheadline61"><span class="toc-number">2.</span> <span class="toc-text">2 Reflecting your world</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline57"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 光学基础</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline60"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 Fresnel reflection</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline58"><span class="toc-number">2.2.1.</span> <span class="toc-text">2.2.1 如何模拟菲涅尔效应效果？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline59"><span class="toc-number">2.2.2.</span> <span class="toc-text">2.2.2 参考资料</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#orgheadline68"><span class="toc-number">3.</span> <span class="toc-text">3 Shader Optimize</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline62"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 数据类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline63"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 noforwardadd</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline64"><span class="toc-number">3.3.</span> <span class="toc-text">3.3 exclude_path</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline65"><span class="toc-number">3.4.</span> <span class="toc-text">3.4 nolightmap</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline66"><span class="toc-number">3.5.</span> <span class="toc-text">3.5 halfasview</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline67"><span class="toc-number">3.6.</span> <span class="toc-text">3.6 参考资料</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#orgheadline75"><span class="toc-number">4.</span> <span class="toc-text">4 LightingModel</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline69"><span class="toc-number">4.1.</span> <span class="toc-text">4.1 Lambert</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline71"><span class="toc-number">4.2.</span> <span class="toc-text">4.2 Phong</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline70"><span class="toc-number">4.2.1.</span> <span class="toc-text">4.2.1 缺点</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline72"><span class="toc-number">4.3.</span> <span class="toc-text">4.3 BlinnPhong</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline74"><span class="toc-number">4.4.</span> <span class="toc-text">4.4 PBR</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline73"><span class="toc-number">4.4.1.</span> <span class="toc-text">4.4.1 Cook-Torrance 模型</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#orgheadline79"><span class="toc-number">5.</span> <span class="toc-text">5 Screen Effect</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline76"><span class="toc-number">5.1.</span> <span class="toc-text">5.1 概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline77"><span class="toc-number">5.2.</span> <span class="toc-text">5.2 明度 亮度 饱和度 对比度</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline78"><span class="toc-number">5.3.</span> <span class="toc-text">5.3 MotionBlur 的实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#orgheadline80"><span class="toc-number">6.</span> <span class="toc-text">6 Skin Shader</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#orgheadline82"><span class="toc-number">7.</span> <span class="toc-text">7 Normal Map</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline81"><span class="toc-number">7.0.1.</span> <span class="toc-text">7.0.1 参考资料</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#orgheadline97"><span class="toc-number">8.</span> <span class="toc-text">8 Q&A</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline83"><span class="toc-number">8.1.</span> <span class="toc-text">8.1 unity 坐标系是左手还是右手？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline88"><span class="toc-number">8.2.</span> <span class="toc-text">8.2 SurfaceShader 中 如何定义多个 Pass，它们的执行与否，以及执行顺序？</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline84"><span class="toc-number">8.2.1.</span> <span class="toc-text">8.2.1 定义多个 Pass</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline85"><span class="toc-number">8.2.2.</span> <span class="toc-text">8.2.2 Pass 是否执行</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline86"><span class="toc-number">8.2.3.</span> <span class="toc-text">8.2.3 Pass 的执行顺序</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline87"><span class="toc-number">8.2.4.</span> <span class="toc-text">8.2.4 Tips</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline93"><span class="toc-number">8.3.</span> <span class="toc-text">8.3 Deferred Renderring，Deferred Shading，Deferred Lighting 是什么关系？</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline89"><span class="toc-number">8.3.1.</span> <span class="toc-text">8.3.1 Deferred Rendering</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline90"><span class="toc-number">8.3.2.</span> <span class="toc-text">8.3.2 Deferred Shading</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline91"><span class="toc-number">8.3.3.</span> <span class="toc-text">8.3.3 Deferred Lighting</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline92"><span class="toc-number">8.3.4.</span> <span class="toc-text">8.3.4 参考资料</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline94"><span class="toc-number">8.4.</span> <span class="toc-text">8.4 为什么 Unity 中 skybox 是在所有不透明物体和所有透明物体之间被绘制的？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline95"><span class="toc-number">8.5.</span> <span class="toc-text">8.5 TODO 为什么光照和表面的交互用乘法？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline96"><span class="toc-number">8.6.</span> <span class="toc-text">8.6 为什么光的衰减和离光源的距离的平方成反比？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#orgheadline104"><span class="toc-number">9.</span> <span class="toc-text">9 Error</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline98"><span class="toc-number">9.0.1.</span> <span class="toc-text">9.0.1 Shader error in Too many texture interpolators would be used for ForwardBase pass (11 out of max 10)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline100"><span class="toc-number">9.0.2.</span> <span class="toc-text">9.0.2 如果发现颜色部分正确部分不正确</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline101"><span class="toc-number">9.0.3.</span> <span class="toc-text">9.0.3 Unity 渲染半透明物体，Editor 下 Scene 中可见，在 Game 中不可见</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline102"><span class="toc-number">9.0.4.</span> <span class="toc-text">9.0.4 vert': output parameter 'o' not completely initialized</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline103"><span class="toc-number">9.0.5.</span> <span class="toc-text">9.0.5 在写屏幕特效的时候，发现屏幕不刷新了</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#orgheadline105"><span class="toc-number">10.</span> <span class="toc-text">10 参考资料</span></a></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#orgheadline57"><span class="toc-number">1.</span> <span class="toc-text">1 Basic</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline1"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 SurfaceShader 工作流程图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline2"><span class="toc-number">1.2.</span> <span class="toc-text">1.2 Properties</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline3"><span class="toc-number">1.3.</span> <span class="toc-text">1.3 SurfaceOutput</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline4"><span class="toc-number">1.4.</span> <span class="toc-text">1.4 Input</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline32"><span class="toc-number">1.5.</span> <span class="toc-text">1.5 shader 的代码结构</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline5"><span class="toc-number">1.5.1.</span> <span class="toc-text">1.5.1 Properties</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline24"><span class="toc-number">1.5.2.</span> <span class="toc-text">1.5.2 SubShader</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline31"><span class="toc-number">1.5.3.</span> <span class="toc-text">1.5.3 Pass</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline35"><span class="toc-number">1.6.</span> <span class="toc-text">1.6 贴图</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline33"><span class="toc-number">1.6.1.</span> <span class="toc-text">1.6.1 贴图过滤模式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline34"><span class="toc-number">1.6.2.</span> <span class="toc-text">1.6.2 Aniso Level</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline55"><span class="toc-number">1.7.</span> <span class="toc-text">1.7 Unity's Rendering Pipline</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline36"><span class="toc-number">1.7.1.</span> <span class="toc-text">1.7.1 Rendering Path</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline45"><span class="toc-number">1.7.2.</span> <span class="toc-text">1.7.2 Forward Rendering path</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline52"><span class="toc-number">1.7.3.</span> <span class="toc-text">1.7.3 Deferred Shading path</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline53"><span class="toc-number">1.7.4.</span> <span class="toc-text">1.7.4 Legacy Deferred Lighting path</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline54"><span class="toc-number">1.7.5.</span> <span class="toc-text">1.7.5 Legacy Vertex Lit Rendering path</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline56"><span class="toc-number">1.8.</span> <span class="toc-text">1.8 RenderQueue And z-depth</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#orgheadline62"><span class="toc-number">2.</span> <span class="toc-text">2 Reflecting your world</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline58"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 光学基础</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline61"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 Fresnel reflection</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline59"><span class="toc-number">2.2.1.</span> <span class="toc-text">2.2.1 如何模拟菲涅尔效应效果？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline60"><span class="toc-number">2.2.2.</span> <span class="toc-text">2.2.2 参考资料</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#orgheadline69"><span class="toc-number">3.</span> <span class="toc-text">3 Shader Optimize</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline63"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 数据类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline64"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 noforwardadd</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline65"><span class="toc-number">3.3.</span> <span class="toc-text">3.3 exclude_path</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline66"><span class="toc-number">3.4.</span> <span class="toc-text">3.4 nolightmap</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline67"><span class="toc-number">3.5.</span> <span class="toc-text">3.5 halfasview</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline68"><span class="toc-number">3.6.</span> <span class="toc-text">3.6 参考资料</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#orgheadline76"><span class="toc-number">4.</span> <span class="toc-text">4 LightingModel</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline70"><span class="toc-number">4.1.</span> <span class="toc-text">4.1 Lambert</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline72"><span class="toc-number">4.2.</span> <span class="toc-text">4.2 Phong</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline71"><span class="toc-number">4.2.1.</span> <span class="toc-text">4.2.1 缺点</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline73"><span class="toc-number">4.3.</span> <span class="toc-text">4.3 BlinnPhong</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline75"><span class="toc-number">4.4.</span> <span class="toc-text">4.4 PBR</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline74"><span class="toc-number">4.4.1.</span> <span class="toc-text">4.4.1 Cook-Torrance 模型</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#orgheadline80"><span class="toc-number">5.</span> <span class="toc-text">5 Screen Effect</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline77"><span class="toc-number">5.1.</span> <span class="toc-text">5.1 概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline78"><span class="toc-number">5.2.</span> <span class="toc-text">5.2 明度 亮度 饱和度 对比度</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline79"><span class="toc-number">5.3.</span> <span class="toc-text">5.3 MotionBlur 的实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#orgheadline81"><span class="toc-number">6.</span> <span class="toc-text">6 Skin Shader</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#orgheadline83"><span class="toc-number">7.</span> <span class="toc-text">7 Normal Map</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline82"><span class="toc-number">7.0.1.</span> <span class="toc-text">7.0.1 参考资料</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#orgheadline98"><span class="toc-number">8.</span> <span class="toc-text">8 Q&A</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline84"><span class="toc-number">8.1.</span> <span class="toc-text">8.1 unity 坐标系是左手还是右手？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline89"><span class="toc-number">8.2.</span> <span class="toc-text">8.2 SurfaceShader 中 如何定义多个 Pass，它们的执行与否，以及执行顺序？</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline85"><span class="toc-number">8.2.1.</span> <span class="toc-text">8.2.1 定义多个 Pass</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline86"><span class="toc-number">8.2.2.</span> <span class="toc-text">8.2.2 Pass 是否执行</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline87"><span class="toc-number">8.2.3.</span> <span class="toc-text">8.2.3 Pass 的执行顺序</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline88"><span class="toc-number">8.2.4.</span> <span class="toc-text">8.2.4 Tips</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline94"><span class="toc-number">8.3.</span> <span class="toc-text">8.3 Deferred Renderring，Deferred Shading，Deferred Lighting 是什么关系？</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline90"><span class="toc-number">8.3.1.</span> <span class="toc-text">8.3.1 Deferred Rendering</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline91"><span class="toc-number">8.3.2.</span> <span class="toc-text">8.3.2 Deferred Shading</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline92"><span class="toc-number">8.3.3.</span> <span class="toc-text">8.3.3 Deferred Lighting</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline93"><span class="toc-number">8.3.4.</span> <span class="toc-text">8.3.4 参考资料</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline95"><span class="toc-number">8.4.</span> <span class="toc-text">8.4 为什么 Unity 中 skybox 是在所有不透明物体和所有透明物体之间被绘制的？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline96"><span class="toc-number">8.5.</span> <span class="toc-text">8.5 TODO 为什么光照和表面的交互用乘法？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline97"><span class="toc-number">8.6.</span> <span class="toc-text">8.6 为什么光的衰减和离光源的距离的平方成反比？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#orgheadline105"><span class="toc-number">9.</span> <span class="toc-text">9 Error</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline99"><span class="toc-number">9.0.1.</span> <span class="toc-text">9.0.1 Shader error in Too many texture interpolators would be used for ForwardBase pass (11 out of max 10)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline101"><span class="toc-number">9.0.2.</span> <span class="toc-text">9.0.2 如果发现颜色部分正确部分不正确</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline102"><span class="toc-number">9.0.3.</span> <span class="toc-text">9.0.3 Unity 渲染半透明物体，Editor 下 Scene 中可见，在 Game 中不可见</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline103"><span class="toc-number">9.0.4.</span> <span class="toc-text">9.0.4 vert': output parameter 'o' not completely initialized</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline104"><span class="toc-number">9.0.5.</span> <span class="toc-text">9.0.5 在写屏幕特效的时候，发现屏幕不刷新了</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#orgheadline106"><span class="toc-number">10.</span> <span class="toc-text">10 参考资料</span></a></li></ol>
         
     </div>
     <style>

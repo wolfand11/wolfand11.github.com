@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="wolfand11" />
+
+
+
+<meta name="description" content="这篇主要是动态规划算法设计相关的笔记。关于算法其他方面的笔记，可以参考本博客 AlgorithmIntroduce 这篇文章。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Dynamic Programming">
+<meta property="og:url" content="http://wolfand11.coding.me/2017/07/18/algorithm/DynamicProgramming/index.html">
+<meta property="og:site_name" content="wolfand11's blog">
+<meta property="og:description" content="这篇主要是动态规划算法设计相关的笔记。关于算法其他方面的笔记，可以参考本博客 AlgorithmIntroduce 这篇文章。">
+<meta property="og:updated_time" content="2017-10-19T04:02:21.087Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Dynamic Programming">
+<meta name="twitter:description" content="这篇主要是动态规划算法设计相关的笔记。关于算法其他方面的笔记，可以参考本博客 AlgorithmIntroduce 这篇文章。">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="wolfand11&#39;s blog" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/favicon.png">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>Dynamic Programming | wolfand11&#39;s blog</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: true
+    }
+</script>
+
+
+    <script> yiliaConfig.jquery_ui = [false]; </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/images/m_lambda-320.png" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">wolfand11</a></h1>
+        </hgroup>
+
+        
+
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" href="https://github.com/wolfand11" title="GitHub"></a>
+                            
+                                <a class="fa 豆瓣" href="https://www.douban.com/people/wolfand11" title="豆瓣"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/InitPC/">InitPC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ai/">ai</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/algorithm/">algorithm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/animation/">animation</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/architecture/">architecture</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/art/">art</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/artist/">artist</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/behaviortree/">behaviortree</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blog/">blog</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/book/">book</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cmd/">cmd</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cryptology/">cryptology</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/csharp/">csharp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/decode/">decode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dynamic-programming/">dynamic programming</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/elisp/">elisp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/emacs/">emacs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/encode/">encode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/framework/">framework</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fsm/">fsm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/game/">game</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/game-engine/">game engine</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gameplay/">gameplay</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/graphics/">graphics</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gui/">gui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hot-update/">hot-update</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/htn/">htn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/language/">language</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/lcs/">lcs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/lua/">lua</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/math/">math</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/matlab/">matlab</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mvc/">mvc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/network/">network</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ngui/">ngui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/package/">package</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/resource/">resource</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/script/">script</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/slua/">slua</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/software-architecture/">software architecture</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spacemacs/">spacemacs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tools/">tools</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ugui/">ugui</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/unity/">unity</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/unity-doc/">unity-doc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/working-in-unity/">working-in-unity</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a class="main-nav-link switch-friends-link" href="http://xtutu.me/">xtutu</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">wolfand11</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/images/m_lambda-320.png" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">wolfand11</a></h1>
+            </hgroup>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/wolfand11" title="GitHub"></a>
+                            
+                                <a class="fa 豆瓣" target="_blank" href="https://www.douban.com/people/wolfand11" title="豆瓣"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-algorithm/DynamicProgramming" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/07/18/algorithm/DynamicProgramming/" class="article-date">
+      <time datetime="2017-07-17T16:00:00.000Z" itemprop="datePublished">2017-07-18</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Dynamic Programming
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/algorithm/">algorithm</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/algorithm/">algorithm</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/dynamic-programming/">dynamic programming</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/lcs/">lcs</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/package/">package</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        
+
+<p>
+这篇主要是动态规划算法设计相关的笔记。关于算法其他方面的笔记，可以参考本博客 AlgorithmIntroduce 这篇文章。<br>
+</p>
+<a id="more"></a>
+<div id="outline-container-orgheadline6" class="outline-2">
+<h2 id="orgheadline6"><span class="section-number-2">1</span> 动态规划法</h2>
+<div class="outline-text-2" id="text-1">
+</div><div id="outline-container-orgheadline1" class="outline-3">
+<h3 id="orgheadline1"><span class="section-number-3">1.1</span> 动态规划的特征</h3>
+<div class="outline-text-3" id="text-1-1">
+<ul class="org-ul">
+<li>最优子结构<br>
+      如果问题的一个最优解包含子问题的最优解，就称该问题具有最优子结构。<br>
+例如： 如果 z = LCS(x,y)，那么任何 z 序列的前缀也是 x 序列前缀和 y 序列前缀的最长公共子序列<br></li>
+<li>重叠子问题，一个递归的过程包含少数独立的子问题被反复计算多次。<br></li>
+<li>在动态规划法中，每一步都要做出选择，但是这些选择依赖于子问题的解。因此，解动态规划问题一般是自底向上，从小子问题处理至大子问题。这样可以避免子问题被反复计算。<br></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgheadline2" class="outline-3">
+<h3 id="orgheadline2"><span class="section-number-3">1.2</span> 找寻最优子结构的模式</h3>
+<div class="outline-text-3" id="text-1-2">
+<ol class="org-ol">
+<li>问题的一个解可以是做一个选择。做这种选择会得到一个或多个有待解决的子问题。<br></li>
+<li>假设对一个给定的问题，已知的是一个可以导致最优解的选择。不必关心如何确定这个选择，尽管假定它是已知的。<br></li>
+<li>在已知这个选择后，要确定哪些子问题会随之发生，以及如何最好地描述所得到的子问题空间。<br>
+描述子问题空间的一个有效经验是，尽量保持这个空间简单，然后在需要时再扩充它。<br>
+      在装配线调度问题中，我们所考虑的子问题空间就是从工厂入口通过装配站 \(S_{1,j}和 S_{2,j}\) 的最快路线。这个子问题空间很合适，因而没必要再去尝试一个更具一般性的子问题空间了。<br>
+在矩阵链乘积问题中，考虑的子问题空间是从第 1 个矩阵到第 j 个矩阵相乘时，最优化的加括号方法。<br></li>
+<li>利用 cut-and-paste 技术，来证明在问题的一个最优解中，使用的子问题的解本身也必须是最优的。<br></li>
+</ol>
+</div>
+</div>
+<div id="outline-container-orgheadline5" class="outline-3">
+<h3 id="orgheadline5"><span class="section-number-3">1.3</span> 动态规划算法的设计步骤</h3>
+<div class="outline-text-3" id="text-1-3">
+</div><div id="outline-container-orgheadline3" class="outline-4">
+<h4 id="orgheadline3"><span class="section-number-4">1.3.1</span> 算法导论列出的设计步骤</h4>
+<div class="outline-text-4" id="text-1-3-1">
+<ol class="org-ol">
+<li>描述最优解的结构。即寻找最优子结构，利用子问题的最优解来构造原问题的一个最优解。<br></li>
+<li>递归定义最优解的值。<br></li>
+<li>按自底向上计算最优解的值。<br></li>
+<li>由计算出的结果构造一个最优解。<br></li>
+</ol>
+</div>
+</div>
+<div id="outline-container-orgheadline4" class="outline-4">
+<h4 id="orgheadline4"><span class="section-number-4">1.3.2</span> 另一种设计步骤</h4>
+<div class="outline-text-4" id="text-1-3-2">
+<ol class="org-ol">
+<li>列出所有涉及到的变量<br></li>
+<li>定义问题的状态<br></li>
+<li>定义状态转移方程<br>
+这一步的本质，其实就是寻找最优子结构。找到最优子结构，就可以定义出状态转移方程！<br>
+<ul class="org-ul">
+<li>首先，将问题划分为子问题。<br>
+划分子问题的方法：<br>
+<ul class="org-ul">
+<li>问题的一个解可以是做一个选择。做这种选择会得到一个或多个有待解决的子问题。<br></li>
+<li>观察状态转移方程。将自变量减去一个值（一般为 1），看看得到的子问题是什么问题。<br></li>
+</ul></li>
+<li>然后，通过子问题来定义原问题，从而得出状态转移方程<br></li>
+</ul></li>
+<li>求解问题<br></li>
+</ol>
+
+<p>
+下面<a href="#orgtarget1">2.2</a>中使用了该设计步骤。<br>
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline28" class="outline-2">
+<h2 id="orgheadline28"><span class="section-number-2">2</span> 实例</h2>
+<div class="outline-text-2" id="text-2">
+</div><div id="outline-container-orgheadline18" class="outline-3">
+<h3 id="orgheadline18"><span class="section-number-3">2.1</span> 最长公共子序列</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+有两个序列 x[1&#x2026;m] y[1&#x2026;n], (1) 求这两个序列的最长公共子序列之一的长度 (2) 输出所有最长公共子序列<br>
+</p>
+</div>
+<div id="outline-container-orgheadline7" class="outline-4">
+<h4 id="orgheadline7"><span class="section-number-4">2.1.1</span> 穷举法</h4>
+<div class="outline-text-4" id="text-2-1-1">
+<p>
+取 x[1&#x2026;m]的所有子序列，分别遍历 y[1&#x2026;n]来查看是否该子序列是公共子序列，记录下当前最长的所有公共子序列。遍历完之后，依次输出。<br>
+</p>
+<ul class="org-ul">
+<li>算法分析<br>
+每次遍历 y[1&#x2026;n]的消耗为 n，x[1&#x2026;m]一共有 \(2^m\) 个子序列，所以总的时间消耗为 \(n2^m\)<br></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgheadline17" class="outline-4">
+<h4 id="orgheadline17"><span class="section-number-4">2.1.2</span> 动态规划法</h4>
+<div class="outline-text-4" id="text-2-1-2">
+</div><ol class="org-ol"><li><a id="orgheadline8"></a>教科书方式<br><div class="outline-text-5" id="text-2-1-2-1">
+<p>
+定义 \(LCS(x,y)\) 为序列 x 和 y 的最长公共子序列之一<br>
+定义 \(|S|\) 为 \(S\) 序列的长度<br>
+定义 \(c[i,j] = |LCS(x[1,i],y(1,j))|\)<br>
+则 \(c[m,m] = |LCS(x,y)|\)<br>
+</p>
+\begin{eqnarray}
+c[i,j] =
+\begin{cases}
+c[i-1,j-1]+1              & if \, x[i]==y[j] \\
+max(c[i,j-1], c[i-1,j])   & other \, cases   \\
+\end{cases} \nonumber
+\end{eqnarray}
+<ul class="org-ul">
+<li>最坏情况分析<br>
+取上面的递归公式中最耗时的部分 \(c[i,j] = max(c[i,j-1], c[i-1,j])\) ，将其转化为递归树，可以计算出树的高度为 $m+n$，这个树的节点数目为 \(2^{m+n}\)<br></li>
+<li>子问题被重复计算<br>
+LCS 问题的子问题空间包含 \(m*n\) 个独立的子问题(c[i,j]一共有 m*n 种组合)，而在最坏情况分析中，一共需要解决的问题数目为  \(2^{m+n}\) ，可以通过记录已经求解过的问题的结果来避免重复的计算。<br>
+使用平摊分析可以得出采用记录求解过的问题结果后，LCS 的时间复杂度为 \(O(n*m)\)<br></li>
+</ul>
+</div></li>
+<li><a id="orgheadline16"></a>另一种方式<br><ol class="org-ol"><li><a id="orgheadline9"></a>所有涉及到的变量<br><div class="outline-text-6" id="text-2-1-2-2-1">
+<p>
+\(序列 S1、序列 S2、最长公共子序列 S、最长公共子序列长度 LCS\)<br>
+\(隐含的变量 S1 第 i 个元素 S1_i、S2 第 j 个元素 S2_j\)<br>
+</p>
+</div></li>
+<li><a id="orgheadline10"></a>定义问题的状态<br><div class="outline-text-6" id="text-2-1-2-2-2">
+<ul class="org-ul">
+<li>方案 1<br>
+      LCS(S1,S2) 表示序列 S1 和序列 S2 的最长公共子序列的长度<br>
+更一般的描述是，LCS(s1,s2) 表示序列 s1 和序列 s2 的最长公共子序列的长度<br>
+使用序列最后一个值的索引值来表示也是等价的。即，LCS(i,j)<br></li>
+<li>方案 2<br>
+LCS(S1) 表示序列 S1 和序列 S2 的最长公共子序列的长度<br>
+更一般的描述是，LCS(s1) 表示序列 s1 和序列 S2 的最长公共子序列的长度<br>
+使用序列最后一个值的索引值来表示也是等价的。即，LCS(i)<br></li>
+<li>方案 3<br>
+LCS(S) 表示序列 S1 和序列 S2 的最长公共子序列 S 的长度<br>
+更一般的描述是，LCS(s) 表示序列 s1 和序列 s2 的最长公共子序列的长度<br>
+使用序列最后一个值的索引值来表示也是等价的。即，LCS(k)<br></li>
+</ul>
+</div></li>
+<li><a id="orgheadline14"></a>定义状态转移方程<br><ol class="org-ol"><li><a id="orgheadline11"></a>方案 1<br><div class="outline-text-7" id="text-2-1-2-2-3-1">
+<ul class="org-ul">
+<li><p>
+将问题划分为多个子问题<br>
+以最长公共子序列中是否包含当前 s1 序列中最后一个值来划分问题<br>
+</p>
+\begin{align}
+&LCS(i-1,j)      如果不包含 s1 的最后一个值        \nonumber \\
+&LCS(i-1,j)+1    如果包含 s1 的最后一个值         \nonumber \\
+\end{align}</li>
+<li><p>
+通过子问题来定义原问题<br>
+</p>
+\begin{eqnarray}
+LCS(i,j) =
+\begin{cases}
+LCS(i-1,j)        & 包含 s1_i     \\
+LCS(i-1,j)+1      & 不包含 s1_i    \\
+\end{cases} \nonumber
+\end{eqnarray}</li>
+</ul>
+</div></li>
+<li><a id="orgheadline12"></a>方案 2<br><div class="outline-text-7" id="text-2-1-2-2-3-2">
+<ul class="org-ul">
+<li><p>
+将问题划分为多个子问题<br>
+以最长公共子序列中是否包含当前 s1 序列中最后一个值来划分问题<br>
+</p>
+    \begin{align}
+&LCS(i-1)      如果不包含 s1 的最后一个值        \nonumber \\
+&LCS(i-1)+1    如果包含 s1 的最后一个值         \nonumber \\
+\end{align}</li>
+<li><p>
+通过子问题来定义原问题<br>
+</p>
+    \begin{eqnarray}
+LCS(i) =
+\begin{cases}
+LCS(i-1)        & 包含 s1_i     \\
+LCS(i-1)+1      & 不包含 s1_i    \\
+\end{cases} \nonumber
+\end{eqnarray}</li>
+</ul>
+<p>
+这种方案的缺点是去掉 s2 这个自变量以后，很难有效定义包含和不包含 \(s1_i\) 的条件。<br>
+</p>
+</div></li>
+<li><a id="orgheadline13"></a>方案 3<br><div class="outline-text-7" id="text-2-1-2-2-3-3">
+<ul class="org-ul">
+<li><p>
+将问题划分为多个子问题<br>
+以最长公共子序列中是否包含当前 s1 序列中最后一个值来划分问题<br>
+</p>
+    \begin{align}
+&LCS(k)        如果不包含 s1 的最后一个值        \nonumber \\
+&LCS(k-1)+1    如果包含 s1 的最后一个值         \nonumber \\
+\end{align}</li>
+<li><p>
+通过子问题来定义原问题<br>
+</p>
+    \begin{eqnarray}
+LCS(k) =
+\begin{cases}
+LCS(k-1)        & 包含 s1_i     \\
+LCS(k-1)+1      & 不包含 s1_i    \\
+\end{cases} \nonumber
+\end{eqnarray}</li>
+</ul>
+</div></li></ol></li>
+<li><a id="orgheadline15"></a>求解问题<br></li></ol></li></ol>
+</div>
+</div>
+<div id="outline-container-orgheadline26" class="outline-3">
+<h3 id="orgheadline26"><span class="section-number-3">2.2</span> 背包问题</h3>
+<div class="outline-text-3" id="text-2-2">
+<p>
+<a id="orgtarget1"></a><br>
+</p>
+</div>
+<div id="outline-container-orgheadline25" class="outline-4">
+<h4 id="orgheadline25"><span class="section-number-4">2.2.1</span> 求解过程</h4>
+<div class="outline-text-4" id="text-2-2-1">
+</div><ol class="org-ol"><li><a id="orgheadline19"></a>所有涉及到的变量<br><div class="outline-text-5" id="text-2-2-1-1">
+<p>
+\(物品总数量 N；物品编号 i（物品 i 的价值 W_i 物品 i 的体积 C_i）；背包容量 V；装完背包后获得的最大总价值 F\)<br>
+</p>
+</div></li>
+<li><a id="orgheadline20"></a>定义问题的状态<br><div class="outline-text-5" id="text-2-2-1-2">
+<ul class="org-ul">
+<li>方案 1<br>
+通过两个自变量来描述问题，即 F(N,V) 表示从 N 个物体中进行选取放入 V 空间中所获得的最大总价值<br>
+更一般的描述就是，F(i,v)表示从 i 个物体中进行选取放入 v 空间中所获得的最大总价值<br></li>
+<li>方案 2<br>
+通过物品总数量这个自变量来描述问题，即 F(N)表示从 N 个物体中进行选取放入 V 空间中所获得的最大总价值<br>
+更一般的描述就是，F(i)表示从 i 个物体中进行选取放入 V 空间中所获得的最大总价值<br></li>
+<li>方案 3<br>
+通过背包体积这个自变量来描述问题，即 F(V)表示从 N 个物体中进行选取放入 V 空间中所获得的最大总价值<br>
+更一般的描述就是，F(v)表示从 N 个物体中进行选取放入 v 空间中所获得的最大总价值<br></li>
+</ul>
+</div></li>
+<li><a id="orgheadline24"></a>定义状态转移方程<br><ol class="org-ol"><li><a id="orgheadline21"></a>方案 1<br><div class="outline-text-6" id="text-2-2-1-3-1">
+<ul class="org-ul">
+<li><p>
+将问题划分为多个子问题<br>
+以是否选择第 i 个物品来划分问题就会得到下面的子问题。<br>
+</p>
+\begin{align}
+&F(i-1,v) 如果不选择第 i 个物品        \nonumber \\
+&F(i-1,v-C_i)+W_i 如果选择第 i 个物品 \nonumber \\
+\end{align}</li>
+<li><p>
+通过子问题来定义原问题<br>
+</p>
+\begin{eqnarray}
+F(i,v) =
+\begin{cases}
+F(i-1,v)           & 不选择物品 i \\
+F(i-1,v-C_i)+W_i   & 选择物品 i    \\
+\end{cases} \nonumber
+\end{eqnarray}</li>
+</ul>
+</div></li>
+<li><a id="orgheadline22"></a>方案 2<br><div class="outline-text-6" id="text-2-2-1-3-2">
+<ul class="org-ul">
+<li><p>
+将问题划分为多个子问题<br>
+以是否选择第 i 个物品来划分问题就会得到下面的子问题。<br>
+</p>
+\begin{align}
+&F(i-1)     如果不选择第 i 个物品        \nonumber \\
+&F(i-1)+W_i 如果选择第 i 个物品 \nonumber \\
+\end{align}</li>
+<li><p>
+通过子问题来定义原问题<br>
+</p>
+\begin{eqnarray}
+F(i) =
+\begin{cases}
+F(i-1)       & 不选择物品 i  \\
+F(i-1)+W_i   & 选择物品 i    \\
+\end{cases} \nonumber
+\end{eqnarray}
+<p>
+从上面定义中可以看出没有考虑背包容量，所以通过子问题定义的原问题是错误的。<br>
+</p></li>
+</ul>
+</div></li>
+<li><a id="orgheadline23"></a>方案 3<br><div class="outline-text-6" id="text-2-2-1-3-3">
+<ul class="org-ul">
+<li><p>
+将问题划分为多个子问题<br>
+以是否选择第 i 个物品来划分问题就会得到下面的子问题。<br>
+</p>
+\begin{align}
+&F(v)         如果不选择第 i 个物品        \nonumber \\
+&F(v-C_i)+W_i 如果选择第 i 个物品         \nonumber \\
+\end{align}</li>
+<li><p>
+通过子问题来定义原问题<br>
+</p>
+\begin{eqnarray}
+F(v) =
+\begin{cases}
+F(v)         & 不选择物品 i \\
+F(v-C_i)+W_i & 选择物品 i    \\
+\end{cases} \nonumber
+\end{eqnarray}</li>
+</ul>
+</div></li></ol></li></ol>
+</div>
+</div>
+<div id="outline-container-orgheadline27" class="outline-3">
+<h3 id="orgheadline27"><span class="section-number-3">2.3</span> 相关代码实现</h3>
+<div class="outline-text-3" id="text-2-3">
+<p>
+<a href="Code_DP_LCS.lua">Code_DP_LCS.lua</a><br>
+<a href="Code_DP_Pack.lua">Code_DP_Pack.lua</a><br>
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline29" class="outline-2">
+<h2 id="orgheadline29"><span class="section-number-2">3</span> 参考资料</h2>
+<div class="outline-text-2" id="text-3">
+<ul class="org-ul">
+<li>什么是动态规划<br>
+<a href="https://www.zhihu.com/question/23995189" target="_blank" rel="external">https://www.zhihu.com/question/23995189</a><br>
+<a href="https://www.zhihu.com/question/23995189/answer/35429905" target="_blank" rel="external">https://www.zhihu.com/question/23995189/answer/35429905</a><br></li>
+<li>背包九讲<br>
+<a href="https://github.com/tianyicui/pack" target="_blank" rel="external">https://github.com/tianyicui/pack</a><br></li>
+</ul>
+</div>
+</div>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2017/07/18/algorithm/DynamicProgramming/">Dynamic Programming</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">wolfand11</a></p>
+        <p><span>发布时间:</span>2017-07-18, 00:00:00</p>
+        <p><span>最后更新:</span>2017-10-19, 12:02:21</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2017/07/18/algorithm/DynamicProgramming/" title="Dynamic Programming">http://wolfand11.coding.me/2017/07/18/algorithm/DynamicProgramming/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://wolfand11.coding.me/2017/07/18/algorithm/DynamicProgramming/　　作者: wolfand11" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2017/08/18/language/Python/">
+                    Python Note
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2017/05/16/gameplay/GameAI/">
+                    GameAI
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">文章目录</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#orgheadline6"><span class="toc-number">1.</span> <span class="toc-text">1 动态规划法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline1"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 动态规划的特征</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline2"><span class="toc-number">1.2.</span> <span class="toc-text">1.2 找寻最优子结构的模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline5"><span class="toc-number">1.3.</span> <span class="toc-text">1.3 动态规划算法的设计步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline3"><span class="toc-number">1.3.1.</span> <span class="toc-text">1.3.1 算法导论列出的设计步骤</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline4"><span class="toc-number">1.3.2.</span> <span class="toc-text">1.3.2 另一种设计步骤</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#orgheadline28"><span class="toc-number">2.</span> <span class="toc-text">2 实例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline18"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 最长公共子序列</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline7"><span class="toc-number">2.1.1.</span> <span class="toc-text">2.1.1 穷举法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline17"><span class="toc-number">2.1.2.</span> <span class="toc-text">2.1.2 动态规划法</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline26"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 背包问题</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#orgheadline25"><span class="toc-number">2.2.1.</span> <span class="toc-text">2.2.1 求解过程</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#orgheadline27"><span class="toc-number">2.3.</span> <span class="toc-text">2.3 相关代码实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#orgheadline29"><span class="toc-number">3.</span> <span class="toc-text">3 参考资料</span></a></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+    <script>
+        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"Dynamic Programming　| wolfand11's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+        <section id="comments">
+    <style> aside.comment-bar { margin: auto 30px; }</style>
+    <div id="disqus_thread"></div>
+    <script>
+        var disqus_config = function(){
+            this.page.url = 'http://wolfand11.coding.me/2017/07/18/algorithm/DynamicProgramming/';
+            this.page.identifier = '2017/07/18/algorithm/DynamicProgramming/';
+        };
+        var loadComment = function(){
+            var d = document, s = d.createElement('script');
+            s.src = '//wolfand11.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        }
+    </script>
+    
+    <script> loadComment(); </script>
+
+</section>
+
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2017/08/18/language/Python/" title="上一篇: Python Note">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2017/05/16/gameplay/GameAI/" title="下一篇: GameAI">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/10/18/algorithm/AlgorithmIntroduce/">algorithm/AlgorithmIntroduce</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/09/14/architecture/Cryptology/">Cryptology</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/09/04/architecture/GameEngineArchitecture/">Game Engine Architecture</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/29/tools/ArtTools/">ArtTools</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/18/language/Python/">Python Note</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/07/18/algorithm/DynamicProgramming/">Dynamic Programming</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/05/16/gameplay/GameAI/">GameAI</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/05/01/unity/DOTween/">DOTween</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/20/tools/Matlab/">Matlab</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/08/architecture/KSFrameworkNote/">KSFramework Note</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/26/unity/UnityHotUpdate/">Unity Hot Update</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/13/architecture/ActionScriptDeveloperGuideToPureMVC/">Action Script Developer Guide To PureMVC</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/01/06/gameplay/MoveSync/">Move Sync</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/01/01/unity/UnityGUI/">Unity GUI</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/12/23/unity/UnityDoc-AnimationFromExternalSources/">Animation From External Sources</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/12/22/unity/UnityDoc-AnimationClips/">Animation Clips</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/12/12/unity/UnityDoc-AnimationSystemOverview/">Animation System Overview</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/11/09/language/Lua/">Programming in Lua</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/10/28/unity/UnityNote/">Unity Note</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/29/tools/vim/">VIM</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/28/tools/GameDevTools/">Game Dev Tools</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/27/language/CSharp/">Programing in CSharp</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/24/unity/UnityDoc-SpecialFolders/">Special Folders</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/09/08/tools/InitMyCore/">Init My Core</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/08/24/unity/UnityDoc-LoadingResourcesatRuntime/">Loading Resources at Runtime</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/08/20/unity/Unity5LightingCookbook/">Unity 5 Lighting Cookbook</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/08/20/unity/UnityShaderAndEffectCookbook/">UnityShaderAndEffectCookbook</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/08/14/tools/InitPC/">Init My PC</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/08/14/language/Elisp/">Programing in Elisp</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/08/14/tools/GitAndGithub/">Git Github</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/08/14/tools/Emacs/">Emacs</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/08/14/language/Shell/">Shell</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/08/12/tools/CreateBlogWithHexo/">Create Blog With Hexo</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/08/12/tools/CreateBlogWithJeykll/">Create Blog With Jeykll</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/16/architecture/GameModules/">GameModules</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/01/algorithm/AlgorithmIntroduce/">AlgorithmIntroduce</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2016-2017 wolfand11
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题  v3.5">Yelee</a> by MOxFIVE <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" title="本站到访数"><i class="fa fa-user" aria-hidden="true"></i><span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>| </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit"  title="本页阅读量"><i class="fa fa-eye animated infinite pulse" aria-hidden="true"></i><span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+            
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+             miniArchives: "a.post-list-link", 
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+</body>
+</html>

@@ -1,0 +1,1076 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2019-03-02 周六 01:40 -->
+<meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta  name="viewport" content="width=device-width, initial-scale=1" />
+<title>DOTween</title>
+<meta  name="generator" content="Org-mode" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+           <meta name="viewport" content="width=device-width, initial-scale=1" />
+           <link rel="stylesheet" title="Standard" href="https://wolfand11.coding.me/res/css/worg.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.coding.me/res/css/worg-zenburn.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.coding.me/res/css/worg-classic.css" type="text/css" />
+           <link rel="icon" href="http://wolfand11.coding.me/res/favicon.ico" type="image/ico" />
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href=""> UP </a>
+ |
+ <a accesskey="H" href="https://wolfand11.coding.me"> HOME </a>
+</div><div id="content">
+<h1 class="title">DOTween</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgheadline85">DOTween</a>
+<ul>
+<li><a href="#orgheadline1">名称术语</a></li>
+<li><a href="#orgheadline8">Tweener</a>
+<ul>
+<li><a href="#orgheadline3">通用方式创建 Tweener</a>
+<ul>
+<li><a href="#orgheadline2">static DOTween.To(getter, setter, to, float duration)</a></li>
+</ul>
+</li>
+<li><a href="#orgheadline4">快捷方式创建 Tweener</a>
+<ul>
+<li><a href="#orgheadline5">对物体坐标系属性做动作</a></li>
+<li><a href="#orgheadline6">在原始属性上叠加变化值</a></li>
+<li><a href="#orgheadline7">等待一定时间</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgheadline9">Seqence</a>
+<ul>
+<li><a href="#orgheadline10">创建一个 Sequence</a></li>
+<li><a href="#orgheadline21">向 Sequence 中添加 tween、intervals 以及 callbacks</a>
+<ul>
+<li><a href="#orgheadline11">Append(Tween tween)</a></li>
+<li><a href="#orgheadline12">AppendCallback(TweenCallback callback)</a></li>
+<li><a href="#orgheadline13">AppendInterval(float interval)</a></li>
+<li><a href="#orgheadline14">Insert(float atPosition, Tween tween)</a></li>
+<li><a href="#orgheadline15">InsertCallback(float atPosition, TweenCallback callback)</a></li>
+<li><a href="#orgheadline16">Join(Tween tween)</a></li>
+<li><a href="#orgheadline17">Prepend(Tween tween)</a></li>
+<li><a href="#orgheadline18">PrependCallback(TweenCallback callback)</a></li>
+<li><a href="#orgheadline19">PrependInterval(float interval)</a></li>
+<li><a href="#orgheadline20">EXAMPLE</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgheadline65">设置，选项和回调函数</a>
+<ul>
+<li><a href="#orgheadline40">全局的设置</a>
+<ul>
+<li><a href="#orgheadline29">一般设置</a>
+<ul>
+<li><a href="#orgheadline22">static LogBehaviour DOTween.logBehaviour</a></li>
+<li><a href="#orgheadline23">static bool DOTween.maxSmoothUnscaledTime</a></li>
+<li><a href="#orgheadline24">static bool DOTween.showUnityEditorReport</a></li>
+<li><a href="#orgheadline25">static float DOTween.timeScale</a></li>
+<li><a href="#orgheadline26">static bool DOTween.useSafeMode</a></li>
+<li><a href="#orgheadline27">static bool DOTween.useSmoothDeltaTime</a></li>
+<li><a href="#orgheadline28">static DOTween.SetTweensCapacity(int maxTweeners, int maxSequences)</a></li>
+</ul>
+</li>
+<li><a href="#orgheadline39">新创建 tween 都会应用的设置</a>
+<ul>
+<li><a href="#orgheadline30">static bool DOTween.defaultAutoKill</a></li>
+<li><a href="#orgheadline31">static AutoPlay DOTween.defaultAutoPlay</a></li>
+<li><a href="#orgheadline32">static float DOTween.defaultEaseOvershootOrAmplitude</a></li>
+<li><a href="#orgheadline33">static float DOTween.defaultEasePeriod</a></li>
+<li><a href="#orgheadline34">static Ease DOTween.defaultEaseType</a></li>
+<li><a href="#orgheadline35">static LoopType DOTween.defaultLoopType</a></li>
+<li><a href="#orgheadline36">static bool DOTween.defaultRecyclable</a></li>
+<li><a href="#orgheadline37">static bool DOTween.defaultTimeScaleIndependent</a></li>
+<li><a href="#orgheadline38">static UpdateType DOTween.defaultUpdateType</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgheadline62">Tweener 和 Seqence 共用的设置</a>
+<ul>
+<li><a href="#orgheadline42">实例属性</a>
+<ul>
+<li><a href="#orgheadline41">timeScale</a></li>
+</ul>
+</li>
+<li><a href="#orgheadline51">级联设置</a>
+<ul>
+<li><a href="#orgheadline43">SetAs(Tween tween \ TweenParams tweenParams)</a></li>
+<li><a href="#orgheadline44">SetAutoKill(bool autoKillOnCompletion=true)</a></li>
+<li><a href="#orgheadline45">SetEase(Ease easeType\AnimationCurve animCurve\ EaseFunction customEase)</a></li>
+<li><a href="#orgheadline46">SetId(object id)</a></li>
+<li><a href="#orgheadline47">SetLoops(int loops, LoopType loopType = LoopType.Restart)</a></li>
+<li><a href="#orgheadline48">SetRecyclable(bool recyclable)</a></li>
+<li><a href="#orgheadline49">SetRelative(bool isRelative = true)</a></li>
+<li><a href="#orgheadline50">SetUpdate(UpdateType updateType,bool isIndependentUpdate = false)</a></li>
+</ul>
+</li>
+<li><a href="#orgheadline61">级联回调</a>
+<ul>
+<li><a href="#orgheadline52">OnComplete(TweenCallback callback)</a></li>
+<li><a href="#orgheadline53">OnKill(TweenCallback callback)</a></li>
+<li><a href="#orgheadline54">OnPlay(TweenCallback callback)</a></li>
+<li><a href="#orgheadline55">OnPause(TweenCallback callback)</a></li>
+<li><a href="#orgheadline56">OnRewind(TweenCallback callback)</a></li>
+<li><a href="#orgheadline57">OnStart(TweenCallback callback)</a></li>
+<li><a href="#orgheadline58">OnStepComplete(TweenCallback callback)</a></li>
+<li><a href="#orgheadline59">OnUpdate(TweenCallback callback)</a></li>
+<li><a href="#orgheadline60">OnWaypointChange(TweenCallback&lt;int&gt; callback)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgheadline63">Tweener 特定的设置和选项</a></li>
+<li><a href="#orgheadline64">TweenParams</a></li>
+</ul>
+</li>
+<li><a href="#orgheadline66">tween 的控制</a>
+<ul>
+<li><a href="#orgheadline67">第一种方式是通过静态函数</a></li>
+<li><a href="#orgheadline68">第二种方式是直接通过 tween</a></li>
+<li><a href="#orgheadline69">第三种方式是通过快捷增强的引用</a></li>
+<li><a href="#orgheadline84">tween 的控制函数</a>
+<ul>
+<li><a href="#orgheadline70">CompleteAll/Complete(bool withCallbacks = false)</a></li>
+<li><a href="#orgheadline71">FlipAll/Flip()</a></li>
+<li><a href="#orgheadline72">GotoAll/Goto(float to,bool andPlay = false)</a></li>
+<li><a href="#orgheadline73">KillAll/Kill(bool complete = true, params object[] idsOrTargetsToExclude)</a></li>
+<li><a href="#orgheadline74">PauseAll/Pause()</a></li>
+<li><a href="#orgheadline75">PlayAll/Play()</a></li>
+<li><a href="#orgheadline76">PlayBackwardsAll/PlayBackwards()</a></li>
+<li><a href="#orgheadline77">PlayForwardAll/PlayForward()</a></li>
+<li><a href="#orgheadline78">RestartAll/Restart(bool includeDelay = true, float changeDelayTo = -1)</a></li>
+<li><a href="#orgheadline79">RewindAll/Rewind(bool includeDelay)</a></li>
+<li><a href="#orgheadline80">SmoothRewindAll/SmoothRewind</a></li>
+<li><a href="#orgheadline81">TogglePauseAll/TogglePause()</a></li>
+<li><a href="#orgheadline82">ForceInit()</a></li>
+<li><a href="#orgheadline83">GotoWaypoint(int waypointIdx,bool andPlay=false)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgheadline86">参考资料</a></li>
+</ul>
+</div>
+</div>
+<p>
+翻译一下官方文档。熟悉以下 DOTween 的用法。<br  />
+</p>
+<!-- more -->
+
+<div id="outline-container-orgheadline85" class="outline-2">
+<h2 id="orgheadline85">DOTween</h2>
+<div class="outline-text-2" id="text-orgheadline85">
+</div><div id="outline-container-orgheadline1" class="outline-3">
+<h3 id="orgheadline1">名称术语</h3>
+<div class="outline-text-3" id="text-orgheadline1">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">Tweener</td>
+<td class="org-left">用来对一个值做动画</td>
+</tr>
+
+<tr>
+<td class="org-left">Sequence</td>
+<td class="org-left">特殊的 tween，它控制一组 tween，并对他们做动画</td>
+</tr>
+
+<tr>
+<td class="org-left">Tween</td>
+<td class="org-left">一个抽象的单词，它可以表示 Tweener 和 Sequence</td>
+</tr>
+
+<tr>
+<td class="org-left">Nested tween</td>
+<td class="org-left">Sequence 中的 tween</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-orgheadline8" class="outline-3">
+<h3 id="orgheadline8">Tweener</h3>
+<div class="outline-text-3" id="text-orgheadline8">
+</div><div id="outline-container-orgheadline3" class="outline-4">
+<h4 id="orgheadline3">通用方式创建 Tweener</h4>
+<div class="outline-text-4" id="text-orgheadline3">
+</div><div id="outline-container-orgheadline2" class="outline-5">
+<h5 id="orgheadline2">static DOTween.To(getter, setter, to, float duration)</h5>
+<div class="outline-text-5" id="text-orgheadline2">
+<ul class="org-ul">
+<li>getter<br  />
+代理返回做动画的属性<br  /></li>
+<li>setter<br  />
+通过该代理来设置做动画的属性<br  /></li>
+<li>to<br  />
+要到达的终点值<br  /></li>
+<li>duration<br  />
+动画持续时间<br  /></li>
+</ul>
+<div class="org-src-container">
+
+<pre class="src src-csharp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Tween a Vector3 called myVector to 3,4,8 in 1 second</span>
+DOTween.To<span style="color: #4f97d7;">(</span><span style="color: #bc6ec5;">()</span>=&gt; myVector, x=&gt; myVector = x, <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Vector3</span><span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">3</span>,<span style="color: #a45bad;">4</span>,<span style="color: #a45bad;">8</span><span style="color: #bc6ec5;">)</span>, <span style="color: #a45bad;">1</span><span style="color: #4f97d7;">)</span>;
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Tween a float called myFloat to 52 in 1 second</span>
+DOTween.To<span style="color: #4f97d7;">(</span><span style="color: #bc6ec5;">()</span>=&gt; myFloat, x=&gt; myFloat = x, <span style="color: #a45bad;">52</span>, <span style="color: #a45bad;">1</span><span style="color: #4f97d7;">)</span>;
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline4" class="outline-4">
+<h4 id="orgheadline4">快捷方式创建 Tweener</h4>
+<div class="outline-text-4" id="text-orgheadline4">
+<p>
+每种快捷方式创建的 tween 都有一个可选的 FROM 版本（除去那些明显指出不存在的）。只要在 tween 后面链接一二个 From，就可以将 tween 的行为从 TO 变为 FROM.<br  />
+</p>
+<div class="org-src-container">
+
+<pre class="src src-csharp">transform.DOMove<span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Vector3</span><span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">2</span>,<span style="color: #a45bad;">3</span>,<span style="color: #a45bad;">4</span><span style="color: #bc6ec5;">)</span>, <span style="color: #a45bad;">1</span><span style="color: #4f97d7;">)</span>;
+rigidbody.DOMove<span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Vector3</span><span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">2</span>,<span style="color: #a45bad;">3</span>,<span style="color: #a45bad;">4</span><span style="color: #bc6ec5;">)</span>, <span style="color: #a45bad;">1</span><span style="color: #4f97d7;">)</span>;
+material.DOColor<span style="color: #4f97d7;">(</span>Color.green, <span style="color: #a45bad;">1</span><span style="color: #4f97d7;">)</span>;
+
+transform.DOMove<span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Vector3</span><span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">2</span>,<span style="color: #a45bad;">3</span>,<span style="color: #a45bad;">4</span><span style="color: #bc6ec5;">)</span>, <span style="color: #a45bad;">1</span><span style="color: #4f97d7;">)</span>.From<span style="color: #4f97d7;">()</span>;
+rigidbody.DOMove<span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Vector3</span><span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">2</span>,<span style="color: #a45bad;">3</span>,<span style="color: #a45bad;">4</span><span style="color: #bc6ec5;">)</span>, <span style="color: #a45bad;">1</span><span style="color: #4f97d7;">)</span>.From<span style="color: #4f97d7;">()</span>;
+material.DOColor<span style="color: #4f97d7;">(</span>Color.green, <span style="color: #a45bad;">1</span><span style="color: #4f97d7;">)</span>.From<span style="color: #4f97d7;">()</span>;
+</pre>
+</div>
+</div>
+<div id="outline-container-orgheadline5" class="outline-5">
+<h5 id="orgheadline5">对物体坐标系属性做动作</h5>
+<div class="outline-text-5" id="text-orgheadline5">
+<p>
+DOXXXLocal<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline6" class="outline-5">
+<h5 id="orgheadline6">在原始属性上叠加变化值</h5>
+<div class="outline-text-5" id="text-orgheadline6">
+<p>
+类似于 cocos 中的 By<br  />
+DOBlendableXXXBy<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline7" class="outline-5">
+<h5 id="orgheadline7">等待一定时间</h5>
+<div class="outline-text-5" id="text-orgheadline7">
+<p>
+SetDelay(delayTime)<br  />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline9" class="outline-3">
+<h3 id="orgheadline9">Seqence</h3>
+<div class="outline-text-3" id="text-orgheadline9">
+<p>
+一个 tween 只能嵌套在一个 sequence 中，不能在不同的 sequence 中使用同一个 tween。<br  />
+不能使用空的 Sequence.<br  />
+</p>
+</div>
+<div id="outline-container-orgheadline10" class="outline-4">
+<h4 id="orgheadline10">创建一个 Sequence</h4>
+<div class="outline-text-4" id="text-orgheadline10">
+<div class="org-src-container">
+
+<pre class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">Sequence</span> <span style="color: #7590db;">mySequence</span> = DOTween.Sequence<span style="color: #4f97d7;">()</span>;
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline21" class="outline-4">
+<h4 id="orgheadline21">向 Sequence 中添加 tween、intervals 以及 callbacks</h4>
+<div class="outline-text-4" id="text-orgheadline21">
+</div><div id="outline-container-orgheadline11" class="outline-5">
+<h5 id="orgheadline11">Append(Tween tween)</h5>
+<div class="outline-text-5" id="text-orgheadline11">
+<p>
+将 tween 添加到 sequence 的末尾<br  />
+</p>
+<div class="org-src-container">
+
+<pre class="src src-csharp">mySequence.Append<span style="color: #4f97d7;">(</span>transform.DOMoveX<span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">45</span>, <span style="color: #a45bad;">1</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>;
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline12" class="outline-5">
+<h5 id="orgheadline12">AppendCallback(TweenCallback callback)</h5>
+<div class="outline-text-5" id="text-orgheadline12">
+<p>
+将 callback 添加到 sequence 的末尾<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline13" class="outline-5">
+<h5 id="orgheadline13">AppendInterval(float interval)</h5>
+<div class="outline-text-5" id="text-orgheadline13">
+<p>
+将 时间间隔 interval 添加到 sequence 的末尾<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline14" class="outline-5">
+<h5 id="orgheadline14">Insert(float atPosition, Tween tween)</h5>
+<div class="outline-text-5" id="text-orgheadline14">
+<p>
+将给定的 tween 插入到特定的时间位置，这样就可以将多个 tween 重叠在一起。<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline15" class="outline-5">
+<h5 id="orgheadline15">InsertCallback(float atPosition, TweenCallback callback)</h5>
+<div class="outline-text-5" id="text-orgheadline15">
+<p>
+将给定的 callback 插入到特定的时间位置。<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline16" class="outline-5">
+<h5 id="orgheadline16">Join(Tween tween)</h5>
+<div class="outline-text-5" id="text-orgheadline16">
+<p>
+将给定的 tween 插入到 sequence 中最后一个 tween 或 callback 的时间位置。<br  />
+该方法相当于 cocos2d-x 中的 spawn<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline17" class="outline-5">
+<h5 id="orgheadline17">Prepend(Tween tween)</h5>
+<div class="outline-text-5" id="text-orgheadline17">
+<p>
+将 tween 添加到 sequence 的开始<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline18" class="outline-5">
+<h5 id="orgheadline18">PrependCallback(TweenCallback callback)</h5>
+<div class="outline-text-5" id="text-orgheadline18">
+<p>
+将 callback 添加到 sequence 的开始<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline19" class="outline-5">
+<h5 id="orgheadline19">PrependInterval(float interval)</h5>
+<div class="outline-text-5" id="text-orgheadline19">
+<p>
+将 时间间隔 interval 添加到 sequence 的开始<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline20" class="outline-5">
+<h5 id="orgheadline20">EXAMPLE</h5>
+<div class="outline-text-5" id="text-orgheadline20">
+<div class="org-src-container">
+
+<pre class="src src-csharp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Grab a free Sequence to use</span>
+<span style="color: #ce537a; font-weight: bold;">Sequence</span> <span style="color: #7590db;">mySequence</span> = DOTween.Sequence<span style="color: #4f97d7;">()</span>;
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Add a movement tween at the beginning</span>
+mySequence.Append<span style="color: #4f97d7;">(</span>transform.DOMoveX<span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">45</span>, <span style="color: #a45bad;">1</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>;
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Add a rotation tween as soon as the previous one is finished</span>
+mySequence.Append<span style="color: #4f97d7;">(</span>transform.DORotate<span style="color: #bc6ec5;">(</span><span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Vector3</span><span style="color: #2d9574;">(</span><span style="color: #a45bad;">0</span>,<span style="color: #a45bad;">180</span>,<span style="color: #a45bad;">0</span><span style="color: #2d9574;">)</span>, <span style="color: #a45bad;">1</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>;
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Delay the whole Sequence by 1 second</span>
+mySequence.PrependInterval<span style="color: #4f97d7;">(</span><span style="color: #a45bad;">1</span><span style="color: #4f97d7;">)</span>;
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Insert a scale tween for the whole duration of the Sequence</span>
+mySequence.Insert<span style="color: #4f97d7;">(</span><span style="color: #a45bad;">0</span>, transform.DOScale<span style="color: #bc6ec5;">(</span><span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Vector3</span><span style="color: #2d9574;">(</span><span style="color: #a45bad;">3</span>,<span style="color: #a45bad;">3</span>,<span style="color: #a45bad;">3</span><span style="color: #2d9574;">)</span>, mySequence.Duration<span style="color: #2d9574;">()</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>;
+
+<span style="color: #ce537a; font-weight: bold;">Sequence</span> <span style="color: #7590db;">mySequence</span> = DOTween.Sequence<span style="color: #4f97d7;">()</span>;
+mySequence.Append<span style="color: #4f97d7;">(</span>transform.DOMoveX<span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">45</span>, <span style="color: #a45bad;">1</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+  .Append<span style="color: #4f97d7;">(</span>transform.DORotate<span style="color: #bc6ec5;">(</span><span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Vector3</span><span style="color: #2d9574;">(</span><span style="color: #a45bad;">0</span>,<span style="color: #a45bad;">180</span>,<span style="color: #a45bad;">0</span><span style="color: #2d9574;">)</span>, <span style="color: #a45bad;">1</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+  .PrependInterval<span style="color: #4f97d7;">(</span><span style="color: #a45bad;">1</span><span style="color: #4f97d7;">)</span>
+  .Insert<span style="color: #4f97d7;">(</span><span style="color: #a45bad;">0</span>, transform.DOScale<span style="color: #bc6ec5;">(</span><span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Vector3</span><span style="color: #2d9574;">(</span><span style="color: #a45bad;">3</span>,<span style="color: #a45bad;">3</span>,<span style="color: #a45bad;">3</span><span style="color: #2d9574;">)</span>, mySequence.Duration<span style="color: #2d9574;">()</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>;
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline65" class="outline-3">
+<h3 id="orgheadline65">设置，选项和回调函数</h3>
+<div class="outline-text-3" id="text-orgheadline65">
+</div><div id="outline-container-orgheadline40" class="outline-4">
+<h4 id="orgheadline40">全局的设置</h4>
+<div class="outline-text-4" id="text-orgheadline40">
+</div><div id="outline-container-orgheadline29" class="outline-5">
+<h5 id="orgheadline29">一般设置</h5>
+<div class="outline-text-5" id="text-orgheadline29">
+</div><div id="outline-container-orgheadline22" class="outline-6">
+<h6 id="orgheadline22">static LogBehaviour DOTween.logBehaviour</h6>
+<div class="outline-text-6" id="text-orgheadline22">
+<p>
+默认值为 LogBehaviour.ErrorsOnly<br  />
+LogBehaviour.ErrorsOnly - 只打印错误日志<br  />
+LogBehaviour.Default    - 打印错误和警告日志<br  />
+LogBehaviour.Verbose    - 打印错误，警告以及额外的信息<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline23" class="outline-6">
+<h6 id="orgheadline23">static bool DOTween.maxSmoothUnscaledTime</h6>
+<div class="outline-text-6" id="text-orgheadline23">
+<p>
+默认值为 0.15f<br  />
+如果 useSmoothDeltaTime 为 true,该值就表示时间独立的 tween 在时间补间时所经过的最大时间间隔<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline24" class="outline-6">
+<h6 id="orgheadline24">static bool DOTween.showUnityEditorReport</h6>
+<div class="outline-text-6" id="text-orgheadline24">
+<p>
+默认值为 false<br  />
+如果设置为 true，则在 Editor 下退出 Play 模式时，会打印 DOTween 报告，里面包含运行期间 Tweener 和 Sequences 的最大数目，可以依据这些信息来优化项目。<br  />
+需要注意的是，这会轻微减低 Unity 编辑器的性能。<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline25" class="outline-6">
+<h6 id="orgheadline25">static float DOTween.timeScale</h6>
+<div class="outline-text-6" id="text-orgheadline25">
+<p>
+默认值为 1<br  />
+全局的 timeScale 值，会应用到所有的 tween。<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline26" class="outline-6">
+<h6 id="orgheadline26">static bool DOTween.useSafeMode</h6>
+<div class="outline-text-6" id="text-orgheadline26">
+<p>
+默认值为 true<br  />
+如果设置为 true，会轻微减慢 tween，但是运行会更安全。这样 DOTween 会自动处理 tween 在运行期间，目标被删除掉的情况。<br  />
+设置为 false，意味着你必须自己保证在销毁目标之前，杀死 tween。<br  />
+警告：<br  />
+在 iOS 模式下，safeMode 只在 stripping level 被设置为 “Strip Assemblies”或者 Script Call Optimization 被设置为“Slow and Safe”时才可用。<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline27" class="outline-6">
+<h6 id="orgheadline27">static bool DOTween.useSmoothDeltaTime</h6>
+<div class="outline-text-6" id="text-orgheadline27">
+<p>
+默认值为 false<br  />
+如果为 true，则 对于 UpdateType.Normal 和 UpdateType.Late 类型的 tween，DOTween 将会使用 Time.smoothDeltaTime 代替 Time.deltaTime.对于设置了 timeScaleIndependent=true 的 tween，DOTween 会使用前一次 timestep 和 maxSmoothUnscaledTime 之间的一个值。<br  />
+设置该选项为 True，将会让动画更加流畅。<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline28" class="outline-6">
+<h6 id="orgheadline28">static DOTween.SetTweensCapacity(int maxTweeners, int maxSequences)</h6>
+<div class="outline-text-6" id="text-orgheadline28">
+<p>
+为了让 DOTween 执行效率更高，你可以限制激活的 tween 的最大数目。如果在执行过程中超过这个值，界限会自动增大。如果你已经知道最大界限，那么就可以手动设置默认值为最大界限，从而避免界限增大时造成卡动。<br  />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline39" class="outline-5">
+<h5 id="orgheadline39">新创建 tween 都会应用的设置</h5>
+<div class="outline-text-5" id="text-orgheadline39">
+</div><div id="outline-container-orgheadline30" class="outline-6">
+<h6 id="orgheadline30">static bool DOTween.defaultAutoKill</h6>
+<div class="outline-text-6" id="text-orgheadline30">
+<p>
+默认值：true<br  />
+默认情况下，tween 会自动释放<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline31" class="outline-6">
+<h6 id="orgheadline31">static AutoPlay DOTween.defaultAutoPlay</h6>
+<div class="outline-text-6" id="text-orgheadline31">
+<p>
+默认值：AutoPlay.All<br  />
+默认情况下，创建的 tween 会自动播放<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline32" class="outline-6">
+<h6 id="orgheadline32">static float DOTween.defaultEaseOvershootOrAmplitude</h6>
+<div class="outline-text-6" id="text-orgheadline32">
+<p>
+默认值：1.70158f<br  />
+</p>
+<ul class="org-ul">
+<li>TODO<br  /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgheadline33" class="outline-6">
+<h6 id="orgheadline33">static float DOTween.defaultEasePeriod</h6>
+<div class="outline-text-6" id="text-orgheadline33">
+<p>
+默认值：0<br  />
+</p>
+<ul class="org-ul">
+<li>TODO<br  /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgheadline34" class="outline-6">
+<h6 id="orgheadline34">static Ease DOTween.defaultEaseType</h6>
+<div class="outline-text-6" id="text-orgheadline34">
+<p>
+默认值：Ease.OutQuad<br  />
+默认情况下，创建的 tween 缓动类型为 Ease.OutQuad<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline35" class="outline-6">
+<h6 id="orgheadline35">static LoopType DOTween.defaultLoopType</h6>
+<div class="outline-text-6" id="text-orgheadline35">
+<p>
+默认值：LoopType.Restart<br  />
+默认情况下，创建的 tween 每次循环播放时会重新开始播放<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline36" class="outline-6">
+<h6 id="orgheadline36">static bool DOTween.defaultRecyclable</h6>
+<div class="outline-text-6" id="text-orgheadline36">
+<p>
+默认值：false<br  />
+默认情况下，创建的 tween 不可以循环利用<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline37" class="outline-6">
+<h6 id="orgheadline37">static bool DOTween.defaultTimeScaleIndependent</h6>
+<div class="outline-text-6" id="text-orgheadline37">
+<p>
+默认值：false<br  />
+是否 Unity 的 timeScale 会被计算在内。<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline38" class="outline-6">
+<h6 id="orgheadline38">static UpdateType DOTween.defaultUpdateType</h6>
+<div class="outline-text-6" id="text-orgheadline38">
+<p>
+默认值：UpdateType.Normal<br  />
+默认情况下，创建的 tween 其更新类型为 UpdateType.Normal<br  />
+关于 UpdateType 的解释可以查看右边链接： <a href="#orgtarget1">1</a><br  />
+</p>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline62" class="outline-4">
+<h4 id="orgheadline62">Tweener 和 Seqence 共用的设置</h4>
+<div class="outline-text-4" id="text-orgheadline62">
+</div><div id="outline-container-orgheadline42" class="outline-5">
+<h5 id="orgheadline42">实例属性</h5>
+<div class="outline-text-5" id="text-orgheadline42">
+</div><div id="outline-container-orgheadline41" class="outline-6">
+<h6 id="orgheadline41">timeScale</h6>
+<div class="outline-text-6" id="text-orgheadline41">
+<p>
+默认值：1<br  />
+设置 tween 内部的时间缩放值<br  />
+这个值可以被其他的 tween 来修改，从而实现流畅的慢动作效果。<br  />
+</p>
+<div class="org-src-container">
+
+<pre class="src src-csharp">myTween.timeScale = <span style="color: #a45bad;">0</span>.<span style="color: #a45bad;">5f</span>;
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline51" class="outline-5">
+<h5 id="orgheadline51">级联设置</h5>
+<div class="outline-text-5" id="text-orgheadline51">
+</div><div id="outline-container-orgheadline43" class="outline-6">
+<h6 id="orgheadline43">SetAs(Tween tween \ TweenParams tweenParams)</h6>
+<div class="outline-text-6" id="text-orgheadline43">
+<p>
+通过给定的另一个 tween 的设置来设置当前 tween 的参数，或者通过 tweenParams 来设置 当前 tween 的参数。（可以设置的参数有 id,ease,loops,delay,timeScale,callbacks 等等）。<br  />
+如果，当前的 tween 已经开始，则该设置将不会生效。<br  />
+</p>
+<div class="org-src-container">
+
+<pre class="src src-csharp">transform.DoMoveX<span style="color: #4f97d7;">(</span><span style="color: #a45bad;">4</span>,<span style="color: #a45bad;">1</span><span style="color: #4f97d7;">)</span>.SetAs<span style="color: #4f97d7;">(</span>myOtherTween<span style="color: #4f97d7;">)</span>;
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline44" class="outline-6">
+<h6 id="orgheadline44">SetAutoKill(bool autoKillOnCompletion=true)</h6>
+<div class="outline-text-6" id="text-orgheadline44">
+<p>
+默认情况下，tween 在执行完后会被自动删除，可以通过该设置来禁止默认操作。<br  />
+</p>
+<div class="org-src-container">
+
+<pre class="src src-csharp">transform.DoMoveX<span style="color: #4f97d7;">(</span><span style="color: #a45bad;">4</span>,<span style="color: #a45bad;">1</span><span style="color: #4f97d7;">)</span>.SetAutoKill<span style="color: #4f97d7;">(</span><span style="color: #a45bad;">false</span><span style="color: #4f97d7;">)</span>;
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline45" class="outline-6">
+<h6 id="orgheadline45">SetEase(Ease easeType\AnimationCurve animCurve\ EaseFunction customEase)</h6>
+<div class="outline-text-6" id="text-orgheadline45">
+<p>
+如果应用于 Sequence，这种缓动将会作用于整个 Sequence，就好比他是单个动画时间线。默认情况下 Sequence 的缓动类型为 Ease.Linear,它独立于全局的缓动设置<br  />
+另外，也可以设置下面的参数。他们只能和 Back 和 Elastic 类型的缓动一起使用：<br  />
+</p>
+<ul class="org-ul">
+<li>overshoot<br  />
+超过返回缓动类型 所使用的 超过参数（默认值为 1.70158）。<br  />
+闪烁缓动类型 所使用的闪烁次数参数。<br  /></li>
+<li>amplitude<br  />
+来回弹缓动类型 所使用的 振幅参数<br  /></li>
+<li>period<br  />
+TODO<br  /></li>
+</ul>
+
+<p>
+EaseFactory.StopMotion 是可以加到缓动外面的额外一层，它可以作为任何一种缓动的包装。<br  />
+</p>
+<div class="org-src-container">
+
+<pre class="src src-csharp">transform.DOMoveX<span style="color: #4f97d7;">(</span><span style="color: #a45bad;">4</span>, <span style="color: #a45bad;">1</span><span style="color: #4f97d7;">)</span>.SetEase<span style="color: #4f97d7;">(</span>Ease.InOutQuint<span style="color: #4f97d7;">)</span>;
+transform.DOMoveX<span style="color: #4f97d7;">(</span><span style="color: #a45bad;">4</span>, <span style="color: #a45bad;">1</span><span style="color: #4f97d7;">)</span>.SetEase<span style="color: #4f97d7;">(</span>myAnimationCurve<span style="color: #4f97d7;">)</span>;
+transform.DOMoveX<span style="color: #4f97d7;">(</span><span style="color: #a45bad;">4</span>, <span style="color: #a45bad;">1</span><span style="color: #4f97d7;">)</span>.SetEase<span style="color: #4f97d7;">(</span>MyEaseFunction<span style="color: #4f97d7;">)</span>;
+
+transform.DOMoveX<span style="color: #4f97d7;">(</span><span style="color: #a45bad;">4</span>, <span style="color: #a45bad;">1</span><span style="color: #4f97d7;">)</span>.SetEase<span style="color: #4f97d7;">(</span>EaseFactory.StopMotion<span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">5</span>, Ease.InOutQuint<span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>;
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline46" class="outline-6">
+<h6 id="orgheadline46">SetId(object id)</h6>
+<div class="outline-text-6" id="text-orgheadline46">
+<p>
+为 tween 设置一个 id，该值可以是 int，string，object 或其他类型。<br  />
+</p>
+<div class="org-src-container">
+
+<pre class="src src-csharp">transform.DOMoveX<span style="color: #4f97d7;">(</span><span style="color: #a45bad;">4</span>, <span style="color: #a45bad;">1</span><span style="color: #4f97d7;">)</span>.SetId<span style="color: #4f97d7;">(</span><span style="color: #2d9574;">"supertween"</span><span style="color: #4f97d7;">)</span>;
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline47" class="outline-6">
+<h6 id="orgheadline47">SetLoops(int loops, LoopType loopType = LoopType.Restart)</h6>
+<div class="outline-text-6" id="text-orgheadline47">
+<p>
+设置 tween 的循环选项。<br  />
+如果 tween 已经开始，则该设置无效。如果一个 tween 在 Sequence 内，则无限循环将不会被应用。<br  />
+</p>
+<ul class="org-ul">
+<li>loops<br  />
+设置循环次数。-1 表示无限循环<br  /></li>
+<li>loopType<br  />
+LoopType.Restart  - 当一次循环结束时，下次循环会从头开始播放.<br  />
+LoopType.Yoyo      - 当一次循环结束时，会倒序播放回开始。<br  />
+LoopType.Incremental - 每次循环结束后，endValue 和 startValue 之间的差值会被加到 endValue 上。(这种类型只能在 Tweener 上使用)<br  /></li>
+</ul>
+<div class="org-src-container">
+
+<pre class="src src-csharp">transform.DOMoveX<span style="color: #4f97d7;">(</span><span style="color: #a45bad;">4</span>, <span style="color: #a45bad;">1</span><span style="color: #4f97d7;">)</span>.SetLoops<span style="color: #4f97d7;">(</span><span style="color: #a45bad;">3</span>, LoopType.Yoyo<span style="color: #4f97d7;">)</span>;
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline48" class="outline-6">
+<h6 id="orgheadline48">SetRecyclable(bool recyclable)</h6>
+<div class="outline-text-6" id="text-orgheadline48">
+<ul class="org-ul">
+<li>recyclable<br  />
+如果为 true，杀死这个 tween 后，就会重复利用它。<br  /></li>
+</ul>
+<div class="org-src-container">
+
+<pre class="src src-csharp">transform.DOMoveX<span style="color: #4f97d7;">(</span><span style="color: #a45bad;">4</span>, <span style="color: #a45bad;">1</span><span style="color: #4f97d7;">)</span>.SetRecyclable<span style="color: #4f97d7;">(</span><span style="color: #a45bad;">true</span><span style="color: #4f97d7;">)</span>;
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline49" class="outline-6">
+<h6 id="orgheadline49">SetRelative(bool isRelative = true)</h6>
+<div class="outline-text-6" id="text-orgheadline49">
+<p>
+如果 isRelative 为 true。endValue 将通过 startValue+endValue 计算得出，而不是直接使用 endValue。<br  />
+对于 Sequence，会设置其中所有嵌套的 tween 为 relative。<br  />
+注意：对于已经开始的 tween 没有效果。<br  />
+</p>
+<div class="org-src-container">
+
+<pre class="src src-csharp">transform.DOMoveX<span style="color: #4f97d7;">(</span><span style="color: #a45bad;">4</span>, <span style="color: #a45bad;">1</span><span style="color: #4f97d7;">)</span>.SetRelative<span style="color: #4f97d7;">()</span>;
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline50" class="outline-6">
+<h6 id="orgheadline50">SetUpdate(UpdateType updateType,bool isIndependentUpdate = false)</h6>
+<div class="outline-text-6" id="text-orgheadline50">
+<ul class="org-ul">
+<li>updateType<br  />
+<a id="orgtarget1"></a><br  />
+UpdateType.Normal - 在每一帧的 Update 函数中更新<br  />
+UpdateType.Late   - 在每一帧的 LateUpdate 函数中更新<br  />
+UpdateType.Fixed  - 使用 FixedUpdate 函数来更新<br  />
+UpdateType.Manual - 使用 DOTween.ManualUpdate 函数来更新<br  /></li>
+<li>isIndependentUpdate<br  />
+如果为 true，tween 就会忽略 unity 的 Time.timeScale<br  />
+注意：UpdateType.Fixed 更新类型时，也可以使用 isIndependentUpdate。但是最好不要这样做，因为 timeScale=0 时，FixedUpdate 是不执行的。<br  /></li>
+</ul>
+<div class="org-src-container">
+
+<pre class="src src-csharp">transform.DOMoveX<span style="color: #4f97d7;">(</span><span style="color: #a45bad;">4</span>, <span style="color: #a45bad;">1</span><span style="color: #4f97d7;">)</span>.SetUpdate<span style="color: #4f97d7;">(</span>UpdateType.Late, <span style="color: #a45bad;">true</span><span style="color: #4f97d7;">)</span>;
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline61" class="outline-5">
+<h5 id="orgheadline61">级联回调</h5>
+<div class="outline-text-5" id="text-orgheadline61">
+</div><div id="outline-container-orgheadline52" class="outline-6">
+<h6 id="orgheadline52">OnComplete(TweenCallback callback)</h6>
+</div>
+<div id="outline-container-orgheadline53" class="outline-6">
+<h6 id="orgheadline53">OnKill(TweenCallback callback)</h6>
+</div>
+<div id="outline-container-orgheadline54" class="outline-6">
+<h6 id="orgheadline54">OnPlay(TweenCallback callback)</h6>
+</div>
+<div id="outline-container-orgheadline55" class="outline-6">
+<h6 id="orgheadline55">OnPause(TweenCallback callback)</h6>
+</div>
+<div id="outline-container-orgheadline56" class="outline-6">
+<h6 id="orgheadline56">OnRewind(TweenCallback callback)</h6>
+</div>
+<div id="outline-container-orgheadline57" class="outline-6">
+<h6 id="orgheadline57">OnStart(TweenCallback callback)</h6>
+</div>
+<div id="outline-container-orgheadline58" class="outline-6">
+<h6 id="orgheadline58">OnStepComplete(TweenCallback callback)</h6>
+</div>
+<div id="outline-container-orgheadline59" class="outline-6">
+<h6 id="orgheadline59">OnUpdate(TweenCallback callback)</h6>
+</div>
+<div id="outline-container-orgheadline60" class="outline-6">
+<h6 id="orgheadline60">OnWaypointChange(TweenCallback&lt;int&gt; callback)</h6>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline63" class="outline-4">
+<h4 id="orgheadline63">Tweener 特定的设置和选项</h4>
+</div>
+<div id="outline-container-orgheadline64" class="outline-4">
+<h4 id="orgheadline64">TweenParams</h4>
+</div>
+</div>
+<div id="outline-container-orgheadline66" class="outline-3">
+<h3 id="orgheadline66">tween 的控制</h3>
+<div class="outline-text-3" id="text-orgheadline66">
+<p>
+有三种方式可以控制一个 tween。这三种方式都有相同的函数名，除了快捷增强方式，这种方式使用的函数名都有 DO 前缀.<br  />
+</p>
+</div>
+<div id="outline-container-orgheadline67" class="outline-4">
+<h4 id="orgheadline67">第一种方式是通过静态函数</h4>
+<div class="outline-text-4" id="text-orgheadline67">
+<div class="org-src-container">
+
+<pre class="src src-csharp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Pauses all tweens</span>
+DOTween.PauseAll<span style="color: #4f97d7;">()</span>;
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Pauses all tweens that have "badoom" as an id</span>
+DOTween.Pause<span style="color: #4f97d7;">(</span><span style="color: #2d9574;">"badoom"</span><span style="color: #4f97d7;">)</span>;
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Pauses all tweens that have someTransform as a target</span>
+DOTween.Pause<span style="color: #4f97d7;">(</span>someTransform<span style="color: #4f97d7;">)</span>;
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline68" class="outline-4">
+<h4 id="orgheadline68">第二种方式是直接通过 tween</h4>
+<div class="outline-text-4" id="text-orgheadline68">
+<div class="org-src-container">
+
+<pre class="src src-csharp">myTween.Pause<span style="color: #4f97d7;">()</span>;
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline69" class="outline-4">
+<h4 id="orgheadline69">第三种方式是通过快捷增强的引用</h4>
+<div class="outline-text-4" id="text-orgheadline69">
+<div class="org-src-container">
+
+<pre class="src src-csharp">transform.DOPause<span style="color: #4f97d7;">()</span>;
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline84" class="outline-4">
+<h4 id="orgheadline84">tween 的控制函数</h4>
+<div class="outline-text-4" id="text-orgheadline84">
+</div><div id="outline-container-orgheadline70" class="outline-5">
+<h5 id="orgheadline70">CompleteAll/Complete(bool withCallbacks = false)</h5>
+<div class="outline-text-5" id="text-orgheadline70">
+<p>
+发送终点位置给 tween（对于无限循环的 tween 不起作用）。<br  />
+</p>
+<ul class="org-ul">
+<li>withCallbacks<br  />
+只对 Sequences 起作用。如果 withCallbacks=true,Sequence 内部的回调函数会被触发，否则它们都被忽略。<br  /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgheadline71" class="outline-5">
+<h5 id="orgheadline71">FlipAll/Flip()</h5>
+<div class="outline-text-5" id="text-orgheadline71">
+<p>
+反转 tween 的方向。<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline72" class="outline-5">
+<h5 id="orgheadline72">GotoAll/Goto(float to,bool andPlay = false)</h5>
+<div class="outline-text-5" id="text-orgheadline72">
+<p>
+发送 to 时间点的位置给 tween。<br  />
+</p>
+<ul class="org-ul">
+<li>to<br  />
+如果 to 比 tween 的 duration 还大，则只是到达终点，并不会超出。<br  /></li>
+<li>andPlay<br  />
+如果为 true，则 tween 到达 to 时间点后会继续播放，否则就会暂停。<br  /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgheadline73" class="outline-5">
+<h5 id="orgheadline73">KillAll/Kill(bool complete = true, params object[] idsOrTargetsToExclude)</h5>
+<div class="outline-text-5" id="text-orgheadline73">
+<p>
+杀死 tween。默认情况下 tween 执行完后会自动被杀死，除非通过 SetAutoKill(false)函数修改默认设置。<br  />
+</p>
+<ul class="org-ul">
+<li>complete<br  />
+如果为 true，在杀死 tween 之前会立即完成该 tween<br  /></li>
+<li>idsOrTargetsToExclude<br  />
+只有 KillAll 有该参数。指定不被杀死的 tween<br  /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgheadline74" class="outline-5">
+<h5 id="orgheadline74">PauseAll/Pause()</h5>
+<div class="outline-text-5" id="text-orgheadline74">
+<p>
+暂停 tween<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline75" class="outline-5">
+<h5 id="orgheadline75">PlayAll/Play()</h5>
+<div class="outline-text-5" id="text-orgheadline75">
+<p>
+播放 tween<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline76" class="outline-5">
+<h5 id="orgheadline76">PlayBackwardsAll/PlayBackwards()</h5>
+<div class="outline-text-5" id="text-orgheadline76">
+<p>
+向后播放 tween<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline77" class="outline-5">
+<h5 id="orgheadline77">PlayForwardAll/PlayForward()</h5>
+<div class="outline-text-5" id="text-orgheadline77">
+<p>
+向前播放 tween<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline78" class="outline-5">
+<h5 id="orgheadline78">RestartAll/Restart(bool includeDelay = true, float changeDelayTo = -1)</h5>
+<div class="outline-text-5" id="text-orgheadline78">
+<p>
+重新开始 tween<br  />
+</p>
+<ul class="org-ul">
+<li>includeDelay<br  />
+如果为 true，则连 tween 的 delay 也会重新开始，否则忽略 delay。<br  /></li>
+<li>changeDelayTo<br  />
+设置 tween 的 delay 为该参数值。<br  /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgheadline79" class="outline-5">
+<h5 id="orgheadline79">RewindAll/Rewind(bool includeDelay)</h5>
+<div class="outline-text-5" id="text-orgheadline79">
+<p>
+对 tween 进行倒带<br  />
+</p>
+<ul class="org-ul">
+<li>includeDelay<br  />
+如果为 true，则会倒回 delay 之前。否则忽略 delay<br  /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgheadline80" class="outline-5">
+<h5 id="orgheadline80">SmoothRewindAll/SmoothRewind</h5>
+<div class="outline-text-5" id="text-orgheadline80">
+<p>
+平滑的倒带（不包括 delay）。<br  />
+平滑地动到 tween 的起始位置（而不是直接跳到起始位置），为了保证动画的流畅性，会忽略所有经过的循环（除了 LoopType.Incremental）<br  />
+如果在一个正在 delay 的 tween 上调用该函数，只会简单将 delay 设置为 0，并暂停该 tween。<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline81" class="outline-5">
+<h5 id="orgheadline81">TogglePauseAll/TogglePause()</h5>
+<div class="outline-text-5" id="text-orgheadline81">
+<p>
+如果 tween 暂停，就播放它；如果 tween 正在播放，就暂停它。<br  />
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline82" class="outline-5">
+<h5 id="orgheadline82">ForceInit()</h5>
+<div class="outline-text-5" id="text-orgheadline82">
+<p>
+强制初始化。当想从一个 tween 中获取数据时，如果该数据只有初始化后才可以获得，那么就可以使用该方法。<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline83" class="outline-5">
+<h5 id="orgheadline83">GotoWaypoint(int waypointIdx,bool andPlay=false)</h5>
+<div class="outline-text-5" id="text-orgheadline83">
+<ul class="org-ul">
+<li>waypointIdex<br  />
+要到达的路径点的索引（如果比最大路径点索引值还大，则只是到达最后一个路径点）<br  /></li>
+<li>andPlay<br  />
+如果 true，则到达路径点后，播放 tween，否则就暂停该 tween<br  /></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline86" class="outline-2">
+<h2 id="orgheadline86">参考资料</h2>
+<div class="outline-text-2" id="text-orgheadline86">
+<p>
+DOTween 官网文档<br  />
+<a href="http://dotween.demigiant.com/documentation.php">http://dotween.demigiant.com/documentation.php</a><br  />
+</p>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<div id="gitment-ctn"></div>
+           <link rel="stylesheet" href="https://dn-coding-net-public-file.qbox.me/Coding-Comments/v0.0.3/default.css">
+           <script src="https://dn-coding-net-public-file.qbox.me/Coding-Comments/v0.0.3/gitment.min.js"></script>
+           <script>
+           var gitment = new Gitment({
+               owner: 'wolfand11',
+               repo: 'blog_comments',
+               oauth: {
+                   client_id: '25bc4077d166c8858dca999bcd070cca',
+                   client_secret: 'c9a758cc154771b25162f537ad711c96ae5ac87c',
+               },
+           });
+           gitment.render('gitment-ctn')
+           </script>
+</div>
+</body>
+</html>

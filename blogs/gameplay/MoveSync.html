@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2019-03-02 周六 01:41 -->
+<meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta  name="viewport" content="width=device-width, initial-scale=1" />
+<title>Move Sync</title>
+<meta  name="generator" content="Org-mode" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+           <meta name="viewport" content="width=device-width, initial-scale=1" />
+           <link rel="stylesheet" title="Standard" href="https://wolfand11.coding.me/res/css/worg.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.coding.me/res/css/worg-zenburn.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.coding.me/res/css/worg-classic.css" type="text/css" />
+           <link rel="icon" href="http://wolfand11.coding.me/res/favicon.ico" type="image/ico" />
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href=""> UP </a>
+ |
+ <a accesskey="H" href="https://wolfand11.coding.me"> HOME </a>
+</div><div id="content">
+<h1 class="title">Move Sync</h1>
+<p>
+最近在看移动同步相关的东西，发现网上已经有人写了很好的文章。这里就只做一些简单思考和学习笔记吧。文章结尾处有原文章地址。<br  />
+</p>
+<!-- more -->
+<div id="outline-container-orgheadline1" class="outline-2">
+<h2 id="orgheadline1">网络同步演示</h2>
+<div class="outline-text-2" id="text-orgheadline1">
+<p>
+原始文章中，网络延迟模拟的方法是，发送数据时，随机一个时间间隔，在该时间间隔以后处理发送的数据，这种方式无法保证模拟的网络数据按照发送的顺序被依次处理。<br  />
+我采用了拥堵概率（delayRate）来模拟网络延迟，发送数据时，将数据放入一个队列中，取数据时，随机一个 0 到 1 的数值 randValue：<br  />
+如果 randValue&lt;delayRate 则说明产生拥堵，本次循环中不处理数据；<br  />
+如果 randValue&gt;delayRate 则说明没产生拥堵，本次循环中处理数据；<br  />
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline2" class="outline-2">
+<h2 id="orgheadline2">状态更新及航位预测法</h2>
+<div class="outline-text-2" id="text-orgheadline2">
+<p>
+引入原因： 状态更新和航位预测用来降低网络同步频率，从而降低服务器响应压力。<br  />
+</p>
+</div>
+<div id="outline-container-orgheadline3" class="outline-3">
+<h3 id="orgheadline3">状态更新</h3>
+<div class="outline-text-3" id="text-orgheadline3">
+<p>
+在同步数据之前，首先判断状态（速度，加速度，方向）是否改变，如果没有改变则不需要进行同步。<br  />
+如果存在加速度，需要做下面一些判断，任何判断为是，则需要进行同步：<br  />
+</p>
+<ul class="org-ul">
+<li>判断加速度是否改变<br  /></li>
+<li>判断速度大小是否改变，用前一次同步的状态来计算出当前的速度，判断计算出来的当前速度和真实的当前速度是否相等<br  /></li>
+<li>判断方向是否改变<br  /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgheadline4" class="outline-3">
+<h3 id="orgheadline4">航位预测</h3>
+<div class="outline-text-3" id="text-orgheadline4">
+<p>
+在同步数据之前，按照前一次同步过的状态，预计算出现在的位置。如果预计算得到的位置和真实的位置的差值超过某个阙值，则进行状态同步。<br  />
+在实现航位预测时，增加了 lastSyncedMoveInfo 变量，来存储前一次同步过的移动信息。不能直接使用 lastMoveInfo 的原因是，如果两帧之间的变化小于阙值时，不会改变 lastSyncedMoveInfo，但是，lastMoveInfo 是需要改变的。<br  />
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline5" class="outline-3">
+<h3 id="orgheadline5">航位预测是状态更新的补充，航位预测可以避免累积错误。</h3>
+<div class="outline-text-3" id="text-orgheadline5">
+<p>
+在包含状态更新的情况下，是否需要航位预测？<br  />
+状态更新是否存在累积错误？<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline11" class="outline-3">
+<h3 id="orgheadline11">平滑算法</h3>
+<div class="outline-text-3" id="text-orgheadline11">
+</div><div id="outline-container-orgheadline6" class="outline-4">
+<h4 id="orgheadline6">引入原因：</h4>
+<div class="outline-text-4" id="text-orgheadline6">
+<p>
+当当前位置和目标位置的差值大于一帧移动的距离时（航位预测法中预测位置和目标位置），为了避免闪现（跳跃）可以采用平滑算法，将角色从当前位置平滑移动到目标位置。<br  />
+</p>
+<ul class="org-ul">
+<li>为什么会产生当前位置和目标位置差值大于一帧移动的距离的情况？<br  /></li>
+</ul>
+<p>
+这是因为网络延迟时间的变化造成的，例如，一般情况下网络延迟为 60ms，当网络情况很好时网络延迟为 30ms，当网络情况不好时网络延迟为 120ms 或更多。举例如下：<br  />
+obj1  在 t=0ms   时，开始移动，速度为 2m/s，方向为（1,0）<br  />
+sobj1 在 t0=30ms  时，开始移动，速度为 2m/s，方向为（1,0） &#x2013; 网络情况良好<br  />
+sobj1 在 t0=60ms  时，开始移动，速度为 2m/s，方向为（1,0） &#x2013; 网络情况一般<br  />
+sobj1 在 t0=120ms 时，开始移动，速度为 2m/s，方向为（1,0） &#x2013; 网络情况不好<br  />
+</p>
+
+<p>
+obj1  在 t=10ms  时，速度变为 4m/s，方向为（0,1）<br  />
+sobj1 在 t1=t0+10ms+30ms  时，速度变为 4m/s，方向为（0,1）<br  />
+      &#x2013; 网络情况良好 t1 可能为（30+10+30） （60+10+30） （120+10+30）<br  />
+sobj1 在 t1=t0+10ms+60ms  时，速度变为 4m/s，方向为（0,1）<br  />
+      &#x2013; 网络情况一般 t1 可能为（30+10+60） （60+10+60） （120+10+60）<br  />
+sobj1 在 t1=t0+10ms+120ms 时，速度变为 4m/s，方向为（0,1）<br  />
+      &#x2013; 网络情况不好 t1 可能为（30+10+120） （60+10+120） （120+10+120）<br  />
+从上面分析可以看出，obj1 在速度为 2m/s，方向为（1,0）状态下只运动了 10ms，当网络状态从良好变为一般时，sobj1 在相同状态下运动了 10ms+(60-30)ms；当网络状态良好变为不好时，sobj1 在相同状态下运动了 10ms+(120-30)ms；<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline7" class="outline-4">
+<h4 id="orgheadline7">平滑处理中有以下几点需要注意：</h4>
+<div class="outline-text-4" id="text-orgheadline7">
+<ul class="org-ul">
+<li>目标位置 不是当前从服务器发来的位置，而是发来的位置加上延迟时间内又移动的距离，所以目标位置稍远一些。<br  /></li>
+<li>平滑时间<br  /></li>
+</ul>
+<p>
+平滑时间为当前时间和同步数据包被发送时的时间差，这个值和网络延迟相关。所以延迟越打平滑时间越长。<br  />
+平滑时间的选取可以采用最近 N 次统计的网络延迟时间的加权平均值<br  />
+</p>
+<ul class="org-ul">
+<li>平滑过程中收到新的同步数据包，则停止当前平滑操作，按照新接收到的数据进行新的平滑操作。<br  /></li>
+<li>插值会出现平滑方向和物体朝向（速度方向）不一致的情况。<br  /></li>
+</ul>
+<p>
+速度方向和变化的位移方向是一致的，只需要在平滑的过程中依据变化的位移方向修改物体朝向即可。<br  />
+</p>
+<ul class="org-ul">
+<li>插值中遇到障碍点的处理。<br  /></li>
+</ul>
+<p>
+插值之前对 当前位置 到 目标位置进行寻路，产生多个路径点，再在这些路径点直接进行插值。<br  />
+</p>
+<ul class="org-ul">
+<li>停止不自然问题<br  /></li>
+</ul>
+<p>
+因为网络延迟不稳定的缘故，所以，物体会或多或少行走 deltaDelayTime*velocity 距离。平滑这部分距离的时候，应该让平滑时间短一点，避免慢悠悠的停下来。<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline8" class="outline-4">
+<h4 id="orgheadline8">线性插值</h4>
+<div class="outline-text-4" id="text-orgheadline8">
+<p>
+线性插值代码：<br  />
+</p>
+<div class="org-src-container">
+
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">var</span> <span style="color: #7590db;">smoothTime</span> = smoothTimer = curTime - svrData.sendTime;
+<span style="color: #4f97d7; font-weight: bold;">var</span> <span style="color: #7590db;">targetPos</span> = svrData.position + svrData.velocity * smoothTime;
+<span style="color: #4f97d7; font-weight: bold;">var</span> <span style="color: #7590db;">smoothLength</span> = targetPos - startPos;
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22312;&#27599;&#19968;&#24103;</span>
+<span style="color: #4f97d7; font-weight: bold;">if</span> <span style="color: #4f97d7;">(</span>smoothTimer&gt;<span style="color: #a45bad;">0</span><span style="color: #4f97d7;">)</span>
+ <span style="color: #4f97d7;">{</span>
+     smoothTimer -= deltaTime;
+     curPos = curPos + deltaTime / smoothTime * smoothLength;
+ <span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline9" class="outline-4">
+<h4 id="orgheadline9">立方样条插值</h4>
+<div class="outline-text-4" id="text-orgheadline9">
+<p>
+实现立方样条插值需要 4 个坐标点：<br  />
+坐标点 0：开始位置（即本地当前位置）<br  />
+坐标点 1：坐标 0 经过一定时间后的位置（速度为当前速度）<br  />
+坐标点 3：最终位置（即网络协议发送的最新位置加上一定的延迟时间后的位置）<br  />
+坐标点 2：坐标 4 反方向移动一定时间后的位置（速度为网络最新速度）<br  />
+插值坐标公式为：<br  />
+x = At<sup>3</sup> + Bt<sup>2</sup> + Ct + D<br  />
+y = Et<sup>3</sup> + Ft<sup>2</sup> + Gt + H<br  />
+其中<br  />
+A = x<sub>3</sub> - 3x<sub>2</sub> + 3x<sub>1</sub> - x<sub>0</sub><br  />
+B = 3x<sub>2</sub> - 6x<sub>1</sub> + 3x<sub>0</sub><br  />
+C = 3x<sub>1</sub> - 3x<sub>0</sub><br  />
+D = x<sub>0</sub><br  />
+E = y<sub>3</sub> - 3y<sub>2</sub> + 3y<sub>1</sub> - x<sub>0</sub><br  />
+F = 3y<sub>2</sub> - 6y<sub>1</sub> + 3y<sub>0</sub><br  />
+G = 3y<sub>1</sub> - 3y<sub>0</sub><br  />
+H = y<sub>0</sub><br  />
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline10" class="outline-4">
+<h4 id="orgheadline10">加权平均插值</h4>
+<div class="outline-text-4" id="text-orgheadline10">
+<p>
+curPos = curPos + (targetPos - curPos)/slowdownFactor<br  />
+slowdownFactor 为缓动因子，slowdownFactor 越大，平滑速度越慢。<br  />
+</p>
+
+<p>
+加权平均插值的好处是不需要记录 dt。<br  />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline12" class="outline-2">
+<h2 id="orgheadline12">帧锁定算法</h2>
+<div class="outline-text-2" id="text-orgheadline12">
+<p>
+帧锁定同步算法描述：<br  />
+帧锁定同步分为两个部分，第一部分是发送客户端的移动信息，第二部分是接收服务器返回的移动信息，并利用该信息执行移动逻辑。具体实现参考下面代码即可。<br  />
+</p>
+
+<p>
+帧锁定同步算法代码：<br  />
+</p>
+<div class="org-src-container">
+
+<pre class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">svrKeyframe</span> = <span style="color: #a45bad;">0</span>;
+<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">syncInterval</span> = <span style="color: #a45bad;">5</span>;
+<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">sendCurFrame</span> = <span style="color: #a45bad;">0</span>;
+<span style="color: #ce537a; font-weight: bold;">List</span><span style="color: #4f97d7;">&lt;</span>MoveInfo<span style="color: #4f97d7;">&gt;</span> <span style="color: #7590db;">infoList</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">List</span><span style="color: #4f97d7;">&lt;</span>MoveInfo<span style="color: #4f97d7;">&gt;()</span>;
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">ProcessClientMoveControl</span><span style="color: #4f97d7;">()</span>
+<span style="color: #4f97d7;">{</span>
+    <span style="color: #4f97d7; font-weight: bold;">if</span> <span style="color: #bc6ec5;">(</span>sendCurFrame &lt;= svrKeyframe + syncInterval<span style="color: #bc6ec5;">)</span>
+    <span style="color: #bc6ec5;">{</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">curMoveInfo &#20026;&#24403;&#21069;&#24103; &#25910;&#38598;&#21040;&#30340;&#31227;&#21160;&#20449;&#24687;</span>
+        infoList.Add<span style="color: #2d9574;">(</span>curMoveInfo<span style="color: #2d9574;">)</span>;
+
+        <span style="color: #4f97d7; font-weight: bold;">if</span> <span style="color: #2d9574;">(</span>sendCurFrame == svrKeyframe + syncInterval<span style="color: #2d9574;">)</span>
+        <span style="color: #2d9574;">{</span>
+            <span style="color: #ce537a; font-weight: bold;">SyncData</span> <span style="color: #7590db;">syncData</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">SyncData</span><span style="color: #67b11d;">()</span>;
+            syncData.infoList = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">List</span><span style="color: #67b11d;">&lt;</span>MoveInfo<span style="color: #67b11d;">&gt;(</span>infoList.ToArray<span style="color: #b1951d;">()</span><span style="color: #67b11d;">)</span>;
+            syncData.keyframe = sendCurFrame;
+            Send<span style="color: #67b11d;">(</span>syncData<span style="color: #67b11d;">)</span>;
+
+            infoList.Clear<span style="color: #67b11d;">()</span>;
+        <span style="color: #2d9574;">}</span>
+        sendCurFrame++;
+    <span style="color: #bc6ec5;">}</span>
+    <span style="color: #4f97d7; font-weight: bold;">else</span>
+    <span style="color: #bc6ec5;">{</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">block game. wait for other player</span>
+    <span style="color: #bc6ec5;">}</span>
+<span style="color: #4f97d7;">}</span>
+
+<span style="color: #ce537a; font-weight: bold;">List</span><span style="color: #4f97d7;">&lt;</span><span style="color: #ce537a; font-weight: bold;">SyncData</span><span style="color: #4f97d7;">&gt;</span> <span style="color: #7590db;">syncDataList</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">List</span><span style="color: #4f97d7;">&lt;</span><span style="color: #ce537a; font-weight: bold;">SyncData</span><span style="color: #4f97d7;">&gt;()</span>;
+<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">receiveCurFrame</span> = <span style="color: #a45bad;">0</span>;
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">UpdateClientMove</span><span style="color: #4f97d7;">()</span>
+<span style="color: #4f97d7;">{</span>
+    <span style="color: #ce537a; font-weight: bold;">SyncData</span> <span style="color: #7590db;">syncData</span> = Receive<span style="color: #bc6ec5;">()</span>;
+    <span style="color: #4f97d7; font-weight: bold;">if</span> <span style="color: #bc6ec5;">(</span>syncData!=<span style="color: #a45bad;">null</span><span style="color: #bc6ec5;">)</span>
+    <span style="color: #bc6ec5;">{</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#26356;&#26032; &#20851;&#38190;&#24103;&#32534;&#21495;</span>
+        svrKeyframe = syncData.keyframe;
+        syncDataList.Add<span style="color: #2d9574;">(</span>syncData<span style="color: #2d9574;">)</span>;
+    <span style="color: #bc6ec5;">}</span>
+
+    <span style="color: #4f97d7; font-weight: bold;">if</span> <span style="color: #bc6ec5;">(</span>syncDataList.Count&gt;<span style="color: #a45bad;">0</span><span style="color: #bc6ec5;">)</span>
+    <span style="color: #bc6ec5;">{</span>
+        <span style="color: #ce537a; font-weight: bold;">SyncData</span> <span style="color: #7590db;">tmp</span> = syncDataList<span style="color: #2d9574;">[</span><span style="color: #a45bad;">0</span><span style="color: #2d9574;">]</span>;
+        <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">idx</span> = receiveCurFrame - <span style="color: #2d9574;">(</span>tmp.keyframe - syncInterval<span style="color: #2d9574;">)</span>;
+        <span style="color: #4f97d7; font-weight: bold;">if</span> <span style="color: #2d9574;">(</span>idx&lt;<span style="color: #a45bad;">0</span><span style="color: #2d9574;">)</span>
+        <span style="color: #2d9574;">{</span>
+            Debug.Log<span style="color: #67b11d;">(</span><span style="color: #2d9574;">"Error : client frame smaller than keyframe begin!"</span><span style="color: #67b11d;">)</span>;
+            quitGame<span style="color: #67b11d;">()</span>;
+        <span style="color: #2d9574;">}</span>
+        <span style="color: #4f97d7; font-weight: bold;">else</span> <span style="color: #4f97d7; font-weight: bold;">if</span> <span style="color: #2d9574;">(</span>idx&lt;tmp.infoList.Count<span style="color: #2d9574;">)</span>
+        <span style="color: #2d9574;">{</span>
+            <span style="color: #ce537a; font-weight: bold;">MoveInfo</span> <span style="color: #7590db;">info</span> = tmp.infoList<span style="color: #67b11d;">[</span>deltaFrame<span style="color: #67b11d;">]</span>;
+            <span style="color: #4f97d7; font-weight: bold;">if</span> <span style="color: #67b11d;">(</span>info!=<span style="color: #a45bad;">null</span><span style="color: #67b11d;">)</span>
+            <span style="color: #67b11d;">{</span>
+                preMoveInfo = info;
+            <span style="color: #67b11d;">}</span>
+            <span style="color: #4f97d7; font-weight: bold;">else</span>
+            <span style="color: #67b11d;">{</span>
+                info = preMoveInfo;
+            <span style="color: #67b11d;">}</span>
+
+            <span style="color: #4f97d7; font-weight: bold;">if</span><span style="color: #67b11d;">(</span>info!=<span style="color: #a45bad;">null</span><span style="color: #67b11d;">)</span>
+            <span style="color: #67b11d;">{</span>
+                UpdateGameObjectMove<span style="color: #b1951d;">(</span>info<span style="color: #b1951d;">)</span>;
+            <span style="color: #67b11d;">}</span>
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22788;&#29702;&#23436;&#19968;&#20010;&#20851;&#38190;&#24103;&#20869;&#30340;&#25968;&#25454;&#21518;&#65292;&#23558;&#36825;&#20010;&#20851;&#38190;&#24103;&#25968;&#25454;&#21024;&#38500;</span>
+            <span style="color: #4f97d7; font-weight: bold;">if</span> <span style="color: #67b11d;">(</span>idx == tmp.infoList.Count-<span style="color: #a45bad;">1</span><span style="color: #67b11d;">)</span>
+            <span style="color: #67b11d;">{</span>
+                syncDataList.Remove<span style="color: #b1951d;">(</span>tmp<span style="color: #b1951d;">)</span>;
+            <span style="color: #67b11d;">}</span>
+
+            receiveCurFrame++;
+        <span style="color: #2d9574;">}</span>
+        <span style="color: #4f97d7; font-weight: bold;">else</span>
+        <span style="color: #2d9574;">{</span>
+            Debug.Log<span style="color: #67b11d;">(</span><span style="color: #2d9574;">"Error : client frame bigger than keyframe end!"</span><span style="color: #67b11d;">)</span>;
+            quitGame<span style="color: #67b11d;">()</span>;
+        <span style="color: #2d9574;">}</span>
+    <span style="color: #bc6ec5;">}</span>
+    <span style="color: #4f97d7; font-weight: bold;">else</span>
+    <span style="color: #bc6ec5;">{</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">block game. wait for other player.</span>
+    <span style="color: #bc6ec5;">}</span>
+<span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline13" class="outline-2">
+<h2 id="orgheadline13">参考链接</h2>
+<div class="outline-text-2" id="text-orgheadline13">
+<p>
+<a href="http://www.zhust.com/index.php/2014/02/%E7%BD%91%E7%BB%9C%E6%B8%B8%E6%88%8F%E7%9A%84%E7%A7%BB%E5%8A%A8%E5%90%8C%E6%AD%A5%EF%BC%88%E4%B8%80%EF%BC%89%E7%BD%91%E7%BB%9C%E5%90%8C%E6%AD%A5%E6%BC%94%E7%A4%BA/">网络游戏的移动同步（一）网络同步演示</a><br  />
+<a href="http://www.zhust.com/index.php/2014/02/%E7%BD%91%E7%BB%9C%E6%B8%B8%E6%88%8F%E7%9A%84%E7%A7%BB%E5%8A%A8%E5%90%8C%E6%AD%A5%EF%BC%88%E4%BA%8C%EF%BC%89%E7%8A%B6%E6%80%81%E6%9B%B4%E6%96%B0%E5%8F%8A%E8%88%AA%E4%BD%8D%E9%A2%84%E6%B5%8B%E6%B3%95/">网络游戏的移动同步（二）状态更新及航位预测法</a><br  />
+<a href="http://www.zhust.com/index.php/2014/02/%E7%BD%91%E7%BB%9C%E6%B8%B8%E6%88%8F%E7%9A%84%E7%A7%BB%E5%8A%A8%E5%90%8C%E6%AD%A5%EF%BC%88%E4%B8%89%EF%BC%89%E5%B9%B3%E6%BB%91%E7%AE%97%E6%B3%95/">网络游戏的移动同步（三）平滑算法</a><br  />
+<a href="http://www.zhust.com/index.php/2014/02/%E7%BD%91%E7%BB%9C%E6%B8%B8%E6%88%8F%E7%9A%84%E7%A7%BB%E5%8A%A8%E5%90%8C%E6%AD%A5%EF%BC%88%E5%9B%9B%EF%BC%89%E5%B8%A7%E9%94%81%E5%AE%9A%E7%AE%97%E6%B3%95/">网络游戏的移动同步（四）帧锁定算法</a><br  />
+</p>
+
+<p>
+<a href="http://blog.csdn.net/skywind/article/details/6179506">帧锁定同步算法</a><br  />
+</p>
+</div>
+</div>
+</div>
+</body>
+</html>

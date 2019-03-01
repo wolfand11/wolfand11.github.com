@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2019-03-02 周六 01:41 -->
+<meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta  name="viewport" content="width=device-width, initial-scale=1" />
+<title>Programing in Elisp</title>
+<meta  name="generator" content="Org-mode" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+           <meta name="viewport" content="width=device-width, initial-scale=1" />
+           <link rel="stylesheet" title="Standard" href="https://wolfand11.coding.me/res/css/worg.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.coding.me/res/css/worg-zenburn.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.coding.me/res/css/worg-classic.css" type="text/css" />
+           <link rel="icon" href="http://wolfand11.coding.me/res/favicon.ico" type="image/ico" />
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href=""> UP </a>
+ |
+ <a accesskey="H" href="https://wolfand11.coding.me"> HOME </a>
+</div><div id="content">
+<h1 class="title">Programing in Elisp</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgheadline12">语法知识</a>
+<ul>
+<li><a href="#orgheadline1">List</a></li>
+<li><a href="#orgheadline9">Base Special List</a>
+<ul>
+<li><a href="#orgheadline2">defun</a></li>
+<li><a href="#orgheadline3">let</a></li>
+<li><a href="#orgheadline4">set setq setf</a></li>
+<li><a href="#orgheadline5">if</a></li>
+<li><a href="#orgheadline6">interactive</a></li>
+<li><a href="#orgheadline7">save-excursion</a></li>
+<li><a href="#orgheadline8">eval-last-sexp</a></li>
+</ul>
+</li>
+<li><a href="#orgheadline10">Buffer-related List</a></li>
+<li><a href="#orgheadline11">Evaluation 表达式求值</a></li>
+</ul>
+</li>
+<li><a href="#orgheadline13">Emacs 相关命令</a></li>
+</ul>
+</div>
+</div>
+<p>
+lisp note.<br  />
+</p>
+<!-- more -->
+<div id="outline-container-orgheadline12" class="outline-2">
+<h2 id="orgheadline12">语法知识</h2>
+<div class="outline-text-2" id="text-orgheadline12">
+</div><div id="outline-container-orgheadline1" class="outline-3">
+<h3 id="orgheadline1">List</h3>
+<div class="outline-text-3" id="text-orgheadline1">
+<pre class="example">
+List      由括号括起来的原子，或括号括起来的 list，或括号括起来的原子和 list,或者一个空括号。元素之间通过空格分隔。
+原子       可以是数字、单字符符号、多字符符号、字符串
+符号表达式  原子和列表的书面或计算机表示被称作符号表达式。
+
+Example:
+'(name age class grade)
+(+ 1 2)
+'(name "wolfand11")
+
+Tips:
+(1) 空列表既是一个列表，也是一个原子; nil 等价于()
+(2) 元素直接的空格可以任意多，解析器在处理的时候会去掉所有多余的空格只留下一个。
+(3) 所谓 s 表达式(s-expression)就是符号表达式(symbolic expression)
+</pre>
+</div>
+</div>
+<div id="outline-container-orgheadline9" class="outline-3">
+<h3 id="orgheadline9">Base Special List</h3>
+<div class="outline-text-3" id="text-orgheadline9">
+</div><div id="outline-container-orgheadline2" class="outline-4">
+<h4 id="orgheadline2">defun</h4>
+<div class="outline-text-4" id="text-orgheadline2">
+<p>
+定义函数 (defun func-name argument-list body)<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline3" class="outline-4">
+<h4 id="orgheadline3">let</h4>
+<div class="outline-text-4" id="text-orgheadline3">
+<p>
+定义局部变量，该变量只在 let 列表内可用。 (let ((local-var value) &#x2026;) body)<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline4" class="outline-4">
+<h4 id="orgheadline4">set setq setf</h4>
+<div class="outline-text-4" id="text-orgheadline4">
+<p>
+定义全局变量。(set 'var value) (setq var value) (setf var value)<br  />
+</p>
+<div class="org-src-container">
+
+<pre class="src src-elisp"><span style="color: #4f97d7;">(</span>set ls '<span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">1</span> <span style="color: #a45bad;">2</span> <span style="color: #a45bad;">3</span> <span style="color: #a45bad;">4</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>  =&gt; Error - ls has no value
+<span style="color: #4f97d7;">(</span>set 'ls '<span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">1</span> <span style="color: #a45bad;">2</span> <span style="color: #a45bad;">3</span> <span style="color: #a45bad;">4</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span> =&gt; OK
+<span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">setq</span> ls '<span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">1</span> <span style="color: #a45bad;">2</span> <span style="color: #a45bad;">3</span> <span style="color: #a45bad;">4</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span> =&gt; OK - make ls to <span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">quote</span> ls<span style="color: #4f97d7;">)</span> and then have the usual set
+<span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">setf</span> ls '<span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">1</span> <span style="color: #a45bad;">2</span> <span style="color: #a45bad;">3</span> <span style="color: #a45bad;">4</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span> =&gt; OK - same as setq so far BUT
+<span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">setf</span> <span style="color: #bc6ec5;">(</span>car ls<span style="color: #bc6ec5;">)</span> <span style="color: #a45bad;">10</span><span style="color: #4f97d7;">)</span>   =&gt; Makes ls '<span style="color: #4f97d7;">(</span><span style="color: #a45bad;">10</span> <span style="color: #a45bad;">2</span> <span style="color: #a45bad;">3</span> <span style="color: #a45bad;">4</span><span style="color: #4f97d7;">)</span> - not duplicated by setq/set
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline5" class="outline-4">
+<h4 id="orgheadline5">if</h4>
+<div class="outline-text-4" id="text-orgheadline5">
+<p>
+分支语句。 (if do-someing do-other-thing)<br  />
+</p>
+<pre class="example">
+Tips:
+elisp 中除去()和 nil 外都为 true
+(if () "() is true" "() is false")
+;; () is false
+(if 0 "0 is true" "0 is false")
+;; 0 is true
+(if 'false "'false is true" "'false is false") == (if (quote false) "'false is true" "'false is false")
+;; 'false is true
+</pre>
+</div>
+</div>
+<div id="outline-container-orgheadline6" class="outline-4">
+<h4 id="orgheadline6">interactive</h4>
+<div class="outline-text-4" id="text-orgheadline6">
+<p>
+使函数变为交互函数。 (interactive arg)<br  />
+</p>
+<pre class="example">
+Example:
+(defun AddTwo (var1)
+  "add two with argument"
+  (interactive "p")
+  (let ((two_value 2) result (info "result is %d"))
+    (setq result (+ var1 two_value))
+    (message info (+ var1 two_value))))
+</pre>
+</div>
+</div>
+<div id="outline-container-orgheadline7" class="outline-4">
+<h4 id="orgheadline7">save-excursion</h4>
+<div class="outline-text-4" id="text-orgheadline7">
+<p>
+保存恢复 point 和 mark 变量<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline8" class="outline-4">
+<h4 id="orgheadline8">eval-last-sexp</h4>
+<div class="outline-text-4" id="text-orgheadline8">
+<p>
+对前面的表达式求值<br  />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline10" class="outline-3">
+<h3 id="orgheadline10">Buffer-related List</h3>
+</div>
+<div id="outline-container-orgheadline11" class="outline-3">
+<h3 id="orgheadline11">Evaluation 表达式求值</h3>
+<div class="outline-text-3" id="text-orgheadline11">
+<pre class="example">
+Number 求值
+直接返回数值
+
+符号求值
+(1) 变量求值 返回变量符号指向的值
+(2) 函数求值 执行函数符号指向的指令，返回最后一个指令的返回值
+
+Lisp 中的任何一个 List 都是一个可以运行的程序。运行一个列表，被称作对这个列表求值。
+运行一个列表会有三类情况：
+(1)只返回列表本身
+(2)提示错误信息
+(3)将列表第一个符号当作命令，然后执行这个命令
+
+Tips:
+单引号(')，表示一个引用。单引号出现在一个列表前，告诉 Lisp 不要对这个列表 做任何操作，仅仅保持其原样。如果一个列表前没有引号，这个列表的第一个符 号就是计算机将要执行的一条命令(Lisp 中，这些命令称为函数)。
+'(setq count 20)  ;;C-x C-e 得到 list (setq count 20)
+(setq count 20)   ;;C-x C-e 得到 20
+'('name)          ;;C-x C-3 得到((quote name))
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline13" class="outline-2">
+<h2 id="orgheadline13">Emacs 相关命令</h2>
+<div class="outline-text-2" id="text-orgheadline13">
+<pre class="example">
+1、lisp 代码缩排：
+M-C-\ 一个区域内正确缩排命令
+TAB   光标所在行缩排
+
+2、运行一个列表
+C-x C-e
+
+3、查看 variable function 信息
+C-h v
+</pre>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<div id="gitment-ctn"></div>
+           <link rel="stylesheet" href="https://dn-coding-net-public-file.qbox.me/Coding-Comments/v0.0.3/default.css">
+           <script src="https://dn-coding-net-public-file.qbox.me/Coding-Comments/v0.0.3/gitment.min.js"></script>
+           <script>
+           var gitment = new Gitment({
+               owner: 'wolfand11',
+               repo: 'blog_comments',
+               oauth: {
+                   client_id: '25bc4077d166c8858dca999bcd070cca',
+                   client_secret: 'c9a758cc154771b25162f537ad711c96ae5ac87c',
+               },
+           });
+           gitment.render('gitment-ctn')
+           </script>
+</div>
+</body>
+</html>

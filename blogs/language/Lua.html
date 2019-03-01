@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2019-03-02 周六 01:41 -->
+<meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta  name="viewport" content="width=device-width, initial-scale=1" />
+<title>Programming in Lua</title>
+<meta  name="generator" content="Org-mode" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+           <meta name="viewport" content="width=device-width, initial-scale=1" />
+           <link rel="stylesheet" title="Standard" href="https://wolfand11.coding.me/res/css/worg.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.coding.me/res/css/worg-zenburn.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.coding.me/res/css/worg-classic.css" type="text/css" />
+           <link rel="icon" href="http://wolfand11.coding.me/res/favicon.ico" type="image/ico" />
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href=""> UP </a>
+ |
+ <a accesskey="H" href="https://wolfand11.coding.me"> HOME </a>
+</div><div id="content">
+<h1 class="title">Programming in Lua</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgheadline1">Programming in Lua</a></li>
+<li><a href="#orgheadline4">The Language</a>
+<ul>
+<li><a href="#orgheadline3">Type and Values</a>
+<ul>
+<li><a href="#orgheadline2">bool</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgheadline11">Tables and Objects</a>
+<ul>
+<li><a href="#orgheadline5">Metatable and Metamethod</a>
+<ul>
+<li><a href="#orgheadline9">metatable-metamethod 实现支持继承的 class</a>
+<ul>
+<li><a href="#orgheadline6">实现 class 关键要实现以下几点：</a></li>
+<li><a href="#orgheadline7">Tips:</a></li>
+<li><a href="#orgheadline8">具体实现</a></li>
+</ul>
+</li>
+<li><a href="#orgheadline10">Tips:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgheadline14">The Standard Library</a>
+<ul>
+<li><a href="#orgheadline13">OS</a>
+<ul>
+<li><a href="#orgheadline12">打印代码执行时间的方法</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgheadline15">The C API</a></li>
+<li><a href="#orgheadline16">参考资料</a></li>
+</ul>
+</div>
+</div>
+<p>
+lua note.<br  />
+</p>
+<!-- more -->
+<div id="outline-container-orgheadline1" class="outline-2">
+<h2 id="orgheadline1">Programming in Lua</h2>
+</div>
+<div id="outline-container-orgheadline4" class="outline-2">
+<h2 id="orgheadline4">The Language</h2>
+<div class="outline-text-2" id="text-orgheadline4">
+</div><div id="outline-container-orgheadline3" class="outline-3">
+<h3 id="orgheadline3">Type and Values</h3>
+<div class="outline-text-3" id="text-orgheadline3">
+</div><div id="outline-container-orgheadline2" class="outline-4">
+<h4 id="orgheadline2">bool</h4>
+<div class="outline-text-4" id="text-orgheadline2">
+<p>
+lua 在进行条件测试中，nil 和 false 为 false，任何其他值都为 true。<br  />
+</p>
+<div class="org-src-container">
+
+<pre class="src src-lua"><span style="color: #4f97d7; font-weight: bold;">function</span> <span style="color: #bc6ec5; font-weight: bold;">PrintBoolCheck</span><span style="color: #4f97d7;">(</span>var<span style="color: #4f97d7;">)</span>
+    <span style="color: #4f97d7; font-weight: bold;">if</span> var <span style="color: #4f97d7; font-weight: bold;">then</span>
+        <span style="color: #4f97d7;">print</span><span style="color: #4f97d7;">(</span><span style="color: #4f97d7;">tostring</span><span style="color: #bc6ec5;">(</span>var<span style="color: #bc6ec5;">)</span> .. <span style="color: #2d9574;">" is true"</span><span style="color: #4f97d7;">)</span>
+    <span style="color: #4f97d7; font-weight: bold;">else</span>
+        <span style="color: #4f97d7;">print</span><span style="color: #4f97d7;">(</span><span style="color: #4f97d7;">tostring</span><span style="color: #bc6ec5;">(</span>var<span style="color: #bc6ec5;">)</span> .. <span style="color: #2d9574;">" is false"</span><span style="color: #4f97d7;">)</span>
+    <span style="color: #4f97d7; font-weight: bold;">end</span>
+<span style="color: #4f97d7; font-weight: bold;">end</span>
+
+PrintBoolCheck<span style="color: #4f97d7;">(</span><span style="color: #a45bad;">nil</span><span style="color: #4f97d7;">)</span>
+PrintBoolCheck<span style="color: #4f97d7;">(</span><span style="color: #a45bad;">false</span><span style="color: #4f97d7;">)</span>
+PrintBoolCheck<span style="color: #4f97d7;">(</span><span style="color: #bc6ec5;">{}</span><span style="color: #4f97d7;">)</span>
+<span style="color: #2aa1ae; background-color: #292e34;">--</span><span style="color: #2aa1ae; background-color: #292e34;">output</span>
+<span style="color: #2aa1ae; background-color: #292e34;">-- </span><span style="color: #2aa1ae; background-color: #292e34;">nil is false</span>
+<span style="color: #2aa1ae; background-color: #292e34;">-- </span><span style="color: #2aa1ae; background-color: #292e34;">false is false</span>
+<span style="color: #2aa1ae; background-color: #292e34;">-- </span><span style="color: #2aa1ae; background-color: #292e34;">table: 0xed7f00 is true</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline11" class="outline-2">
+<h2 id="orgheadline11">Tables and Objects</h2>
+<div class="outline-text-2" id="text-orgheadline11">
+</div><div id="outline-container-orgheadline5" class="outline-3">
+<h3 id="orgheadline5">Metatable and Metamethod</h3>
+<div class="outline-text-3" id="text-orgheadline5">
+<p>
+metatable 是 lua 中修改 table 默认行为的一种机制。通过给一个 table 指定 metatable，并给该 metatable 添加一些特定的方法，就可以改变 table 的行为。<br  />
+例如：<br  />
+给 metatable 添加__index 元方法，可以改变索引 table 不存在字段时的行为。<br  />
+给 metatable 添加__newindex 元方法，可以改变为 table 不存在字段赋值时的行为。<br  />
+</p>
+</div>
+<div id="outline-container-orgheadline9" class="outline-4">
+<h4 id="orgheadline9">metatable-metamethod 实现支持继承的 class</h4>
+<div class="outline-text-4" id="text-orgheadline9">
+</div><div id="outline-container-orgheadline6" class="outline-5">
+<h5 id="orgheadline6">实现 class 关键要实现以下几点：</h5>
+<div class="outline-text-5" id="text-orgheadline6">
+<ul class="org-ul">
+<li>类支持构造对象，构造出的对象共用类的方法<br  />
+可以 new 对象，new 对象时调用类的构造函数<br  /></li>
+<li>子类对象可以访问父类的方法<br  /></li>
+<li>构造对象时，先调用父类构造函数，后调用子类构造函数<br  />
+通常父类的构造函数调用不封装在 class 的实现中，而是放在定义类的时候，这样可以让上层控制，父类构造函数的调用顺序，以及是否调用。<br  /></li>
+<li>子类对象拥有父类对象的属性<br  /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgheadline7" class="outline-5">
+<h5 id="orgheadline7">Tips:</h5>
+<div class="outline-text-5" id="text-orgheadline7">
+<p>
+在元方法__index 中取属性时，需要使用 rawget,否则会自己调用自己陷入死循环<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline8" class="outline-5">
+<h5 id="orgheadline8">具体实现</h5>
+<div class="outline-text-5" id="text-orgheadline8">
+<p>
+在该实现中，我将父类的构造函数调用也封装到 class 实现中了。<br  />
+</p>
+<div class="org-src-container">
+
+<pre class="src src-lua"><span style="color: #4f97d7; font-weight: bold;">function</span> <span style="color: #bc6ec5; font-weight: bold;">class</span><span style="color: #4f97d7;">(</span>clsName, super<span style="color: #4f97d7;">)</span>
+    <span style="color: #4f97d7; font-weight: bold;">if</span> clsName==<span style="color: #a45bad;">nil</span> <span style="color: #4f97d7; font-weight: bold;">then</span>
+        <span style="color: #4f97d7;">print</span><span style="color: #4f97d7;">(</span><span style="color: #2d9574;">"Error: className is nil"</span><span style="color: #4f97d7;">)</span>
+    <span style="color: #4f97d7; font-weight: bold;">end</span>
+    <span style="color: #4f97d7; font-weight: bold;">if</span> <span style="color: #4f97d7;">_G</span><span style="color: #4f97d7;">[</span>clsName<span style="color: #4f97d7;">]</span> <span style="color: #4f97d7; font-weight: bold;">then</span>
+        <span style="color: #4f97d7;">print</span><span style="color: #4f97d7;">(</span><span style="color: #2d9574;">"Error: class eixst. className = "</span> .. clsName<span style="color: #4f97d7;">)</span>
+    <span style="color: #4f97d7; font-weight: bold;">end</span>
+
+    <span style="color: #4f97d7; font-weight: bold;">function</span> <span style="color: #bc6ec5; font-weight: bold;">invoke_ctor</span><span style="color: #4f97d7;">(</span>class, obj, ...<span style="color: #4f97d7;">)</span>
+        <span style="color: #4f97d7; font-weight: bold;">if</span> class~=<span style="color: #a45bad;">nil</span> <span style="color: #4f97d7; font-weight: bold;">then</span>
+            invoke_ctor<span style="color: #4f97d7;">(</span><span style="color: #4f97d7;">rawget</span><span style="color: #bc6ec5;">(</span>class,<span style="color: #2d9574;">"super"</span><span style="color: #bc6ec5;">)</span>, obj, ...<span style="color: #4f97d7;">)</span>
+            <span style="color: #4f97d7; font-weight: bold;">if</span> <span style="color: #4f97d7;">type</span><span style="color: #4f97d7;">(</span><span style="color: #4f97d7;">rawget</span><span style="color: #bc6ec5;">(</span>class,<span style="color: #2d9574;">"ctor"</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>==<span style="color: #2d9574;">"function"</span> <span style="color: #4f97d7; font-weight: bold;">then</span>
+                class.ctor<span style="color: #4f97d7;">(</span>obj, ...<span style="color: #4f97d7;">)</span>
+            <span style="color: #4f97d7; font-weight: bold;">end</span>
+        <span style="color: #4f97d7; font-weight: bold;">end</span>
+    <span style="color: #4f97d7; font-weight: bold;">end</span>
+    <span style="color: #4f97d7; font-weight: bold;">function</span> <span style="color: #bc6ec5; font-weight: bold;">get_func</span><span style="color: #4f97d7;">(</span>class, key<span style="color: #4f97d7;">)</span>
+        <span style="color: #4f97d7; font-weight: bold;">if</span> class~=<span style="color: #a45bad;">nil</span> <span style="color: #4f97d7; font-weight: bold;">then</span>
+            <span style="color: #4f97d7; font-weight: bold;">if</span> <span style="color: #4f97d7;">type</span><span style="color: #4f97d7;">(</span><span style="color: #4f97d7;">rawget</span><span style="color: #bc6ec5;">(</span>class,key<span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>==<span style="color: #2d9574;">"function"</span> <span style="color: #4f97d7; font-weight: bold;">then</span>
+                <span style="color: #4f97d7; font-weight: bold;">return</span> class<span style="color: #4f97d7;">[</span>key<span style="color: #4f97d7;">]</span>
+            <span style="color: #4f97d7; font-weight: bold;">else</span>
+                <span style="color: #4f97d7; font-weight: bold;">return</span> get_func<span style="color: #4f97d7;">(</span><span style="color: #4f97d7;">rawget</span><span style="color: #bc6ec5;">(</span>class,<span style="color: #2d9574;">"super"</span><span style="color: #bc6ec5;">)</span>, key<span style="color: #4f97d7;">)</span>
+            <span style="color: #4f97d7; font-weight: bold;">end</span>
+        <span style="color: #4f97d7; font-weight: bold;">end</span>
+        <span style="color: #4f97d7;">print</span><span style="color: #4f97d7;">(</span><span style="color: #2d9574;">"Error: not exist member func -&gt; "</span> .. key<span style="color: #4f97d7;">)</span>
+        <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #a45bad;">nil</span>
+    <span style="color: #4f97d7; font-weight: bold;">end</span>
+
+    <span style="color: #4f97d7; font-weight: bold;">local</span> <span style="color: #7590db;">cls</span> = <span style="color: #4f97d7;">{}</span>
+    cls.super = super
+    <span style="color: #bc6ec5; font-weight: bold;">cls.__index</span> = <span style="color: #4f97d7; font-weight: bold;">function</span> <span style="color: #4f97d7;">(</span>tbl, key<span style="color: #4f97d7;">)</span>
+        <span style="color: #4f97d7; font-weight: bold;">return</span> get_func<span style="color: #4f97d7;">(</span>cls, key<span style="color: #4f97d7;">)</span>
+    <span style="color: #4f97d7; font-weight: bold;">end</span>
+    <span style="color: #4f97d7;">setmetatable</span><span style="color: #4f97d7;">(</span>cls,cls<span style="color: #4f97d7;">)</span>
+    <span style="color: #bc6ec5; font-weight: bold;">cls.new</span> = <span style="color: #4f97d7; font-weight: bold;">function</span> <span style="color: #4f97d7;">(</span>...<span style="color: #4f97d7;">)</span>
+        <span style="color: #4f97d7; font-weight: bold;">local</span> <span style="color: #7590db;">obj</span> = <span style="color: #4f97d7;">{}</span>
+        <span style="color: #4f97d7;">setmetatable</span><span style="color: #4f97d7;">(</span>obj, cls<span style="color: #4f97d7;">)</span>
+        invoke_ctor<span style="color: #4f97d7;">(</span>cls, obj, ...<span style="color: #4f97d7;">)</span>
+        <span style="color: #4f97d7; font-weight: bold;">return</span> obj
+    <span style="color: #4f97d7; font-weight: bold;">end</span>
+    <span style="color: #4f97d7; font-weight: bold;">return</span> cls
+<span style="color: #4f97d7; font-weight: bold;">end</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline10" class="outline-4">
+<h4 id="orgheadline10">Tips:</h4>
+<div class="outline-text-4" id="text-orgheadline10">
+<ul class="org-ul">
+<li>pairs 不会列出元表中__index 的字段<br  /></li>
+<li>判断 tabel 是否含有某个字段<br  /></li>
+</ul>
+<div class="org-src-container">
+
+<pre class="src src-lua"><span style="color: #2aa1ae; background-color: #292e34;">-- </span><span style="color: #2aa1ae; background-color: #292e34;">&#38169;&#35823;&#30340;&#20889;&#27861;&#65306;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">-- </span><span style="color: #2aa1ae; background-color: #292e34;">&#24403; svrData.IsLeader == false &#32780; role.data.IsLeader == true &#26102;&#65292;&#19979;&#38754;&#30340;&#20195;&#30721;&#19981;&#20250;&#26356;&#26032; role.data.IsLeader &#30340;&#20540;&#20026; false</span>
+<span style="color: #4f97d7; font-weight: bold;">if</span> <span style="color: #4f97d7;">rawget</span><span style="color: #4f97d7;">(</span>svrData,<span style="color: #2d9574;">"IsLeader"</span><span style="color: #4f97d7;">)</span> <span style="color: #4f97d7; font-weight: bold;">then</span>
+    role.data.IsLeader = svrData.IsLeader
+<span style="color: #4f97d7; font-weight: bold;">end</span>
+<span style="color: #2aa1ae; background-color: #292e34;">-- </span><span style="color: #2aa1ae; background-color: #292e34;">&#27491;&#30830;&#30340;&#20889;&#27861;&#65306;</span>
+<span style="color: #4f97d7; font-weight: bold;">if</span> <span style="color: #4f97d7;">rawget</span><span style="color: #4f97d7;">(</span>svrData,<span style="color: #2d9574;">"IsLeader"</span><span style="color: #4f97d7;">)</span>~=<span style="color: #a45bad;">nil</span> <span style="color: #4f97d7; font-weight: bold;">then</span>
+    role.data.IsLeader = svrData.IsLeader
+<span style="color: #4f97d7; font-weight: bold;">end</span>
+<span style="color: #2aa1ae; background-color: #292e34;">-- </span><span style="color: #2aa1ae; background-color: #292e34;">&#26368;&#22909;&#30340;&#20889;&#27861;&#65306;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">-- </span><span style="color: #2aa1ae; background-color: #292e34;">&#36825;&#26679;&#21363;&#20351; svrData[k] == nil &#20063;&#21487;&#20197;&#23545; role.data[k]&#36827;&#34892;&#36171;&#20540;</span>
+<span style="color: #4f97d7; font-weight: bold;">for</span> <span style="color: #7590db;">k</span>,<span style="color: #7590db;">v</span> <span style="color: #4f97d7; font-weight: bold;">in</span> <span style="color: #4f97d7;">pairs</span><span style="color: #4f97d7;">(</span>svrData<span style="color: #4f97d7;">)</span> <span style="color: #4f97d7; font-weight: bold;">do</span>
+    role.data<span style="color: #4f97d7;">[</span>k<span style="color: #4f97d7;">]</span> = v
+<span style="color: #4f97d7; font-weight: bold;">end</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline14" class="outline-2">
+<h2 id="orgheadline14">The Standard Library</h2>
+<div class="outline-text-2" id="text-orgheadline14">
+</div><div id="outline-container-orgheadline13" class="outline-3">
+<h3 id="orgheadline13">OS</h3>
+<div class="outline-text-3" id="text-orgheadline13">
+</div><div id="outline-container-orgheadline12" class="outline-4">
+<h4 id="orgheadline12">打印代码执行时间的方法</h4>
+<div class="outline-text-4" id="text-orgheadline12">
+<p>
+下面打印出的时间单位为秒<br  />
+</p>
+<div class="org-src-container">
+
+<pre class="src src-lua"><span style="color: #4f97d7; font-weight: bold;">local</span> <span style="color: #7590db;">codeTimer</span> = <span style="color: #4f97d7;">os</span>.<span style="color: #4f97d7;">clock</span><span style="color: #4f97d7;">()</span>
+<span style="color: #2aa1ae; background-color: #292e34;">-- </span><span style="color: #2aa1ae; background-color: #292e34;">... &#27492;&#22788;&#30465;&#30053;&#33509;&#24178;&#19978;&#24093;&#20195;&#30721;</span>
+<span style="color: #4f97d7;">print</span><span style="color: #4f97d7;">(</span><span style="color: #2d9574;">"delta time = "</span> .. <span style="color: #4f97d7;">tostring</span><span style="color: #bc6ec5;">(</span><span style="color: #4f97d7;">os</span>.<span style="color: #4f97d7;">clock</span><span style="color: #2d9574;">()</span>-codeTimer<span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+<span style="color: #2aa1ae; background-color: #292e34;">-- </span><span style="color: #2aa1ae; background-color: #292e34;">delta time = 4.928</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline15" class="outline-2">
+<h2 id="orgheadline15">The C API</h2>
+</div>
+<div id="outline-container-orgheadline16" class="outline-2">
+<h2 id="orgheadline16">参考资料</h2>
+<div class="outline-text-2" id="text-orgheadline16">
+<ul class="org-ul">
+<li>Programming in Lua ver3<br  /></li>
+<li>lua online<br  /></li>
+</ul>
+<p>
+<a href="https://www.lua.org/cgi-bin/demo">https://www.lua.org/cgi-bin/demo</a><br  />
+</p>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<div id="gitment-ctn"></div>
+           <link rel="stylesheet" href="https://dn-coding-net-public-file.qbox.me/Coding-Comments/v0.0.3/default.css">
+           <script src="https://dn-coding-net-public-file.qbox.me/Coding-Comments/v0.0.3/gitment.min.js"></script>
+           <script>
+           var gitment = new Gitment({
+               owner: 'wolfand11',
+               repo: 'blog_comments',
+               oauth: {
+                   client_id: '25bc4077d166c8858dca999bcd070cca',
+                   client_secret: 'c9a758cc154771b25162f537ad711c96ae5ac87c',
+               },
+           });
+           gitment.render('gitment-ctn')
+           </script>
+</div>
+</body>
+</html>

@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2019-08-16 周五 19:40 -->
+<meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta  name="viewport" content="width=device-width, initial-scale=1" />
+<title>Game Physics</title>
+<meta  name="generator" content="Org-mode" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+           <meta name="viewport" content="width=device-width, initial-scale=1" />
+           <link rel="stylesheet" title="Standard" href="https://wolfand11.coding.me/res/css/worg.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.coding.me/res/css/worg-zenburn.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.coding.me/res/css/worg-classic.css" type="text/css" />
+           <link rel="icon" href="http://wolfand11.coding.me/res/favicon.ico" type="image/ico" />
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href=""> UP </a>
+ |
+ <a accesskey="H" href="https://wolfand11.coding.me"> HOME </a>
+</div><div id="content">
+<h1 class="title">Game Physics</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgheadline15">Physics 101</a>
+<ul>
+<li><a href="#orgheadline5">Understanding physics simulation</a>
+<ul>
+<li><a href="#orgheadline1">The problem</a></li>
+<li><a href="#orgheadline2">What's a model?</a></li>
+<li><a href="#orgheadline3">What's an "integrator"?</a></li>
+<li><a href="#orgheadline4">What's a "solver"?</a></li>
+</ul>
+</li>
+<li><a href="#orgheadline9">Rigid bodies</a>
+<ul>
+<li><a href="#orgheadline6">The model</a></li>
+<li><a href="#orgheadline7">Integration</a></li>
+<li><a href="#orgheadline8">The solver</a></li>
+</ul>
+</li>
+<li><a href="#orgheadline13">Solvers</a>
+<ul>
+<li><a href="#orgheadline10">The naive iterative solver (which is actually very good).</a></li>
+<li><a href="#orgheadline11">Convergence</a></li>
+<li><a href="#orgheadline12">Another solver (which is better in some ways, but worse in others).</a></li>
+</ul>
+</li>
+<li><a href="#orgheadline14">参考资料</a></li>
+</ul>
+</li>
+<li><a href="#orgheadline16">Obi Cloth</a></li>
+<li><a href="#orgheadline29">SpringManager</a>
+<ul>
+<li><a href="#orgheadline22">源码解析</a>
+<ul>
+<li><a href="#orgheadline19">SpringManager</a>
+<ul>
+<li><a href="#orgheadline17">Public Interface</a>
+<ul>
+<li><a href="#orgheadline18">注意</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgheadline21">SpringBone</a>
+<ul>
+<li><a href="#orgheadline20">Public Interface</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgheadline27">使用</a>
+<ul>
+<li><a href="#orgheadline23">做动作后衣服飘带回归原始位置的过程非常缓慢，如何调节？</a></li>
+<li><a href="#orgheadline24">拿几个 Cube 连接在一起做了一条绳子，发现绳子最末端两个骨骼始终保持相同的运动</a></li>
+<li><a href="#orgheadline25">拿几个 Cube 连接在一起做了一条绳子，发现绳子起始端骨骼非常僵硬</a></li>
+<li><a href="#orgheadline26">武器的挂坠使用了动态骨骼来做，做动作时武器挂坠会横着没有重力影响的效果</a></li>
+</ul>
+</li>
+<li><a href="#orgheadline28">参考资料</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<p>
+Game Physics note.<br  />
+</p>
+
+<div id="outline-container-orgheadline15" class="outline-2">
+<h2 id="orgheadline15">Physics 101</h2>
+<div class="outline-text-2" id="text-orgheadline15">
+</div><div id="outline-container-orgheadline5" class="outline-3">
+<h3 id="orgheadline5">Understanding physics simulation</h3>
+<div class="outline-text-3" id="text-orgheadline5">
+</div><div id="outline-container-orgheadline1" class="outline-4">
+<h4 id="orgheadline1">The problem</h4>
+<div class="outline-text-4" id="text-orgheadline1">
+<p>
+在电影和游戏中求解物理问题几乎是相同的任务。唯一的不同是，电影中可以花费足够长时间来求解问题，而游戏中必须在非常短时间内求解问题。<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline2" class="outline-4">
+<h4 id="orgheadline2">What's a model?</h4>
+<div class="outline-text-4" id="text-orgheadline2">
+<p>
+在两辆汽车碰撞的模拟中，我们需要多少这两辆汽车的运动学参数？他们的尺寸，质量，形状，轮子的直径，轮胎的类型以及轮胎的抓地力&#x2026;&#x2026;.<br  />
+也许我们可以简化该问题，将每辆汽车当作一整个铁盒子，在路上滑动，没有任何摩擦力。我们不需要考虑各个独立部分的动力学。这样我们的问题就变得非常容易，也可以快速的求解，但是会遗失掉很多的细节。<br  />
+这是两个同一个物理系统的不同模型。前一个模型的求解比较难，速度也慢，但是其结果详细且真实。后一个模型的求解比较容易，速度快，但是结果缺少细节。对于游戏来说我们只能使用简单的模型，这样才能足够快的求解问题。<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline3" class="outline-4">
+<h4 id="orgheadline3">What's an "integrator"?</h4>
+<div class="outline-text-4" id="text-orgheadline3">
+<p>
+每次电脑重新绘制一帧时，两辆汽车必须改变他们的位置，互相接近对方直到它们碰到一起。我们必须设计一种方法来驱动这种模拟从一帧变化到下一帧。<br  />
+可以通过下面的方法来更新每辆车的位置：<br  />
+</p>
+<pre class="example">
+new position = current position + current velocity * time between frames
+new velocity = current velocity + (force / mass) * time between frames
+</pre>
+<p>
+上面的伪代码通过对速度积分来获得位置，通过对加速度积分来获得速度。这是就是 Euler 积分，其是一个更新我们物理模拟的非常基础的方法，该方法速度非常快，当然，其精确度比较低。<br  />
+无论我们选择如何建模我们的问题，我们都需要一个积分方案来驱动物理模拟从一帧进行到下一帧。<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline4" class="outline-4">
+<h4 id="orgheadline4">What's a "solver"?</h4>
+<div class="outline-text-4" id="text-orgheadline4">
+<p>
+直到两辆车碰撞，他们的速度和位置几乎是独立的(不相关的)。碰撞之后，他们新的速度将依赖于他们质量的相对值（例如，当一辆自行车和货车撞击会导致自行车速度有很大变化，而货车的速度不会有太大变化），碰撞期间的接触点等等。这是一个涉及到多物体的问题，而不只是一个物体。<br  />
+简单来说，Solver 就是一个程序，它可以处理这类问题，并进行求解。这些问题通常被表示为一个方程组，其将各个物体的多个物理属性关联在一起。<br  />
+广义来说，有两种 Solvers：Direct Solver 和 Iterative Solver. Direct Solver 会在一次求解中获得确定的结果。Iterative Solver 则会执行很多个阶段，每一次会获得的结果会更加近似最终确定的结果。<br  />
+Direct Solver (例如：Lemke,Dantzig) 对于小规模的问题来说是非常快的，但是当问题规模变大时，会逐渐变得越来越慢。<br  />
+Iterative Solver (例如：Gauss-Seidel, Jacobi) 可以很快地给出一个近似解。它会以一个猜测的解作为开始，然后在方程组上执行一系列快速的处理来渐进地改善问题的解。执行的迭代次数越多，结果越精确。<br  />
+很难百分百确定一个求解器是 Direct 类型的还是 Iterative 类型的，有些方法可以被认为既是 Direct Solver 又是 Iterative Solver（例如：Conjugate Gradient）。<br  />
+</p>
+
+<p>
+迭代法也称辗转法，是一种不断用变量的旧值递推新值的过程，跟迭代法相对应的是直接法(或者称为一次解法)，即一次性解决问题。迭代算法是用计算机解决问题的一种基本方法，它利用计算机运算速度快、适合做重复性操作的特点，让计算机对一组指令(或一定步骤)进行重复执行，在每次执行这组指令(或这些步骤)时，都从变量的原值推出它的一个新值，迭代法又分为精确迭代和近似迭代。比较典型的迭代法如“二分法”和"牛顿迭代法”属于近似迭代法。<br  />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline9" class="outline-3">
+<h3 id="orgheadline9">Rigid bodies</h3>
+<div class="outline-text-3" id="text-orgheadline9">
+</div><div id="outline-container-orgheadline6" class="outline-4">
+<h4 id="orgheadline6">The model</h4>
+<div class="outline-text-4" id="text-orgheadline6">
+<p>
+如果我们想让游戏流畅地运行，我们需要每秒在屏幕上绘制至少 60 次，这意味着我们有 1/60 秒（16 毫秒）来处理输入、模拟物理、更新 AI 并且为当前帧显示渲染所有内容。通常每帧时间内，游戏物理的预算时间为 5 毫秒。<br  />
+在如此紧张的预算下，计算草的叶子之间的碰撞毫无疑问在我们的模型中是不会考虑的。在纱线级别对角色衣服进行模拟也必然是超出我们考虑范围了。动态液体的模拟我们也不会考虑。<br  />
+修剪掉这些复杂的事情后，我们就得到了典型的游戏物理模型。我们使用胶囊体来模拟角色，使用高度图来模拟地形，使用简单的盒子来模拟墙壁和地表。更多复杂的物体可以使用任意的凸形来模拟。我们假定这些简单的形状可以移动和旋转，但是不会以任何方式变形。即使在很大的压力下，他们也不会被压扁，切变，扭曲，弯曲等等。因此我们称他们为刚体。<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline7" class="outline-4">
+<h4 id="orgheadline7">Integration</h4>
+<div class="outline-text-4" id="text-orgheadline7">
+<p>
+模拟空间中一点所需要的所有信息为：<br  />
+</p>
+<ul class="org-ul">
+<li>Position 位置<br  /></li>
+<li>Linear Velocity 线性速度<br  /></li>
+<li>Mass 质量<br  /></li>
+</ul>
+<p>
+因为我们可能需要支持旋转运动，我们还需要下面额外的数据：<br  />
+</p>
+<ul class="org-ul">
+<li>Orientation 朝向（类比位置）<br  /></li>
+<li>Angular Velocity 角速度 （类比线性速度）<br  /></li>
+<li>Inertia tensor 惯性张量 （类比质量）<br  /></li>
+</ul>
+
+<p>
+下面的代码使用了 Euler 积分器来驱动刚体的旋转<br  />
+</p>
+<pre class="example">
+new orientation = current orientation + current angular vel. * time between frames
+new angular vel. = current angular vel. + (torque / inertia tensor) * time between frames
+
+// 注意下面的 "x" 运算符是叉乘运算符。
+torque =  force x (point – center of mass)
+</pre>
+</div>
+</div>
+<div id="outline-container-orgheadline8" class="outline-4">
+<h4 id="orgheadline8">The solver</h4>
+<div class="outline-text-4" id="text-orgheadline8">
+<p>
+我们已经知道如何模拟各自独立的刚体了，碰撞会使他们相互影响。<br  />
+对于两个重叠的刚体，给定一个接触点，我们可以在接触点上应用一个力。这个力使得这两个刚体移动和旋转，从而在下一帧开始时，这两个刚体基本上不再接触。这个力是在当前帧期间立即作用的，不会持续很长时间。这种方法被称为基于冲量的解决方法。<br  />
+我们也可以计算两个刚体之间的距离，然后应用一个排斥力分别作用给它们，并且两种距离越近排斥力越大。这种方法被称为基于惩罚的解决方法。<br  />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline13" class="outline-3">
+<h3 id="orgheadline13">Solvers</h3>
+<div class="outline-text-3" id="text-orgheadline13">
+</div><div id="outline-container-orgheadline10" class="outline-4">
+<h4 id="orgheadline10">The naive iterative solver (which is actually very good).</h4>
+<div class="outline-text-4" id="text-orgheadline10">
+<p>
+假设有两个物体 A 和 B 分别都和第三个物体 C 接触。这会产生两个接触约束，也就是两个方程式：A vs C 和 B vs C.<br  />
+我们先以求解 A vs C 开始，这会同时移动 A 和 C 使他们不再重叠。然后这使得 C 和 B 重叠的部分更多。我们再求解 B vs C，这会对他们的位置都做轻微调整来避免碰撞。此时，对 B vs C 的求解破坏了一开始对 A vs C 的求解，因为两次调节都对 C 位置做了调整，而且两次调整的方向不同。我们可以对 A vs C 再次进行求解，来使结果变得更好一些。&#x2026;&#x2026;.<br  />
+重复求解两个方程四次，可能是五次。每次迭代没对物体重叠的部分都会减少，并且最终方程的模拟会非常满意。尽管这个方法看起来有点鲁莽（只是对所有方程按顺序不停的求解直到所有物体很好的排列），但事实上这是一个解决很多问题的好方法：这就是 Gauss-Seidel 方法<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline11" class="outline-4">
+<h4 id="orgheadline11">Convergence</h4>
+<div class="outline-text-4" id="text-orgheadline11">
+<p>
+在前面的情况中，如果我们求解 A vs C 之后，求解 B vs C 将 A vs C 还原为初始的状态，此时会发生什么？也就是说 A 和 B 是静态的不允许动的，C 就像三明治一样夹在 A 和 B 的中间。此时，我们无论迭代多少次求解过程，结果都没有改善。这是我们就称该问题是不收敛的。如果每次迭代使问题变得更糟糕，则该问题是发散的。<br  />
+如果我们可以找到一个方法 A 迭代 5 次就可以达到另一个方法 B 迭代 10 次的效果，我们就说方法 A 比方法 B 收敛的更快。<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline12" class="outline-4">
+<h4 id="orgheadline12">Another solver (which is better in some ways, but worse in others).</h4>
+<div class="outline-text-4" id="text-orgheadline12">
+<p>
+在 Gauss-Seidel 方法中，我们再进行下一次迭代之前就会使用每个方程求解的结果。如果本次迭代全部使用上一次迭代的结果，而不使用本次迭代产生的结果，然后再将结果进行平均。这种方法被称为平均化的 Jacobi 方法。<br  />
+和 Gauss-Seidel 方法相比，Jacobi 方法收敛速度比较慢，但是 Jacobi 方法每次迭代开始时所有方程都使用相同的输入，所以方便并行计算。另外，平均 Jacobi 方法是顺序无关的，而 Gauss-Seidel 方法则和求解顺序相关。<br  />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline14" class="outline-3">
+<h3 id="orgheadline14">参考资料</h3>
+<div class="outline-text-3" id="text-orgheadline14">
+<ul class="org-ul">
+<li>Understanding physics simulation <a href="http://blog.virtualmethodstudio.com/2017/03/physics-101-understanding-physics-simulation/">http://blog.virtualmethodstudio.com/2017/03/physics-101-understanding-physics-simulation/</a><br  /></li>
+<li>Rigid bodies <a href="http://blog.virtualmethodstudio.com/2017/03/physics-101-2-rigid-bodies/">http://blog.virtualmethodstudio.com/2017/03/physics-101-2-rigid-bodies/</a><br  /></li>
+<li>Solvers <a href="http://blog.virtualmethodstudio.com/2017/11/physics-101-3-solvers/">http://blog.virtualmethodstudio.com/2017/11/physics-101-3-solvers/</a><br  /></li>
+<li>迭代法 <a href="https://baike.baidu.com/item/%E8%BF%AD%E4%BB%A3%E6%B3%95">https://baike.baidu.com/item/%E8%BF%AD%E4%BB%A3%E6%B3%95</a><br  /></li>
+<li>Jacobi 迭代法与 Gauss-Seidel 迭代法 <a href="https://blog.csdn.net/baimafujinji/article/details/50582462">https://blog.csdn.net/baimafujinji/article/details/50582462</a><br  /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline16" class="outline-2">
+<h2 id="orgheadline16">Obi Cloth</h2>
+<div class="outline-text-2" id="text-orgheadline16">
+<ul class="org-ul">
+<li>官方文档 <a href="http://obi.virtualmethodstudio.com/tutorials/">http://obi.virtualmethodstudio.com/tutorials/</a><br  /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgheadline29" class="outline-2">
+<h2 id="orgheadline29">SpringManager</h2>
+<div class="outline-text-2" id="text-orgheadline29">
+</div><div id="outline-container-orgheadline22" class="outline-3">
+<h3 id="orgheadline22">源码解析</h3>
+<div class="outline-text-3" id="text-orgheadline22">
+</div><div id="outline-container-orgheadline19" class="outline-4">
+<h4 id="orgheadline19">SpringManager</h4>
+<div class="outline-text-4" id="text-orgheadline19">
+</div><div id="outline-container-orgheadline17" class="outline-5">
+<h5 id="orgheadline17">Public Interface</h5>
+<div class="outline-text-5" id="text-orgheadline17">
+<ul class="org-ul">
+<li>Dynamic Ratio<br  /></li>
+<li>Stiffness Force        指定骨骼的硬度(柔软度)<br  /></li>
+<li>Stiffness Curve        指定骨骼硬度变化曲线<br  /></li>
+<li>Drag Force            指定骨骼运动的阻力<br  /></li>
+<li>Drag Curve            指定阻力变化曲线<br  /></li>
+<li>Spring Bones            指定所有的动态骨骼，没有将 SpringBone 放入该数组，SpringBone 不会有动态骨骼效果<br  /></li>
+</ul>
+</div>
+<div id="outline-container-orgheadline18" class="outline-6">
+<h6 id="orgheadline18">注意</h6>
+<div class="outline-text-6" id="text-orgheadline18">
+<p>
+上面的 Curve 的 x 坐标轴和 SpringBones 中骨骼的顺序相对应。<br  />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline21" class="outline-4">
+<h4 id="orgheadline21">SpringBone</h4>
+<div class="outline-text-4" id="text-orgheadline21">
+</div><div id="outline-container-orgheadline20" class="outline-5">
+<h5 id="orgheadline20">Public Interface</h5>
+<div class="outline-text-5" id="text-orgheadline20">
+<ul class="org-ul">
+<li>Child    指定当前骨骼的子骨骼<br  /></li>
+<li>BoneAxis 指定骨骼排布方向 (以世界坐标轴为坐标系)<br  /></li>
+<li>Radius   指定骨骼的直径，用于碰撞处理<br  /></li>
+<li>Is Use Each Bone Force Setting<br  /></li>
+<li>Stiffness Force     指定骨骼的硬度(柔软度)<br  /></li>
+<li>Drag Force         指定骨骼运动的阻力<br  /></li>
+<li>Spring Force        指定弹簧力的方向和大小 (以世界坐标轴为坐标系)<br  /></li>
+<li>Colliders            指定碰撞体集合，骨骼和碰撞体不会穿插在一起<br  /></li>
+<li>Threshold<br  /></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline27" class="outline-3">
+<h3 id="orgheadline27">使用</h3>
+<div class="outline-text-3" id="text-orgheadline27">
+</div><div id="outline-container-orgheadline23" class="outline-4">
+<h4 id="orgheadline23">做动作后衣服飘带回归原始位置的过程非常缓慢，如何调节？</h4>
+<div class="outline-text-4" id="text-orgheadline23">
+<p>
+需要同时调节 Stiffness Force 和 Drag Force，首先适度增加 Stiffness Force 让物体不要太柔软，其次调节 Drag Force 使运动阻力适中。Drag Force 太小，物体以静止位置为中心来回运动次数较多，Drag Force 太大，物体回到静止位置花费时间比较长。<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline24" class="outline-4">
+<h4 id="orgheadline24">拿几个 Cube 连接在一起做了一条绳子，发现绳子最末端两个骨骼始终保持相同的运动</h4>
+<div class="outline-text-4" id="text-orgheadline24">
+<p>
+需要在最末端添加一个空节点，作为虚拟的绳子末端。这样就可以解决这个问题了。<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline25" class="outline-4">
+<h4 id="orgheadline25">拿几个 Cube 连接在一起做了一条绳子，发现绳子起始端骨骼非常僵硬</h4>
+<div class="outline-text-4" id="text-orgheadline25">
+<p>
+需要在起始端添加一个空接点，作为虚拟的绳子起始端。这样就可以解决这个问题了。<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline26" class="outline-4">
+<h4 id="orgheadline26">武器的挂坠使用了动态骨骼来做，做动作时武器挂坠会横着没有重力影响的效果</h4>
+<div class="outline-text-4" id="text-orgheadline26">
+<p>
+修改 Spring Force 来改变弹簧力的方向和大小，可以使重力影响效果变的明显。<br  />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline28" class="outline-3">
+<h3 id="orgheadline28">参考资料</h3>
+<div class="outline-text-3" id="text-orgheadline28">
+<ul class="org-ul">
+<li>SpringManager 源码 <a href="https://github.com/unity3d-jp/unitychan-crs">https://github.com/unity3d-jp/unitychan-crs</a><br  /></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

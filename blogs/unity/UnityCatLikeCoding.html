@@ -1,0 +1,1104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2019-08-16 周五 19:40 -->
+<meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta  name="viewport" content="width=device-width, initial-scale=1" />
+<title>UnityCatLikeCoding</title>
+<meta  name="generator" content="Org-mode" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+           <meta name="viewport" content="width=device-width, initial-scale=1" />
+           <link rel="stylesheet" title="Standard" href="https://wolfand11.coding.me/res/css/worg.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.coding.me/res/css/worg-zenburn.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.coding.me/res/css/worg-classic.css" type="text/css" />
+           <link rel="icon" href="http://wolfand11.coding.me/res/favicon.ico" type="image/ico" />
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href=""> UP </a>
+ |
+ <a accesskey="H" href="https://wolfand11.coding.me"> HOME </a>
+</div><div id="content">
+<h1 class="title">UnityCatLikeCoding</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgheadline45">UnityCatLikeCoding</a>
+<ul>
+<li><a href="#orgheadline44">Rendering</a>
+<ul>
+<li><a href="#orgheadline8">Shader Fundamentals</a>
+<ul>
+<li><a href="#orgheadline6">基础知识</a>
+<ul>
+<li><a href="#orgheadline1">SV 含义</a></li>
+<li><a href="#orgheadline2">ST 含义</a></li>
+<li><a href="#orgheadline3">贴图坐标系</a></li>
+<li><a href="#orgheadline4">MipMap 和 FilterMode</a></li>
+<li><a href="#orgheadline5">TRANSFORM_TEX</a></li>
+</ul>
+</li>
+<li><a href="#orgheadline7">D3D11 汇编命令</a></li>
+</ul>
+</li>
+<li><a href="#orgheadline11">Combining Textures</a>
+<ul>
+<li><a href="#orgheadline9">Linear Color Space</a>
+<ul>
+<li><a href="#orgheadline10">参考资料</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgheadline20">The First Light</a>
+<ul>
+<li><a href="#orgheadline12">normal 从物体空间到世界空间的变换</a></li>
+<li><a href="#orgheadline13">Tags LightMode=ForwardBase</a></li>
+<li><a href="#orgheadline14">Unity 定义的变量</a></li>
+<li><a href="#orgheadline15">BlinnPhong</a></li>
+<li><a href="#orgheadline16">Energy Conservation</a></li>
+<li><a href="#orgheadline19">Specular / Metallic Workflow</a>
+<ul>
+<li><a href="#orgheadline17">Specular Workflow</a></li>
+<li><a href="#orgheadline18">Metallic Workflow</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgheadline31">Multi Lights</a>
+<ul>
+<li><a href="#orgheadline21">Light Attenuation</a>
+<ul>
+<li><a href="#orgheadline22">Point Light</a></li>
+</ul>
+</li>
+<li><a href="#orgheadline23">Mixing Lights</a></li>
+<li><a href="#orgheadline24">Cookies</a></li>
+<li><a href="#orgheadline25">Vertex Lights</a></li>
+<li><a href="#orgheadline30">Spherical Harmonics</a>
+<ul>
+<li><a href="#orgheadline26">相关数学概念</a></li>
+<li><a href="#orgheadline28">原理概述</a></li>
+<li><a href="#orgheadline29">Spherical Harmonics Bands</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgheadline40">Bumpiness</a>
+<ul>
+<li><a href="#orgheadline34">高度图转 normal map 的方法</a>
+<ul>
+<li><a href="#orgheadline32">方案 1</a></li>
+<li><a href="#orgheadline33">方案 2</a></li>
+</ul>
+</li>
+<li><a href="#orgheadline35">Normal 向量的插值</a></li>
+<li><a href="#orgheadline36">Normal 贴图存储惯例</a></li>
+<li><a href="#orgheadline37">DXT5nm 存储 normal 贴图</a></li>
+<li><a href="#orgheadline38">缩放 Normal</a></li>
+<li><a href="#orgheadline39">Blending Normals</a></li>
+</ul>
+</li>
+<li><a href="#orgheadline43">Shadows</a>
+<ul>
+<li><a href="#orgheadline41">Rendering To Shadow Maps</a></li>
+<li><a href="#orgheadline42">参考资料</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgheadline49">Q&amp;A</a>
+<ul>
+<li><a href="#orgheadline46">为什么 Unity 标准材质中只有点光源可以在顶点着色器中计算？</a></li>
+<li><a href="#orgheadline47">Unity 球谐光照函数中只需要传递 normal，那么物体到光源的距离引起的光照差异是如何实现的？</a></li>
+<li><a href="#orgheadline48">为什么渲染方向光的阴影贴图时需要使用正交矩阵，而点光源需要使用透视矩阵？</a></li>
+</ul>
+</li>
+<li><a href="#orgheadline50">参考资料</a></li>
+</ul>
+</div>
+</div>
+<p>
+UnityCatLikeCoding note.<br  />
+</p>
+<!-- more -->
+
+<div id="outline-container-orgheadline45" class="outline-2">
+<h2 id="orgheadline45">UnityCatLikeCoding</h2>
+<div class="outline-text-2" id="text-orgheadline45">
+</div><div id="outline-container-orgheadline44" class="outline-3">
+<h3 id="orgheadline44">Rendering</h3>
+<div class="outline-text-3" id="text-orgheadline44">
+</div><div id="outline-container-orgheadline8" class="outline-4">
+<h4 id="orgheadline8">Shader Fundamentals</h4>
+<div class="outline-text-4" id="text-orgheadline8">
+</div><div id="outline-container-orgheadline6" class="outline-5">
+<h5 id="orgheadline6">基础知识</h5>
+<div class="outline-text-5" id="text-orgheadline6">
+</div><div id="outline-container-orgheadline1" class="outline-6">
+<h6 id="orgheadline1">SV 含义</h6>
+<div class="outline-text-6" id="text-orgheadline1">
+<p>
+SV_POSITION、SV_TARGET 中 SV 表示 System Value<br  />
+SV_TARGET 表示 fragment shader 写入最终颜色值的默认目标对象，其实就是帧缓冲区对象<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline2" class="outline-6">
+<h6 id="orgheadline2">ST 含义</h6>
+<div class="outline-text-6" id="text-orgheadline2">
+<p>
+贴图附加的 Tiling 和 Offset 属性。ST 表示 Scale 和 Translation.<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline3" class="outline-6">
+<h6 id="orgheadline3">贴图坐标系</h6>
+<div class="outline-text-6" id="text-orgheadline3">
+<p>
+OpenGL 坐标原点在左下角<br  />
+D3D 坐标原点在左上角<br  />
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline4" class="outline-6">
+<h6 id="orgheadline4">MipMap 和 FilterMode</h6>
+<div class="outline-text-6" id="text-orgheadline4">
+<p>
+MipMap       用于处理贴图图元密度大于像素密度的情况，一个像素对应多个贴图图元时，如果没有 mipmap，在多个贴图图元中采用一个图元而丢弃其他。有 mipmap 时，则使用更低分辨率的贴图让 像素密度和贴图密度相接近。<br  />
+FilterMode   用于处理贴图图元密度小于像素密度的情况，采样器会对靠近采样点的图元进行采样，然后对这些图元进行插值，来得到最终颜色值。<br  />
+</p>
+
+<p>
+Bilinear texture filtering  会对靠近采样点的四个图元进行加权平均。<br  />
+</p>
+
+<p>
+<a href="https://docs.microsoft.com/en-us/windows/uwp/graphics-concepts/bilinear-texture-filtering">https://docs.microsoft.com/en-us/windows/uwp/graphics-concepts/bilinear-texture-filtering</a><br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline5" class="outline-6">
+<h6 id="orgheadline5">TRANSFORM_TEX</h6>
+<div class="outline-text-6" id="text-orgheadline5">
+<div class="org-src-container">
+
+<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#35813;&#26041;&#27861;&#23450;&#20041;&#22312; UnityCG.cginc</span>
+<span style="color: #bc6ec5;">#define</span> TRANSFORM_TEX<span style="color: #4f97d7;">(</span>tex,name<span style="color: #4f97d7;">)</span> <span style="color: #4f97d7;">(</span>tex.xy * name##<span style="color: #7590db;">_ST</span>.xy + name##<span style="color: #7590db;">_ST</span>.zw<span style="color: #4f97d7;">)</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline7" class="outline-5">
+<h5 id="orgheadline7">D3D11 汇编命令</h5>
+<div class="outline-text-5" id="text-orgheadline7">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">命令</th>
+<th scope="col" class="org-left">说明</th>
+<th scope="col" class="org-left">示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">mul result opt1 opt2</td>
+<td class="org-left">opt1 乘 opt2 保存到 result</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">add result opt1 opt2</td>
+<td class="org-left">opt1 加 opt2 保存到 result</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">mad result opt1 opt2 opt3</td>
+<td class="org-left">opt1 乘 opt2 再加 opt3 保存结果到 result</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">mov result opt1</td>
+<td class="org-left">将 opt1 数据保存到 result</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">dcl_sampler s0, mode_default</td>
+<td class="org-left">创建贴图采样对象 s0</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">dcl_resource_texture2d(float,float,float,float) t0</td>
+<td class="org-left">创建 2D 贴图资源 t0</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">sample result.xyzw, uv.xyxx, t0.xyzw, s0</td>
+<td class="org-left">使用 s0 采样器以 uv 为贴图坐标，对贴图资源 t0 进行采样将结果保存到 result 中</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline11" class="outline-4">
+<h4 id="orgheadline11">Combining Textures</h4>
+<div class="outline-text-4" id="text-orgheadline11">
+</div><div id="outline-container-orgheadline9" class="outline-5">
+<h5 id="orgheadline9">Linear Color Space</h5>
+<div class="outline-text-5" id="text-orgheadline9">
+<p>
+Gamma space 是指经过 gamma 矫正的颜色。gamma 矫正是对光照亮度的调整。最简单的方式是提升原始值某次幂，如 \(originalValue^{gamma}\) 。<br  />
+gamma=1 表示没有改变。gamma=2 表示对原始值求平方。<br  />
+</p>
+
+<p>
+这种转换原本是为了适应非线性的 CRT 显示器的。一个附加的好处是这种转换刚好和我们眼睛对不同光强度的敏感程度相一致。人眼对不同的暗的颜色要比不同的亮的颜色更加敏感。所以使用更多位数字存储暗颜色是很有意义的，求幂运算可以实现该需求，它会将比较小的值扩展到一个更大的范围，同时将较大的值压缩到一个小的范围。<br  />
+</p>
+
+<p>
+运用最广泛的图片颜色格式是 sRGB.<br  />
+</p>
+<ul class="org-ul">
+<li>Encoding with gamma 1/2.2 即 \(originalValue^{\frac{1}{2.2}} = originalValue^{0.45}\)<br  />
+  <img src="./UnityCatLikeCoding/01_03ct_linear-to-gamma.png" alt="01_03ct_linear-to-gamma.png" /><br  /></li>
+<li>Decoding with gamma 2.2 即 \(originalValue^{2.2}\)<br  />
+  <img src="./UnityCatLikeCoding/01_03ct_gamma-to-linear.png" alt="01_03ct_gamma-to-linear.png" /><br  /></li>
+<li>伽马矫正函数图示<br  />
+<img src="./UnityCatLikeCoding/01_03ct_gamma_correct.png" alt="01_03ct_gamma_correct.png" /><br  /></li>
+</ul>
+<p>
+横坐标为编码前的颜色值，纵坐标为编码后的颜色值。蓝色的线表示线性编码前后颜色值不变。红色的线表示 Gamma 编码前后颜色值变大。以 0.5 为分界线，Gamma 编码后，[0-0.5] 被扩展到了 [0-0.7297&#x2026;] [0.5-1] 被压缩到了 [0.7297&#x2026; - 1]<br  />
+</p>
+
+<p>
+下面的 HTML 可用于 GammaToLinear 转换<br  />
+</p>
+<div class="org-src-container">
+
+<pre class="src src-html">&lt;<span style="color: #4f97d7; font-weight: bold;">!DOCTYPE</span> html&gt;
+&lt;<span style="color: #bc6ec5; font-weight: bold;">html</span>&gt;
+    &lt;<span style="color: #bc6ec5; font-weight: bold;">body</span>&gt;
+
+        &lt;<span style="color: #bc6ec5; font-weight: bold;">h2</span>&gt;<span style="font-weight: bold; font-style: italic; text-decoration: underline;">&#39068;&#33394;&#36716;&#25442;</span>&lt;/<span style="color: #bc6ec5; font-weight: bold;">h2</span>&gt;
+
+        &lt;<span style="color: #bc6ec5; font-weight: bold;">form</span> <span style="color: #7590db;">action</span>=<span style="color: #2d9574;">""</span> <span style="color: #7590db;">id</span>=<span style="color: #2d9574;">"originColor"</span>&gt;
+            TD &#39068;&#33394;
+            R: &lt;<span style="color: #bc6ec5; font-weight: bold;">input</span> <span style="color: #7590db;">type</span>=<span style="color: #2d9574;">"text"</span> <span style="color: #7590db;">id</span>=<span style="color: #2d9574;">"oR"</span> value =<span style="color: #2d9574;">"128"</span> <span style="color: #7590db;">size</span>=<span style="color: #2d9574;">"4"</span>&gt;
+            G: &lt;<span style="color: #bc6ec5; font-weight: bold;">input</span> <span style="color: #7590db;">type</span>=<span style="color: #2d9574;">"text"</span> <span style="color: #7590db;">id</span>=<span style="color: #2d9574;">"oG"</span> value =<span style="color: #2d9574;">"128"</span> <span style="color: #7590db;">size</span>=<span style="color: #2d9574;">"4"</span>&gt;
+            B: &lt;<span style="color: #bc6ec5; font-weight: bold;">input</span> <span style="color: #7590db;">type</span>=<span style="color: #2d9574;">"text"</span> <span style="color: #7590db;">id</span>=<span style="color: #2d9574;">"oB"</span> value =<span style="color: #2d9574;">"64"</span> <span style="color: #7590db;">size</span>=<span style="color: #2d9574;">"4"</span>&gt;
+        &lt;/<span style="color: #bc6ec5; font-weight: bold;">form</span>&gt;
+        &lt;<span style="color: #bc6ec5; font-weight: bold;">br</span>&gt;
+        &lt;<span style="color: #bc6ec5; font-weight: bold;">form</span> <span style="color: #7590db;">action</span>=<span style="color: #2d9574;">""</span> <span style="color: #7590db;">id</span>=<span style="color: #2d9574;">"newColor"</span>&gt;
+            Qin &#39068;&#33394;
+            R: &lt;<span style="color: #bc6ec5; font-weight: bold;">input</span> <span style="color: #7590db;">type</span>=<span style="color: #2d9574;">"text"</span> <span style="color: #7590db;">id</span>=<span style="color: #2d9574;">"nR"</span> value =<span style="color: #2d9574;">""</span> <span style="color: #7590db;">size</span>=<span style="color: #2d9574;">"4"</span> disabled&gt;
+            G: &lt;<span style="color: #bc6ec5; font-weight: bold;">input</span> <span style="color: #7590db;">type</span>=<span style="color: #2d9574;">"text"</span> <span style="color: #7590db;">id</span>=<span style="color: #2d9574;">"nG"</span> value =<span style="color: #2d9574;">""</span> <span style="color: #7590db;">size</span>=<span style="color: #2d9574;">"4"</span> disabled&gt;
+            B: &lt;<span style="color: #bc6ec5; font-weight: bold;">input</span> <span style="color: #7590db;">type</span>=<span style="color: #2d9574;">"text"</span> <span style="color: #7590db;">id</span>=<span style="color: #2d9574;">"nB"</span> value =<span style="color: #2d9574;">""</span> <span style="color: #7590db;">size</span>=<span style="color: #2d9574;">"4"</span> disabled&gt;
+        &lt;/<span style="color: #bc6ec5; font-weight: bold;">form</span>&gt;
+        &lt;<span style="color: #bc6ec5; font-weight: bold;">br</span>&gt;
+
+        &lt;<span style="color: #bc6ec5; font-weight: bold;">button</span> <span style="color: #7590db;">type</span>=<span style="color: #2d9574;">"button"</span> <span style="color: #7590db;">onclick</span>='convertColor()'&gt;&#36716;&#25442;&lt;/<span style="color: #bc6ec5; font-weight: bold;">button</span>&gt;
+    &lt;/<span style="color: #bc6ec5; font-weight: bold;">body</span>&gt;
+
+    &lt;<span style="color: #bc6ec5; font-weight: bold;">script</span> <span style="color: #7590db;">type</span>=<span style="color: #2d9574;">"text/javascript"</span>&gt;
+     function convertColor()
+     {
+         var r = document.getElementById(<span style="color: #2d9574;">"oR"</span>).value / 255;
+         var g = document.getElementById(<span style="color: #2d9574;">"oG"</span>).value / 255;
+         var b = document.getElementById(<span style="color: #2d9574;">"oB"</span>).value / 255;
+
+         //window.alert(<span style="color: #2d9574;">"test = "</span> + r + b + g);
+         document.getElementById(<span style="color: #2d9574;">"nR"</span>).value = Math.round(Math.pow(r, 1/2.2) * 255);
+         document.getElementById(<span style="color: #2d9574;">"nG"</span>).value = Math.round(Math.pow(g, 1/2.2) * 255);
+         document.getElementById(<span style="color: #2d9574;">"nB"</span>).value = Math.round(Math.pow(b, 1/2.2) * 255);
+     }
+    &lt;/<span style="color: #bc6ec5; font-weight: bold;">script</span>&gt;
+
+&lt;/<span style="color: #bc6ec5; font-weight: bold;">html</span>&gt;
+</pre>
+</div>
+</div>
+<div id="outline-container-orgheadline10" class="outline-6">
+<h6 id="orgheadline10">参考资料</h6>
+<div class="outline-text-6" id="text-orgheadline10">
+<ul class="org-ul">
+<li>Gamma 空间是什么，为什么我们需要它 <a href="https://blog.csdn.net/qq_18229381/article/details/78053018">https://blog.csdn.net/qq_18229381/article/details/78053018</a><br  /></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline20" class="outline-4">
+<h4 id="orgheadline20">The First Light</h4>
+<div class="outline-text-4" id="text-orgheadline20">
+</div><div id="outline-container-orgheadline12" class="outline-5">
+<h5 id="orgheadline12">normal 从物体空间到世界空间的变换</h5>
+<div class="outline-text-5" id="text-orgheadline12">
+<div class="org-src-container">
+
+<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">obj to world</span>
+i.normal = <span style="color: #4f97d7;">mul</span><span style="color: #4f97d7;">(</span><span style="color: #4f97d7;">transpose</span><span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">(</span><span style="color: #ce537a; font-weight: bold;">float3x3</span><span style="color: #2d9574;">)</span>unity_WorldToObject<span style="color: #bc6ec5;">)</span>, v.normal<span style="color: #4f97d7;">)</span>;
+
+<span style="color: #4f97d7; font-weight: bold;">inline</span> <span style="color: #ce537a; font-weight: bold;">float3</span> UnityObjectToWorldNormal<span style="color: #4f97d7;">(</span> <span style="color: #4f97d7; font-weight: bold;">in</span> <span style="color: #ce537a; font-weight: bold;">float3</span> norm <span style="color: #4f97d7;">)</span>
+<span style="color: #4f97d7;">{</span>
+<span style="color: #bc6ec5;">#ifdef</span> UNITY_ASSUME_UNIFORM_SCALING
+    <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #bc6ec5; font-weight: bold;">UnityObjectToWorldDir</span><span style="color: #bc6ec5;">(</span>norm<span style="color: #bc6ec5;">)</span>;
+<span style="color: #bc6ec5;">#else</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25913;&#21464;&#24038;&#20056; &#21491;&#20056;&#39034;&#24207; &#31561;&#20215;&#20110; &#30697;&#38453;&#36716;&#32622;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">mul(IT_M, norm) =&gt; mul(norm, I_M) =&gt; {dot(norm, I_M.col0), dot(norm, I_M.col1), dot(norm, I_M.col2)}</span>
+    <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #bc6ec5; font-weight: bold;">normalize</span><span style="color: #bc6ec5;">(</span><span style="color: #4f97d7;">mul</span><span style="color: #2d9574;">(</span>norm, <span style="color: #67b11d;">(</span><span style="color: #ce537a; font-weight: bold;">float3x3</span><span style="color: #67b11d;">)</span>unity_WorldToObject<span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span>;
+<span style="color: #bc6ec5;">#endif</span>
+<span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline13" class="outline-5">
+<h5 id="orgheadline13">Tags LightMode=ForwardBase</h5>
+<div class="outline-text-5" id="text-orgheadline13">
+<p>
+定义该 Tags 才可以在 shader 中访问场景中主方向光的信息。<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline14" class="outline-5">
+<h5 id="orgheadline14">Unity 定义的变量</h5>
+<div class="outline-text-5" id="text-orgheadline14">
+<p>
+_WorldSpaceLightPos0      世界空间 Light 位置<br  />
+_LightColor0              Light 颜色<br  />
+_WorldSpaceCameraPos      世界坐标摄像机位置<br  />
+_LightTexture0            Light 没有使用 Cookie 时，该变量存储衰减贴图。使用了 Cookie 时，存储 Cookie 贴图。 (Directional Light 没有衰减贴图)<br  />
+_LightTextureB0           Light 使用了 Cookie 时，该变量存储衰减贴图。 (Directional Light 没有衰减贴图)<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline15" class="outline-5">
+<h5 id="orgheadline15">BlinnPhong</h5>
+<div class="outline-text-5" id="text-orgheadline15">
+<p>
+视角不逆光时的显示效果如下：<br  />
+<img src="./UnityCatLikeCoding/01_04fl_blinnphone.png" alt="01_04fl_blinnphone.png" /><br  />
+</p>
+
+<p>
+视角逆光时会有显示错误。错误如下图：<br  />
+<img src="./UnityCatLikeCoding/01_04fl_blinnphone_error.png" alt="01_04fl_blinnphone_error.png" /><br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline16" class="outline-5">
+<h5 id="orgheadline16">Energy Conservation</h5>
+<div class="outline-text-5" id="text-orgheadline16">
+<div class="org-src-container">
+
+<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Unity &#23454;&#29616;&#30340;&#33021;&#37327;&#23432;&#24658; UnityStandardUtils.cginc</span>
+
+<span style="color: #ce537a; font-weight: bold;">half</span> <span style="color: #bc6ec5; font-weight: bold;">SpecularStrength</span><span style="color: #4f97d7;">(</span><span style="color: #ce537a; font-weight: bold;">half3</span> specular<span style="color: #4f97d7;">)</span>
+<span style="color: #4f97d7;">{</span>
+<span style="color: #bc6ec5;">    #if</span> <span style="color: #bc6ec5;">(</span>SHADER_TARGET &lt; <span style="color: #a45bad;">30</span><span style="color: #bc6ec5;">)</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">SM2.0: instruction count limitation</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">SM2.0: simplified SpecularStrength</span>
+        <span style="color: #4f97d7; font-weight: bold;">return</span> specular.r; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Red channel - because most metals are either monocrhome or with redish/yellowish tint</span>
+<span style="color: #bc6ec5;">    #else</span>
+        <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #bc6ec5; font-weight: bold;">max</span> <span style="color: #bc6ec5;">(</span><span style="color: #4f97d7;">max</span> <span style="color: #2d9574;">(</span>specular.r, specular.g<span style="color: #2d9574;">)</span>, specular.b<span style="color: #bc6ec5;">)</span>;
+<span style="color: #bc6ec5;">    #endif</span>
+<span style="color: #4f97d7;">}</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Diffuse/Spec Energy conservation</span>
+<span style="color: #4f97d7; font-weight: bold;">inline</span> <span style="color: #ce537a; font-weight: bold;">half3</span> EnergyConservationBetweenDiffuseAndSpecular <span style="color: #4f97d7;">(</span><span style="color: #ce537a; font-weight: bold;">half3</span> albedo, <span style="color: #ce537a; font-weight: bold;">half3</span> specColor, <span style="color: #4f97d7; font-weight: bold;">out</span> <span style="color: #ce537a; font-weight: bold;">half</span> oneMinusReflectivity<span style="color: #4f97d7;">)</span>
+<span style="color: #4f97d7;">{</span>
+    oneMinusReflectivity = <span style="color: #a45bad;">1</span> - SpecularStrength<span style="color: #bc6ec5;">(</span>specColor<span style="color: #bc6ec5;">)</span>;
+<span style="color: #bc6ec5;">    #if</span> !UNITY_CONSERVE_ENERGY
+        <span style="color: #4f97d7; font-weight: bold;">return</span> albedo;
+<span style="color: #bc6ec5;">    #elif</span> UNITY_CONSERVE_ENERGY_MONOCHROME
+        <span style="color: #4f97d7; font-weight: bold;">return</span> albedo * oneMinusReflectivity;
+<span style="color: #bc6ec5;">    #else</span>
+        <span style="color: #4f97d7; font-weight: bold;">return</span> albedo * <span style="color: #bc6ec5;">(</span><span style="color: #ce537a; font-weight: bold;">half3</span><span style="color: #2d9574;">(</span><span style="color: #a45bad;">1</span>,<span style="color: #a45bad;">1</span>,<span style="color: #a45bad;">1</span><span style="color: #2d9574;">)</span> - specColor<span style="color: #bc6ec5;">)</span>;
+<span style="color: #bc6ec5;">    #endif</span>
+<span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline19" class="outline-5">
+<h5 id="orgheadline19">Specular / Metallic Workflow</h5>
+<div class="outline-text-5" id="text-orgheadline19">
+</div><div id="outline-container-orgheadline17" class="outline-6">
+<h6 id="orgheadline17">Specular Workflow</h6>
+<div class="outline-text-6" id="text-orgheadline17">
+<p>
+Specular Workflow 中将 Specular Color 的强度提高来实现金属材质。将 Specular Color 的强度减弱来实现非金属材质。<br  />
+</p>
+<div class="org-src-container">
+
+<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#40664;&#35748;&#26159; Specular Workflow</span>
+<span style="color: #bc6ec5;">#ifndef</span> UNITY_SETUP_BRDF_INPUT
+<span style="color: #bc6ec5;">    #define</span> UNITY_SETUP_BRDF_INPUT SpecularSetup
+<span style="color: #bc6ec5;">#endif</span>
+
+<span style="color: #4f97d7; font-weight: bold;">inline</span> FragmentCommonData SpecularSetup <span style="color: #4f97d7;">(</span><span style="color: #ce537a; font-weight: bold;">float4</span> i_tex<span style="color: #4f97d7;">)</span>
+<span style="color: #4f97d7;">{</span>
+    <span style="color: #ce537a; font-weight: bold;">half4</span> specGloss = SpecularGloss<span style="color: #bc6ec5;">(</span>i_tex.xy<span style="color: #bc6ec5;">)</span>;
+    <span style="color: #ce537a; font-weight: bold;">half3</span> specColor = specGloss.rgb;
+    <span style="color: #ce537a; font-weight: bold;">half</span> smoothness = specGloss.a;
+
+    <span style="color: #ce537a; font-weight: bold;">half</span> oneMinusReflectivity;
+    <span style="color: #ce537a; font-weight: bold;">half3</span> diffColor = EnergyConservationBetweenDiffuseAndSpecular <span style="color: #bc6ec5;">(</span>Albedo<span style="color: #2d9574;">(</span>i_tex<span style="color: #2d9574;">)</span>, specColor, <span style="color: #2aa1ae; background-color: #292e34;">/*</span><span style="color: #2aa1ae; background-color: #292e34;">out*/</span> oneMinusReflectivity<span style="color: #bc6ec5;">)</span>;
+
+    FragmentCommonData o = <span style="color: #bc6ec5;">(</span>FragmentCommonData<span style="color: #bc6ec5;">)</span><span style="color: #a45bad;">0</span>;
+    o.diffColor = diffColor;
+    o.specColor = specColor;
+    o.oneMinusReflectivity = oneMinusReflectivity;
+    o.smoothness = smoothness;
+    <span style="color: #4f97d7; font-weight: bold;">return</span> o;
+<span style="color: #4f97d7;">}</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Diffuse/Spec Energy conservation</span>
+<span style="color: #4f97d7; font-weight: bold;">inline</span> <span style="color: #ce537a; font-weight: bold;">half3</span> EnergyConservationBetweenDiffuseAndSpecular <span style="color: #4f97d7;">(</span><span style="color: #ce537a; font-weight: bold;">half3</span> albedo, <span style="color: #ce537a; font-weight: bold;">half3</span> specColor, <span style="color: #4f97d7; font-weight: bold;">out</span> <span style="color: #ce537a; font-weight: bold;">half</span> oneMinusReflectivity<span style="color: #4f97d7;">)</span>
+<span style="color: #4f97d7;">{</span>
+    oneMinusReflectivity = <span style="color: #a45bad;">1</span> - SpecularStrength<span style="color: #bc6ec5;">(</span>specColor<span style="color: #bc6ec5;">)</span>;
+<span style="color: #bc6ec5;">    #if</span> !UNITY_CONSERVE_ENERGY
+        <span style="color: #4f97d7; font-weight: bold;">return</span> albedo;
+<span style="color: #bc6ec5;">    #elif</span> UNITY_CONSERVE_ENERGY_MONOCHROME
+        <span style="color: #4f97d7; font-weight: bold;">return</span> albedo * oneMinusReflectivity;
+<span style="color: #bc6ec5;">    #else</span> <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#35813;&#24773;&#20917;&#19979;&#65292;&#22914;&#26524; specColor &#19981;&#26159;&#28784;&#24230;&#22270;&#65292;diffuse &#39068;&#33394;&#20250;&#26174;&#31034;&#24322;&#24120;</span>
+        <span style="color: #4f97d7; font-weight: bold;">return</span> albedo * <span style="color: #bc6ec5;">(</span><span style="color: #ce537a; font-weight: bold;">half3</span><span style="color: #2d9574;">(</span><span style="color: #a45bad;">1</span>,<span style="color: #a45bad;">1</span>,<span style="color: #a45bad;">1</span><span style="color: #2d9574;">)</span> - specColor<span style="color: #bc6ec5;">)</span>;
+<span style="color: #bc6ec5;">    #endif</span>
+<span style="color: #4f97d7;">}</span>
+
+<span style="color: #ce537a; font-weight: bold;">half</span> <span style="color: #bc6ec5; font-weight: bold;">SpecularStrength</span><span style="color: #4f97d7;">(</span><span style="color: #ce537a; font-weight: bold;">half3</span> specular<span style="color: #4f97d7;">)</span>
+<span style="color: #4f97d7;">{</span>
+<span style="color: #bc6ec5;">    #if</span> <span style="color: #bc6ec5;">(</span>SHADER_TARGET &lt; <span style="color: #a45bad;">30</span><span style="color: #bc6ec5;">)</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">SM2.0: instruction count limitation</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">SM2.0: simplified SpecularStrength</span>
+        <span style="color: #4f97d7; font-weight: bold;">return</span> specular.r; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Red channel - because most metals are either monocrhome or with redish/yellowish tint</span>
+<span style="color: #bc6ec5;">    #else</span>
+        <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #bc6ec5; font-weight: bold;">max</span> <span style="color: #bc6ec5;">(</span><span style="color: #4f97d7;">max</span> <span style="color: #2d9574;">(</span>specular.r, specular.g<span style="color: #2d9574;">)</span>, specular.b<span style="color: #bc6ec5;">)</span>;
+<span style="color: #bc6ec5;">    #endif</span>
+<span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline18" class="outline-6">
+<h6 id="orgheadline18">Metallic Workflow</h6>
+<div class="outline-text-6" id="text-orgheadline18">
+<p>
+Metallic Workflow 中通过金属度来实现金属和非金属材质。<br  />
+</p>
+<div class="org-src-container">
+
+<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22312;&#33258;&#24049;&#30340; shader &#20013;&#23450;&#20041; UNITY_SETUP_BRDF_INPUT = MetallicSetup &#26469;&#25351;&#23450;&#20351;&#29992; Metallic &#27969;&#31243;</span>
+<span style="color: #4f97d7; font-weight: bold;">CGINCLUDE</span>
+<span style="color: #bc6ec5;">    #define</span> UNITY_SETUP_BRDF_INPUT MetallicSetup
+<span style="color: #4f97d7; font-weight: bold;">ENDCG</span>
+
+<span style="color: #4f97d7; font-weight: bold;">inline</span> FragmentCommonData MetallicSetup <span style="color: #4f97d7;">(</span><span style="color: #ce537a; font-weight: bold;">float4</span> i_tex<span style="color: #4f97d7;">)</span>
+<span style="color: #4f97d7;">{</span>
+    <span style="color: #ce537a; font-weight: bold;">half2</span> metallicGloss = MetallicGloss<span style="color: #bc6ec5;">(</span>i_tex.xy<span style="color: #bc6ec5;">)</span>;
+    <span style="color: #ce537a; font-weight: bold;">half</span> metallic = metallicGloss.x;
+    <span style="color: #ce537a; font-weight: bold;">half</span> smoothness = metallicGloss.y; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">this is 1 minus the square root of real roughness m.</span>
+
+    <span style="color: #ce537a; font-weight: bold;">half</span> oneMinusReflectivity;
+    <span style="color: #ce537a; font-weight: bold;">half3</span> specColor;
+    <span style="color: #ce537a; font-weight: bold;">half3</span> diffColor = DiffuseAndSpecularFromMetallic <span style="color: #bc6ec5;">(</span>Albedo<span style="color: #2d9574;">(</span>i_tex<span style="color: #2d9574;">)</span>, metallic, <span style="color: #2aa1ae; background-color: #292e34;">/*</span><span style="color: #2aa1ae; background-color: #292e34;">out*/</span> specColor, <span style="color: #2aa1ae; background-color: #292e34;">/*</span><span style="color: #2aa1ae; background-color: #292e34;">out*/</span> oneMinusReflectivity<span style="color: #bc6ec5;">)</span>;
+
+    FragmentCommonData o = <span style="color: #bc6ec5;">(</span>FragmentCommonData<span style="color: #bc6ec5;">)</span><span style="color: #a45bad;">0</span>;
+    o.diffColor = diffColor;
+    o.specColor = specColor;
+    o.oneMinusReflectivity = oneMinusReflectivity;
+    o.smoothness = smoothness;
+    <span style="color: #4f97d7; font-weight: bold;">return</span> o;
+<span style="color: #4f97d7;">}</span>
+
+<span style="color: #4f97d7; font-weight: bold;">inline</span> <span style="color: #ce537a; font-weight: bold;">half3</span> DiffuseAndSpecularFromMetallic <span style="color: #4f97d7;">(</span><span style="color: #ce537a; font-weight: bold;">half3</span> albedo, <span style="color: #ce537a; font-weight: bold;">half</span> metallic, <span style="color: #4f97d7; font-weight: bold;">out</span> <span style="color: #ce537a; font-weight: bold;">half3</span> specColor, <span style="color: #4f97d7; font-weight: bold;">out</span> <span style="color: #ce537a; font-weight: bold;">half</span> oneMinusReflectivity<span style="color: #4f97d7;">)</span>
+<span style="color: #4f97d7;">{</span>
+    specColor = <span style="color: #4f97d7;">lerp</span> <span style="color: #bc6ec5;">(</span>unity_ColorSpaceDielectricSpec.rgb, albedo, metallic<span style="color: #bc6ec5;">)</span>;
+    oneMinusReflectivity = OneMinusReflectivityFromMetallic<span style="color: #bc6ec5;">(</span>metallic<span style="color: #bc6ec5;">)</span>;
+    <span style="color: #4f97d7; font-weight: bold;">return</span> albedo * oneMinusReflectivity;
+<span style="color: #4f97d7;">}</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#24120;&#37327;&#23450;&#20041;</span>
+<span style="color: #bc6ec5;">#ifdef</span> UNITY_COLORSPACE_GAMMA
+<span style="color: #bc6ec5;">  #define</span> unity_ColorSpaceGrey <span style="color: #ce537a; font-weight: bold;">fixed4</span><span style="color: #4f97d7;">(</span><span style="color: #a45bad;">0</span>.<span style="color: #a45bad;">5</span>, <span style="color: #a45bad;">0</span>.<span style="color: #a45bad;">5</span>, <span style="color: #a45bad;">0</span>.<span style="color: #a45bad;">5</span>, <span style="color: #a45bad;">0</span>.<span style="color: #a45bad;">5</span><span style="color: #4f97d7;">)</span>
+<span style="color: #bc6ec5;">  #define</span> unity_ColorSpaceDouble <span style="color: #ce537a; font-weight: bold;">fixed4</span><span style="color: #4f97d7;">(</span><span style="color: #a45bad;">2</span>.<span style="color: #a45bad;">0</span>, <span style="color: #a45bad;">2</span>.<span style="color: #a45bad;">0</span>, <span style="color: #a45bad;">2</span>.<span style="color: #a45bad;">0</span>, <span style="color: #a45bad;">2</span>.<span style="color: #a45bad;">0</span><span style="color: #4f97d7;">)</span>
+<span style="color: #bc6ec5;">  #define</span> unity_ColorSpaceDielectricSpec <span style="color: #ce537a; font-weight: bold;">half4</span><span style="color: #4f97d7;">(</span><span style="color: #a45bad;">0</span>.<span style="color: #a45bad;">220916301</span>, <span style="color: #a45bad;">0</span>.<span style="color: #a45bad;">220916301</span>, <span style="color: #a45bad;">0</span>.<span style="color: #a45bad;">220916301</span>, <span style="color: #a45bad;">1</span>.<span style="color: #a45bad;">0</span> - <span style="color: #a45bad;">0</span>.<span style="color: #a45bad;">220916301</span><span style="color: #4f97d7;">)</span>
+<span style="color: #bc6ec5;">  #define</span> unity_ColorSpaceLuminance <span style="color: #ce537a; font-weight: bold;">half4</span><span style="color: #4f97d7;">(</span><span style="color: #a45bad;">0</span>.<span style="color: #a45bad;">22</span>, <span style="color: #a45bad;">0</span>.<span style="color: #a45bad;">707</span>, <span style="color: #a45bad;">0</span>.<span style="color: #a45bad;">071</span>, <span style="color: #a45bad;">0</span>.<span style="color: #a45bad;">0</span><span style="color: #4f97d7;">)</span> <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Legacy: alpha is set to 0.0 to specify gamma mode</span>
+<span style="color: #bc6ec5;">#else</span> <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Linear values</span>
+<span style="color: #bc6ec5;">  #define</span> unity_ColorSpaceGrey <span style="color: #ce537a; font-weight: bold;">fixed4</span><span style="color: #4f97d7;">(</span><span style="color: #a45bad;">0</span>.<span style="color: #a45bad;">214041144</span>, <span style="color: #a45bad;">0</span>.<span style="color: #a45bad;">214041144</span>, <span style="color: #a45bad;">0</span>.<span style="color: #a45bad;">214041144</span>, <span style="color: #a45bad;">0</span>.<span style="color: #a45bad;">5</span><span style="color: #4f97d7;">)</span>
+<span style="color: #bc6ec5;">  #define</span> unity_ColorSpaceDouble <span style="color: #ce537a; font-weight: bold;">fixed4</span><span style="color: #4f97d7;">(</span><span style="color: #a45bad;">4</span>.<span style="color: #a45bad;">59479380</span>, <span style="color: #a45bad;">4</span>.<span style="color: #a45bad;">59479380</span>, <span style="color: #a45bad;">4</span>.<span style="color: #a45bad;">59479380</span>, <span style="color: #a45bad;">2</span>.<span style="color: #a45bad;">0</span><span style="color: #4f97d7;">)</span>
+<span style="color: #bc6ec5;">  #define</span> unity_ColorSpaceDielectricSpec <span style="color: #ce537a; font-weight: bold;">half4</span><span style="color: #4f97d7;">(</span><span style="color: #a45bad;">0</span>.<span style="color: #a45bad;">04</span>, <span style="color: #a45bad;">0</span>.<span style="color: #a45bad;">04</span>, <span style="color: #a45bad;">0</span>.<span style="color: #a45bad;">04</span>, <span style="color: #a45bad;">1</span>.<span style="color: #a45bad;">0</span> - <span style="color: #a45bad;">0</span>.<span style="color: #a45bad;">04</span><span style="color: #4f97d7;">)</span> <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">standard dielectric reflectivity coef at incident angle (= 4%)</span>
+<span style="color: #bc6ec5;">  #define</span> unity_ColorSpaceLuminance <span style="color: #ce537a; font-weight: bold;">half4</span><span style="color: #4f97d7;">(</span><span style="color: #a45bad;">0</span>.<span style="color: #a45bad;">0396819152</span>, <span style="color: #a45bad;">0</span>.<span style="color: #a45bad;">458021790</span>, <span style="color: #a45bad;">0</span>.<span style="color: #a45bad;">00609653955</span>, <span style="color: #a45bad;">1</span>.<span style="color: #a45bad;">0</span><span style="color: #4f97d7;">)</span> <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Legacy: alpha is set to 1.0 to specify linear mode</span>
+<span style="color: #bc6ec5;">#endif</span>
+
+<span style="color: #4f97d7; font-weight: bold;">inline</span> <span style="color: #ce537a; font-weight: bold;">half</span> OneMinusReflectivityFromMetallic<span style="color: #4f97d7;">(</span><span style="color: #ce537a; font-weight: bold;">half</span> metallic<span style="color: #4f97d7;">)</span>
+<span style="color: #4f97d7;">{</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">We'll need oneMinusReflectivity, so</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">//   </span><span style="color: #2aa1ae; background-color: #292e34;">1-reflectivity = 1-lerp(dielectricSpec, 1, metallic) = lerp(1-dielectricSpec, 0, metallic)</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">store (1-dielectricSpec) in unity_ColorSpaceDielectricSpec.a, then</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">//   </span><span style="color: #2aa1ae; background-color: #292e34;">1-reflectivity = lerp(alpha, 0, metallic) = alpha + metallic*(0 - alpha) =</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">//                  </span><span style="color: #2aa1ae; background-color: #292e34;">= alpha - metallic * alpha</span>
+    <span style="color: #ce537a; font-weight: bold;">half</span> oneMinusDielectricSpec = unity_ColorSpaceDielectricSpec.a;
+    <span style="color: #4f97d7; font-weight: bold;">return</span> oneMinusDielectricSpec - metallic * oneMinusDielectricSpec;
+<span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline31" class="outline-4">
+<h4 id="orgheadline31">Multi Lights</h4>
+<div class="outline-text-4" id="text-orgheadline31">
+</div><div id="outline-container-orgheadline21" class="outline-5">
+<h5 id="orgheadline21">Light Attenuation</h5>
+<div class="outline-text-5" id="text-orgheadline21">
+<div class="org-src-container">
+
+<pre class="src src-shader"><span style="color: #bc6ec5;">#ifdef</span> POINT
+sampler2D_float <span style="color: #7590db;">_LightTexture0</span>;
+unityShadowCoord4x4 unity_WorldToLight;
+<span style="color: #bc6ec5;">    #define</span> UNITY_LIGHT_ATTENUATION<span style="color: #4f97d7;">(</span>destName, input, worldPos<span style="color: #4f97d7;">)</span> \
+    unityShadowCoord3 lightCoord = <span style="color: #4f97d7;">mul</span><span style="color: #4f97d7;">(</span>unity_WorldToLight, unityShadowCoord4<span style="color: #bc6ec5;">(</span>worldPos, <span style="color: #a45bad;">1</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>.xyz; \
+    <span style="color: #ce537a; font-weight: bold;">fixed</span> shadow = UNITY_SHADOW_ATTENUATION<span style="color: #4f97d7;">(</span>input, worldPos<span style="color: #4f97d7;">)</span>; \
+    <span style="color: #ce537a; font-weight: bold;">fixed</span> destName = <span style="color: #4f97d7;">tex2D</span><span style="color: #4f97d7;">(</span><span style="color: #7590db;">_LightTexture0</span>, <span style="color: #4f97d7;">dot</span><span style="color: #bc6ec5;">(</span>lightCoord, lightCoord<span style="color: #bc6ec5;">)</span>.rr<span style="color: #4f97d7;">)</span>.r * shadow;
+<span style="color: #bc6ec5;">#endif</span>
+
+<span style="color: #bc6ec5;">#ifdef</span> SPOT
+    sampler2D_float <span style="color: #7590db;">_LightTexture0</span>;
+    unityShadowCoord4x4 unity_WorldToLight;
+    sampler2D_float <span style="color: #7590db;">_LightTextureB0</span>;
+    <span style="color: #4f97d7; font-weight: bold;">inline</span> <span style="color: #ce537a; font-weight: bold;">fixed</span> UnitySpotCookie<span style="color: #4f97d7;">(</span>unityShadowCoord4 LightCoord<span style="color: #4f97d7;">)</span>
+    <span style="color: #4f97d7;">{</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#37319;&#26679;&#26102;&#20174;&#40784;&#27425;&#22352;&#26631;&#31995;&#36716;&#25442;&#21040;&#27431;&#25289;&#22352;&#26631;&#31995;</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20559;&#31227; 0.5 &#36825;&#26679;&#28783;&#20809;&#22352;&#26631;&#31995;&#21407;&#28857;&#23601;&#21644;&#22270;&#29255;&#20013;&#24515;&#28857;&#23545;&#24212;&#20102;</span>
+        <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #bc6ec5; font-weight: bold;">tex2D</span><span style="color: #bc6ec5;">(</span><span style="color: #7590db;">_LightTexture0</span>, LightCoord.xy / LightCoord.w + <span style="color: #a45bad;">0</span>.<span style="color: #a45bad;">5</span><span style="color: #bc6ec5;">)</span>.w;
+    <span style="color: #4f97d7;">}</span>
+    <span style="color: #4f97d7; font-weight: bold;">inline</span> <span style="color: #ce537a; font-weight: bold;">fixed</span> UnitySpotAttenuate<span style="color: #4f97d7;">(</span>unityShadowCoord3 LightCoord<span style="color: #4f97d7;">)</span>
+    <span style="color: #4f97d7;">{</span>
+        <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #bc6ec5; font-weight: bold;">tex2D</span><span style="color: #bc6ec5;">(</span><span style="color: #7590db;">_LightTextureB0</span>, <span style="color: #4f97d7;">dot</span><span style="color: #2d9574;">(</span>LightCoord, LightCoord<span style="color: #2d9574;">)</span>.xx<span style="color: #bc6ec5;">)</span>.r;
+    <span style="color: #4f97d7;">}</span>
+<span style="color: #bc6ec5;">    #if</span> !defined<span style="color: #4f97d7;">(</span>UNITY_HALF_PRECISION_FRAGMENT_SHADER_REGISTERS<span style="color: #4f97d7;">)</span>
+<span style="color: #bc6ec5;">        #define</span> DECLARE_LIGHT_COORD<span style="color: #4f97d7;">(</span>input, worldPos<span style="color: #4f97d7;">)</span> unityShadowCoord4 lightCoord = <span style="color: #4f97d7;">mul</span><span style="color: #4f97d7;">(</span>unity_WorldToLight, unityShadowCoord4<span style="color: #bc6ec5;">(</span>worldPos, <span style="color: #a45bad;">1</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+<span style="color: #bc6ec5;">    #else</span>
+<span style="color: #bc6ec5;">        #define</span> DECLARE_LIGHT_COORD<span style="color: #4f97d7;">(</span>input, worldPos<span style="color: #4f97d7;">)</span> unityShadowCoord4 lightCoord = input.<span style="color: #7590db;">_LightCoord</span>
+<span style="color: #bc6ec5;">    #endif</span>
+<span style="color: #bc6ec5;">    #define</span> UNITY_LIGHT_ATTENUATION<span style="color: #4f97d7;">(</span>destName, input, worldPos<span style="color: #4f97d7;">)</span> \
+        DECLARE_LIGHT_COORD<span style="color: #4f97d7;">(</span>input, worldPos<span style="color: #4f97d7;">)</span>; \
+        <span style="color: #ce537a; font-weight: bold;">fixed</span> shadow = UNITY_SHADOW_ATTENUATION<span style="color: #4f97d7;">(</span>input, worldPos<span style="color: #4f97d7;">)</span>; \
+        <span style="color: #ce537a; font-weight: bold;">fixed</span> destName = <span style="color: #4f97d7;">(</span>lightCoord.z &gt; <span style="color: #a45bad;">0</span><span style="color: #4f97d7;">)</span> * UnitySpotCookie<span style="color: #4f97d7;">(</span>lightCoord<span style="color: #4f97d7;">)</span> * UnitySpotAttenuate<span style="color: #4f97d7;">(</span>lightCoord.xyz<span style="color: #4f97d7;">)</span> * shadow;
+<span style="color: #bc6ec5;">#endif</span>
+
+<span style="color: #bc6ec5;">#ifdef</span> DIRECTIONAL
+<span style="color: #bc6ec5;">    #define</span> UNITY_LIGHT_ATTENUATION<span style="color: #4f97d7;">(</span>destName, input, worldPos<span style="color: #4f97d7;">)</span> <span style="color: #ce537a; font-weight: bold;">fixed</span> destName = UNITY_SHADOW_ATTENUATION<span style="color: #4f97d7;">(</span>input, worldPos<span style="color: #4f97d7;">)</span>;
+<span style="color: #bc6ec5;">#endif</span>
+
+<span style="color: #bc6ec5;">#ifdef</span> POINT_COOKIE
+    samplerCUBE_float <span style="color: #7590db;">_LightTexture0</span>;
+    unityShadowCoord4x4 unity_WorldToLight;
+    sampler2D_float <span style="color: #7590db;">_LightTextureB0</span>;
+<span style="color: #bc6ec5;">    #if</span> !defined<span style="color: #4f97d7;">(</span>UNITY_HALF_PRECISION_FRAGMENT_SHADER_REGISTERS<span style="color: #4f97d7;">)</span>
+<span style="color: #bc6ec5;">        #define</span> DECLARE_LIGHT_COORD<span style="color: #4f97d7;">(</span>input, worldPos<span style="color: #4f97d7;">)</span> unityShadowCoord3 lightCoord = <span style="color: #4f97d7;">mul</span><span style="color: #4f97d7;">(</span>unity_WorldToLight, unityShadowCoord4<span style="color: #bc6ec5;">(</span>worldPos, <span style="color: #a45bad;">1</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>.xyz
+<span style="color: #bc6ec5;">    #else</span>
+<span style="color: #bc6ec5;">        #define</span> DECLARE_LIGHT_COORD<span style="color: #4f97d7;">(</span>input, worldPos<span style="color: #4f97d7;">)</span> unityShadowCoord3 lightCoord = input.<span style="color: #7590db;">_LightCoord</span>
+<span style="color: #bc6ec5;">    #endif</span>
+<span style="color: #bc6ec5;">    #define</span> UNITY_LIGHT_ATTENUATION<span style="color: #4f97d7;">(</span>destName, input, worldPos<span style="color: #4f97d7;">)</span> \
+        DECLARE_LIGHT_COORD<span style="color: #4f97d7;">(</span>input, worldPos<span style="color: #4f97d7;">)</span>; \
+        <span style="color: #ce537a; font-weight: bold;">fixed</span> shadow = UNITY_SHADOW_ATTENUATION<span style="color: #4f97d7;">(</span>input, worldPos<span style="color: #4f97d7;">)</span>; \
+        <span style="color: #ce537a; font-weight: bold;">fixed</span> destName = <span style="color: #4f97d7;">tex2D</span><span style="color: #4f97d7;">(</span><span style="color: #7590db;">_LightTextureB0</span>, <span style="color: #4f97d7;">dot</span><span style="color: #bc6ec5;">(</span>lightCoord, lightCoord<span style="color: #bc6ec5;">)</span>.rr<span style="color: #4f97d7;">)</span>.r * <span style="color: #4f97d7;">texCUBE</span><span style="color: #4f97d7;">(</span><span style="color: #7590db;">_LightTexture0</span>, lightCoord<span style="color: #4f97d7;">)</span>.w * shadow;
+<span style="color: #bc6ec5;">#endif</span>
+
+<span style="color: #bc6ec5;">#ifdef</span> DIRECTIONAL_COOKIE
+  sampler2D_float <span style="color: #7590db;">_LightTexture0</span>;
+  unityShadowCoord4x4 unity_WorldToLight;
+<span style="color: #bc6ec5;">  #if</span> !defined<span style="color: #4f97d7;">(</span>UNITY_HALF_PRECISION_FRAGMENT_SHADER_REGISTERS<span style="color: #4f97d7;">)</span>
+<span style="color: #bc6ec5;">      #define</span> DECLARE_LIGHT_COORD<span style="color: #4f97d7;">(</span>input, worldPos<span style="color: #4f97d7;">)</span> unityShadowCoord2 lightCoord = <span style="color: #4f97d7;">mul</span><span style="color: #4f97d7;">(</span>unity_WorldToLight, unityShadowCoord4<span style="color: #bc6ec5;">(</span>worldPos, <span style="color: #a45bad;">1</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>.xy
+<span style="color: #bc6ec5;">  #else</span>
+<span style="color: #bc6ec5;">      #define</span> DECLARE_LIGHT_COORD<span style="color: #4f97d7;">(</span>input, worldPos<span style="color: #4f97d7;">)</span> unityShadowCoord2 lightCoord = input.<span style="color: #7590db;">_LightCoord</span>
+<span style="color: #bc6ec5;">  #endif</span>
+<span style="color: #bc6ec5;">  #define</span> UNITY_LIGHT_ATTENUATION<span style="color: #4f97d7;">(</span>destName, input, worldPos<span style="color: #4f97d7;">)</span> \
+      DECLARE_LIGHT_COORD<span style="color: #4f97d7;">(</span>input, worldPos<span style="color: #4f97d7;">)</span>; \
+      <span style="color: #ce537a; font-weight: bold;">fixed</span> shadow = UNITY_SHADOW_ATTENUATION<span style="color: #4f97d7;">(</span>input, worldPos<span style="color: #4f97d7;">)</span>; \
+      <span style="color: #ce537a; font-weight: bold;">fixed</span> destName = <span style="color: #4f97d7;">tex2D</span><span style="color: #4f97d7;">(</span><span style="color: #7590db;">_LightTexture0</span>, lightCoord<span style="color: #4f97d7;">)</span>.w * shadow;
+<span style="color: #bc6ec5;">#endif</span>
+</pre>
+</div>
+</div>
+<div id="outline-container-orgheadline22" class="outline-6">
+<h6 id="orgheadline22">Point Light</h6>
+<div class="outline-text-6" id="text-orgheadline22">
+<div class="org-src-container">
+
+<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">half3</span> lightVector = <span style="color: #7590db;">_WorldSpaceLightPos0</span>.xyz - i.worldPos;
+light.dir = <span style="color: #4f97d7;">normalize</span><span style="color: #4f97d7;">(</span>lightVector<span style="color: #4f97d7;">)</span>;
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20998;&#27597;&#20013;&#21152; 1 &#26159;&#20026;&#20102;&#36991;&#20813;&#29289;&#20307;&#21040;&#20809;&#28304;&#36317;&#31163;&#23567;&#20110; 1 &#26102;&#65292;&#20809;&#29031;&#24378;&#24230;&#34987;&#25918;&#22823;</span>
+<span style="color: #ce537a; font-weight: bold;">half</span> attenuation = <span style="color: #a45bad;">1</span> / <span style="color: #4f97d7;">(</span><span style="color: #a45bad;">1</span> + <span style="color: #4f97d7;">dot</span><span style="color: #bc6ec5;">(</span>lightVector, lightVector<span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>;
+light.color = <span style="color: #7590db;">_LightColor0</span>.rgb * attenuation;
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline23" class="outline-5">
+<h5 id="orgheadline23">Mixing Lights</h5>
+<div class="outline-text-5" id="text-orgheadline23">
+<p>
+通过增加 shader 变体来实现对混合灯光的支持。<br  />
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-shader"><span style="color: #bc6ec5;">#pragma</span> multi_compile DIRECTIONAL POINT
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline24" class="outline-5">
+<h5 id="orgheadline24">Cookies</h5>
+<div class="outline-text-5" id="text-orgheadline24">
+<p>
+Spot Light 默认支持 Cookie，Spot Light 的形状是通过 Cookie 来实现。SpotLight 的 Cookie 贴图的 Wrap 模式采用 Clamp。<br  />
+Direcional 默认不支持 Cookie，需要通过 shader 变体开启支持。其 Cookie 贴图的 Wrap 模式采用 Repeat。<br  />
+Point 默认不支持 Cookie，需要通过 shader 变体开启支持。其 Cookie 贴图是 Cube 贴图，Wrap 模式采用 Clamp。<br  />
+</p>
+<div class="org-src-container">
+
+<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19979;&#38754;&#20195;&#30721;&#31561;&#20215;&#20110;  #pragma multi_compile_fwdadd</span>
+<span style="color: #bc6ec5;">#pragma</span> multi_compile DIRECTIONAL POINT DIRECTIONAL_COOKIE POINT_COOKIE
+</pre>
+</div>
+
+<ul class="org-ul">
+<li>multi_compile_fwdbase 变体 <a href="https://www.cnblogs.com/sifenkesi/p/9942272.html">https://www.cnblogs.com/sifenkesi/p/9942272.html</a><br  /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgheadline25" class="outline-5">
+<h5 id="orgheadline25">Vertex Lights</h5>
+<div class="outline-text-5" id="text-orgheadline25">
+<p>
+灯光数量增加后，drawcall 数量会成倍增加。Unity 可以设置逐像素光照的数量。如果将超出数量限制的光照直接不进行计算，会导致明显的显示错误，可以采用更廉价的顶点光照来代替像素光照。<br  />
+Unity 在 Base Pass 中实现顶点光照。引擎会寻找包含 VERTEXLIGHT_ON 关键字的 Base Pass 着色器。<br  />
+顶点光照只支持 点光源，方向光和聚光灯都能在顶点着色器中计算。<br  />
+在 Light 的 RenderMode 属性中，可以设置重要类型，Important 类型的光照总是逐像素光照，Not Important 类型的光照永远不会被当作逐像素光照，Auto 类型的光照其重要性由引擎来决定。<br  />
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">UnityCG.cginc</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22312;&#39030;&#28857;&#20013;&#35745;&#31639; 4 &#20010;&#28857;&#20809;&#28304;&#20809;&#29031;&#65292;&#24403;&#20809;&#28304;&#25968;&#30446;&#19981;&#36275; 4 &#20010;&#26102;&#65292;&#35745;&#31639;&#28040;&#32791;&#20381;&#28982;&#26159; 4 &#20010;&#20809;&#29031;&#30340;&#35745;&#31639;&#37327;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Used in ForwardBase pass: Calculates diffuse lighting from 4 point lights, with data packed in a special way.</span>
+<span style="color: #ce537a; font-weight: bold;">float3</span> <span style="color: #bc6ec5; font-weight: bold;">Shade4PointLights</span> <span style="color: #4f97d7;">(</span>
+    <span style="color: #ce537a; font-weight: bold;">float4</span> lightPosX, <span style="color: #ce537a; font-weight: bold;">float4</span> lightPosY, <span style="color: #ce537a; font-weight: bold;">float4</span> lightPosZ,
+    <span style="color: #ce537a; font-weight: bold;">float3</span> lightColor0, <span style="color: #ce537a; font-weight: bold;">float3</span> lightColor1, <span style="color: #ce537a; font-weight: bold;">float3</span> lightColor2, <span style="color: #ce537a; font-weight: bold;">float3</span> lightColor3,
+    <span style="color: #ce537a; font-weight: bold;">float4</span> lightAttenSq,
+    <span style="color: #ce537a; font-weight: bold;">float3</span> pos, <span style="color: #ce537a; font-weight: bold;">float3</span> normal<span style="color: #4f97d7;">)</span>
+<span style="color: #4f97d7;">{</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">to light vectors</span>
+    <span style="color: #ce537a; font-weight: bold;">float4</span> toLightX = lightPosX - pos.x;
+    <span style="color: #ce537a; font-weight: bold;">float4</span> toLightY = lightPosY - pos.y;
+    <span style="color: #ce537a; font-weight: bold;">float4</span> toLightZ = lightPosZ - pos.z;
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">squared lengths</span>
+    <span style="color: #ce537a; font-weight: bold;">float4</span> lengthSq = <span style="color: #a45bad;">0</span>;
+    lengthSq += toLightX * toLightX;
+    lengthSq += toLightY * toLightY;
+    lengthSq += toLightZ * toLightZ;
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">don't produce NaNs if some vertex position overlaps with the light</span>
+    lengthSq = <span style="color: #4f97d7;">max</span><span style="color: #bc6ec5;">(</span>lengthSq, <span style="color: #a45bad;">0</span>.<span style="color: #a45bad;">000001</span><span style="color: #bc6ec5;">)</span>;
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">NdotL</span>
+    <span style="color: #ce537a; font-weight: bold;">float4</span> ndotl = <span style="color: #a45bad;">0</span>;
+    ndotl += toLightX * normal.x;
+    ndotl += toLightY * normal.y;
+    ndotl += toLightZ * normal.z;
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">correct NdotL</span>
+    <span style="color: #ce537a; font-weight: bold;">float4</span> corr = <span style="color: #4f97d7;">rsqrt</span><span style="color: #bc6ec5;">(</span>lengthSq<span style="color: #bc6ec5;">)</span>;
+    ndotl = <span style="color: #4f97d7;">max</span> <span style="color: #bc6ec5;">(</span><span style="color: #ce537a; font-weight: bold;">float4</span><span style="color: #2d9574;">(</span><span style="color: #a45bad;">0</span>,<span style="color: #a45bad;">0</span>,<span style="color: #a45bad;">0</span>,<span style="color: #a45bad;">0</span><span style="color: #2d9574;">)</span>, ndotl * corr<span style="color: #bc6ec5;">)</span>;
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">attenuation</span>
+    <span style="color: #ce537a; font-weight: bold;">float4</span> atten = <span style="color: #a45bad;">1</span>.<span style="color: #a45bad;">0</span> / <span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">1</span>.<span style="color: #a45bad;">0</span> + lengthSq * lightAttenSq<span style="color: #bc6ec5;">)</span>;
+    <span style="color: #ce537a; font-weight: bold;">float4</span> diff = ndotl * atten;
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">final color</span>
+    <span style="color: #ce537a; font-weight: bold;">float3</span> col = <span style="color: #a45bad;">0</span>;
+    col += lightColor0 * diff.x;
+    col += lightColor1 * diff.y;
+    col += lightColor2 * diff.z;
+    col += lightColor3 * diff.w;
+    <span style="color: #4f97d7; font-weight: bold;">return</span> col;
+<span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline30" class="outline-5">
+<h5 id="orgheadline30">Spherical Harmonics</h5>
+<div class="outline-text-5" id="text-orgheadline30">
+</div><div id="outline-container-orgheadline26" class="outline-6">
+<h6 id="orgheadline26">相关数学概念</h6>
+<div class="outline-text-6" id="text-orgheadline26">
+<ul class="org-ul">
+<li>球谐函数 是拉普拉斯方程的球坐标系形式解的角度部分。拉普拉斯方程在球坐标系中的表达式分离变量之后，角度部分的偏微分方程称为球函数方程。<br  /></li>
+<li>球坐标系 球坐标系是三维坐标系的一种，用以确定三维空间中点、线、面以及体的位置，它以坐标原点为参考点，由方位角、仰角和距离构成。球坐标系在地理学、天文学中都有着广泛应用。<br  /></li>
+<li>拉普拉斯方程 拉普拉斯方程为二阶偏微分方程。<br  /></li>
+<li>勒让德多项式<br  /></li>
+<li>偏微分方程 包含未知函数的偏导数(或偏微分)的方程。方程中所出现未知函数偏导数的最高阶数，称为该方程的阶。在数学、物理及工程技术中应用最广泛的，是二阶偏微分方程，习惯上把这些方程称为数学物理方程。<br  /></li>
+<li>偏导数 在数学中，一个多变量的函数的偏导数，就是它关于其中一个变量的导数而保持其他变量恒定（相对于全导数，在其中所有变量都允许变化）。<br  /></li>
+</ul>
+</div>
+
+<ul class="org-ul"><li><a id="orgheadline27"></a>参考资料<br  /><div class="outline-text-7" id="text-orgheadline27">
+<ul class="org-ul">
+<li><a href="https://zh.wikipedia.org/wiki/%E7%90%83%E8%B0%90%E5%87%BD%E6%95%B0">https://zh.wikipedia.org/wiki/%E7%90%83%E8%B0%90%E5%87%BD%E6%95%B0</a><br  /></li>
+<li><a href="https://baike.baidu.com/item/%E7%90%83%E8%B0%90%E5%87%BD%E6%95%B0">https://baike.baidu.com/item/%E7%90%83%E8%B0%90%E5%87%BD%E6%95%B0</a><br  /></li>
+<li><a href="https://baike.baidu.com/item/%E7%90%83%E5%9D%90%E6%A0%87%E7%B3%BB">https://baike.baidu.com/item/%E7%90%83%E5%9D%90%E6%A0%87%E7%B3%BB</a><br  /></li>
+<li><a href="https://baike.baidu.com/item/Legendre%E5%A4%9A%E9%A1%B9%E5%BC%8F">https://baike.baidu.com/item/Legendre%E5%A4%9A%E9%A1%B9%E5%BC%8F</a><br  /></li>
+<li><a href="https://baike.baidu.com/item/%E6%8B%89%E6%99%AE%E6%8B%89%E6%96%AF%E6%96%B9%E7%A8%8B">https://baike.baidu.com/item/%E6%8B%89%E6%99%AE%E6%8B%89%E6%96%AF%E6%96%B9%E7%A8%8B</a><br  /></li>
+<li><a href="https://baike.baidu.com/item/%E5%81%8F%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B">https://baike.baidu.com/item/%E5%81%8F%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B</a><br  /></li>
+<li><a href="https://baike.baidu.com/item/%E5%81%8F%E5%AF%BC%E6%95%B0">https://baike.baidu.com/item/%E5%81%8F%E5%AF%BC%E6%95%B0</a><br  /></li>
+<li>球谐函数是什么？<a href="https://www.zhihu.com/question/26405495">https://www.zhihu.com/question/26405495</a><br  /></li>
+<li>Unity 渲染教程（五）：多个光源 <a href="http://gad.qq.com/program/translateview/7173934">http://gad.qq.com/program/translateview/7173934</a><br  /></li>
+<li>UnityShader——球谐光照 <a href="https://blog.csdn.net/NotMz/article/details/78339913">https://blog.csdn.net/NotMz/article/details/78339913</a><br  /></li>
+<li>球谐光照（spherical harmonic lighting）解析 <a href="https://gameinstitute.qq.com/community/detail/123183">https://gameinstitute.qq.com/community/detail/123183</a>  (该篇文章讲解通俗易懂，有道笔记中做了备份)<br  /></li>
+<li>球谐光照 (一)从拉普拉斯方程到球谐函数 <a href="https://zhuanlan.zhihu.com/p/66989673">https://zhuanlan.zhihu.com/p/66989673</a><br  /></li>
+</ul>
+</div></li></ul>
+</div>
+<div id="outline-container-orgheadline28" class="outline-6">
+<h6 id="orgheadline28">原理概述</h6>
+<div class="outline-text-6" id="text-orgheadline28">
+<p>
+球谐函数背后的思想是你可以只用一个连续函数来描述所有入射光在某个点的效果，这个函数定义在球的表面。<br  />
+通常来说，这个函数是用球面坐标表示的。但是也可以使用 3D 坐标，这样我们就可以使用物体的 normal 向量对函数进行采样了。<br  />
+为了创建这样的函数，你必须在所有方向上对光照强度进行采样，然后将解郭转换为单个连续的函数。为了达到完美模拟，你必须为表面的每个点做这样的工作。这当然是无法做到的，所以我们只能做到近似效果。<br  />
+</p>
+
+<p>
+首先，我们只从对象本地原点的角度定义函数。光照条件在随物体表面变化不大时效果还是可以的。小物体，或者光照比较弱或光照离物体很远时满足这种情况。幸运的是，这恰好是那些不值得逐像素计算的光照或者顶点光照。<br  />
+其次，我们必须近似函数自身。你可以将任何连续的函数分解为多个不同频率的函数。这些被称为波段。对于任意一个函数，你可能需要无数个波段来模拟。<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline29" class="outline-6">
+<h6 id="orgheadline29">Spherical Harmonics Bands</h6>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline40" class="outline-4">
+<h4 id="orgheadline40">Bumpiness</h4>
+<div class="outline-text-4" id="text-orgheadline40">
+</div><div id="outline-container-orgheadline34" class="outline-5">
+<h5 id="orgheadline34">高度图转 normal map 的方法</h5>
+<div class="outline-text-5" id="text-orgheadline34">
+</div><div id="outline-container-orgheadline32" class="outline-6">
+<h6 id="orgheadline32">方案 1</h6>
+<div class="outline-text-6" id="text-orgheadline32">
+<ol class="org-ol">
+<li>通过高度求出每一点的斜率。该斜率就是该点的 tangent。分别求出 u/v 方向的 tangent。<br  /></li>
+<li>将 tangent 绕 z 轴旋转 90 度，就是 normal。<br  /></li>
+</ol>
+
+<div class="figure">
+<p><img src="./UnityCatLikeCoding/01_06bu_vector-rotation.png" alt="01_06bu_vector-rotation.png" /><br  />
+</p>
+</div>
+
+<div class="org-src-container">
+
+<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">float2</span> du = <span style="color: #ce537a; font-weight: bold;">float2</span><span style="color: #4f97d7;">(</span><span style="color: #7590db;">_HeightMap_TexelSize</span>.x * <span style="color: #a45bad;">0</span>.<span style="color: #a45bad;">5</span>, <span style="color: #a45bad;">0</span><span style="color: #4f97d7;">)</span>;
+<span style="color: #ce537a; font-weight: bold;">float</span> u1 = <span style="color: #4f97d7;">tex2D</span><span style="color: #4f97d7;">(</span><span style="color: #7590db;">_HeightMap</span>, i.uv - du<span style="color: #4f97d7;">)</span>;
+<span style="color: #ce537a; font-weight: bold;">float</span> u2 = <span style="color: #4f97d7;">tex2D</span><span style="color: #4f97d7;">(</span><span style="color: #7590db;">_HeightMap</span>, i.uv + du<span style="color: #4f97d7;">)</span>;
+i.normal = <span style="color: #ce537a; font-weight: bold;">float3</span><span style="color: #4f97d7;">(</span>u1 - u2, <span style="color: #a45bad;">1</span>, <span style="color: #a45bad;">0</span><span style="color: #4f97d7;">)</span>;
+
+<span style="color: #ce537a; font-weight: bold;">float2</span> dv = <span style="color: #ce537a; font-weight: bold;">float2</span><span style="color: #4f97d7;">(</span><span style="color: #a45bad;">0</span>, <span style="color: #7590db;">_HeightMap_TexelSize</span>.y * <span style="color: #a45bad;">0</span>.<span style="color: #a45bad;">5</span><span style="color: #4f97d7;">)</span>;
+<span style="color: #ce537a; font-weight: bold;">float</span> v1 = <span style="color: #4f97d7;">tex2D</span><span style="color: #4f97d7;">(</span><span style="color: #7590db;">_HeightMap</span>, i.uv - dv<span style="color: #4f97d7;">)</span>;
+<span style="color: #ce537a; font-weight: bold;">float</span> v2 = <span style="color: #4f97d7;">tex2D</span><span style="color: #4f97d7;">(</span><span style="color: #7590db;">_HeightMap</span>, i.uv + dv<span style="color: #4f97d7;">)</span>;
+i.normal = <span style="color: #ce537a; font-weight: bold;">float3</span><span style="color: #4f97d7;">(</span><span style="color: #a45bad;">0</span>, <span style="color: #a45bad;">1</span>, v1 - v2<span style="color: #4f97d7;">)</span>;
+
+i.normal = <span style="color: #4f97d7;">normalize</span><span style="color: #4f97d7;">(</span>i.normal<span style="color: #4f97d7;">)</span>;
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline33" class="outline-6">
+<h6 id="orgheadline33">方案 2</h6>
+<div class="outline-text-6" id="text-orgheadline33">
+<ol class="org-ol">
+<li>通过高度求出每一点的斜率。该斜率就是该点的 tangent。分别求出 u/v 方向的 tangent。<br  /></li>
+<li>将 u/v 方向的 tangent 进行叉乘生成 normal。<br  /></li>
+</ol>
+
+<p>
+此处 tangent 向量叉乘优化：<br  />
+</p>
+\begin{equation}  
+  \begin{bmatrix}
+  0\\ 
+  {f_v}'\\ 
+  1
+  \end{bmatrix} \times 
+  \begin{bmatrix}
+  1\\ 
+  {f_u}'\\ 
+  0
+  \end{bmatrix} = 
+  \begin{bmatrix}
+  -{f_u}'\\ 
+  1 \\
+  -{f_v}'
+  \end{bmatrix}
+\end{equation}
+
+<div class="org-src-container">
+
+<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">float2</span> du = <span style="color: #ce537a; font-weight: bold;">float2</span><span style="color: #4f97d7;">(</span><span style="color: #7590db;">_HeightMap_TexelSize</span>.x * <span style="color: #a45bad;">0</span>.<span style="color: #a45bad;">5</span>, <span style="color: #a45bad;">0</span><span style="color: #4f97d7;">)</span>;
+<span style="color: #ce537a; font-weight: bold;">float</span> u1 = <span style="color: #4f97d7;">tex2D</span><span style="color: #4f97d7;">(</span><span style="color: #7590db;">_HeightMap</span>, i.uv - du<span style="color: #4f97d7;">)</span>;
+<span style="color: #ce537a; font-weight: bold;">float</span> u2 = <span style="color: #4f97d7;">tex2D</span><span style="color: #4f97d7;">(</span><span style="color: #7590db;">_HeightMap</span>, i.uv + du<span style="color: #4f97d7;">)</span>;
+<span style="color: #ce537a; font-weight: bold;">float3</span> tu = <span style="color: #ce537a; font-weight: bold;">float3</span><span style="color: #4f97d7;">(</span><span style="color: #a45bad;">1</span>, u2 - u1, <span style="color: #a45bad;">0</span><span style="color: #4f97d7;">)</span>;
+
+<span style="color: #ce537a; font-weight: bold;">float2</span> dv = <span style="color: #ce537a; font-weight: bold;">float2</span><span style="color: #4f97d7;">(</span><span style="color: #a45bad;">0</span>, <span style="color: #7590db;">_HeightMap_TexelSize</span>.y * <span style="color: #a45bad;">0</span>.<span style="color: #a45bad;">5</span><span style="color: #4f97d7;">)</span>;
+<span style="color: #ce537a; font-weight: bold;">float</span> v1 = <span style="color: #4f97d7;">tex2D</span><span style="color: #4f97d7;">(</span><span style="color: #7590db;">_HeightMap</span>, i.uv - dv<span style="color: #4f97d7;">)</span>;
+<span style="color: #ce537a; font-weight: bold;">float</span> v2 = <span style="color: #4f97d7;">tex2D</span><span style="color: #4f97d7;">(</span><span style="color: #7590db;">_HeightMap</span>, i.uv + dv<span style="color: #4f97d7;">)</span>;
+<span style="color: #ce537a; font-weight: bold;">float3</span> tv = <span style="color: #ce537a; font-weight: bold;">float3</span><span style="color: #4f97d7;">(</span><span style="color: #a45bad;">0</span>, v2 - v1, <span style="color: #a45bad;">1</span><span style="color: #4f97d7;">)</span>;
+
+i.normal = <span style="color: #4f97d7;">cross</span><span style="color: #4f97d7;">(</span>tv, tu<span style="color: #4f97d7;">)</span>;
+i.normal = <span style="color: #4f97d7;">normalize</span><span style="color: #4f97d7;">(</span>i.normal<span style="color: #4f97d7;">)</span>;
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline35" class="outline-5">
+<h5 id="orgheadline35">Normal 向量的插值</h5>
+<div class="outline-text-5" id="text-orgheadline35">
+<p>
+Normal 贴图的 Filter，以及顶点的 Normal 向量在传递到片段着色器过程中的插值 都会导致 normal 向量不再是单位向量，所以需要重新单位化。<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline36" class="outline-5">
+<h5 id="orgheadline36">Normal 贴图存储惯例</h5>
+<div class="outline-text-5" id="text-orgheadline36">
+<p>
+Normal 贴图通用的惯例是将向上的方向存储到 z 分量.所以，在 shader 中采样出来 normal 向量后需要调换 y 分量和 z 分量。<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline37" class="outline-5">
+<h5 id="orgheadline37">DXT5nm 存储 normal 贴图</h5>
+<div class="outline-text-5" id="text-orgheadline37">
+<p>
+其只存储了 normal 的 x，y 分量，丢弃掉了 z 分量。z 分量通过计算得到 \(z=\sqrt{1-x^2-y^2}\) .<br  />
+x 分量存储在 A 通道，y 分量存储在 G 通道。R 通道和 B 通道没有使用。<br  />
+DXT5 按照 4x4 个像素为一个块进行压缩。R 占用 5 位，B 占用 5 位，G 占用 6 位，A 占用 8 位。RGB 公用一个查找表，A 公用一个查找表。所以将 x 分量存储到 A 通道可以保持 x 分量和 y 分量的独立性。<br  />
+手机平台不支持 DXT5nm 格式，在手机平台 unity 仍然使用通用的 rgb 进行编码。<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline38" class="outline-5">
+<h5 id="orgheadline38">缩放 Normal</h5>
+<div class="outline-text-5" id="text-orgheadline38">
+<p>
+只需要在单位化 normal 前，对 normal 的 x 分量和 z 分量进行缩放，就可以强化和弱化 y 分量。<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline39" class="outline-5">
+<h5 id="orgheadline39">Blending Normals</h5>
+<div class="outline-text-5" id="text-orgheadline39">
+<p>
+回顾使用高度图生成 normal 贴图的方法，可以知道，如果希望 normal 效果叠加，其实就是将高度叠加，也就是斜率叠加。<br  />
+normal 贴图中存储的值为:(s 表示单位化过程中，对各个分量的缩放)<br  />
+</p>
+\begin{bmatrix}
+-s{f_u}'\\ 
+-s{f_v}'
+s \\
+\end{bmatrix}
+<p>
+所以叠加 MainNormalTex 和 DetailNormalTex 的高度后得到的 normal 为<br  />
+</p>
+\begin{bmatrix}
+\frac{M_x}{M_z} + \frac{D_x}{D_z} \\
+\frac{M_y}{M_z} + \frac{D_y}{D_z} \\
+1 \\
+\end{bmatrix}
+
+<p>
+Whiteout Blending : 对上面得到的 normal 乘 $M_zD_z$，然后丢弃掉对 x 和 y 分量的缩放、这样可以强化 X 和 Y 分量<br  />
+</p>
+\begin{equation}  
+  \begin{bmatrix}
+  \frac{M_x}{M_z} + \frac{D_x}{D_z} \\
+  \frac{M_y}{M_z} + \frac{D_y}{D_z} \\
+  1 \\
+  \end{bmatrix} * M_zD_z = 
+  \begin{bmatrix}
+    M_xD_z + D_xM_z \\
+    M_yD_z + D_yM_z \\
+    M_zD_z \\
+  \end{bmatrix} = 
+  \begin{bmatrix}
+    M_x + D_x \\
+    M_y + D_y \\
+    M_zD_z \\
+  \end{bmatrix}
+\end{equation}
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline43" class="outline-4">
+<h4 id="orgheadline43">Shadows</h4>
+<div class="outline-text-4" id="text-orgheadline43">
+</div><div id="outline-container-orgheadline41" class="outline-5">
+<h5 id="orgheadline41">Rendering To Shadow Maps</h5>
+<div class="outline-text-5" id="text-orgheadline41">
+<p>
+开启 shadow cascades 后，会多次绘制阴影。开启 2 级会绘制两次，开启 4 级会绘制 4 次。下图为 4cascades 渲染的阴影贴图。<br  />
+<img src="./UnityCatLikeCoding/01_07sh_4cascades_shadows.png" alt="01_07sh_4cascades_shadows.png" /><br  />
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline42" class="outline-5">
+<h5 id="orgheadline42">参考资料</h5>
+<div class="outline-text-5" id="text-orgheadline42">
+<ul class="org-ul">
+<li><a href="https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping">https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping</a><br  /></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline49" class="outline-2">
+<h2 id="orgheadline49">Q&amp;A</h2>
+<div class="outline-text-2" id="text-orgheadline49">
+</div><div id="outline-container-orgheadline46" class="outline-3">
+<h3 id="orgheadline46">为什么 Unity 标准材质中只有点光源可以在顶点着色器中计算？</h3>
+<div class="outline-text-3" id="text-orgheadline46">
+<p>
+因为 unity 就是这样实现的。其实任何光照都可以在顶点着色器中计算，在片段着色器中插值获得片段颜色。<br  />
+</p>
+</div>
+</div>
+<div id="outline-container-orgheadline47" class="outline-3">
+<h3 id="orgheadline47">Unity 球谐光照函数中只需要传递 normal，那么物体到光源的距离引起的光照差异是如何实现的？</h3>
+<div class="outline-text-3" id="text-orgheadline47">
+<p>
+Unity<br  />
+</p>
+<ul class="org-ul">
+<li><a href="https://www.cnblogs.com/murongxiaopifu/p/8997720.html">https://www.cnblogs.com/murongxiaopifu/p/8997720.html</a><br  /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgheadline48" class="outline-3">
+<h3 id="orgheadline48">为什么渲染方向光的阴影贴图时需要使用正交矩阵，而点光源需要使用透视矩阵？</h3>
+<div class="outline-text-3" id="text-orgheadline48">
+<p>
+对于物体来说方向光的方向都是相同的，和方向光垂直的同一平面内的点，他们对应的阴影贴图中的值应该相同，使用正交投影按照方向光方向，渲染场景中物体，将深度写入阴影贴图刚好可以满足这个要求。<br  />
+点光源的情况则刚好和透视投影相对应。<br  />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline50" class="outline-2">
+<h2 id="orgheadline50">参考资料</h2>
+<div class="outline-text-2" id="text-orgheadline50">
+<p>
+官网 <a href="https://catlikecoding.com/">https://catlikecoding.com/</a><br  />
+</p>
+</div>
+</div>
+</div>
+</body>
+</html>

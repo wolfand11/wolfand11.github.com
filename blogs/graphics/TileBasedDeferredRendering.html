@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2020-01-14 周二 10:46 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TileBasedDeferredRendering</title>
+<meta name="generator" content="Org mode" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+           <meta name="viewport" content="width=device-width, initial-scale=1" />
+           <link rel="stylesheet" title="Standard" href="https://wolfand11.coding.me/res/css/worg.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.coding.me/res/css/worg-zenburn.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.coding.me/res/css/worg-classic.css" type="text/css" />
+           <link rel="icon" href="http://wolfand11.coding.me/res/favicon.ico" type="image/ico" />
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2019 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href=""> UP </a>
+ |
+ <a accesskey="H" href="https://wolfand11.coding.me"> HOME </a>
+</div><div id="content">
+<h1 class="title">TileBasedDeferredRendering</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orga6abe0f">TileBasedDeferredRendering</a>
+<ul>
+<li><a href="#orgba6df52">Use Tile-Based Deferred Rendering Efficiently</a>
+<ul>
+<li><a href="#org7ffc2a1">避免 Logical Buffer Load 和 Store 操作</a></li>
+<li><a href="#org876217a">Use Hidden Surface Removal Effectively</a></li>
+<li><a href="#org9530820">参考资料</a></li>
+</ul>
+</li>
+<li><a href="#org5f2a70d">Q&amp;A</a>
+<ul>
+<li><a href="#org2793b87">为什么 TBDR 可以实现 hidden surface removal ？</a></li>
+<li><a href="#org0efa77c">TBDR</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<p>
+TileBasedDeferredRendering note.<br />
+</p>
+<div class="HTML">
+<p>
+&lt;!&#x2013; more &#x2013;&gt;<br />
+</p>
+
+</div>
+
+<div id="outline-container-orga6abe0f" class="outline-2">
+<h2 id="orga6abe0f">TileBasedDeferredRendering</h2>
+<div class="outline-text-2" id="text-orga6abe0f">
+</div>
+<div id="outline-container-orgba6df52" class="outline-3">
+<h3 id="orgba6df52">Use Tile-Based Deferred Rendering Efficiently</h3>
+<div class="outline-text-3" id="text-orgba6df52">
+</div>
+<div id="outline-container-org7ffc2a1" class="outline-4">
+<h4 id="org7ffc2a1">避免 Logical Buffer Load 和 Store 操作</h4>
+<div class="outline-text-4" id="text-org7ffc2a1">
+<p>
+TBDR 图形处理器在绘制一个 Tile 时，会先将 framebuffer 对应的块从共享内存传输到 tile 内存中。这种内存的传输操作被称为 Logical Buffer Load。通常，在渲染下一帧时是不需要前一帧的内容的。为了避免加载前一帧缓冲区内容，可以在开始渲染新的一帧前调用 glClear。<br />
+类似的，当 GPU 结束一个 Tile 的渲染后，必须将 tile 的像素数据写回共享内存。这种内存的传输操作被称为 Logical Buffer Store。渲染每帧必须至少有一次这样的数据传输，被显示在屏幕上的颜色渲染缓冲区必须被传输到共享内存，这样才会被 CoreAnimation 展示，其他的帧缓冲区（例如 depth stencil multisampling buffers）不需要保留，因为这些缓冲区的内容在下一帧会被重新创建。OpenGL ES 会自动将这些缓冲区写回共享内存，这会导致性能消耗。可以调用 glInvalidateFramebuffer（OpenGL ES 3.0）或者 glDiscardFramebufferEXT(OpenGL 1.1 or 2.0)来显示指定不写回共享内存。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org876217a" class="outline-4">
+<h4 id="org876217a">Use Hidden Surface Removal Effectively</h4>
+<div class="outline-text-4" id="text-org876217a">
+<p>
+当 blending 或者 alpha testing 开启，或者 fragment shader 中使用了 discard 或者使用 gl_FragDepth 输出变量。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org9530820" class="outline-4">
+<h4 id="org9530820">参考资料</h4>
+<div class="outline-text-4" id="text-org9530820">
+<ul class="org-ul">
+<li><a href="https://developer.apple.com/library/archive/documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/Performance/Performance.html">https://developer.apple.com/library/archive/documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/Performance/Performance.html</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org5f2a70d" class="outline-3">
+<h3 id="org5f2a70d">Q&amp;A</h3>
+<div class="outline-text-3" id="text-org5f2a70d">
+</div>
+<div id="outline-container-org2793b87" class="outline-4">
+<h4 id="org2793b87">为什么 TBDR 可以实现 hidden surface removal ？</h4>
+<div class="outline-text-4" id="text-org2793b87">
+<p>
+因为 TBDR 中，当提交渲染指令到硬件后，渲染指令会被缓存到一个列表中。硬件不会处理这些指令，直到你显示 renderbuffer 或者 flush 指令 buff 时，才会开始处理顶点并且对像素着色。所以 TBDR 一次性处理了场景的所有顶点，这样 GPU 就可以在片段被处理之前知道场景中所有对象的遮挡关系从而进行隐藏表面消除。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org0efa77c" class="outline-4">
+<h4 id="org0efa77c">TBDR</h4>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

@@ -3,11 +3,11 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2019-08-16 周五 19:40 -->
-<meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
-<meta  name="viewport" content="width=device-width, initial-scale=1" />
+<!-- 2020-01-14 周二 10:48 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>UnityShaderAndEffectCookbook</title>
-<meta  name="generator" content="Org-mode" />
+<meta name="generator" content="Org mode" />
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
            <meta name="viewport" content="width=device-width, initial-scale=1" />
            <link rel="stylesheet" title="Standard" href="https://wolfand11.coding.me/res/css/worg.css" type="text/css" />
@@ -19,7 +19,7 @@
 @licstart  The following is the entire license notice for the
 JavaScript code in this tag.
 
-Copyright (C) 2012-2013 Free Software Foundation, Inc.
+Copyright (C) 2012-2019 Free Software Foundation, Inc.
 
 The JavaScript code in this tag is free software: you can
 redistribute it and/or modify it under the terms of the GNU
@@ -72,278 +72,296 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orgheadline73">Basic</a>
+<li><a href="#orgbdd72cb">Basic</a>
 <ul>
-<li><a href="#orgheadline1">SurfaceShader 工作流程图</a></li>
-<li><a href="#orgheadline2">Properties</a></li>
-<li><a href="#orgheadline3">SurfaceOutput</a></li>
-<li><a href="#orgheadline4">Input</a></li>
-<li><a href="#orgheadline5">shader 的代码结构</a>
+<li><a href="#orgebfea4e">SurfaceShader 工作流程图</a></li>
+<li><a href="#org32b6d89">Properties</a></li>
+<li><a href="#orgd5e277b">SurfaceOutput</a></li>
+<li><a href="#org5a7adb6">Input</a></li>
+<li><a href="#org0acb39e">shader 的代码结构</a>
 <ul>
-<li><a href="#orgheadline6">Properties</a></li>
-<li><a href="#orgheadline7">SubShader</a>
+<li><a href="#org32e929a">Properties</a></li>
+<li><a href="#org8bdcb22">SubShader</a>
 <ul>
-<li><a href="#orgheadline18">SubShader Tags</a>
+<li><a href="#org74453f1">SubShader Tags</a>
 <ul>
-<li><a href="#orgheadline8">渲染次序 Queue</a></li>
-<li><a href="#orgheadline15">渲染类型 RenderType</a></li>
-<li><a href="#orgheadline16">DisableBatching</a></li>
-<li><a href="#orgheadline17">其他的一些 tag</a></li>
+<li><a href="#org7459d1e">渲染次序 Queue</a></li>
+<li><a href="#orgdb7cd7d">渲染类型 RenderType</a></li>
+<li><a href="#orgb748156">DisableBatching</a></li>
+<li><a href="#org8e117bb">其他的一些 tag</a></li>
 </ul>
 </li>
-<li><a href="#orgheadline19">SurfaceShader 编译指令</a>
+<li><a href="#org4986aaa">SurfaceShader 编译指令</a>
 <ul>
-<li><a href="#orgheadline20">透明和 alpha 测试</a></li>
-<li><a href="#orgheadline21">用户自定义修改函数</a></li>
-<li><a href="#orgheadline22">阴影和曲面细分</a></li>
-<li><a href="#orgheadline23">代码生成选项</a></li>
-<li><a href="#orgheadline24">其他选项</a></li>
+<li><a href="#orgb943ff0">透明和 alpha 测试</a></li>
+<li><a href="#org3e2dc87">用户自定义修改函数</a></li>
+<li><a href="#orgeaf52c7">阴影和曲面细分</a></li>
+<li><a href="#org2e2b25d">代码生成选项</a></li>
+<li><a href="#orge2a9139">其他选项</a></li>
 </ul>
 </li>
-<li><a href="#orgheadline25">LOD</a></li>
+<li><a href="#orgebc1e82">LOD</a></li>
 </ul>
 </li>
-<li><a href="#orgheadline35">Pass</a>
+<li><a href="#orgadbd568">Pass</a>
 <ul>
-<li><a href="#orgheadline26">Name</a></li>
-<li><a href="#orgheadline27">GrabPass</a></li>
-<li><a href="#orgheadline28">Tags</a>
+<li><a href="#org3a0143d">Name</a></li>
+<li><a href="#orgeba876f">GrabPass</a></li>
+<li><a href="#org10599bd">Tags</a>
 <ul>
-<li><a href="#orgheadline29">LightMode</a></li>
-<li><a href="#orgheadline30">RequireOptions</a></li>
+<li><a href="#org51d7f23">LightMode</a></li>
+<li><a href="#org1f1a4e5">RequireOptions</a></li>
 </ul>
 </li>
-<li><a href="#orgheadline31">Render State Setup</a>
+<li><a href="#org157b9d7">Render State Setup</a>
 <ul>
-<li><a href="#orgheadline32">深度相关的状态</a></li>
-<li><a href="#orgheadline33">Blend</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#orgheadline38">贴图</a>
-<ul>
-<li><a href="#orgheadline36">贴图过滤模式</a></li>
-<li><a href="#orgheadline37">Aniso Level</a></li>
-</ul>
-</li>
-<li><a href="#orgheadline39">Unity  Camera 渲染场景的流程</a></li>
-<li><a href="#orgheadline40">Unity's Rendering Pipline</a>
-<ul>
-<li><a href="#orgheadline41">Rendering Path</a></li>
-<li><a href="#orgheadline42">Forward Rendering path</a>
-<ul>
-<li><a href="#orgheadline43">Forward Rendering Detail</a></li>
-<li><a href="#orgheadline44">Implementation Detail</a>
-<ul>
-<li><a href="#orgheadline45">Base Pass</a></li>
-<li><a href="#orgheadline46">Additional Passes</a></li>
-</ul>
-</li>
-<li><a href="#orgheadline47">Performance Considerations</a></li>
-</ul>
-</li>
-<li><a href="#orgheadline51">Deferred Shading path</a>
-<ul>
-<li><a href="#orgheadline52">Overview</a></li>
-<li><a href="#orgheadline53">Requirements</a></li>
-<li><a href="#orgheadline54">Performance Considerations</a></li>
-<li><a href="#orgheadline55">Implementation Details</a></li>
-<li><a href="#orgheadline56">G-Buffer Pass</a></li>
-<li><a href="#orgheadline57">Lighting Pass</a></li>
-</ul>
-</li>
-<li><a href="#orgheadline58">Legacy Deferred Lighting path</a></li>
-<li><a href="#orgheadline59">Legacy Vertex Lit Rendering path</a></li>
-</ul>
-</li>
-<li><a href="#orgheadline60">RenderQueue And z-depth</a>
-<ul>
-<li><a href="#orgheadline61">shader 中 RenderQueue 设置</a></li>
-</ul>
-</li>
-<li><a href="#orgheadline72">Misc</a>
-<ul>
-<li><a href="#orgheadline68">Shader Variants</a>
-<ul>
-<li><a href="#orgheadline62">移除不使用的变体</a></li>
-<li><a href="#orgheadline65">强制使用某个变体</a>
-<ul>
-<li><a href="#orgheadline63">方案 1</a></li>
-<li><a href="#orgheadline64">方案 2</a></li>
-</ul>
-</li>
-<li><a href="#orgheadline66">变体动态开关控制</a></li>
-<li><a href="#orgheadline67">参考文档</a></li>
-</ul>
-</li>
-<li><a href="#orgheadline71">Shader 中的预编译指令</a>
-<ul>
-<li><a href="#orgheadline69">if else endif</a></li>
-<li><a href="#orgheadline70">define</a></li>
+<li><a href="#org3e462f5">深度相关的状态</a></li>
+<li><a href="#org1ca45be">Blend</a></li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#orgheadline78">Reflecting your world</a>
+<li><a href="#orgb30f052">贴图</a>
 <ul>
-<li><a href="#orgheadline74">光学基础</a></li>
-<li><a href="#orgheadline75">Fresnel reflection</a>
+<li><a href="#org93f02f8">贴图过滤模式</a></li>
+<li><a href="#org824ae62">Aniso Level</a></li>
+</ul>
+</li>
+<li><a href="#org4b2d5ca">Unity  Camera 渲染场景的流程</a></li>
+<li><a href="#org9f44c6c">Unity's Rendering Pipline</a>
 <ul>
-<li><a href="#orgheadline76">如何模拟菲涅尔效应效果？</a></li>
-<li><a href="#orgheadline77">参考资料</a></li>
+<li><a href="#orga4ee20b">Rendering Path</a></li>
+<li><a href="#org34e118e">Forward Rendering path</a>
+<ul>
+<li><a href="#org3158cf5">Forward Rendering Detail</a></li>
+<li><a href="#org597823b">Implementation Detail</a>
+<ul>
+<li><a href="#org08ab32d">Base Pass</a></li>
+<li><a href="#orgda7a1bf">Additional Passes</a></li>
+</ul>
+</li>
+<li><a href="#org874ef8d">Performance Considerations</a></li>
+</ul>
+</li>
+<li><a href="#orge597f3b">Deferred Shading path</a>
+<ul>
+<li><a href="#org6cd946e">Overview</a></li>
+<li><a href="#org0f58db1">Requirements</a></li>
+<li><a href="#org934121d">Performance Considerations</a></li>
+<li><a href="#org019b759">Implementation Details</a></li>
+<li><a href="#org65e008c">G-Buffer Pass</a></li>
+<li><a href="#orgab6f646">Lighting Pass</a></li>
+</ul>
+</li>
+<li><a href="#org50f8729">Legacy Deferred Lighting path</a></li>
+<li><a href="#org3ba7d86">Legacy Vertex Lit Rendering path</a></li>
+</ul>
+</li>
+<li><a href="#org266f95d">RenderQueue And z-depth</a>
+<ul>
+<li><a href="#orgbb9b1ef">shader 中 RenderQueue 设置</a></li>
+</ul>
+</li>
+<li><a href="#orgf236073">Misc</a>
+<ul>
+<li><a href="#org4a5c5bb">Shader Variants</a>
+<ul>
+<li><a href="#orgd47a4f1">Inspector 查看当前开启的变体</a></li>
+<li><a href="#org05fb30d">移除不使用的变体</a></li>
+<li><a href="#orgaf0069a">强制使用某个变体</a>
+<ul>
+<li><a href="#org59328dd">方案 1</a></li>
+<li><a href="#org896cdf0">方案 2</a></li>
+</ul>
+</li>
+<li><a href="#orgd59e871">运行时变体动态开关控制</a></li>
+<li><a href="#orge09e63c">shader_feature 和 multi_compile 的差别</a></li>
+<li><a href="#orgb09ce79">参考文档</a></li>
+</ul>
+</li>
+<li><a href="#orgbec393b">Shader 中的预编译指令</a>
+<ul>
+<li><a href="#orga3b93db">if else endif</a></li>
+<li><a href="#org2619249">define</a></li>
+<li><a href="#org10203da">multi_compile_fwdbase</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#orgheadline86">Shader Optimize</a>
-<ul>
-<li><a href="#orgheadline79">数据类型</a></li>
-<li><a href="#orgheadline80">noforwardadd</a></li>
-<li><a href="#orgheadline81">exclude_path</a></li>
-<li><a href="#orgheadline82">nolightmap</a></li>
-<li><a href="#orgheadline83">halfasview</a></li>
-<li><a href="#orgheadline84">使用 UnityObjectToClipPos 代替 mul(UNITY_MATRIX_MVP,v.vertex)</a></li>
-<li><a href="#orgheadline85">参考资料</a></li>
 </ul>
 </li>
-<li><a href="#orgheadline87">LightingModel</a></li>
-<li><a href="#orgheadline91">Screen Effect</a>
+<li><a href="#org157fe58">Reflecting your world</a>
 <ul>
-<li><a href="#orgheadline88">概述</a></li>
-<li><a href="#orgheadline89">明度 亮度 饱和度 对比度</a></li>
-<li><a href="#orgheadline90">MotionBlur 的实现</a></li>
+<li><a href="#org6990c57">光学基础</a></li>
+<li><a href="#org6865222">Fresnel reflection</a>
+<ul>
+<li><a href="#org66030aa">如何模拟菲涅尔效应效果？</a></li>
+<li><a href="#orgfc7973c">参考资料</a></li>
 </ul>
 </li>
-<li><a href="#orgheadline92">Skin Shader</a></li>
-<li><a href="#orgheadline93">Normal Map</a>
+</ul>
+</li>
+<li><a href="#orgfd262f6">Shader Optimize</a>
+<ul>
+<li><a href="#org7eb161a">数据类型</a></li>
+<li><a href="#org9b331a4">noforwardadd</a></li>
+<li><a href="#org1bb0a6c">exclude_path</a></li>
+<li><a href="#org1e6ed47">nolightmap</a></li>
+<li><a href="#orgecfa3fb">halfasview</a></li>
+<li><a href="#orged3acf9">使用 UnityObjectToClipPos 代替 mul(UNITY_MATRIX_MVP,v.vertex)</a></li>
+<li><a href="#org1d7c8b8">参考资料</a></li>
+</ul>
+</li>
+<li><a href="#orga980725">LightingModel</a></li>
+<li><a href="#orgbe3526e">Screen Effect</a>
+<ul>
+<li><a href="#orge3f525c">概述</a></li>
+<li><a href="#org3a92616">明度 亮度 饱和度 对比度</a></li>
+<li><a href="#orgf41cd27">MotionBlur 的实现</a></li>
+</ul>
+</li>
+<li><a href="#org0341baa">Skin Shader</a></li>
+<li><a href="#org26ad6c9">Normal Map</a>
 <ul>
 <li>
 <ul>
-<li><a href="#orgheadline94">参考资料</a></li>
+<li><a href="#org9a06fa5">参考资料</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#orgheadline99">ShaderForge</a>
+<li><a href="#orgeb2a090">ShaderForge</a>
 <ul>
-<li><a href="#orgheadline96">基本操作</a>
+<li><a href="#orgea595f6">基本操作</a>
 <ul>
-<li><a href="#orgheadline95">删除连线</a></li>
+<li><a href="#orga07a208">删除连线</a></li>
 </ul>
 </li>
-<li><a href="#orgheadline98">ErrorFixed</a>
+<li><a href="#org0a1f2cd">ErrorFixed</a>
 <ul>
-<li><a href="#orgheadline97">在 iOS 平台下 Shader 出错</a></li>
+<li><a href="#org4045730">在 iOS 平台下 Shader 出错</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#orgheadline120">Q&amp;A</a>
+<li><a href="#org0374e71">Q&amp;A</a>
 <ul>
-<li><a href="#orgheadline100">unity 坐标系是左手还是右手？</a></li>
-<li><a href="#orgheadline106">SurfaceShader 中 如何定义多个 Pass，它们的执行与否，以及执行顺序？</a>
+<li><a href="#org689fe63">unity 坐标系是左手还是右手？</a></li>
+<li><a href="#org0d313f5">SurfaceShader 中 如何定义多个 Pass，它们的执行与否，以及执行顺序？</a>
 <ul>
-<li><a href="#orgheadline101">定义多个 Pass</a></li>
-<li><a href="#orgheadline102">Pass 是否执行</a>
+<li><a href="#org686312e">定义多个 Pass</a></li>
+<li><a href="#orgf701d8b">Pass 是否执行</a>
 <ul>
-<li><a href="#orgheadline103">没有 LightMode Tag 时，Pass 执行与否如何决定</a></li>
+<li><a href="#org124d7a8">没有 LightMode Tag 时，Pass 执行与否如何决定</a></li>
 </ul>
 </li>
-<li><a href="#orgheadline104">Pass 的执行顺序</a></li>
-<li><a href="#orgheadline105">Tips</a></li>
+<li><a href="#org00e5270">Pass 的执行顺序</a></li>
+<li><a href="#orge239977">Tips</a></li>
 </ul>
 </li>
-<li><a href="#orgheadline107">如何实现半透明渲染？</a></li>
-<li><a href="#orgheadline108">AlphaTest AlphaBlend 性能消耗</a></li>
-<li><a href="#orgheadline113">Deferred Renderring，Deferred Shading，Deferred Lighting 是什么关系？</a>
+<li><a href="#org4a59206">如何实现半透明渲染？</a></li>
+<li><a href="#org0c084de">AlphaTest AlphaBlend 性能消耗</a></li>
+<li><a href="#org35e52af">Deferred Renderring，Deferred Shading，Deferred Lighting 是什么关系？</a>
 <ul>
-<li><a href="#orgheadline109">Deferred Rendering</a></li>
-<li><a href="#orgheadline110">Deferred Shading</a></li>
-<li><a href="#orgheadline111">Deferred Lighting</a></li>
-<li><a href="#orgheadline112">参考资料</a></li>
+<li><a href="#org4846f2b">Deferred Rendering</a></li>
+<li><a href="#orgb4c55be">Deferred Shading</a></li>
+<li><a href="#org42d2c45">Deferred Lighting</a></li>
+<li><a href="#orgdd73b9d">参考资料</a></li>
 </ul>
 </li>
-<li><a href="#orgheadline114">为什么 Unity 中 skybox 是在所有不透明物体和所有透明物体之间被绘制的？</a></li>
-<li><a href="#orgheadline115">为什么光照和表面的交互用乘法？</a></li>
-<li><a href="#orgheadline116">为什么光的衰减和离光源的距离的平方成反比？</a></li>
-<li><a href="#orgheadline117">内置着色器下载</a></li>
-<li><a href="#orgheadline118">贴图 UV 坐标系</a></li>
-<li><a href="#orgheadline119">What is tangent.w? How to know whether it's 1 or -1? tangent.w VS unity_WorldTransformParams.w?</a></li>
+<li><a href="#org71e946b">为什么 Unity 中 skybox 是在所有不透明物体和所有透明物体之间被绘制的？</a></li>
+<li><a href="#org8abccf7">为什么光照和表面的交互用乘法？</a></li>
+<li><a href="#orgb7e093a">为什么光的衰减和离光源的距离的平方成反比？</a></li>
+<li><a href="#orge98aa50">内置着色器下载</a></li>
+<li><a href="#orge5968a6">贴图 UV 坐标系</a></li>
+<li><a href="#orgbd16198">What is tangent.w? How to know whether it's 1 or -1? tangent.w VS unity_WorldTransformParams.w?</a></li>
 </ul>
 </li>
-<li><a href="#orgheadline121">参考资料</a></li>
+<li><a href="#orgc50848e">参考资料</a></li>
 </ul>
 </div>
 </div>
 <p>
-本来只是一篇读书笔记，后来把 unity shader 相关的东西都加进来了。<br  />
+本来只是一篇读书笔记，后来把 unity shader 相关的东西都加进来了。<br />
 </p>
-<!-- more -->
-<div id="outline-container-orgheadline73" class="outline-2">
-<h2 id="orgheadline73">Basic</h2>
-<div class="outline-text-2" id="text-orgheadline73">
-</div><div id="outline-container-orgheadline1" class="outline-3">
-<h3 id="orgheadline1">SurfaceShader 工作流程图</h3>
-<div class="outline-text-3" id="text-orgheadline1">
+<div class="HTML">
+<p>
+&lt;!&#x2013; more &#x2013;&gt;<br />
+</p>
+
+</div>
+<div id="outline-container-orgbdd72cb" class="outline-2">
+<h2 id="orgbdd72cb">Basic</h2>
+<div class="outline-text-2" id="text-orgbdd72cb">
+</div>
+<div id="outline-container-orgebfea4e" class="outline-3">
+<h3 id="orgebfea4e">SurfaceShader 工作流程图</h3>
+<div class="outline-text-3" id="text-orgebfea4e">
 
 <div class="figure">
-<p><img src="UnityShaderAndEffectCookbook/SurfaceShaderFlow.jpg" alt="SurfaceShaderFlow.jpg" /><br  />
+<p><img src="UnityShaderAndEffectCookbook/SurfaceShaderFlow.jpg" alt="SurfaceShaderFlow.jpg" /><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline2" class="outline-3">
-<h3 id="orgheadline2">Properties</h3>
-<div class="outline-text-3" id="text-orgheadline2">
+<div id="outline-container-org32b6d89" class="outline-3">
+<h3 id="org32b6d89">Properties</h3>
+<div class="outline-text-3" id="text-org32b6d89">
 <p>
-通过 Properties，可以将 shader 的一些参数暴露给编辑器进行设置。<br  />
+通过 Properties，可以将 shader 的一些参数暴露给编辑器进行设置。<br />
 </p>
 <div class="org-src-container">
-
 <pre class="src src-shader"><span style="color: #4f97d7; font-weight: bold;">Properties</span> <span style="color: #4f97d7;">{</span>
-    <span style="color: #bc6ec5;">[</span>Toggle <span style="color: #2d9574;">(</span>ADVANCE_EF_ENABLE<span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">]</span> <span style="color: #7590db;">_AdvanceEFEnable</span><span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"AdvanceEffectEnable"</span>,<span style="color: #ce537a; font-weight: bold;">float</span><span style="color: #bc6ec5;">)</span> = <span style="color: #a45bad;">0</span>
-    <span style="color: #7590db;">_MyFloatValue</span><span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"This is a Float"</span>, Float<span style="color: #bc6ec5;">)</span> = <span style="color: #a45bad;">1</span>.<span style="color: #a45bad;">5</span>
+    <span style="color: #7590db;">_MyFloatValue</span><span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"This is a Float"</span>, <span style="color: #4f97d7; font-weight: bold;">Float</span><span style="color: #bc6ec5;">)</span> = <span style="color: #a45bad;">1</span>.<span style="color: #a45bad;">5</span>
     <span style="color: #7590db;">_MyRangeValue</span><span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"This is a Range"</span>, <span style="color: #4f97d7; font-weight: bold;">Range</span><span style="color: #2d9574;">(</span><span style="color: #a45bad;">0</span>,<span style="color: #a45bad;">10</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span> = <span style="color: #a45bad;">2</span>.<span style="color: #a45bad;">5</span>
     <span style="color: #7590db;">_MyColorValue</span><span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"This is a ColorAmbient Color"</span>, <span style="color: #4f97d7; font-weight: bold;">Color</span><span style="color: #bc6ec5;">)</span> = <span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">0</span>.<span style="color: #a45bad;">5</span>,<span style="color: #a45bad;">1</span>,<span style="color: #a45bad;">1</span>,<span style="color: #a45bad;">1</span><span style="color: #bc6ec5;">)</span>
-    <span style="color: #7590db;">_MyVectorValue</span><span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"This is a Vector"</span>, Vector<span style="color: #bc6ec5;">)</span> = <span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">1</span>,<span style="color: #a45bad;">2</span>,<span style="color: #a45bad;">3</span>,<span style="color: #a45bad;">4</span><span style="color: #bc6ec5;">)</span>
+    <span style="color: #7590db;">_MyVectorValue</span><span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"This is a Vector"</span>, <span style="color: #4f97d7; font-weight: bold;">Vector</span><span style="color: #bc6ec5;">)</span> = <span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">1</span>,<span style="color: #a45bad;">2</span>,<span style="color: #a45bad;">3</span>,<span style="color: #a45bad;">4</span><span style="color: #bc6ec5;">)</span>
     <span style="color: #7590db;">_My2DValue</span><span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"This is a Texture 2D"</span>, <span style="color: #a45bad;">2D</span><span style="color: #bc6ec5;">)</span> = <span style="color: #2d9574;">"white"</span> <span style="color: #bc6ec5;">{}</span>
     <span style="color: #7590db;">_MyRectValue</span><span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"This is a Texture Rect"</span>, Rect<span style="color: #bc6ec5;">)</span> = <span style="color: #2d9574;">"white"</span> <span style="color: #bc6ec5;">{}</span>
-    <span style="color: #7590db;">_MyCubeValue</span><span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"This is a Texture Cube"</span>, Cube<span style="color: #bc6ec5;">)</span> = <span style="color: #2d9574;">"white"</span> <span style="color: #bc6ec5;">{}</span>
+    <span style="color: #7590db;">_MyCubeValue</span><span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"This is a Texture Cube"</span>, <span style="color: #4f97d7; font-weight: bold;">Cube</span><span style="color: #bc6ec5;">)</span> = <span style="color: #2d9574;">"white"</span> <span style="color: #bc6ec5;">{}</span>
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#24067;&#23572;&#20063;&#26159;&#28014;&#28857;&#22411;&#25968;&#25454;&#65292;&#21482;&#26159;&#22312;&#26448;&#36136;&#38754;&#26495;&#19978;&#20197;&#24320;&#20851;&#30340;&#24418;&#24335;&#26174;&#31034;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#24320;&#20851;&#21482;&#20250;&#29992;&#21040;&#20004;&#20010;&#25968;&#65306;0&#21644;1&#65292;&#24320;&#21551;&#21363;&#20026;1&#65292;&#20851;&#38381;&#21363;&#20026;0</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#24403;&#24320;&#20851;&#24320;&#21551;&#65292;shader&#20851;&#38190;&#35789;&#20250;&#34987;&#35774;&#23450;&#20026;&#65306;"property name" + "_ON"&#65292;&#24517;&#39035;&#22823;&#20889;  _INVERT_ON</span>
+    <span style="color: #bc6ec5;">[</span>Toggle<span style="color: #bc6ec5;">]</span> <span style="color: #7590db;">_Invert</span> <span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"Invert color?"</span>, <span style="color: #4f97d7; font-weight: bold;">Float</span><span style="color: #bc6ec5;">)</span> = <span style="color: #a45bad;">0</span>
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25110;&#32773;&#37325;&#26032;&#25351;&#23450;&#19968;&#20010;shader&#20851;&#38190;&#35789;&#65292;&#25324;&#21495;&#20869;&#20026;shader&#20851;&#38190;&#35789;</span>
+    <span style="color: #bc6ec5;">[</span>Toggle<span style="color: #2d9574;">(</span>ENABLE_FANCY<span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">]</span> <span style="color: #7590db;">_Fancy</span> <span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"Fancy?"</span>, <span style="color: #4f97d7; font-weight: bold;">Float</span><span style="color: #bc6ec5;">)</span> = <span style="color: #a45bad;">0</span>
 
     <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Blend mode values</span>
-    <span style="color: #bc6ec5;">[</span>Enum<span style="color: #2d9574;">(</span>UnityEngine.Rendering.BlendMode<span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">]</span> <span style="color: #7590db;">_Blend</span> <span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"Blend mode"</span>, Float<span style="color: #bc6ec5;">)</span> = <span style="color: #a45bad;">1</span>
+    <span style="color: #bc6ec5;">[</span>Enum<span style="color: #2d9574;">(</span>UnityEngine.Rendering.BlendMode<span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">]</span> <span style="color: #7590db;">_Blend</span> <span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"Blend mode"</span>, <span style="color: #4f97d7; font-weight: bold;">Float</span><span style="color: #bc6ec5;">)</span> = <span style="color: #a45bad;">1</span>
 
     <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">A subset of blend mode values, just "One" (value 1) and "SrcAlpha" (value 5).</span>
-    <span style="color: #bc6ec5;">[</span>Enum<span style="color: #2d9574;">(</span>One,<span style="color: #a45bad;">1</span>,SrcAlpha,<span style="color: #a45bad;">5</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">]</span> <span style="color: #7590db;">_Blend2</span> <span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"Blend mode subset"</span>, Float<span style="color: #bc6ec5;">)</span> = <span style="color: #a45bad;">1</span>
+    <span style="color: #bc6ec5;">[</span>Enum<span style="color: #2d9574;">(</span>One,<span style="color: #a45bad;">1</span>,SrcAlpha,<span style="color: #a45bad;">5</span><span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">]</span> <span style="color: #7590db;">_Blend2</span> <span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"Blend mode subset"</span>, <span style="color: #4f97d7; font-weight: bold;">Float</span><span style="color: #bc6ec5;">)</span> = <span style="color: #a45bad;">1</span>
 
-    <span style="color: #bc6ec5;">[</span>KeywordEnum<span style="color: #2d9574;">(</span>None, Add, Multiply<span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">]</span> <span style="color: #7590db;">_Overlay</span><span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"Overlay mode"</span>, Float<span style="color: #bc6ec5;">)</span> = <span style="color: #a45bad;">0</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20851;&#38190;&#35789;&#26522;&#20030;&#20063;&#26159;&#28014;&#28857;&#22411;&#25968;&#25454;&#65292;&#21482;&#26159;&#22312;&#26448;&#36136;&#38754;&#26495;&#19978;&#20197;&#19979;&#25289;&#21015;&#34920;&#30340;&#24418;&#24335;&#26174;&#31034;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">shader&#20851;&#38190;&#35789;&#26684;&#24335;&#20026;&#65306;"property name" + &#19979;&#21010;&#32447; + &#8220;&#26522;&#20030;&#21517;&#31216;&#8221;&#65292;&#24517;&#39035;&#22823;&#20889;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20294;&#26159;&#26368;&#22810;&#25903;&#25345;9&#20010;&#26522;&#20030;&#21517;&#31216;</span>
+    <span style="color: #bc6ec5;">[</span>KeywordEnum<span style="color: #2d9574;">(</span>None, Add, Multiply<span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">]</span> <span style="color: #7590db;">_Overlay</span> <span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"Overlay mode"</span>, <span style="color: #4f97d7; font-weight: bold;">Float</span><span style="color: #bc6ec5;">)</span> = <span style="color: #a45bad;">0</span>
 <span style="color: #4f97d7;">}</span>
 </pre>
 </div>
 <ul class="org-ul">
-<li>关于 shader 中的 Properties<br  />
+<li>关于 shader 中的 Properties<br />
 <ul class="org-ul">
-<li><a href="https://docs.unity3d.com/Manual/SL-Properties.html">https://docs.unity3d.com/Manual/SL-Properties.html</a><br  /></li>
-<li><a href="https://docs.unity3d.com/ScriptReference/MaterialPropertyDrawer.html">https://docs.unity3d.com/ScriptReference/MaterialPropertyDrawer.html</a><br  /></li>
+<li><a href="https://docs.unity3d.com/Manual/SL-Properties.html">https://docs.unity3d.com/Manual/SL-Properties.html</a><br /></li>
+<li><a href="https://docs.unity3d.com/ScriptReference/MaterialPropertyDrawer.html">https://docs.unity3d.com/ScriptReference/MaterialPropertyDrawer.html</a><br /></li>
+<li>在 Unity Shader 中自定义材质面板 <a href="https://zhuanlan.zhihu.com/p/78589597">https://zhuanlan.zhihu.com/p/78589597</a><br /></li>
 </ul></li>
-<li>关于 shader 中的多程序变量<br  />
+<li>关于 shader 中的多程序变量<br />
 <ul class="org-ul">
-<li><a href="https://blog.csdn.net/candycat1992/article/details/51417965">https://blog.csdn.net/candycat1992/article/details/51417965</a><br  /></li>
-<li><a href="https://docs.unity3d.com/Manual/SL-MultipleProgramVariants.html">https://docs.unity3d.com/Manual/SL-MultipleProgramVariants.html</a><br  /></li>
+<li><a href="https://blog.csdn.net/candycat1992/article/details/51417965">https://blog.csdn.net/candycat1992/article/details/51417965</a><br /></li>
+<li><a href="https://docs.unity3d.com/Manual/SL-MultipleProgramVariants.html">https://docs.unity3d.com/Manual/SL-MultipleProgramVariants.html</a><br /></li>
 </ul></li>
 </ul>
 </div>
 </div>
-<div id="outline-container-orgheadline3" class="outline-3">
-<h3 id="orgheadline3">SurfaceOutput</h3>
-<div class="outline-text-3" id="text-orgheadline3">
+<div id="outline-container-orgd5e277b" class="outline-3">
+<h3 id="orgd5e277b">SurfaceOutput</h3>
+<div class="outline-text-3" id="text-orgd5e277b">
 <div class="org-src-container">
-
 <pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">unity4</span>
 <span style="color: #4f97d7; font-weight: bold;">struct</span> SurfaceOutput <span style="color: #4f97d7;">{</span> 
     <span style="color: #ce537a; font-weight: bold;">fixed3</span> Albedo;      <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#26448;&#36136;&#30340;&#39068;&#33394;</span>
@@ -378,9 +396,9 @@ for the JavaScript code in this tag.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline4" class="outline-3">
-<h3 id="orgheadline4">Input</h3>
-<div class="outline-text-3" id="text-orgheadline4">
+<div id="outline-container-org5a7adb6" class="outline-3">
+<h3 id="org5a7adb6">Input</h3>
+<div class="outline-text-3" id="text-org5a7adb6">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -460,23 +478,22 @@ Tips:
 使用 worldNormal;INTERNAL_DATA 时，通过 WorldNormalVector（IN, o.Normal）来从法线贴图获得法线
 </pre>
 <p>
-<a href="http://docs.unity3d.com/Manual/SL-SurfaceShaders.html">Unity 官方文档</a><br  />
+<a href="http://docs.unity3d.com/Manual/SL-SurfaceShaders.html">Unity 官方文档</a><br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline5" class="outline-3">
-<h3 id="orgheadline5">shader 的代码结构</h3>
-<div class="outline-text-3" id="text-orgheadline5">
+<div id="outline-container-org0acb39e" class="outline-3">
+<h3 id="org0acb39e">shader 的代码结构</h3>
+<div class="outline-text-3" id="text-org0acb39e">
 <p>
-<a href="https://docs.unity3d.com/Manual/SL-Reference.html">https://docs.unity3d.com/Manual/SL-Reference.html</a><br  />
-<a href="https://docs.unity3d.com/Manual/SL-Shader.html">https://docs.unity3d.com/Manual/SL-Shader.html</a><br  />
+<a href="https://docs.unity3d.com/Manual/SL-Reference.html">https://docs.unity3d.com/Manual/SL-Reference.html</a><br />
+<a href="https://docs.unity3d.com/Manual/SL-Shader.html">https://docs.unity3d.com/Manual/SL-Shader.html</a><br />
 </p>
 <div class="org-src-container">
-
 <pre class="src src-shader"><span style="color: #4f97d7; font-weight: bold;">Shader</span> <span style="color: #2d9574;">"GroupName/SubGroupName/ShaderName"</span>
 <span style="color: #4f97d7;">{</span>
     <span style="color: #4f97d7; font-weight: bold;">Properties</span> <span style="color: #bc6ec5;">{</span>
-        <span style="color: #7590db;">_MyFloatValue</span><span style="color: #2d9574;">(</span><span style="color: #2d9574;">"This is a Float"</span>, Float<span style="color: #2d9574;">)</span> = <span style="color: #a45bad;">1</span>.<span style="color: #a45bad;">5</span>
+        <span style="color: #7590db;">_MyFloatValue</span><span style="color: #2d9574;">(</span><span style="color: #2d9574;">"This is a Float"</span>, <span style="color: #4f97d7; font-weight: bold;">Float</span><span style="color: #2d9574;">)</span> = <span style="color: #a45bad;">1</span>.<span style="color: #a45bad;">5</span>
         <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">......</span>
     <span style="color: #bc6ec5;">}</span>
     <span style="color: #4f97d7; font-weight: bold;">SubShader</span> 
@@ -520,113 +537,126 @@ Tips:
 </pre>
 </div>
 </div>
-<div id="outline-container-orgheadline6" class="outline-4">
-<h4 id="orgheadline6">Properties</h4>
-<div class="outline-text-4" id="text-orgheadline6">
+<div id="outline-container-org32e929a" class="outline-4">
+<h4 id="org32e929a">Properties</h4>
+<div class="outline-text-4" id="text-org32e929a">
 <p>
-Properties 指定了 surface shader 中可供调节的变量，这些变量可以被显示在 Inspector 中。<br  />
+Properties 指定了 surface shader 中可供调节的变量，这些变量可以被显示在 Inspector 中。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline7" class="outline-4">
-<h4 id="orgheadline7">SubShader</h4>
-<div class="outline-text-4" id="text-orgheadline7">
+<div id="outline-container-org8bdcb22" class="outline-4">
+<h4 id="org8bdcb22">SubShader</h4>
+<div class="outline-text-4" id="text-org8bdcb22">
 <p>
-1 每个 Shader 都包含一个 SubShader 列表。SubShader 列表中至少要有一个 SubShader。当加载一个 Shader 时，Unity 会遍历其包含的 SubShader 列表，选择第一个用户机器所支持的 SubShader。如果没有 SubShader 被支持，则 Unity 会尝试使用 fallback shader。<br  />
+1 每个 Shader 都包含一个 SubShader 列表。SubShader 列表中至少要有一个 SubShader。当加载一个 Shader 时，Unity 会遍历其包含的 SubShader 列表，选择第一个用户机器所支持的 SubShader。如果没有 SubShader 被支持，则 Unity 会尝试使用 fallback shader。<br />
 </p>
 
 <p>
-2 一个 SubShader 定义了一个 Pass 列表，也就是说一个 SubShader 中包含多个 Pass，在 SubShader 中可以有选择地设置其中包含的所有 Pass 所公用的任何状态。此外 SubShader 还有额外的 Tags 可以被设置。<br  />
+2 一个 SubShader 定义了一个 Pass 列表，也就是说一个 SubShader 中包含多个 Pass，在 SubShader 中可以有选择地设置其中包含的所有 Pass 所公用的任何状态。此外 SubShader 还有额外的 Tags 可以被设置。<br />
 </p>
 
 <p>
-3 Unity 选定了 SubShader 后，当渲染一个物体时，SubShader 中的每个 Pass 会导致对该物体的一次渲染。<br  />
+3 Unity 选定了 SubShader 后，当渲染一个物体时，SubShader 中的每个 Pass 会导致对该物体的一次渲染。<br />
 </p>
 
 <p>
-4 任何在 Pass 中可用的状态都可以放置在 SubShader 中，这样的话 SubShader 中的所有 Pass 都会公用该状态的设置。<br  />
+4 任何在 Pass 中可用的状态都可以放置在 SubShader 中，这样的话 SubShader 中的所有 Pass 都会公用该状态的设置。<br />
 </p>
 </div>
-<div id="outline-container-orgheadline18" class="outline-5">
-<h5 id="orgheadline18">SubShader Tags</h5>
-<div class="outline-text-5" id="text-orgheadline18">
-</div><div id="outline-container-orgheadline8" class="outline-6">
-<h6 id="orgheadline8">渲染次序 Queue</h6>
-<div class="outline-text-6" id="text-orgheadline8">
+<div id="outline-container-org74453f1" class="outline-5">
+<h5 id="org74453f1">SubShader Tags</h5>
+<div class="outline-text-5" id="text-org74453f1">
+</div>
+<div id="outline-container-org7459d1e" class="outline-6">
+<h6 id="org7459d1e">渲染次序 Queue</h6>
+<div class="outline-text-6" id="text-org7459d1e">
 <p>
-可以通过 Queue tag 来确定物体的渲染顺序。Shader 决定了它的物体所属的渲染队列，这样就可以确保透明物体在不透明物体绘制之后再绘制。Unity 有四个预定义的渲染队列，但是默认的渲染队列之间可以定义更多的渲染队列。<br  />
+可以通过 Queue tag 来确定物体的渲染顺序。Shader 决定了它的物体所属的渲染队列，这样就可以确保透明物体在不透明物体绘制之后再绘制。Unity 有四个预定义的渲染队列，但是默认的渲染队列之间可以定义更多的渲染队列。<br />
 </p>
 
 <p>
-每个渲染队列在内部是通过一个整型的索引来表示的。Background 为 1000，Geometry 为 2000，AlphaTest 为 2450，Transparent 为 3000，Overlay 为 4000。<br  />
+每个渲染队列在内部是通过一个整型的索引来表示的。Background 为 1000，Geometry 为 2000，AlphaTest 为 2450，Transparent 为 3000，Overlay 为 4000。<br />
 </p>
 
 <p>
-小于等于 2500 的渲染队列，被当做不透明物体的渲染队列，并且可以调整物体的渲染顺序来达到最佳性能。更高的渲染队列被认为是透明物体的渲染队列，并且物体依据距离来排序，从最远的物体开始渲染直到最近的物体。Skyboxes 是在所有不透明物体和所有透明物体之间被绘制的。<br  />
+小于等于 2500 的渲染队列，被当做不透明物体的渲染队列，并且可以调整物体的渲染顺序来达到最佳性能。更高的渲染队列被认为是透明物体的渲染队列，并且物体依据距离来排序，从最远的物体开始渲染直到最近的物体。Skyboxes 是在所有不透明物体和所有透明物体之间被绘制的。<br />
 </p>
 <pre class="example">
 Tags { "Queue" = "Transparent" }
 </pre>
 </div>
-<ul class="org-ul"><li><a id="orgheadline9"></a>Background<br  /><div class="outline-text-7" id="text-orgheadline9">
+<ul class="org-ul">
+<li><a id="org1a5613c"></a>Background<br />
+<div class="outline-text-7" id="text-org1a5613c">
 <p>
-这个渲染队列在任何其他队列之前被渲染。<br  />
+这个渲染队列在任何其他队列之前被渲染。<br />
 </p>
-</div></li>
-<li><a id="orgheadline10"></a>Geometry (默认的渲染队列)<br  /><div class="outline-text-7" id="text-orgheadline10">
+</div>
+</li>
+<li><a id="orgb605dab"></a>Geometry (默认的渲染队列)<br />
+<div class="outline-text-7" id="text-orgb605dab">
 <p>
-不透明的几何体可以使用这个渲染队列<br  />
+不透明的几何体可以使用这个渲染队列<br />
 </p>
-</div></li>
-<li><a id="orgheadline11"></a>AlphaTest<br  /><div class="outline-text-7" id="text-orgheadline11">
+</div>
+</li>
+<li><a id="org2691f43"></a>AlphaTest<br />
+<div class="outline-text-7" id="text-org2691f43">
 <p>
-需要 Alpha 测试的几何体使用该队列。它独立于 Geometry 渲染队列，因为所有固体渲染之后，再渲染需要 alpha-tested 物体会更高效。(因为只对需要 Alpha 测试的物体开启 Alpha 测试，不需要 Alpha 测试的不会放在该队列，所以高效)<br  />
+需要 Alpha 测试的几何体使用该队列。它独立于 Geometry 渲染队列，因为所有固体渲染之后，再渲染需要 alpha-tested 物体会更高效。(因为只对需要 Alpha 测试的物体开启 Alpha 测试，不需要 Alpha 测试的不会放在该队列，所以高效)<br />
 </p>
-</div></li>
-<li><a id="orgheadline12"></a>Transparent<br  /><div class="outline-text-7" id="text-orgheadline12">
+</div>
+</li>
+<li><a id="orgd56dc45"></a>Transparent<br />
+<div class="outline-text-7" id="text-orgd56dc45">
 <p>
-Geometry 和 AlphaTest 之后渲染的队列，该队列以从后到前的顺序渲染。需要 alpha-blended 的物体使用该队列。<br  />
+Geometry 和 AlphaTest 之后渲染的队列，该队列以从后到前的顺序渲染。需要 alpha-blended 的物体使用该队列。<br />
 </p>
-</div></li>
-<li><a id="orgheadline13"></a>Overlay<br  /><div class="outline-text-7" id="text-orgheadline13">
+</div>
+</li>
+<li><a id="org7e42a28"></a>Overlay<br />
+<div class="outline-text-7" id="text-org7e42a28">
 <p>
-该渲染队列可以实现覆盖效果。任何最终渲染的物体使用该队列。<br  />
+该渲染队列可以实现覆盖效果。任何最终渲染的物体使用该队列。<br />
 </p>
-</div></li>
-<li><a id="orgheadline14"></a>自定义渲染队列<br  /><div class="outline-text-7" id="text-orgheadline14">
+</div>
+</li>
+<li><a id="org2754daa"></a>自定义渲染队列<br />
+<div class="outline-text-7" id="text-org2754daa">
 <pre class="example">
 Tags { "Queue" = "Geometry+1" }
 </pre>
-</div></li></ul>
 </div>
-<div id="outline-container-orgheadline15" class="outline-6">
-<h6 id="orgheadline15">渲染类型 RenderType</h6>
-<div class="outline-text-6" id="text-orgheadline15">
+</li>
+</ul>
+</div>
+<div id="outline-container-orgdb7cd7d" class="outline-6">
+<h6 id="orgdb7cd7d">渲染类型 RenderType</h6>
+<div class="outline-text-6" id="text-orgdb7cd7d">
 <p>
-RenderType 将 shaders 归类为很多不同的预定义的组。<br  />
+RenderType 将 shaders 归类为很多不同的预定义的组。<br />
 </p>
 <div class="org-src-container">
-
 <pre class="src src-cg">Tags { "RenderType"="Opaque" "PerformanceChecks"="False" }
 </pre>
 </div>
 <p>
-Shader Replacement 会用到该设置。/Manual/SL-ShaderReplacement.html<br  />
+Shader Replacement 会用到该设置。/Manual/SL-ShaderReplacement.html<br />
 </p>
 
 <p>
-有时候通过该设置来制作摄像机的深度贴图。/Manual/SL-CameraDepthTexture.html<br  />
+有时候通过该设置来制作摄像机的深度贴图。/Manual/SL-CameraDepthTexture.html<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline16" class="outline-6">
-<h6 id="orgheadline16">DisableBatching</h6>
-<div class="outline-text-6" id="text-orgheadline16">
+<div id="outline-container-orgb748156" class="outline-6">
+<h6 id="orgb748156">DisableBatching</h6>
+<div class="outline-text-6" id="text-orgb748156">
 <p>
-有些 Shader 在 DrawCallBatching 下是不可用的，因为 DrawCallBatching 会将所有的几何体变换到世界空间，因此本地空间信息会丢失。<br  />
+有些 Shader 在 DrawCallBatching 下是不可用的，因为 DrawCallBatching 会将所有的几何体变换到世界空间，因此本地空间信息会丢失。<br />
 </p>
 <div class="org-src-container">
-
 <pre class="src src-shader"><span style="color: #4f97d7; font-weight: bold;">Tags</span> <span style="color: #4f97d7;">{</span><span style="color: #2d9574;">"DisableBatching"</span> = <span style="color: #2d9574;">"True"</span><span style="color: #4f97d7;">}</span>       <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20026;&#35813; shader &#22987;&#32456;&#31105;&#27490; Batching</span>
 <span style="color: #4f97d7; font-weight: bold;">Tags</span> <span style="color: #4f97d7;">{</span><span style="color: #2d9574;">"DisableBatching"</span> = <span style="color: #2d9574;">"False"</span><span style="color: #4f97d7;">}</span>      <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20026;&#35813; shader &#24320;&#21551; Batching</span>
 <span style="color: #4f97d7; font-weight: bold;">Tags</span> <span style="color: #4f97d7;">{</span><span style="color: #2d9574;">"DisableBatching"</span> = <span style="color: #2d9574;">"LODFading"</span><span style="color: #4f97d7;">}</span>  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">LOD Fading &#24320;&#21551;&#26102;&#65292;&#31105;&#27490; Batching</span>
@@ -634,9 +664,9 @@ Shader Replacement 会用到该设置。/Manual/SL-ShaderReplacement.html<br  />
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline17" class="outline-6">
-<h6 id="orgheadline17">其他的一些 tag</h6>
-<div class="outline-text-6" id="text-orgheadline17">
+<div id="outline-container-org8e117bb" class="outline-6">
+<h6 id="org8e117bb">其他的一些 tag</h6>
+<div class="outline-text-6" id="text-org8e117bb">
 <pre class="example">
 ForceNoShadowCasting
 IgnoreProjector
@@ -646,35 +676,34 @@ PreviewType
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline19" class="outline-5">
-<h5 id="orgheadline19">SurfaceShader 编译指令</h5>
-<div class="outline-text-5" id="text-orgheadline19">
+<div id="outline-container-org4986aaa" class="outline-5">
+<h5 id="org4986aaa">SurfaceShader 编译指令</h5>
+<div class="outline-text-5" id="text-org4986aaa">
 <p>
-surface shader 被放置在 CGPROGRAM &#x2026; ENDCG 块中。有两点需要注意：<br  />
+surface shader 被放置在 CGPROGRAM &#x2026; ENDCG 块中。有两点需要注意：<br />
 </p>
 
 <p>
-1 surface shader 必须放在 SubShader 块中，不能放在 Pass 中。Unity 会通过编译将其放在不同 Pass 中。<br  />
+1 surface shader 必须放在 SubShader 块中，不能放在 Pass 中。Unity 会通过编译将其放在不同 Pass 中。<br />
 </p>
 
 <p>
-2 使用下面的指令来指明一个 surface shader<br  />
+2 使用下面的指令来指明一个 surface shader<br />
 </p>
 <div class="org-src-container">
-
 <pre class="src src-shader"><span style="color: #bc6ec5;">#pragma</span> surface surfaceFunction lightModel <span style="color: #4f97d7;">[</span>optionalparams<span style="color: #4f97d7;">]</span>
 </pre>
 </div>
 
 <p>
-Optional Parameters<br  />
+Optional Parameters<br />
 </p>
 </div>
-<div id="outline-container-orgheadline20" class="outline-6">
-<h6 id="orgheadline20">透明和 alpha 测试</h6>
-<div class="outline-text-6" id="text-orgheadline20">
+<div id="outline-container-orgb943ff0" class="outline-6">
+<h6 id="orgb943ff0">透明和 alpha 测试</h6>
+<div class="outline-text-6" id="text-orgb943ff0">
 <p>
-透明和 alpha 测试通过 alpha 和 alphatest 指令来控制。透明通常有两种：传统的 alpha 混合 或者 更物理拟真的预乘混合（这种方式允许半透明表面保持合适的镜面反射）。开启半透明可以使生成的 surface shader 代码包含混合命令；反之开启 alpha cutout 将会在生成的片段着色器中，基于给定的值，执行片段丢弃。<br  />
+透明和 alpha 测试通过 alpha 和 alphatest 指令来控制。透明通常有两种：传统的 alpha 混合 或者 更物理拟真的预乘混合（这种方式允许半透明表面保持合适的镜面反射）。开启半透明可以使生成的 surface shader 代码包含混合命令；反之开启 alpha cutout 将会在生成的片段着色器中，基于给定的值，执行片段丢弃。<br />
 </p>
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
@@ -728,21 +757,21 @@ Optional Parameters<br  />
 </table>
 
 <p>
-关于 keepalpha:<br  />
-无论从光照计算返回的或从 output 结构体中输入的 alpha 值为多少，默认情况下不透明 surface shader 都会将 1.0 写入 alpha 通道，而 keepalpha 选项可以允许保持光照函数中的 alpha 值。<br  />
+关于 keepalpha:<br />
+无论从光照计算返回的或从 output 结构体中输入的 alpha 值为多少，默认情况下不透明 surface shader 都会将 1.0 写入 alpha 通道，而 keepalpha 选项可以允许保持光照函数中的 alpha 值。<br />
 </p>
 
 <p>
-关于预乘混合可以查看以下文档：<br  />
-<a href="https://developer.nvidia.com/content/alpha-blending-pre-or-not-pre">https://developer.nvidia.com/content/alpha-blending-pre-or-not-pre</a><br  />
+关于预乘混合可以查看以下文档：<br />
+<a href="https://developer.nvidia.com/content/alpha-blending-pre-or-not-pre">https://developer.nvidia.com/content/alpha-blending-pre-or-not-pre</a><br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline21" class="outline-6">
-<h6 id="orgheadline21">用户自定义修改函数</h6>
-<div class="outline-text-6" id="text-orgheadline21">
+<div id="outline-container-org3e2dc87" class="outline-6">
+<h6 id="org3e2dc87">用户自定义修改函数</h6>
+<div class="outline-text-6" id="text-org3e2dc87">
 <p>
-用户自定义修改函数可以用来修改或计算输入的顶点数据，或者修改最终计算出来的片段颜色<br  />
+用户自定义修改函数可以用来修改或计算输入的顶点数据，或者修改最终计算出来的片段颜色<br />
 </p>
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
@@ -776,9 +805,9 @@ Optional Parameters<br  />
 </table>
 </div>
 </div>
-<div id="outline-container-orgheadline22" class="outline-6">
-<h6 id="orgheadline22">阴影和曲面细分</h6>
-<div class="outline-text-6" id="text-orgheadline22">
+<div id="outline-container-orgeaf52c7" class="outline-6">
+<h6 id="orgeaf52c7">阴影和曲面细分</h6>
+<div class="outline-text-6" id="text-orgeaf52c7">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -806,9 +835,9 @@ Optional Parameters<br  />
 </table>
 </div>
 </div>
-<div id="outline-container-orgheadline23" class="outline-6">
-<h6 id="orgheadline23">代码生成选项</h6>
-<div class="outline-text-6" id="text-orgheadline23">
+<div id="outline-container-org2e2b25d" class="outline-6">
+<h6 id="org2e2b25d">代码生成选项</h6>
+<div class="outline-text-6" id="text-org2e2b25d">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -881,9 +910,9 @@ Optional Parameters<br  />
 </table>
 </div>
 </div>
-<div id="outline-container-orgheadline24" class="outline-6">
-<h6 id="orgheadline24">其他选项</h6>
-<div class="outline-text-6" id="text-orgheadline24">
+<div id="outline-container-orge2a9139" class="outline-6">
+<h6 id="orge2a9139">其他选项</h6>
+<div class="outline-text-6" id="text-orge2a9139">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -922,50 +951,50 @@ Optional Parameters<br  />
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline25" class="outline-5">
-<h5 id="orgheadline25">LOD</h5>
-<div class="outline-text-5" id="text-orgheadline25">
+<div id="outline-container-orgebc1e82" class="outline-5">
+<h5 id="orgebc1e82">LOD</h5>
+<div class="outline-text-5" id="text-orgebc1e82">
 <p>
-LOD 很简单，它是 Level of Detail 的缩写，在这里例子里我们指定了其为 200（其实这是 Unity 的内建 Diffuse 着色器的设定值）。这个数值决定了我们能用什么样的 Shader。在 Unity 的 Quality Settings 中我们可以设定允许的最大 LOD，当设定的 LOD 小于 SubShader 所指定的 LOD 时，这个 SubShader 将不可用。Unity 内建 Shader 定义了一组 LOD 的数值，我们在实现自己的 Shader 的时候可以将其作为参考来设定自己的 LOD 数值，这样在之后调整根据设备图形性能来调整画质时可以进行比较精确的控制。<br  />
+LOD 很简单，它是 Level of Detail 的缩写，在这里例子里我们指定了其为 200（其实这是 Unity 的内建 Diffuse 着色器的设定值）。这个数值决定了我们能用什么样的 Shader。在 Unity 的 Quality Settings 中我们可以设定允许的最大 LOD，当设定的 LOD 小于 SubShader 所指定的 LOD 时，这个 SubShader 将不可用。Unity 内建 Shader 定义了一组 LOD 的数值，我们在实现自己的 Shader 的时候可以将其作为参考来设定自己的 LOD 数值，这样在之后调整根据设备图形性能来调整画质时可以进行比较精确的控制。<br />
 </p>
 
 <p>
-VertexLit 及其系列 = 100<br  />
-Decal, Reflective VertexLit = 150<br  />
-Diffuse = 200<br  />
-Diffuse Detail, Reflective Bumped Unlit, Reflective Bumped VertexLit = 250<br  />
-Bumped, Specular = 300<br  />
-Bumped Specular = 400<br  />
-Parallax = 500<br  />
-Parallax Specular = 600<br  />
+VertexLit 及其系列 = 100<br />
+Decal, Reflective VertexLit = 150<br />
+Diffuse = 200<br />
+Diffuse Detail, Reflective Bumped Unlit, Reflective Bumped VertexLit = 250<br />
+Bumped, Specular = 300<br />
+Bumped Specular = 400<br />
+Parallax = 500<br />
+Parallax Specular = 600<br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline35" class="outline-4">
-<h4 id="orgheadline35">Pass</h4>
-<div class="outline-text-4" id="text-orgheadline35">
-</div><div id="outline-container-orgheadline26" class="outline-5">
-<h5 id="orgheadline26">Name</h5>
-<div class="outline-text-5" id="text-orgheadline26">
+<div id="outline-container-orgadbd568" class="outline-4">
+<h4 id="orgadbd568">Pass</h4>
+<div class="outline-text-4" id="text-orgadbd568">
+</div>
+<div id="outline-container-org3a0143d" class="outline-5">
+<h5 id="org3a0143d">Name</h5>
+<div class="outline-text-5" id="text-org3a0143d">
 <p>
-为 Pass 定义一个名称，这样就可以通过 UsePass 来引用它了。<br  />
-UsePass "VertexLit/SHADOWCASTER"<br  />
+为 Pass 定义一个名称，这样就可以通过 UsePass 来引用它了。<br />
+UsePass "VertexLit/SHADOWCASTER"<br />
 </p>
 
 <p>
-注意： 不要在 Pass 定义的 shader 中，引用 Pass，unity 会直接 Crash<br  />
+注意： 不要在 Pass 定义的 shader 中，引用 Pass，unity 会直接 Crash<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline27" class="outline-5">
-<h5 id="orgheadline27">GrabPass</h5>
-<div class="outline-text-5" id="text-orgheadline27">
+<div id="outline-container-orgeba876f" class="outline-5">
+<h5 id="orgeba876f">GrabPass</h5>
+<div class="outline-text-5" id="text-orgeba876f">
 <p>
-GrabPass 是一种特殊的 pass 类型。当物体将要被绘制时，它可以获取屏幕的内容并将其绘制到一张贴图中。这张贴图可以在后续 pass 中使用，来实现高级的基于图片的特效。<br  />
+GrabPass 是一种特殊的 pass 类型。当物体将要被绘制时，它可以获取屏幕的内容并将其绘制到一张贴图中。这张贴图可以在后续 pass 中使用，来实现高级的基于图片的特效。<br />
 </p>
 <div class="org-src-container">
-
 <pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19979;&#38754;&#30340;&#26041;&#24335;&#20250;&#65292;&#23558;&#23631;&#24149;&#20869;&#23481;&#20445;&#23384;&#21040;_GrabTexture &#36148;&#22270;&#23545;&#35937;&#20013;&#12290;&#36825;&#31181;&#26041;&#24335;&#20250;&#20026;&#27599;&#20010;&#20351;&#29992;&#35813; shader &#30340;&#23545;&#35937;&#65292;&#25191;&#34892;&#19968;&#27425;&#23631;&#24149;&#25235;&#21462;.</span>
 <span style="color: #4f97d7; font-weight: bold;">GrabPass</span><span style="color: #4f97d7;">{</span>
 <span style="color: #4f97d7;">}</span>
@@ -977,18 +1006,18 @@ GrabPass 是一种特殊的 pass 类型。当物体将要被绘制时，它可�
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline28" class="outline-5">
-<h5 id="orgheadline28">Tags</h5>
-<div class="outline-text-5" id="text-orgheadline28">
+<div id="outline-container-org10599bd" class="outline-5">
+<h5 id="org10599bd">Tags</h5>
+<div class="outline-text-5" id="text-org10599bd">
 <p>
-Pass 使用 Tags 来告诉渲染引擎，什么时候、如何被渲染。<br  />
+Pass 使用 Tags 来告诉渲染引擎，什么时候、如何被渲染。<br />
 </p>
 </div>
-<div id="outline-container-orgheadline29" class="outline-6">
-<h6 id="orgheadline29">LightMode</h6>
-<div class="outline-text-6" id="text-orgheadline29">
+<div id="outline-container-org51d7f23" class="outline-6">
+<h6 id="org51d7f23">LightMode</h6>
+<div class="outline-text-6" id="text-org51d7f23">
 <p>
-LightMode tag 定义了 Pass 在光照管线中的角色。这些 tags 很少手动指定。<br  />
+LightMode tag 定义了 Pass 在光照管线中的角色。这些 tags 很少手动指定。<br />
 </p>
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
@@ -1057,17 +1086,16 @@ LightMode tag 定义了 Pass 在光照管线中的角色。这些 tags 很少手
 </tbody>
 </table>
 <div class="org-src-container">
-
 <pre class="src src-cg">Tags { "LightMode" = "ForwardAdd" }
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline30" class="outline-6">
-<h6 id="orgheadline30">RequireOptions</h6>
-<div class="outline-text-6" id="text-orgheadline30">
+<div id="outline-container-org1f1a4e5" class="outline-6">
+<h6 id="org1f1a4e5">RequireOptions</h6>
+<div class="outline-text-6" id="text-org1f1a4e5">
 <p>
-指定 Pass 在满足某些外部条件时才被渲染。<br  />
+指定 Pass 在满足某些外部条件时才被渲染。<br />
 </p>
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
@@ -1093,11 +1121,11 @@ LightMode tag 定义了 Pass 在光照管线中的角色。这些 tags 很少手
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline31" class="outline-5">
-<h5 id="orgheadline31">Render State Setup</h5>
-<div class="outline-text-5" id="text-orgheadline31">
+<div id="outline-container-org157b9d7" class="outline-5">
+<h5 id="org157b9d7">Render State Setup</h5>
+<div class="outline-text-5" id="text-org157b9d7">
 <p>
-Pass 可以设置图形硬件的渲染状态。<br  />
+Pass 可以设置图形硬件的渲染状态。<br />
 </p>
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
@@ -1152,91 +1180,96 @@ Pass 可以设置图形硬件的渲染状态。<br  />
 </table>
 </div>
 
-<div id="outline-container-orgheadline32" class="outline-6">
-<h6 id="orgheadline32">深度相关的状态</h6>
-<div class="outline-text-6" id="text-orgheadline32">
+<div id="outline-container-org3e462f5" class="outline-6">
+<h6 id="org3e462f5">深度相关的状态</h6>
+<div class="outline-text-6" id="text-org3e462f5">
 <p>
-默认的深度相关状态是 ZWrite On 和 ZTest LEqual<br  />
-ZTest Less（深度小于当前缓存则通过<br  />
-ZTest Greater（深度大于当前缓存则通过）<br  />
-ZTest LEqual（深度小于等于当前缓存则通过）<br  />
-ZTest GEqual（深度大于等于当前缓存则通过）<br  />
-ZTest Equal（深度等于当前缓存则通过）<br  />
-ZTest NotEqual（深度不等于当前缓存则通过）<br  />
-ZTest Always（不论如何都通过）<br  />
-注意，ZTest Off 等同于 ZTest Always，关闭深度测试等于完全通过。<br  />
+默认的深度相关状态是 ZWrite On 和 ZTest LEqual<br />
+ZTest Less（深度小于当前缓存则通过<br />
+ZTest Greater（深度大于当前缓存则通过）<br />
+ZTest LEqual（深度小于等于当前缓存则通过）<br />
+ZTest GEqual（深度大于等于当前缓存则通过）<br />
+ZTest Equal（深度等于当前缓存则通过）<br />
+ZTest NotEqual（深度不等于当前缓存则通过）<br />
+ZTest Always（不论如何都通过）<br />
+注意，ZTest Off 等同于 ZTest Always，关闭深度测试等于完全通过。<br />
 </p>
 
 <p>
-ZWrite On（开启深度写入）<br  />
-ZWrite Off（关闭深度写入）<br  />
+ZWrite On（开启深度写入）<br />
+ZWrite Off（关闭深度写入）<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline33" class="outline-6">
-<h6 id="orgheadline33">Blend</h6>
-<div class="outline-text-6" id="text-orgheadline33">
+<div id="outline-container-org1ca45be" class="outline-6">
+<h6 id="org1ca45be">Blend</h6>
+<div class="outline-text-6" id="text-org1ca45be">
 <p>
-Blend Off 关闭混合（默认）<br  />
+Blend Off 关闭混合（默认）<br />
 </p>
 </div>
-<ul class="org-ul"><li><a id="orgheadline34"></a>参考资料<br  /><div class="outline-text-7" id="text-orgheadline34">
 <ul class="org-ul">
-<li><a href="https://docs.unity3d.com/Manual/SL-Blend.html">https://docs.unity3d.com/Manual/SL-Blend.html</a><br  /></li>
-<li><a href="https://blog.csdn.net/ecidevilin/article/details/52864349">https://blog.csdn.net/ecidevilin/article/details/52864349</a><br  /></li>
+<li><a id="org0a74bf8"></a>参考资料<br />
+<div class="outline-text-7" id="text-org0a74bf8">
+<ul class="org-ul">
+<li><a href="https://docs.unity3d.com/Manual/SL-Blend.html">https://docs.unity3d.com/Manual/SL-Blend.html</a><br /></li>
+<li><a href="https://blog.csdn.net/ecidevilin/article/details/52864349">https://blog.csdn.net/ecidevilin/article/details/52864349</a><br /></li>
 </ul>
-</div></li></ul>
+</div>
+</li>
+</ul>
 </div>
 </div>
 </div>
 </div>
 
-<div id="outline-container-orgheadline38" class="outline-3">
-<h3 id="orgheadline38">贴图</h3>
-<div class="outline-text-3" id="text-orgheadline38">
-</div><div id="outline-container-orgheadline36" class="outline-4">
-<h4 id="orgheadline36">贴图过滤模式</h4>
-<div class="outline-text-4" id="text-orgheadline36">
+<div id="outline-container-orgb30f052" class="outline-3">
+<h3 id="orgb30f052">贴图</h3>
+<div class="outline-text-3" id="text-orgb30f052">
+</div>
+<div id="outline-container-org93f02f8" class="outline-4">
+<h4 id="org93f02f8">贴图过滤模式</h4>
+<div class="outline-text-4" id="text-org93f02f8">
 <ol class="org-ol">
-<li>Bilinear 对于大多数应用，双线性过滤可以耗费不大，而且可以有效平滑贴图。<br  /></li>
-<li>Point    如果你在构建一个 2D 游戏，双线性过滤可能会导致模糊。这种情况下，你可以使用 Point 指定无过滤。<br  /></li>
+<li>Bilinear 对于大多数应用，双线性过滤可以耗费不大，而且可以有效平滑贴图。<br /></li>
+<li>Point    如果你在构建一个 2D 游戏，双线性过滤可能会导致模糊。这种情况下，你可以使用 Point 指定无过滤。<br /></li>
 </ol>
 </div>
 </div>
-<div id="outline-container-orgheadline37" class="outline-4">
-<h4 id="orgheadline37">Aniso Level</h4>
-<div class="outline-text-4" id="text-orgheadline37">
+<div id="outline-container-org824ae62" class="outline-4">
+<h4 id="org824ae62">Aniso Level</h4>
+<div class="outline-text-4" id="text-org824ae62">
 <p>
-当从一个很陡峭的角度看贴图，贴图采样很可能会产生锯齿。你可以将 AnisoLevel 设置的更高来减低锯齿。这通常对于地面和屋顶贴图很有效。<br  />
+当从一个很陡峭的角度看贴图，贴图采样很可能会产生锯齿。你可以将 AnisoLevel 设置的更高来减低锯齿。这通常对于地面和屋顶贴图很有效。<br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline39" class="outline-3">
-<h3 id="orgheadline39">Unity  Camera 渲染场景的流程</h3>
-<div class="outline-text-3" id="text-orgheadline39">
+<div id="outline-container-org4b2d5ca" class="outline-3">
+<h3 id="org4b2d5ca">Unity  Camera 渲染场景的流程</h3>
+<div class="outline-text-3" id="text-org4b2d5ca">
 <p>
-<a href="https://docs.unity3d.com/Manual/GraphicsCommandBuffers.html">https://docs.unity3d.com/Manual/GraphicsCommandBuffers.html</a><br  />
+<a href="https://docs.unity3d.com/Manual/GraphicsCommandBuffers.html">https://docs.unity3d.com/Manual/GraphicsCommandBuffers.html</a><br />
 </p>
 
 
 <div class="figure">
-<p><img src="./UnityShaderAndEffectCookbook/001_CameraRender.jpg" alt="001_CameraRender.jpg" /><br  />
+<p><img src="./UnityShaderAndEffectCookbook/001_CameraRender.jpg" alt="001_CameraRender.jpg" /><br />
 </p>
 </div>
 <ul class="org-ul">
-<li>参考资料<br  />
+<li>参考资料<br />
 <ul class="org-ul">
-<li><a href="https://docs.unity3d.com/Manual/SL-CullAndDepth.html">https://docs.unity3d.com/Manual/SL-CullAndDepth.html</a><br  /></li>
+<li><a href="https://docs.unity3d.com/Manual/SL-CullAndDepth.html">https://docs.unity3d.com/Manual/SL-CullAndDepth.html</a><br /></li>
 </ul></li>
 </ul>
 </div>
 </div>
-<div id="outline-container-orgheadline40" class="outline-3">
-<h3 id="orgheadline40">Unity's Rendering Pipline</h3>
-<div class="outline-text-3" id="text-orgheadline40">
+<div id="outline-container-org9f44c6c" class="outline-3">
+<h3 id="org9f44c6c">Unity's Rendering Pipline</h3>
+<div class="outline-text-3" id="text-org9f44c6c">
 <p>
-Shaders 定义了一个物体看起来是怎样的，以及这个物体如何和光照交互。因为光照计算必须在 shader 中进行，并且可能有很多种类型的光照和阴影，所以编写高质量的可用的 shaders 将是一个复杂的任务。为了让这项工作变的简单，Unity 提供了 Surface Shaders，其中所有的光照、阴影、光照贴图，正向渲染、延迟渲染等事情都被自动化管理。<br  />
+Shaders 定义了一个物体看起来是怎样的，以及这个物体如何和光照交互。因为光照计算必须在 shader 中进行，并且可能有很多种类型的光照和阴影，所以编写高质量的可用的 shaders 将是一个复杂的任务。为了让这项工作变的简单，Unity 提供了 Surface Shaders，其中所有的光照、阴影、光照贴图，正向渲染、延迟渲染等事情都被自动化管理。<br />
 </p>
 <pre class="example">
 本小结内容翻译自 Unity 官方文档：
@@ -1245,11 +1278,11 @@ RenderTech-ForwardRendering.html
 RenderTech-DeferredShading.html
 </pre>
 </div>
-<div id="outline-container-orgheadline41" class="outline-4">
-<h4 id="orgheadline41">Rendering Path</h4>
-<div class="outline-text-4" id="text-orgheadline41">
+<div id="outline-container-orga4ee20b" class="outline-4">
+<h4 id="orga4ee20b">Rendering Path</h4>
+<div class="outline-text-4" id="text-orga4ee20b">
 <p>
-光照是如何被应用以及 shader 的哪些 Passes 被使用都依赖于使用了哪种 Rendering Path. shader 中的每个 Pass 通过 Pass Tags 来传达它的光照类型。<br  />
+光照是如何被应用以及 shader 的哪些 Passes 被使用都依赖于使用了哪种 Rendering Path. shader 中的每个 Pass 通过 Pass Tags 来传达它的光照类型。<br />
 </p>
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
@@ -1288,159 +1321,163 @@ RenderTech-DeferredShading.html
 </tbody>
 </table>
 <p>
-上面的任何 Rendering Path，用来渲染 Shadows 或深度贴图时，ShadowCaster Pass 会被用到。<br  />
+上面的任何 Rendering Path，用来渲染 Shadows 或深度贴图时，ShadowCaster Pass 会被用到。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline42" class="outline-4">
-<h4 id="orgheadline42">Forward Rendering path</h4>
-<div class="outline-text-4" id="text-orgheadline42">
+<div id="outline-container-org34e118e" class="outline-4">
+<h4 id="org34e118e">Forward Rendering path</h4>
+<div class="outline-text-4" id="text-org34e118e">
 <p>
-ForwardBase pass 用于一次性渲染环境光，光照贴图，主要的定向光以及不重要的光照(Spherical Harmonics)。<br  />
+ForwardBase pass 用于一次性渲染环境光，光照贴图，主要的定向光以及不重要的光照(Spherical Harmonics)。<br />
 </p>
 
 <p>
-ForwardAdd pass 用于任何附加的基于像素的光照。被该光照照明的每个物体都会调用一次该 Pass。<br  />
+ForwardAdd pass 用于任何附加的基于像素的光照。被该光照照明的每个物体都会调用一次该 Pass。<br />
 </p>
 
 <p>
-如果 Forward Rendering 被使用，但是 shader 中没有合适的 Passes（没有 ForwardBase 或 ForwardAdd 存在），则物体会被按照 Vertex Lit path 的方式渲染。<br  />
+如果 Forward Rendering 被使用，但是 shader 中没有合适的 Passes（没有 ForwardBase 或 ForwardAdd 存在），则物体会被按照 Vertex Lit path 的方式渲染。<br />
 </p>
 </div>
-<div id="outline-container-orgheadline43" class="outline-5">
-<h5 id="orgheadline43">Forward Rendering Detail</h5>
-<div class="outline-text-5" id="text-orgheadline43">
+<div id="outline-container-org3158cf5" class="outline-5">
+<h5 id="org3158cf5">Forward Rendering Detail</h5>
+<div class="outline-text-5" id="text-org3158cf5">
 <p>
-依据光照对物体的影响，Forward Rendering path 使用一个或多个 Pass 来渲染这个物体。依据每个光照的不同设置和亮度，Forward Rendering 会对光照有不同的处理。<br  />
+依据光照对物体的影响，Forward Rendering path 使用一个或多个 Pass 来渲染这个物体。依据每个光照的不同设置和亮度，Forward Rendering 会对光照有不同的处理。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline44" class="outline-5">
-<h5 id="orgheadline44">Implementation Detail</h5>
-<div class="outline-text-5" id="text-orgheadline44">
+<div id="outline-container-org597823b" class="outline-5">
+<h5 id="org597823b">Implementation Detail</h5>
+<div class="outline-text-5" id="text-org597823b">
 <p>
-在正向渲染中，一些影响到每个物体的最亮的光照会基于每个像素来计算。然后，最多有 4 个点光照被基于每个顶点来计算。剩余的光照按照 Spherical Harmonics 方式来计算，该方法速度比较快，但是只是一种近似计算。<br  />
-</p>
-
-<p>
-一个光照是否会被基于每个像素来计算依赖于下面几点：<br  />
-1 光照的 RenderMode 属性被设置为 Not Important 将使用 per-vertex 或 SH 方式计算。<br  />
-2 最亮的方向光总是使用 per-pixel 方式来计算的。<br  />
-3 光照的 RenderMode 属性被设置为 Important 将使用 per-pixel 方式计算。<br  />
-4 按照上面的方式，使用 per-pixel 方式计算的光照数目少于 QualitySetting 中 current Pixel Light Count 所设置的数量时，更多的光照会使用 per-pixel 方式来计算,从而减低明亮度。(光照是按照距离的平方衰减的，而顶点光照是线性插值，所以 per-vertex 会更亮)<br  />
+在正向渲染中，一些影响到每个物体的最亮的光照会基于每个像素来计算。然后，最多有 4 个点光照被基于每个顶点来计算。剩余的光照按照 Spherical Harmonics 方式来计算，该方法速度比较快，但是只是一种近似计算。<br />
 </p>
 
 <p>
-Tips:<br  />
-per-vertex 就是光照计算在顶点着色器中进行。<br  />
-per-pixel 就是光照计算在片段着色器中进行。<br  />
-SH 方式其实是计算光照的一种方法，这种计算方法是在顶点着色器中进行的。<br  />
+一个光照是否会被基于每个像素来计算依赖于下面几点：<br />
+1 光照的 RenderMode 属性被设置为 Not Important 将使用 per-vertex 或 SH 方式计算。<br />
+2 最亮的方向光总是使用 per-pixel 方式来计算的。<br />
+3 光照的 RenderMode 属性被设置为 Important 将使用 per-pixel 方式计算。<br />
+4 按照上面的方式，使用 per-pixel 方式计算的光照数目少于 QualitySetting 中 current Pixel Light Count 所设置的数量时，更多的光照会使用 per-pixel 方式来计算,从而减低明亮度。(光照是按照距离的平方衰减的，而顶点光照是线性插值，所以 per-vertex 会更亮)<br />
 </p>
 
 <p>
-使用 Forward Rendering 时，Unity 中的渲染处理在下面的 Passes 中进行：<br  />
-Base Pass 应用于 per-pixel 方式的方向光照 和 所有 per-vertex/Spherical Harmonics 方式的光照。<br  />
-其他的 per-pixel 方式的光照在附加的 Passes 中进行渲染，一个 Pass 对应每个光照。<br  />
+Tips:<br />
+per-vertex 就是光照计算在顶点着色器中进行。<br />
+per-pixel 就是光照计算在片段着色器中进行。<br />
+SH 方式其实是计算光照的一种方法，这种计算方法是在顶点着色器中进行的。<br />
 </p>
 
 <p>
-例如，如果有一个物体被很多个光照所影响（下图 1 中的一个圆圈，被 A 到 H 个光照影响）：<br  />
-我们假设光照 A 到 H 有相同的颜色和亮度，并且它们都设置 RenderMode 为 Auto。最亮的光将会使用 per-pixel 方式来计算（A 到 D）。<br  />
-然后，最多 4 个光源会使用 per-vertex 方式来计算（D 到 G），最后剩余的光照使用 SH 方式来计算(G 到 H)。<br  />
-如下图 2 所示，光照分组会有重叠。最后的使用 per-pixel 方式计算的光照会和使用 per-vertex 方式计算的结果混合，这样可以在物体运动或光照移动时减少“light popping”。<br  />
-<img src="UnityShaderAndEffectCookbook/1ForwardLightsExample.png" alt="1ForwardLightsExample.png" /><br  />
-<img src="UnityShaderAndEffectCookbook/2ForwardLightsClassify.png" alt="2ForwardLightsClassify.png" /><br  />
-</p>
-</div>
-<div id="outline-container-orgheadline45" class="outline-6">
-<h6 id="orgheadline45">Base Pass</h6>
-<div class="outline-text-6" id="text-orgheadline45">
-<p>
-Base pass 使用一个 per-pixel 方式计算的方向光照和所有的 SH 方式计算的光照渲染物体。这个阶段也会添加任何光照贴图，环境光<br  />
-和发射光到 shader 中。该 Pass 中的方向光可以有阴影。注意光照贴图的物体不会从 SH 方式计算的光照中获得照明。<br  />
-</p>
-</div>
-</div>
-<div id="outline-container-orgheadline46" class="outline-6">
-<h6 id="orgheadline46">Additional Passes</h6>
-<div class="outline-text-6" id="text-orgheadline46">
-<p>
-Additional Passes 用来渲染影响到物体的每个额外的 per-pixel 方式计算的光照。在该 Pass 计算的光照不能有阴影效果。<br  />
-（所以 Forward Rendering 只支持一个方向光有阴影）<br  />
-</p>
-</div>
-</div>
-</div>
-<div id="outline-container-orgheadline47" class="outline-5">
-<h5 id="orgheadline47">Performance Considerations</h5>
-<div class="outline-text-5" id="text-orgheadline47">
-<p>
-Spherical Harmonics 方式计算的光照渲染速度非常快。他们消耗很少的 CPU 资源，并且对于 GPU 基本是无消耗的（也就是说，Base Passes 总是计算 SH 方式计算的光照，但是，基于 SH 的工作方式，无论有多少光照按照 SH 方式计算，其消耗都是一样的）。<br  />
-SH 方式计算光照的缺点有：<br  />
-</p>
-</div>
-<ul class="org-ul"><li><a id="orgheadline48"></a>SH 是基于物体顶点的，而不是基于片段的。这意味着他们不支持光照的 Cookies 或法线贴图。<br  /></li>
-<li><a id="orgheadline49"></a>SH 是非常低频率的。你不能对 SH 方式计算的光照有有尖锐的光照变换。他们只会影响漫反射光照（对于镜面光来说频率太低了）<br  /></li>
-<li><a id="orgheadline50"></a>SH 是非局部的。点光源、聚光灯使用 SH 方式计算时，若靠近某些表面时看起来会是错误的。<br  /><div class="outline-text-7" id="text-orgheadline50">
-<p>
-总的来说，SH 方式计算光照对于低动态的物体来说通常是效果很好的。<br  />
-</p>
-</div></li></ul>
-</div>
-</div>
-<div id="outline-container-orgheadline51" class="outline-4">
-<h4 id="orgheadline51">Deferred Shading path</h4>
-<div class="outline-text-4" id="text-orgheadline51">
-<p>
-Deferred Pass 用来渲染光照计算需要的所有的信息（在内置 shaders 中会渲染：diffuse color, specular color, smoothness, world space normal, emission）。它还会添加光照贴图，反射探针以及环境光照到 emission 通道。<br  />
-</p>
-</div>
-<div id="outline-container-orgheadline52" class="outline-5">
-<h5 id="orgheadline52">Overview</h5>
-<div class="outline-text-5" id="text-orgheadline52">
-<p>
-当使用延迟渲染时，对于可以影响一个物体的光照数量没有限制。所有的光照都是按照 per-pixel 方式计算的,这就意味着他们都可以正确地和法线贴图交互。另外所有的光照都可以有 cookies 和阴影。<br  />
+使用 Forward Rendering 时，Unity 中的渲染处理在下面的 Passes 中进行：<br />
+Base Pass 应用于 per-pixel 方式的方向光照 和 所有 per-vertex/Spherical Harmonics 方式的光照。<br />
+其他的 per-pixel 方式的光照在附加的 Passes 中进行渲染，一个 Pass 对应每个光照。<br />
 </p>
 
 <p>
-延迟渲染的优势是光照处理的开销和被照亮的像素数量成正比。这是由场景中的光的体积大小决定的和被照亮的物体的数目无关。所以，保持小体积的光照可以改善性能。延迟渲染还有高度的一致性和可预测性。每个光照的效果是基于每个像素计算的，所以不会有在大的三角形上的光照计算被分解。<br  />
+例如，如果有一个物体被很多个光照所影响（下图 1 中的一个圆圈，被 A 到 H 个光照影响）：<br />
+我们假设光照 A 到 H 有相同的颜色和亮度，并且它们都设置 RenderMode 为 Auto。最亮的光将会使用 per-pixel 方式来计算（A 到 D）。<br />
+然后，最多 4 个光源会使用 per-vertex 方式来计算（D 到 G），最后剩余的光照使用 SH 方式来计算(G 到 H)。<br />
+如下图 2 所示，光照分组会有重叠。最后的使用 per-pixel 方式计算的光照会和使用 per-vertex 方式计算的结果混合，这样可以在物体运动或光照移动时减少“light popping”。<br />
+<img src="UnityShaderAndEffectCookbook/1ForwardLightsExample.png" alt="1ForwardLightsExample.png" /><br />
+<img src="UnityShaderAndEffectCookbook/2ForwardLightsClassify.png" alt="2ForwardLightsClassify.png" /><br />
+</p>
+</div>
+<div id="outline-container-org08ab32d" class="outline-6">
+<h6 id="org08ab32d">Base Pass</h6>
+<div class="outline-text-6" id="text-org08ab32d">
+<p>
+Base pass 使用一个 per-pixel 方式计算的方向光照和所有的 SH 方式计算的光照渲染物体。这个阶段也会添加任何光照贴图，环境光<br />
+和发射光到 shader 中。该 Pass 中的方向光可以有阴影。注意光照贴图的物体不会从 SH 方式计算的光照中获得照明。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgda7a1bf" class="outline-6">
+<h6 id="orgda7a1bf">Additional Passes</h6>
+<div class="outline-text-6" id="text-orgda7a1bf">
+<p>
+Additional Passes 用来渲染影响到物体的每个额外的 per-pixel 方式计算的光照。在该 Pass 计算的光照不能有阴影效果。<br />
+（所以 Forward Rendering 只支持一个方向光有阴影）<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org874ef8d" class="outline-5">
+<h5 id="org874ef8d">Performance Considerations</h5>
+<div class="outline-text-5" id="text-org874ef8d">
+<p>
+Spherical Harmonics 方式计算的光照渲染速度非常快。他们消耗很少的 CPU 资源，并且对于 GPU 基本是无消耗的（也就是说，Base Passes 总是计算 SH 方式计算的光照，但是，基于 SH 的工作方式，无论有多少光照按照 SH 方式计算，其消耗都是一样的）。<br />
+SH 方式计算光照的缺点有：<br />
+</p>
+</div>
+<ul class="org-ul">
+<li><a id="org8212c1b"></a>SH 是基于物体顶点的，而不是基于片段的。这意味着他们不支持光照的 Cookies 或法线贴图。<br /></li>
+<li><a id="org981a470"></a>SH 是非常低频率的。你不能对 SH 方式计算的光照有有尖锐的光照变换。他们只会影响漫反射光照（对于镜面光来说频率太低了）<br /></li>
+<li><a id="orge31ba57"></a>SH 是非局部的。点光源、聚光灯使用 SH 方式计算时，若靠近某些表面时看起来会是错误的。<br />
+<div class="outline-text-7" id="text-orge31ba57">
+<p>
+总的来说，SH 方式计算光照对于低动态的物体来说通常是效果很好的。<br />
+</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orge597f3b" class="outline-4">
+<h4 id="orge597f3b">Deferred Shading path</h4>
+<div class="outline-text-4" id="text-orge597f3b">
+<p>
+Deferred Pass 用来渲染光照计算需要的所有的信息（在内置 shaders 中会渲染：diffuse color, specular color, smoothness, world space normal, emission）。它还会添加光照贴图，反射探针以及环境光照到 emission 通道。<br />
+</p>
+</div>
+<div id="outline-container-org6cd946e" class="outline-5">
+<h5 id="org6cd946e">Overview</h5>
+<div class="outline-text-5" id="text-org6cd946e">
+<p>
+当使用延迟渲染时，对于可以影响一个物体的光照数量没有限制。所有的光照都是按照 per-pixel 方式计算的,这就意味着他们都可以正确地和法线贴图交互。另外所有的光照都可以有 cookies 和阴影。<br />
 </p>
 
 <p>
-延迟渲染的缺点是，对于反锯齿没有真正的支持，并且不能够处理半透明的物体（这类物体需要通过 Forward Rendering 来渲染）。不支持 Mesh Render 的 Receive Shadows 标记，对于剔除层 masks 的支持也很有限。你只能使用最多 4 个剔除 masks。也就是说，你的剔除层 mask 必须至少包含所有的层减去任意的 4 个层，所以 32 个层中的 28 个层必须被设置。否则你将会得到变花的图像。<br  />
-</p>
-</div>
-</div>
-<div id="outline-container-orgheadline53" class="outline-5">
-<h5 id="orgheadline53">Requirements</h5>
-<div class="outline-text-5" id="text-orgheadline53">
-<p>
-延迟渲染需要图形卡包含 Multiple Render Targets，Shader Model 3.0 或者更高，支持深度贴图以及双面的模板缓冲区。大多数 PC2005 年以后的显卡支持延迟渲染，包括 GeForce6 以及更高，RadeonX1300 以及更高，InterG45+以及更高。在移动设备中，由于 MRT 使用的格式延迟渲染支持很有限（一些支持多个渲染目标的 GPUs 仍然只支持很有限的位数）。<br  />
-注意：在使用正交投影时，不支持延迟渲染。如果摄像机的投影模式被设置为正交投影，这些数值将被覆盖，并且摄像机将总是使用 Forward Rendering。<br  />
-</p>
-</div>
-</div>
-<div id="outline-container-orgheadline54" class="outline-5">
-<h5 id="orgheadline54">Performance Considerations</h5>
-<div class="outline-text-5" id="text-orgheadline54">
-<p>
-在延迟渲染中渲染实时光照的开销和被照明的像素数量成比例，而和场景的复杂程度无关。所以小的点光源或聚光灯开销非常小，如果场景中的物体将它们整个或部分遮挡，渲染它们的开销将更小。<br  />
+延迟渲染的优势是光照处理的开销和被照亮的像素数量成正比。这是由场景中的光的体积大小决定的和被照亮的物体的数目无关。所以，保持小体积的光照可以改善性能。延迟渲染还有高度的一致性和可预测性。每个光照的效果是基于每个像素计算的，所以不会有在大的三角形上的光照计算被分解。<br />
 </p>
 
 <p>
-当然，带阴影的光照会比没有阴影的光照开销更大。在延迟渲染中，对于每个产生阴影的光照，产生阴影的物体仍然需要被渲染一次或多次。此外，应用阴影的光照着色器比阴影关闭的有更高的渲染开销。<br  />
+延迟渲染的缺点是，对于反锯齿没有真正的支持，并且不能够处理半透明的物体（这类物体需要通过 Forward Rendering 来渲染）。不支持 Mesh Render 的 Receive Shadows 标记，对于剔除层 masks 的支持也很有限。你只能使用最多 4 个剔除 masks。也就是说，你的剔除层 mask 必须至少包含所有的层减去任意的 4 个层，所以 32 个层中的 28 个层必须被设置。否则你将会得到变花的图像。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline55" class="outline-5">
-<h5 id="orgheadline55">Implementation Details</h5>
-<div class="outline-text-5" id="text-orgheadline55">
+<div id="outline-container-org0f58db1" class="outline-5">
+<h5 id="org0f58db1">Requirements</h5>
+<div class="outline-text-5" id="text-org0f58db1">
 <p>
-物体的不支持延迟渲染的 shaders，将在延迟渲染结束后，使用 Forward Rendering 方式来渲染。<br  />
+延迟渲染需要图形卡包含 Multiple Render Targets，Shader Model 3.0 或者更高，支持深度贴图以及双面的模板缓冲区。大多数 PC2005 年以后的显卡支持延迟渲染，包括 GeForce6 以及更高，RadeonX1300 以及更高，InterG45+以及更高。在移动设备中，由于 MRT 使用的格式延迟渲染支持很有限（一些支持多个渲染目标的 GPUs 仍然只支持很有限的位数）。<br />
+注意：在使用正交投影时，不支持延迟渲染。如果摄像机的投影模式被设置为正交投影，这些数值将被覆盖，并且摄像机将总是使用 Forward Rendering。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org934121d" class="outline-5">
+<h5 id="org934121d">Performance Considerations</h5>
+<div class="outline-text-5" id="text-org934121d">
+<p>
+在延迟渲染中渲染实时光照的开销和被照明的像素数量成比例，而和场景的复杂程度无关。所以小的点光源或聚光灯开销非常小，如果场景中的物体将它们整个或部分遮挡，渲染它们的开销将更小。<br />
 </p>
 
 <p>
-默认的 G-Buffer 按照下面方式布局：<br  />
+当然，带阴影的光照会比没有阴影的光照开销更大。在延迟渲染中，对于每个产生阴影的光照，产生阴影的物体仍然需要被渲染一次或多次。此外，应用阴影的光照着色器比阴影关闭的有更高的渲染开销。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org019b759" class="outline-5">
+<h5 id="org019b759">Implementation Details</h5>
+<div class="outline-text-5" id="text-org019b759">
+<p>
+物体的不支持延迟渲染的 shaders，将在延迟渲染结束后，使用 Forward Rendering 方式来渲染。<br />
+</p>
+
+<p>
+默认的 G-Buffer 按照下面方式布局：<br />
 </p>
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
@@ -1498,166 +1535,174 @@ Deferred Pass 用来渲染光照计算需要的所有的信息（在内置 shade
 </tbody>
 </table>
 <p>
-所以默认的 g-buffer 布局下，非高动态范围下每个像素占 160 位，高动态范围下每个像素占 192 位。<br  />
+所以默认的 g-buffer 布局下，非高动态范围下每个像素占 160 位，高动态范围下每个像素占 192 位。<br />
 </p>
 
 <p>
-当 camera 不使用 HDR 时，Emission+光照 buffer(RT3)使用了对数编码要比通常使用的 ARGB32 贴图能提供更大的动态范围。<br  />
+当 camera 不使用 HDR 时，Emission+光照 buffer(RT3)使用了对数编码要比通常使用的 ARGB32 贴图能提供更大的动态范围。<br />
 </p>
 
 <p>
-当 camera 使用 HDR 渲染时，如果没有为 Emission+lighting buffer（RT3）创建独立的渲染对象，替代的渲染目标将被用作 RT3，camera 将会渲染到替代的渲染目标中。<br  />
+当 camera 使用 HDR 渲染时，如果没有为 Emission+lighting buffer（RT3）创建独立的渲染对象，替代的渲染目标将被用作 RT3，camera 将会渲染到替代的渲染目标中。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline56" class="outline-5">
-<h5 id="orgheadline56">G-Buffer Pass</h5>
-<div class="outline-text-5" id="text-orgheadline56">
+<div id="outline-container-org65e008c" class="outline-5">
+<h5 id="org65e008c">G-Buffer Pass</h5>
+<div class="outline-text-5" id="text-org65e008c">
 <p>
-G-Buffer Pass 为每个物体渲染一次。漫反射和镜面颜色，表面平滑度，世界空间的法线，发射+环境+反射+光照贴图都被渲染到 g-buffer 贴图中。g-buffer 贴图被设置为全局的着色器属性，从而在可以被着色器在后面阶段访问(名称为 CameraGBufferTexture0 &#x2026; CameraGBufferTexture3)<br  />
+G-Buffer Pass 为每个物体渲染一次。漫反射和镜面颜色，表面平滑度，世界空间的法线，发射+环境+反射+光照贴图都被渲染到 g-buffer 贴图中。g-buffer 贴图被设置为全局的着色器属性，从而在可以被着色器在后面阶段访问(名称为 CameraGBufferTexture0 &#x2026; CameraGBufferTexture3)<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline57" class="outline-5">
-<h5 id="orgheadline57">Lighting Pass</h5>
-<div class="outline-text-5" id="text-orgheadline57">
+<div id="outline-container-orgab6f646" class="outline-5">
+<h5 id="orgab6f646">Lighting Pass</h5>
+<div class="outline-text-5" id="text-orgab6f646">
 <p>
-这个光照阶段会基于 g-buffer 和深度来计算光照。光照是在屏幕空间中计算的，所以光照花费的时间独立于场景的复杂度。光照被添加到发射缓冲区中。当对于场景的 Z buffer 测试开启时，和摄像机近平面没有相交的点光源和聚光灯会被当做 3D 形状来渲染。这使得部分或全部被遮挡的点光源或聚光灯的渲染开销很小。方向光和点光源聚光灯和近平面相交时，被当做全屏的方形面片来渲染。<br  />
+这个光照阶段会基于 g-buffer 和深度来计算光照。光照是在屏幕空间中计算的，所以光照花费的时间独立于场景的复杂度。光照被添加到发射缓冲区中。当对于场景的 Z buffer 测试开启时，和摄像机近平面没有相交的点光源和聚光灯会被当做 3D 形状来渲染。这使得部分或全部被遮挡的点光源或聚光灯的渲染开销很小。方向光和点光源聚光灯和近平面相交时，被当做全屏的方形面片来渲染。<br />
 </p>
 
 <p>
-如果一个光开启了阴影效果，他们也会在这个 Pass 中被渲染和应用。需要注意的是阴影并不是免费得来的；投影者需要被渲染并且一个更加复杂的光照着色器需要被应用。<br  />
+如果一个光开启了阴影效果，他们也会在这个 Pass 中被渲染和应用。需要注意的是阴影并不是免费得来的；投影者需要被渲染并且一个更加复杂的光照着色器需要被应用。<br />
 </p>
 
 <p>
-唯一可用的光照模型是 Standard。如果想要一个不同的模型，你可以修改光照着色器的 Pass，将修改后的 Internal-DeferredShading.shader 版本从内置的 shaders 放到你自己的 Assets/Resources 目录下。然后在 Edit-&gt;Project Settings-&gt;Graphics 窗口中，选择“Deferred”下拉列表中的"Custum Shader"。然后修改着色器的选项将会显示出你正在使用的着色器。<br  />
+唯一可用的光照模型是 Standard。如果想要一个不同的模型，你可以修改光照着色器的 Pass，将修改后的 Internal-DeferredShading.shader 版本从内置的 shaders 放到你自己的 Assets/Resources 目录下。然后在 Edit-&gt;Project Settings-&gt;Graphics 窗口中，选择“Deferred”下拉列表中的"Custum Shader"。然后修改着色器的选项将会显示出你正在使用的着色器。<br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline58" class="outline-4">
-<h4 id="orgheadline58">Legacy Deferred Lighting path</h4>
-<div class="outline-text-4" id="text-orgheadline58">
+<div id="outline-container-org50f8729" class="outline-4">
+<h4 id="org50f8729">Legacy Deferred Lighting path</h4>
+<div class="outline-text-4" id="text-org50f8729">
 <p>
-官方都要遗弃了，就不用了解了。<br  />
+官方都要遗弃了，就不用了解了。<br />
 </p>
 
 <p>
-PrepassBase pass 渲染法线和镜面指数；<br  />
+PrepassBase pass 渲染法线和镜面指数；<br />
 </p>
 
 <p>
-PrepassFinal pass 将贴图、光照和发射材质属性组合起来渲染最终的颜色。所有的正式的光照被分开在屏幕空间中计算。<br  />
+PrepassFinal pass 将贴图、光照和发射材质属性组合起来渲染最终的颜色。所有的正式的光照被分开在屏幕空间中计算。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline59" class="outline-4">
-<h4 id="orgheadline59">Legacy Vertex Lit Rendering path</h4>
-<div class="outline-text-4" id="text-orgheadline59">
+<div id="outline-container-org3ba7d86" class="outline-4">
+<h4 id="org3ba7d86">Legacy Vertex Lit Rendering path</h4>
+<div class="outline-text-4" id="text-org3ba7d86">
 <p>
-因为顶点光照通常在不支持可编程渲染的平台上，Unity 无法创建多个 shader 变量来处理有光照贴图和没光照贴图的情况。所以为了处理有光照贴图和无光照贴图的物体，必须显式地写多个 Pass。<br  />
+因为顶点光照通常在不支持可编程渲染的平台上，Unity 无法创建多个 shader 变量来处理有光照贴图和没光照贴图的情况。所以为了处理有光照贴图和无光照贴图的物体，必须显式地写多个 Pass。<br />
 </p>
 
 <p>
-Vertex Pass 用于无光照贴图的物体。使用 Blinn-Phong 光照模型对所有的光照一次进行渲染。<br  />
+Vertex Pass 用于无光照贴图的物体。使用 Blinn-Phong 光照模型对所有的光照一次进行渲染。<br />
 </p>
 
 <p>
-VertexLMRGBM Pass 用于有光照贴图的物体，光照贴图按照 RGBM 编码（PC 和 consoles 平台）。没有实时的光照被应用，Pass 只是组合了贴图和光照贴图。<br  />
+VertexLMRGBM Pass 用于有光照贴图的物体，光照贴图按照 RGBM 编码（PC 和 consoles 平台）。没有实时的光照被应用，Pass 只是组合了贴图和光照贴图。<br />
 </p>
 
 <p>
-VertexLMM Pass 用于有光照贴图的物体，光照贴图按照 double-LDR 编码（mobile 平台）。没有实时的光照被应用，Pass 只是组合了贴图和光照贴图。<br  />
+VertexLMM Pass 用于有光照贴图的物体，光照贴图按照 double-LDR 编码（mobile 平台）。没有实时的光照被应用，Pass 只是组合了贴图和光照贴图。<br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline60" class="outline-3">
-<h3 id="orgheadline60">RenderQueue And z-depth</h3>
-<div class="outline-text-3" id="text-orgheadline60">
+<div id="outline-container-org266f95d" class="outline-3">
+<h3 id="org266f95d">RenderQueue And z-depth</h3>
+<div class="outline-text-3" id="text-org266f95d">
 <p>
-RenderQueue 是用来控制渲染顺序的。系统内置了下面的渲染队列 Background(1000) Geometry(2000) AlphaTest(2450) Transparent(3000) Overlay(4000)。索引值小的队列先渲染。<br  />
-z-depth 是表示被渲染的片段离摄像机的距离。渲染的时候会依据深度测试函数来比较此时被渲染的片段的 z-depth 值和当前 z-buffer 中的 z-depth 值，测试通过以后，该片段的颜色才会被写入。<br  />
+RenderQueue 是用来控制渲染顺序的。系统内置了下面的渲染队列 Background(1000) Geometry(2000) AlphaTest(2450) Transparent(3000) Overlay(4000)。索引值小的队列先渲染。<br />
+z-depth 是表示被渲染的片段离摄像机的距离。渲染的时候会依据深度测试函数来比较此时被渲染的片段的 z-depth 值和当前 z-buffer 中的 z-depth 值，测试通过以后，该片段的颜色才会被写入。<br />
 </p>
 </div>
 
-<div id="outline-container-orgheadline61" class="outline-4">
-<h4 id="orgheadline61">shader 中 RenderQueue 设置</h4>
-<div class="outline-text-4" id="text-orgheadline61">
+<div id="outline-container-orgbb9b1ef" class="outline-4">
+<h4 id="orgbb9b1ef">shader 中 RenderQueue 设置</h4>
+<div class="outline-text-4" id="text-orgbb9b1ef">
 <div class="org-src-container">
-
 <pre class="src src-shader"><span style="color: #4f97d7;">{</span> <span style="color: #2d9574;">"Queue"</span> = <span style="color: #2d9574;">"Geometry+1"</span> <span style="color: #4f97d7;">}</span>
 </pre>
 </div>
 
 <ul class="org-ul">
-<li>参考资料 <a href="https://blog.csdn.net/u014794120/article/details/50989491">https://blog.csdn.net/u014794120/article/details/50989491</a><br  /></li>
+<li>参考资料 <a href="https://blog.csdn.net/u014794120/article/details/50989491">https://blog.csdn.net/u014794120/article/details/50989491</a><br /></li>
 </ul>
 </div>
 </div>
 </div>
 
-<div id="outline-container-orgheadline72" class="outline-3">
-<h3 id="orgheadline72">Misc</h3>
-<div class="outline-text-3" id="text-orgheadline72">
-</div><div id="outline-container-orgheadline68" class="outline-4">
-<h4 id="orgheadline68">Shader Variants</h4>
-<div class="outline-text-4" id="text-orgheadline68">
-</div><div id="outline-container-orgheadline62" class="outline-5">
-<h5 id="orgheadline62">移除不使用的变体</h5>
-<div class="outline-text-5" id="text-orgheadline62">
-<div class="org-src-container">
+<div id="outline-container-orgf236073" class="outline-3">
+<h3 id="orgf236073">Misc</h3>
+<div class="outline-text-3" id="text-orgf236073">
+</div>
+<div id="outline-container-org4a5c5bb" class="outline-4">
+<h4 id="org4a5c5bb">Shader Variants</h4>
+<div class="outline-text-4" id="text-org4a5c5bb">
+</div>
+<div id="outline-container-orgd47a4f1" class="outline-5">
+<h5 id="orgd47a4f1">Inspector 查看当前开启的变体</h5>
+<div class="outline-text-5" id="text-orgd47a4f1">
+<p>
+Inspector 切换到 Debug 模式后，可以查看和编辑当前开启的变体<br />
+<img src="./UnityShaderAndEffectCookbook/20_01_08_matInspectorDebug.png" alt="20_01_08_matInspectorDebug.png" /><br />
+</p>
+</div>
+</div>
 
-<pre class="src src-csharp"><span style="color: #bc6ec5;">#pragma</span> <span style="color: #2aa1ae; background-color: #292e34;">multi_compile_fwdadd</span>
+<div id="outline-container-org05fb30d" class="outline-5">
+<h5 id="org05fb30d">移除不使用的变体</h5>
+<div class="outline-text-5" id="text-org05fb30d">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #bc6ec5;">#pragma</span><span style="color: #2d9574;"> multi_compile_fwdadd</span>
 <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">will make all variants containing</span>
 <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">"POINT" or "POINT_COOKIE" be skipped</span>
-<span style="color: #bc6ec5;">#pragma</span> <span style="color: #2aa1ae; background-color: #292e34;">skip_variants POINT POINT_COOKIE</span>
+<span style="color: #bc6ec5;">#pragma</span><span style="color: #2d9574;"> skip_variants POINT POINT_COOKIE</span>
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline65" class="outline-5">
-<h5 id="orgheadline65">强制使用某个变体</h5>
-<div class="outline-text-5" id="text-orgheadline65">
-</div><div id="outline-container-orgheadline63" class="outline-6">
-<h6 id="orgheadline63">方案 1</h6>
-<div class="outline-text-6" id="text-orgheadline63">
+<div id="outline-container-orgaf0069a" class="outline-5">
+<h5 id="orgaf0069a">强制使用某个变体</h5>
+<div class="outline-text-5" id="text-orgaf0069a">
+</div>
+<div id="outline-container-org59328dd" class="outline-6">
+<h6 id="org59328dd">方案 1</h6>
+<div class="outline-text-6" id="text-org59328dd">
 <div class="org-src-container">
-
 <pre class="src src-csharp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Will set "_TINT_ON" shader keyword when set.</span>
 <span style="color: #4f97d7;">[</span>Toggle<span style="color: #bc6ec5;">(</span>_TINT_ON<span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">]</span> _Tint<span style="color: #4f97d7;">(</span><span style="color: #2d9574;">"Tint"</span>, Float<span style="color: #4f97d7;">)</span> = <span style="color: #a45bad;">1</span>  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">1 &#34920;&#31034;&#24320;&#21551;&#20851;&#38190;&#23383; _TINT_ON</span>
 
 <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">......</span>
-<span style="color: #bc6ec5;">#pragma</span> <span style="color: #2aa1ae; background-color: #292e34;">multi_compile __ _TINT_ON</span>
+<span style="color: #bc6ec5;">#pragma</span><span style="color: #2d9574;"> multi_compile __ _TINT_ON</span>
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline64" class="outline-6">
-<h6 id="orgheadline64">方案 2</h6>
-<div class="outline-text-6" id="text-orgheadline64">
+<div id="outline-container-org896cdf0" class="outline-6">
+<h6 id="org896cdf0">方案 2</h6>
+<div class="outline-text-6" id="text-org896cdf0">
 <div class="org-src-container">
-
-<pre class="src src-csharp"><span style="color: #bc6ec5;">#pragma</span> <span style="color: #2aa1ae; background-color: #292e34;">multi_compile __ USE_RED</span>
+<pre class="src src-csharp"><span style="color: #bc6ec5;">#pragma</span><span style="color: #2d9574;"> multi_compile __ USE_RED</span>
 <span style="color: #bc6ec5;">#define</span> <span style="color: #7590db;">USE_RED</span> <span style="color: #a45bad;">1</span>
 </pre>
 </div>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline66" class="outline-5">
-<h5 id="orgheadline66">变体动态开关控制</h5>
-<div class="outline-text-5" id="text-orgheadline66">
+<div id="outline-container-orgd59e871" class="outline-5">
+<h5 id="orgd59e871">运行时变体动态开关控制</h5>
+<div class="outline-text-5" id="text-orgd59e871">
 <ul class="org-ul">
-<li>任意通过下面一种都可以开启关键字:<br  />
-Shader.EnableKeyword("USE_RED");<br  />
-Materials.EnableKeyword("USE_RED");<br  /></li>
-<li>只要有一种方式开启了关键字，另一种方式无论开启还是关闭关键字，关键字都开启<br  /></li>
+<li>任意通过下面一种都可以开启关键字:<br />
+Shader.EnableKeyword("USE_RED");<br />
+Materials.EnableKeyword("USE_RED");<br /></li>
+<li>只要有一种方式开启了关键字，另一种方式无论开启还是关闭关键字，关键字都开启<br /></li>
 </ul>
 <div class="org-src-container">
-
 <pre class="src src-csharp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">shader &#20013;&#23450;&#20041;&#30340;&#23439;&#24320;&#20851;</span>
-<span style="color: #bc6ec5;">#pragma</span> <span style="color: #2aa1ae; background-color: #292e34;">multi_compile __ USE_RED</span>
+<span style="color: #bc6ec5;">#pragma</span><span style="color: #2d9574;"> multi_compile __ USE_RED</span>
 
 <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">csharp &#20013;&#25511;&#21046;&#25511;&#24320;&#20851;&#30340;&#20195;&#30721;</span>
 <span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #a45bad;">System.Collections</span>;
@@ -1674,44 +1719,44 @@ Materials.EnableKeyword("USE_RED");<br  /></li>
         <span style="color: #4f97d7; font-weight: bold;">switch</span><span style="color: #2d9574;">(</span>caseNO<span style="color: #2d9574;">)</span>
         <span style="color: #2d9574;">{</span>
             <span style="color: #4f97d7; font-weight: bold;">case</span> <span style="color: #a45bad;">1</span>:
-                Shader.EnableKeyword<span style="color: #67b11d;">(</span><span style="color: #2d9574;">"USE_RED"</span><span style="color: #67b11d;">)</span>;
+                Shader.<span style="color: #bc6ec5; font-weight: bold;">EnableKeyword</span><span style="color: #67b11d;">(</span><span style="color: #2d9574;">"USE_RED"</span><span style="color: #67b11d;">)</span>;
                 <span style="color: #4f97d7; font-weight: bold;">if</span><span style="color: #67b11d;">(</span>mRenderer!=<span style="color: #a45bad;">null</span><span style="color: #67b11d;">)</span>
                 <span style="color: #67b11d;">{</span>
-                    mRenderer.sharedMaterial.DisableKeyword<span style="color: #b1951d;">(</span><span style="color: #2d9574;">"USE_RED"</span><span style="color: #b1951d;">)</span>;
+                    mRenderer.sharedMaterial.<span style="color: #bc6ec5; font-weight: bold;">DisableKeyword</span><span style="color: #b1951d;">(</span><span style="color: #2d9574;">"USE_RED"</span><span style="color: #b1951d;">)</span>;
                 <span style="color: #67b11d;">}</span>
                 <span style="color: #4f97d7; font-weight: bold;">break</span>;
             <span style="color: #4f97d7; font-weight: bold;">case</span> <span style="color: #a45bad;">2</span>:
-                Shader.DisableKeyword<span style="color: #67b11d;">(</span><span style="color: #2d9574;">"USE_RED"</span><span style="color: #67b11d;">)</span>;
+                Shader.<span style="color: #bc6ec5; font-weight: bold;">DisableKeyword</span><span style="color: #67b11d;">(</span><span style="color: #2d9574;">"USE_RED"</span><span style="color: #67b11d;">)</span>;
                 <span style="color: #4f97d7; font-weight: bold;">if</span><span style="color: #67b11d;">(</span>mRenderer!=<span style="color: #a45bad;">null</span><span style="color: #67b11d;">)</span>
                 <span style="color: #67b11d;">{</span>
-                    mRenderer.sharedMaterial.EnableKeyword<span style="color: #b1951d;">(</span><span style="color: #2d9574;">"USE_RED"</span><span style="color: #b1951d;">)</span>;
+                    mRenderer.sharedMaterial.<span style="color: #bc6ec5; font-weight: bold;">EnableKeyword</span><span style="color: #b1951d;">(</span><span style="color: #2d9574;">"USE_RED"</span><span style="color: #b1951d;">)</span>;
                 <span style="color: #67b11d;">}</span>
                 <span style="color: #4f97d7; font-weight: bold;">break</span>;
             <span style="color: #4f97d7; font-weight: bold;">case</span> <span style="color: #a45bad;">3</span>:
                 <span style="color: #4f97d7; font-weight: bold;">if</span><span style="color: #67b11d;">(</span>mRenderer!=<span style="color: #a45bad;">null</span><span style="color: #67b11d;">)</span>
                 <span style="color: #67b11d;">{</span>
-                    mRenderer.sharedMaterial.DisableKeyword<span style="color: #b1951d;">(</span><span style="color: #2d9574;">"USE_RED"</span><span style="color: #b1951d;">)</span>;
+                    mRenderer.sharedMaterial.<span style="color: #bc6ec5; font-weight: bold;">DisableKeyword</span><span style="color: #b1951d;">(</span><span style="color: #2d9574;">"USE_RED"</span><span style="color: #b1951d;">)</span>;
                 <span style="color: #67b11d;">}</span>
-                Shader.EnableKeyword<span style="color: #67b11d;">(</span><span style="color: #2d9574;">"USE_RED"</span><span style="color: #67b11d;">)</span>;
+                Shader.<span style="color: #bc6ec5; font-weight: bold;">EnableKeyword</span><span style="color: #67b11d;">(</span><span style="color: #2d9574;">"USE_RED"</span><span style="color: #67b11d;">)</span>;
                 <span style="color: #4f97d7; font-weight: bold;">break</span>;
             <span style="color: #4f97d7; font-weight: bold;">case</span> <span style="color: #a45bad;">4</span>:
                 <span style="color: #4f97d7; font-weight: bold;">if</span><span style="color: #67b11d;">(</span>mRenderer!=<span style="color: #a45bad;">null</span><span style="color: #67b11d;">)</span>
                 <span style="color: #67b11d;">{</span>
-                    mRenderer.sharedMaterial.EnableKeyword<span style="color: #b1951d;">(</span><span style="color: #2d9574;">"USE_RED"</span><span style="color: #b1951d;">)</span>;
+                    mRenderer.sharedMaterial.<span style="color: #bc6ec5; font-weight: bold;">EnableKeyword</span><span style="color: #b1951d;">(</span><span style="color: #2d9574;">"USE_RED"</span><span style="color: #b1951d;">)</span>;
                 <span style="color: #67b11d;">}</span>
-                Shader.DisableKeyword<span style="color: #67b11d;">(</span><span style="color: #2d9574;">"USE_RED"</span><span style="color: #67b11d;">)</span>;
+                Shader.<span style="color: #bc6ec5; font-weight: bold;">DisableKeyword</span><span style="color: #67b11d;">(</span><span style="color: #2d9574;">"USE_RED"</span><span style="color: #67b11d;">)</span>;
                 <span style="color: #4f97d7; font-weight: bold;">break</span>;
             <span style="color: #4f97d7; font-weight: bold;">case</span> <span style="color: #a45bad;">5</span>:
                 <span style="color: #4f97d7; font-weight: bold;">if</span><span style="color: #67b11d;">(</span>mRenderer!=<span style="color: #a45bad;">null</span><span style="color: #67b11d;">)</span>
                 <span style="color: #67b11d;">{</span>
-                    mRenderer.sharedMaterial.DisableKeyword<span style="color: #b1951d;">(</span><span style="color: #2d9574;">"USE_RED"</span><span style="color: #b1951d;">)</span>;
+                    mRenderer.sharedMaterial.<span style="color: #bc6ec5; font-weight: bold;">DisableKeyword</span><span style="color: #b1951d;">(</span><span style="color: #2d9574;">"USE_RED"</span><span style="color: #b1951d;">)</span>;
                 <span style="color: #67b11d;">}</span>
                 <span style="color: #4f97d7; font-weight: bold;">break</span>;
             <span style="color: #4f97d7; font-weight: bold;">case</span> <span style="color: #a45bad;">6</span>:
-                Shader.DisableKeyword<span style="color: #67b11d;">(</span><span style="color: #2d9574;">"USE_RED"</span><span style="color: #67b11d;">)</span>;
+                Shader.<span style="color: #bc6ec5; font-weight: bold;">DisableKeyword</span><span style="color: #67b11d;">(</span><span style="color: #2d9574;">"USE_RED"</span><span style="color: #67b11d;">)</span>;
                 <span style="color: #4f97d7; font-weight: bold;">break</span>;
             <span style="color: #4f97d7; font-weight: bold;">case</span> <span style="color: #a45bad;">7</span>:
-                Shader.DisableKeyword<span style="color: #67b11d;">(</span><span style="color: #2d9574;">"USE_RED"</span><span style="color: #67b11d;">)</span>;
+                Shader.<span style="color: #bc6ec5; font-weight: bold;">DisableKeyword</span><span style="color: #67b11d;">(</span><span style="color: #2d9574;">"USE_RED"</span><span style="color: #67b11d;">)</span>;
                 <span style="color: #4f97d7; font-weight: bold;">break</span>;
             <span style="color: #4f97d7; font-weight: bold;">default</span>:
                 <span style="color: #4f97d7; font-weight: bold;">break</span>;
@@ -1723,24 +1768,36 @@ Materials.EnableKeyword("USE_RED");<br  /></li>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline67" class="outline-5">
-<h5 id="orgheadline67">参考文档</h5>
-<div class="outline-text-5" id="text-orgheadline67">
+<div id="outline-container-orge09e63c" class="outline-5">
+<h5 id="orge09e63c">shader_feature 和 multi_compile 的差别</h5>
+<div class="outline-text-5" id="text-orge09e63c">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">multi_compile &#20250;&#29983;&#25104;&#25152;&#26377;&#21464;&#20307;</span>
+<span style="color: #bc6ec5;">#pragma</span><span style="color: #2d9574;"> multi_compile _ _TEST_MULTI_COMPILE</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">shader_feature &#21482;&#20250;&#29983;&#25104;&#26448;&#36136;&#20013;&#20351;&#29992;&#30340;&#21464;&#20307;&#65292;&#25152;&#20197;&#25171;&#21253;&#20986;&#26469;&#30340;App&#36816;&#34892;&#26102;&#65292;&#22914;&#26524;&#20999;&#25442;&#21464;&#20307;&#21487;&#33021;&#20250;&#23548;&#33268;&#25928;&#26524;&#20986;&#38169;&#12290;</span>
+<span style="color: #bc6ec5;">#pragma</span><span style="color: #2d9574;"> shader_feature _ _TEST_SHADER_FEATURE</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgb09ce79" class="outline-5">
+<h5 id="orgb09ce79">参考文档</h5>
+<div class="outline-text-5" id="text-orgb09ce79">
 <ul class="org-ul">
-<li><a href="https://docs.unity3d.com/Manual/SL-MultipleProgramVariants.html">https://docs.unity3d.com/Manual/SL-MultipleProgramVariants.html</a><br  /></li>
-<li><a href="https://docs.unity3d.com/ScriptReference/MaterialPropertyDrawer.html">https://docs.unity3d.com/ScriptReference/MaterialPropertyDrawer.html</a><br  /></li>
+<li><a href="https://docs.unity3d.com/Manual/SL-MultipleProgramVariants.html">https://docs.unity3d.com/Manual/SL-MultipleProgramVariants.html</a><br /></li>
+<li><a href="https://docs.unity3d.com/ScriptReference/MaterialPropertyDrawer.html">https://docs.unity3d.com/ScriptReference/MaterialPropertyDrawer.html</a><br /></li>
 </ul>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline71" class="outline-4">
-<h4 id="orgheadline71">Shader 中的预编译指令</h4>
-<div class="outline-text-4" id="text-orgheadline71">
-</div><div id="outline-container-orgheadline69" class="outline-5">
-<h5 id="orgheadline69">if else endif</h5>
-<div class="outline-text-5" id="text-orgheadline69">
+<div id="outline-container-orgbec393b" class="outline-4">
+<h4 id="orgbec393b">Shader 中的预编译指令</h4>
+<div class="outline-text-4" id="text-orgbec393b">
+</div>
+<div id="outline-container-orga3b93db" class="outline-5">
+<h5 id="orga3b93db">if else endif</h5>
+<div class="outline-text-5" id="text-orga3b93db">
 <div class="org-src-container">
-
 <pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">if </span>
 <span style="color: #bc6ec5;">#if</span> <span style="color: #4f97d7;">(</span>SHADER_TARGET &lt; <span style="color: #a45bad;">30</span> || SHADER_API_GLES<span style="color: #4f97d7;">)</span>
 <span style="color: #bc6ec5;">#endif</span>
@@ -1763,14 +1820,64 @@ Materials.EnableKeyword("USE_RED");<br  /></li>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline70" class="outline-5">
-<h5 id="orgheadline70">define</h5>
-<div class="outline-text-5" id="text-orgheadline70">
+<div id="outline-container-org2619249" class="outline-5">
+<h5 id="org2619249">define</h5>
+<div class="outline-text-5" id="text-org2619249">
 <div class="org-src-container">
-
 <pre class="src src-shader"><span style="color: #bc6ec5;">#define</span> MakeupProperty<span style="color: #4f97d7;">(</span>partName<span style="color: #4f97d7;">)</span> \
-    <span style="color: #ce537a; font-weight: bold;">float4</span> _##partName##TexUVArea, _##partName##Area; \
+  <span style="color: #ce537a; font-weight: bold;">float4</span> _##partName##TexUVArea, _##partName##Area; \
     <span style="color: #ce537a; font-weight: bold;">float</span> _##partName##H, _##partName##S, _##partName##V;
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org10203da" class="outline-5">
+<h5 id="org10203da">multi_compile_fwdbase</h5>
+<div class="outline-text-5" id="text-org10203da">
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20351;&#29992; multi_compile_fwdbase &#20250;&#24341;&#20837;&#22914;&#19979;&#21464;&#20307;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Total snippets: 1</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">-----------------------------------------</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Snippet #0 platforms ffffffff:</span>
+Builtin keywords used: DIRECTIONAL LIGHTPROBE_SH SHADOWS_SHADOWMASK DYNAMICLIGHTMAP_ON LIGHTMAP_ON LIGHTMAP_SHADOW_MIXING DIRLIGHTMAP_COMBINED SHADOWS_SCREEN VERTEXLIGHT_ON
+
+<span style="color: #a45bad;">34</span> keyword variants used <span style="color: #4f97d7; font-weight: bold;">in</span> scene:
+
+DIRECTIONAL
+DIRECTIONAL LIGHTPROBE_SH
+DIRECTIONAL LIGHTPROBE_SH SHADOWS_SHADOWMASK
+DIRECTIONAL DIRLIGHTMAP_COMBINED LIGHTMAP_ON
+DIRECTIONAL DIRLIGHTMAP_COMBINED LIGHTMAP_ON LIGHTPROBE_SH
+DIRECTIONAL DIRLIGHTMAP_COMBINED LIGHTMAP_ON LIGHTMAP_SHADOW_MIXING
+DIRECTIONAL DIRLIGHTMAP_COMBINED LIGHTMAP_ON LIGHTMAP_SHADOW_MIXING LIGHTPROBE_SH
+DIRECTIONAL DIRLIGHTMAP_COMBINED LIGHTMAP_ON SHADOWS_SHADOWMASK
+DIRECTIONAL DIRLIGHTMAP_COMBINED LIGHTMAP_ON LIGHTPROBE_SH SHADOWS_SHADOWMASK
+DIRECTIONAL DIRLIGHTMAP_COMBINED LIGHTMAP_ON LIGHTMAP_SHADOW_MIXING SHADOWS_SHADOWMASK
+DIRECTIONAL DIRLIGHTMAP_COMBINED LIGHTMAP_ON LIGHTMAP_SHADOW_MIXING LIGHTPROBE_SH SHADOWS_SHADOWMASK
+DIRECTIONAL SHADOWS_SCREEN
+DIRECTIONAL LIGHTPROBE_SH SHADOWS_SCREEN
+DIRECTIONAL LIGHTMAP_SHADOW_MIXING LIGHTPROBE_SH SHADOWS_SCREEN
+DIRECTIONAL LIGHTPROBE_SH SHADOWS_SCREEN SHADOWS_SHADOWMASK
+DIRECTIONAL LIGHTMAP_SHADOW_MIXING LIGHTPROBE_SH SHADOWS_SCREEN SHADOWS_SHADOWMASK
+DIRECTIONAL DIRLIGHTMAP_COMBINED LIGHTMAP_ON SHADOWS_SCREEN
+DIRECTIONAL DIRLIGHTMAP_COMBINED LIGHTMAP_ON LIGHTPROBE_SH SHADOWS_SCREEN
+DIRECTIONAL DIRLIGHTMAP_COMBINED LIGHTMAP_ON LIGHTMAP_SHADOW_MIXING SHADOWS_SCREEN
+DIRECTIONAL DIRLIGHTMAP_COMBINED LIGHTMAP_ON LIGHTMAP_SHADOW_MIXING LIGHTPROBE_SH SHADOWS_SCREEN
+DIRECTIONAL DIRLIGHTMAP_COMBINED LIGHTMAP_ON SHADOWS_SCREEN SHADOWS_SHADOWMASK
+DIRECTIONAL DIRLIGHTMAP_COMBINED LIGHTMAP_ON LIGHTPROBE_SH SHADOWS_SCREEN SHADOWS_SHADOWMASK
+DIRECTIONAL DIRLIGHTMAP_COMBINED LIGHTMAP_ON LIGHTMAP_SHADOW_MIXING SHADOWS_SCREEN SHADOWS_SHADOWMASK
+DIRECTIONAL DIRLIGHTMAP_COMBINED LIGHTMAP_ON LIGHTMAP_SHADOW_MIXING LIGHTPROBE_SH SHADOWS_SCREEN SHADOWS_SHADOWMASK
+DIRECTIONAL VERTEXLIGHT_ON
+DIRECTIONAL LIGHTPROBE_SH VERTEXLIGHT_ON
+DIRECTIONAL SHADOWS_SCREEN VERTEXLIGHT_ON
+DIRECTIONAL LIGHTPROBE_SH SHADOWS_SCREEN VERTEXLIGHT_ON
+DIRECTIONAL LIGHTMAP_SHADOW_MIXING SHADOWS_SCREEN VERTEXLIGHT_ON
+DIRECTIONAL LIGHTMAP_SHADOW_MIXING LIGHTPROBE_SH SHADOWS_SCREEN VERTEXLIGHT_ON
+DIRECTIONAL SHADOWS_SCREEN SHADOWS_SHADOWMASK VERTEXLIGHT_ON
+DIRECTIONAL LIGHTPROBE_SH SHADOWS_SCREEN SHADOWS_SHADOWMASK VERTEXLIGHT_ON
+DIRECTIONAL LIGHTMAP_SHADOW_MIXING SHADOWS_SCREEN SHADOWS_SHADOWMASK VERTEXLIGHT_ON
+DIRECTIONAL LIGHTMAP_SHADOW_MIXING LIGHTPROBE_SH SHADOWS_SCREEN SHADOWS_SHADOWMASK VERTEXLIGHT_ON
+
 </pre>
 </div>
 </div>
@@ -1778,41 +1885,41 @@ Materials.EnableKeyword("USE_RED");<br  /></li>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline78" class="outline-2">
-<h2 id="orgheadline78">Reflecting your world</h2>
-<div class="outline-text-2" id="text-orgheadline78">
-</div><div id="outline-container-orgheadline74" class="outline-3">
-<h3 id="orgheadline74">光学基础</h3>
-<div class="outline-text-3" id="text-orgheadline74">
+<div id="outline-container-org157fe58" class="outline-2">
+<h2 id="org157fe58">Reflecting your world</h2>
+<div class="outline-text-2" id="text-org157fe58">
+</div>
+<div id="outline-container-org6990c57" class="outline-3">
+<h3 id="org6990c57">光学基础</h3>
+<div class="outline-text-3" id="text-org6990c57">
 <p>
-反射：当光在两种物质分界面上改变传播方向又返回原来物质中的现象，叫做光的反射。<br  />
+反射：当光在两种物质分界面上改变传播方向又返回原来物质中的现象，叫做光的反射。<br />
 </p>
 
 <p>
-折射：光从一种透明介质斜射入另一种透明介质时，传播方向一般会发生变化，这种现象叫光的折射。<br  />
+折射：光从一种透明介质斜射入另一种透明介质时，传播方向一般会发生变化，这种现象叫光的折射。<br />
 </p>
 
 <p>
-散射：光束通过不均匀媒质时，部分光束将偏离原来方向而分散传播，从侧向也可以看到光的现象，叫做光的散射。散射是多重折射和反射的结果。<br  />
+散射：光束通过不均匀媒质时，部分光束将偏离原来方向而分散传播，从侧向也可以看到光的现象，叫做光的散射。散射是多重折射和反射的结果。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline75" class="outline-3">
-<h3 id="orgheadline75">Fresnel reflection</h3>
-<div class="outline-text-3" id="text-orgheadline75">
+<div id="outline-container-org6865222" class="outline-3">
+<h3 id="org6865222">Fresnel reflection</h3>
+<div class="outline-text-3" id="text-org6865222">
 <p>
-菲涅尔反射<br  />
-“菲涅尔”是一个人的名字，因为他发现了一个有关反射的光学现象，这个现象就用这个人的名字命名了。那么，是什么现象呢？<br  />
-就是反射/折射与视点角度之间的关系。如果你站在湖边，低头看脚下的水，你会发现水是透明的，反射不是特别强烈；如果你看远处的湖面，你会发现水并不是透明的，但反射非常强烈。这就是“菲涅尔效应”。 简单的讲，就是视线垂直于表面时，反射较弱，而当视线非垂直表面时，夹角越小，反射越明显。如果你看向一个圆球，那圆球中心的反射较弱，靠近边缘较强。不过这种过度关系被折射率影响。<br  />
-如果不使用“菲涅尔效应”的话，则反射是不考虑视点与表面之间的角度的。 注意，在真实世界中，除了金属之外，其它物质均有不同程度的“菲涅尔效应”。<br  />
-所谓菲涅尔反射就是用波动的理论来解释光的反射。 主要包括一些电磁场的边界传输条件，比如 P 矢量和 S 矢量的反射，菲涅尔用波动学说第一次从本质上解释了光的传播，而之前人们只能从宏观上进行试验，无法从微观的理论上获得支持。然而缺少微观理论支持的定律总是空虚的，随时都可能被推翻的。<br  />
+菲涅尔反射<br />
+“菲涅尔”是一个人的名字，因为他发现了一个有关反射的光学现象，这个现象就用这个人的名字命名了。那么，是什么现象呢？<br />
+就是反射/折射与视点角度之间的关系。如果你站在湖边，低头看脚下的水，你会发现水是透明的，反射不是特别强烈；如果你看远处的湖面，你会发现水并不是透明的，但反射非常强烈。这就是“菲涅尔效应”。 简单的讲，就是视线垂直于表面时，反射较弱，而当视线非垂直表面时，夹角越小，反射越明显。如果你看向一个圆球，那圆球中心的反射较弱，靠近边缘较强。不过这种过度关系被折射率影响。<br />
+如果不使用“菲涅尔效应”的话，则反射是不考虑视点与表面之间的角度的。 注意，在真实世界中，除了金属之外，其它物质均有不同程度的“菲涅尔效应”。<br />
+所谓菲涅尔反射就是用波动的理论来解释光的反射。 主要包括一些电磁场的边界传输条件，比如 P 矢量和 S 矢量的反射，菲涅尔用波动学说第一次从本质上解释了光的传播，而之前人们只能从宏观上进行试验，无法从微观的理论上获得支持。然而缺少微观理论支持的定律总是空虚的，随时都可能被推翻的。<br />
 </p>
 </div>
-<div id="outline-container-orgheadline76" class="outline-4">
-<h4 id="orgheadline76">如何模拟菲涅尔效应效果？</h4>
-<div class="outline-text-4" id="text-orgheadline76">
+<div id="outline-container-org66030aa" class="outline-4">
+<h4 id="org66030aa">如何模拟菲涅尔效应效果？</h4>
+<div class="outline-text-4" id="text-org66030aa">
 <div class="org-src-container">
-
 <pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">rim &#38543;&#35270;&#35282;&#21644;&#27861;&#32447;&#22841;&#35282;&#30340;&#22686;&#22823;&#32780;&#22686;&#22823;</span>
 <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">saturate &#20989;&#25968;&#30340;&#20316;&#29992;&#26159;&#25226;&#36755;&#20837;&#20540;&#38480;&#21046;&#21040;[0, 1] &#20043;&#38388;</span>
 <span style="color: #ce537a; font-weight: bold;">float</span> rim = <span style="color: #a45bad;">1</span>.<span style="color: #a45bad;">0</span> - <span style="color: #4f97d7;">saturate</span><span style="color: #4f97d7;">(</span><span style="color: #4f97d7;">dot</span><span style="color: #bc6ec5;">(</span>o.Normal,<span style="color: #4f97d7;">normalize</span><span style="color: #2d9574;">(</span>IN.viewDir<span style="color: #2d9574;">)</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>;
@@ -1826,25 +1933,28 @@ o.<span style="color: #4f97d7; font-weight: bold;">Specular</span> = <span style
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline77" class="outline-4">
-<h4 id="orgheadline77">参考资料</h4>
-<div class="outline-text-4" id="text-orgheadline77">
+<div id="outline-container-orgfc7973c" class="outline-4">
+<h4 id="orgfc7973c">参考资料</h4>
+<div class="outline-text-4" id="text-orgfc7973c">
 <p>
-菲涅耳反射 互动百科:<br  />
-<a href="http://www.baike.com/wiki/%E8%8F%B2%E6%B6%85%E5%B0%94%E5%8F%8D%E5%B0%84">http://www.baike.com/wiki/%E8%8F%B2%E6%B6%85%E5%B0%94%E5%8F%8D%E5%B0%84</a><br  />
-菲涅耳方程 维基百科:<br  />
-<a href="https://zh.wikipedia.org/wiki/%E8%8F%B2%E6%B6%85%E8%80%B3%E6%96%B9%E7%A8%8B">https://zh.wikipedia.org/wiki/%E8%8F%B2%E6%B6%85%E8%80%B3%E6%96%B9%E7%A8%8B</a><br  />
+菲涅耳反射 互动百科:<br />
+<a href="http://www.baike.com/wiki/%E8%8F%B2%E6%B6%85%E5%B0%94%E5%8F%8D%E5%B0%84">http://www.baike.com/wiki/%E8%8F%B2%E6%B6%85%E5%B0%94%E5%8F%8D%E5%B0%84</a><br />
+菲涅耳方程 维基百科:<br />
+<a href="https://zh.wikipedia.org/wiki/%E8%8F%B2%E6%B6%85%E8%80%B3%E6%96%B9%E7%A8%8B">https://zh.wikipedia.org/wiki/%E8%8F%B2%E6%B6%85%E8%80%B3%E6%96%B9%E7%A8%8B</a><br />
+Everything has Fresnel en <a href="http://filmicworlds.com/blog/everything-has-fresnel/">http://filmicworlds.com/blog/everything-has-fresnel/</a><br />
+Everything has Fresnel cn <a href="http://gad.qq.com/program/translateview/7195431">http://gad.qq.com/program/translateview/7195431</a><br />
 </p>
 </div>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline86" class="outline-2">
-<h2 id="orgheadline86">Shader Optimize</h2>
-<div class="outline-text-2" id="text-orgheadline86">
-</div><div id="outline-container-orgheadline79" class="outline-3">
-<h3 id="orgheadline79">数据类型</h3>
-<div class="outline-text-3" id="text-orgheadline79">
+<div id="outline-container-orgfd262f6" class="outline-2">
+<h2 id="orgfd262f6">Shader Optimize</h2>
+<div class="outline-text-2" id="text-orgfd262f6">
+</div>
+<div id="outline-container-org7eb161a" class="outline-3">
+<h3 id="org7eb161a">数据类型</h3>
+<div class="outline-text-3" id="text-org7eb161a">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -1888,97 +1998,196 @@ o.<span style="color: #4f97d7; font-weight: bold;">Specular</span> = <span style
 </tr>
 </tbody>
 </table>
+
+
 <p>
-<a href="https://docs.unity3d.com/Manual/SL-DataTypesAndPrecision.html">SL-DataTypesAndPrecision</a><br  />
+IEEE754 浮点数的表示方法。C 语言里对 float 类型数据的表示范围为-3.4*10^38～+3.4*10^38。double 为-1.7*10^-308~1.7*10^308，long double 为-1.2*10^-4932~1.2*10^4932.<br />
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-right" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">类型</th>
+<th scope="col" class="org-right">比特（位）数</th>
+<th scope="col" class="org-left">有效数字</th>
+<th scope="col" class="org-left">数值范围</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">float</td>
+<td class="org-right">32</td>
+<td class="org-left">6~7</td>
+<td class="org-left">-3.4*10^38～+3.4*10^38</td>
+</tr>
+
+<tr>
+<td class="org-left">double</td>
+<td class="org-right">64</td>
+<td class="org-left">15~16</td>
+<td class="org-left">-1.7*10^-308~1.7*10^308</td>
+</tr>
+
+<tr>
+<td class="org-left">long double</td>
+<td class="org-right">128</td>
+<td class="org-left">18~19</td>
+<td class="org-left">-1.2*10^-4932~1.2*10^4932</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+究竟如何计算该范围，分析如下：<br />
+</p>
+
+<p>
+对于单精度浮点数（float）来说，符号位一位，指数位 8 位，尾数 23 位。指数能够表示的指数范围为-128~127。尾数为 23 位。<br />
+float 和 double 的精度是由尾数的位数来决定的。浮点数在内存中是按科学计数法来存储的，其整数部分始终是一个隐含着的“1”，由于它是不变的，故不能对精度造成影响。float：2^23 = 8388608，一共七位，这意味着最多能有 7 位有效数字，但绝对能保证的为 6 位，也即 float 的精度为 6~7 位有效数字；double：2^52 = 4503599627370496，一共 16 位，同理，double 的精度为 15~16 位。<br />
+其中负指数决定了浮点数所能表达的绝对值最小的非零数；而正指数决定了浮点数所能表达的绝对值最大的数，也即决定了浮点数的取值范围。float 的范围为-2^128 ~ +2^128，也即-3.40E+38 ~ +3.40E+38；double 的范围为-2^1024 ~ +2^1024，也即-1.79E+308 ~+1.79E+308。<br />
+</p>
+
+<p>
+以 float 为例，如下表<br />
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">符号</th>
+<th scope="col" class="org-left">尾数</th>
+<th scope="col" class="org-left">指数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">1</td>
+<td class="org-left">23</td>
+<td class="org-left">8</td>
+</tr>
+
+<tr>
+<td class="org-left">数符（+-）</td>
+<td class="org-left">小数部分（决定精度）</td>
+<td class="org-left">-127~128 指数（决定范围）</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+例如：<br />
++1.1111111111111111111111*2^127（小数点后面 23 个 1，由于尾数的范围 1～2，其最高位总为 1，故只需存取小数部分，所以小数为是 23 位 1），约等于 2*2^127=3.4*10^38。为 3.4*10^38 负数亦然。<br />
+Double 的计算与此类似，double 的符号位为 63 位，指数为 62～52 位，共 11 位。表示的范围为-1024～1023。尾数为 51～0。表示的范围为+1.1111111111111111..11111*2^1023（小数点后面 52 个 1）为 1.7*10^308。负数亦然。<br />
+</p>
+
+<p>
+<a href="https://docs.unity3d.com/Manual/SL-DataTypesAndPrecision.html">SL-DataTypesAndPrecision</a><br />
+<a href="https://www.jianshu.com/p/c1ad09b690b2">https://www.jianshu.com/p/c1ad09b690b2</a><br />
+<a href="https://blog.csdn.net/KLFTESPACE/article/details/81150481">https://blog.csdn.net/KLFTESPACE/article/details/81150481</a><br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline80" class="outline-3">
-<h3 id="orgheadline80">noforwardadd</h3>
-<div class="outline-text-3" id="text-orgheadline80">
+<div id="outline-container-org9b331a4" class="outline-3">
+<h3 id="org9b331a4">noforwardadd</h3>
+<div class="outline-text-3" id="text-org9b331a4">
 <p>
-该选项基于一个开关来自动告诉 Unity，任何采用该着色器的物体只从一个单一的方向光接收每个像素的光照。该着色器计算的其他光照将使用 SH 方式计算。<br  />
+该选项基于一个开关来自动告诉 Unity，任何采用该着色器的物体只从一个单一的方向光接收每个像素的光照。该着色器计算的其他光照将使用 SH 方式计算。<br />
 </p>
 <div class="org-src-container">
-
 <pre class="src src-shader"><span style="color: #bc6ec5;">#pragma</span> surface surf SimpleLambert noforwardadd
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline81" class="outline-3">
-<h3 id="orgheadline81">exclude_path</h3>
-<div class="outline-text-3" id="text-orgheadline81">
+<div id="outline-container-org1bb0a6c" class="outline-3">
+<h3 id="org1bb0a6c">exclude_path</h3>
+<div class="outline-text-3" id="text-org1bb0a6c">
 <p>
-exclude_path:deferred, exclude_path:forward, exclude_path:prepass<br  />
-不为指定渲染方式(Deferred Shading, Forward , Legacy Deferred)生成代码。<br  />
+exclude_path:deferred, exclude_path:forward, exclude_path:prepass<br />
+不为指定渲染方式(Deferred Shading, Forward , Legacy Deferred)生成代码。<br />
 </p>
 <div class="org-src-container">
-
 <pre class="src src-shader"><span style="color: #bc6ec5;">#pragma</span> surface surf SimpleLambert exclude_path:prepass
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline82" class="outline-3">
-<h3 id="orgheadline82">nolightmap</h3>
-<div class="outline-text-3" id="text-orgheadline82">
+<div id="outline-container-org1e6ed47" class="outline-3">
+<h3 id="org1e6ed47">nolightmap</h3>
+<div class="outline-text-3" id="text-org1e6ed47">
 <p>
-关闭该 shader 的所有光照贴图支持。<br  />
+关闭该 shader 的所有光照贴图支持。<br />
 </p>
 <div class="org-src-container">
-
 <pre class="src src-shader"><span style="color: #bc6ec5;">#pragma</span> surface surf SimpleLambert noforwardadd nolightmap halfasview exclude_path:prepass
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline83" class="outline-3">
-<h3 id="orgheadline83">halfasview</h3>
-<div class="outline-text-3" id="text-orgheadline83">
+<div id="outline-container-orgecfa3fb" class="outline-3">
+<h3 id="orgecfa3fb">halfasview</h3>
+<div class="outline-text-3" id="text-orgecfa3fb">
 <p>
-用 halfDir 代替 viewDir 作为光照函数的参数传入 shader。<br  />
+用 halfDir 代替 viewDir 作为光照函数的参数传入 shader。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline84" class="outline-3">
-<h3 id="orgheadline84">使用 UnityObjectToClipPos 代替 mul(UNITY_MATRIX_MVP,v.vertex)</h3>
-<div class="outline-text-3" id="text-orgheadline84">
+<div id="outline-container-orged3acf9" class="outline-3">
+<h3 id="orged3acf9">使用 UnityObjectToClipPos 代替 mul(UNITY_MATRIX_MVP,v.vertex)</h3>
+<div class="outline-text-3" id="text-orged3acf9">
 <p>
-UnityObjectToClipPos 的效率要比 mul(UNITY_MATRIX_MVP,v.vertex)高。<br  />
+UnityObjectToClipPos 的效率要比 mul(UNITY_MATRIX_MVP,v.vertex)高。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline85" class="outline-3">
-<h3 id="orgheadline85">参考资料</h3>
-<div class="outline-text-3" id="text-orgheadline85">
+<div id="outline-container-org1d7c8b8" class="outline-3">
+<h3 id="org1d7c8b8">参考资料</h3>
+<div class="outline-text-3" id="text-org1d7c8b8">
 <p>
-<a href="https://docs.unity3d.com/Manual/SL-SurfaceShaders.html">Shader 编译指令</a><br  />
-<a href="https://docs.unity3d.com/Manual/MobileOptimizationPracticalGuide.html">Mobile Optimize Doc</a><br  />
+<a href="https://docs.unity3d.com/Manual/SL-SurfaceShaders.html">Shader 编译指令</a><br />
+<a href="https://docs.unity3d.com/Manual/MobileOptimizationPracticalGuide.html">Mobile Optimize Doc</a><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline87" class="outline-2">
-<h2 id="orgheadline87">LightingModel</h2>
-<div class="outline-text-2" id="text-orgheadline87">
+<div id="outline-container-orga980725" class="outline-2">
+<h2 id="orga980725">LightingModel</h2>
+<div class="outline-text-2" id="text-orga980725">
 <p>
-请参考 LightingModel.org 这篇文档。<br  />
+请参考 LightingModel.org 这篇文档。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline91" class="outline-2">
-<h2 id="orgheadline91">Screen Effect</h2>
-<div class="outline-text-2" id="text-orgheadline91">
-</div><div id="outline-container-orgheadline88" class="outline-3">
-<h3 id="orgheadline88">概述</h3>
-<div class="outline-text-3" id="text-orgheadline88">
+<div id="outline-container-orgbe3526e" class="outline-2">
+<h2 id="orgbe3526e">Screen Effect</h2>
+<div class="outline-text-2" id="text-orgbe3526e">
+</div>
+<div id="outline-container-orge3f525c" class="outline-3">
+<h3 id="orge3f525c">概述</h3>
+<div class="outline-text-3" id="text-orge3f525c">
 <p>
-屏幕特效特效就相当于对最终显示图片到显示器之前的图片进行 PS 处理。具体处理每个像素的过程会通过一个 Shader 来进行，进行处理的时机是 Camera.OnRenderImage 被触发的时候，而 Graphics.Blit 可以将处理结果生效。<br  />
-处理每个像素的 Shader 通常会使用下面的一些配置：<br  />
+屏幕特效特效就相当于对最终显示图片到显示器之前的图片进行 PS 处理。具体处理每个像素的过程会通过一个 Shader 来进行，进行处理的时机是 Camera.OnRenderImage 被触发的时候，而 Graphics.Blit 可以将处理结果生效。<br />
+处理每个像素的 Shader 通常会使用下面的一些配置：<br />
 </p>
 <div class="org-src-container">
-
 <pre class="src src-shader"><span style="color: #bc6ec5;">#pragma</span> vertex vert_img        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20351;&#29992;&#31995;&#32479;&#20869;&#32622;&#30340;&#20989;&#25968;</span>
 <span style="color: #bc6ec5;">#pragma</span> fragment frag          <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20855;&#20307;&#22788;&#29702;&#36807;&#31243;&#22312; frag &#20013;&#23454;&#29616;</span>
 <span style="color: #bc6ec5;">#pragma</span> fragmentoption ARB_precision_hint_fastest
@@ -1988,35 +2197,34 @@ UnityObjectToClipPos 的效率要比 mul(UNITY_MATRIX_MVP,v.vertex)高。<br  />
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline89" class="outline-3">
-<h3 id="orgheadline89">明度 亮度 饱和度 对比度</h3>
-<div class="outline-text-3" id="text-orgheadline89">
+<div id="outline-container-org3a92616" class="outline-3">
+<h3 id="org3a92616">明度 亮度 饱和度 对比度</h3>
+<div class="outline-text-3" id="text-org3a92616">
 <p>
-明度（Brightness）是眼睛对光源和物体表面的明暗程度的感觉，主要是由光线强弱决定的一种视觉经验。<br  />
-亮度（Luminance）是指发光体（反光体）表面发光（反光）强弱的物理量。<br  />
-饱和度（Saturation）是指色彩的鲜艳程度，也称色彩的纯度。饱和度取决于该色中含色成分和消色成分（灰色）的比例。含色成分越大，饱和度越大；消色成分越大，饱和度越小。纯的颜色都是高度饱和的，如鲜红，鲜绿。混杂上白色，灰色或其他色调的颜色，是不饱和的颜色，如绛紫，粉红，黄褐等。完全不饱和的颜色根本没有色调，如黑白之间的各种灰色。<br  />
-对比度（Contrast）指的是一幅图像中明暗区域最亮的白和最暗的黑之间不同亮度层级的测量，差异范围越大代表对比越大，差异范围越小代表对比越小，好的对比率 120:1 就可容易地显示生动、丰富的色彩，当对比率高达 300:1 时，便可支持各阶的颜色。但对比率遭受和亮度相同的困境，现今尚无一套有效又公正的标准来衡量对比率，所以最好的辨识方式还是依靠使用者眼睛。<br  />
+明度（Brightness）是眼睛对光源和物体表面的明暗程度的感觉，主要是由光线强弱决定的一种视觉经验。<br />
+亮度（Luminance）是指发光体（反光体）表面发光（反光）强弱的物理量。<br />
+饱和度（Saturation）是指色彩的鲜艳程度，也称色彩的纯度。饱和度取决于该色中含色成分和消色成分（灰色）的比例。含色成分越大，饱和度越大；消色成分越大，饱和度越小。纯的颜色都是高度饱和的，如鲜红，鲜绿。混杂上白色，灰色或其他色调的颜色，是不饱和的颜色，如绛紫，粉红，黄褐等。完全不饱和的颜色根本没有色调，如黑白之间的各种灰色。<br />
+对比度（Contrast）指的是一幅图像中明暗区域最亮的白和最暗的黑之间不同亮度层级的测量，差异范围越大代表对比越大，差异范围越小代表对比越小，好的对比率 120:1 就可容易地显示生动、丰富的色彩，当对比率高达 300:1 时，便可支持各阶的颜色。但对比率遭受和亮度相同的困境，现今尚无一套有效又公正的标准来衡量对比率，所以最好的辨识方式还是依靠使用者眼睛。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline90" class="outline-3">
-<h3 id="orgheadline90">MotionBlur 的实现</h3>
-<div class="outline-text-3" id="text-orgheadline90">
+<div id="outline-container-orgf41cd27" class="outline-3">
+<h3 id="orgf41cd27">MotionBlur 的实现</h3>
+<div class="outline-text-3" id="text-orgf41cd27">
 <p>
-运动模糊产生的原因是 一个视觉信息采集周期内，同一个采集点接收到了多个信息，这些信息在同一个运动方向上依次排列。<br  />
+运动模糊产生的原因是 一个视觉信息采集周期内，同一个采集点接收到了多个信息，这些信息在同一个运动方向上依次排列。<br />
 </p>
 <div class="org-src-container">
-
 <pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">fixed4</span> <span style="color: #bc6ec5; font-weight: bold;">frag</span> <span style="color: #4f97d7;">(</span>v2f i<span style="color: #4f97d7;">)</span> : <span style="color: #a45bad;">SV_Target</span>
 <span style="color: #4f97d7;">{</span>
     <span style="color: #ce537a; font-weight: bold;">float4</span> col = <span style="color: #4f97d7;">tex2D</span><span style="color: #bc6ec5;">(</span><span style="color: #7590db;">_MainTex</span>, i.uv<span style="color: #bc6ec5;">)</span>;
     <span style="color: #4f97d7; font-weight: bold;">if</span> <span style="color: #bc6ec5;">(</span>!<span style="color: #7590db;">_isStopBlur</span><span style="color: #bc6ec5;">)</span>
     <span style="color: #bc6ec5;">{</span>
-        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">uvOffset &#23601;&#26159;&#36816;&#21160;&#26041;&#21521;&#30340;&#21453;&#26041;&#21521;</span>
+      <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">uvOffset &#23601;&#26159;&#36816;&#21160;&#26041;&#21521;&#30340;&#21453;&#26041;&#21521;</span>
         <span style="color: #ce537a; font-weight: bold;">fixed2</span> uvOffset = i.uv - <span style="color: #7590db;">_Center</span>;
         <span style="color: #4f97d7; font-weight: bold;">for</span> <span style="color: #2d9574;">(</span><span style="color: #ce537a; font-weight: bold;">int</span> iterCount = <span style="color: #a45bad;">1</span>; iterCount &lt; <span style="color: #7590db;">_IterNumber</span>; ++iterCount<span style="color: #2d9574;">)</span>
         <span style="color: #2d9574;">{</span>
-            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21462;&#20986;&#20498;&#25968;&#31532; iterCount &#20010;&#20449;&#24687;&#65292;&#24182;&#32047;&#21152;&#21040; col &#20013;</span>
+          <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21462;&#20986;&#20498;&#25968;&#31532; iterCount &#20010;&#20449;&#24687;&#65292;&#24182;&#32047;&#21152;&#21040; col &#20013;</span>
             col += <span style="color: #4f97d7;">tex2D</span><span style="color: #67b11d;">(</span><span style="color: #7590db;">_MainTex</span>, i.uv+uvOffset*iterCount*<span style="color: #7590db;">_SpeedFactor</span><span style="color: #67b11d;">)</span>;
         <span style="color: #2d9574;">}</span>
         <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23545;&#25152;&#26377;&#20449;&#24687;&#21462;&#24179;&#22343;&#20540;</span>
@@ -2029,292 +2237,293 @@ UnityObjectToClipPos 的效率要比 mul(UNITY_MATRIX_MVP,v.vertex)高。<br  />
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline92" class="outline-2">
-<h2 id="orgheadline92">Skin Shader</h2>
-<div class="outline-text-2" id="text-orgheadline92">
+<div id="outline-container-org0341baa" class="outline-2">
+<h2 id="org0341baa">Skin Shader</h2>
+<div class="outline-text-2" id="text-org0341baa">
 <p>
-请参考 SkinRendering.org 这篇文档。<br  />
+请参考 SkinRendering.org 这篇文档。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline93" class="outline-2">
-<h2 id="orgheadline93">Normal Map</h2>
-<div class="outline-text-2" id="text-orgheadline93">
+<div id="outline-container-org26ad6c9" class="outline-2">
+<h2 id="org26ad6c9">Normal Map</h2>
+<div class="outline-text-2" id="text-org26ad6c9">
 <p>
-Normal Map 又叫 Ramp Map，其实就是法线贴图。<br  />
-UnpackNormal 的作用是将 0-1 范围的数值(法线贴图存储的颜色值)映射为-1-1 范围的数值（法线向量）。<br  />
+Normal Map 又叫 Ramp Map，其实就是法线贴图。<br />
+UnpackNormal 的作用是将 0-1 范围的数值(法线贴图存储的颜色值)映射为-1-1 范围的数值（法线向量）。<br />
 </p>
 </div>
-<div id="outline-container-orgheadline94" class="outline-4">
-<h4 id="orgheadline94">参考资料</h4>
-<div class="outline-text-4" id="text-orgheadline94">
+<div id="outline-container-org9a06fa5" class="outline-4">
+<h4 id="org9a06fa5">参考资料</h4>
+<div class="outline-text-4" id="text-org9a06fa5">
 <p>
-<a href="http://www.songho.ca/opengl/gl_normaltransform.html">Normal 变换矩阵推导</a><br  />
-<a href="http://blog.csdn.net/candycat1992/article/details/41605257">Unity 中的 Normal Map</a><br  />
-<a href="http://http.developer.nvidia.com/CgTutorial/cg_tutorial_chapter08.html">Cg 中的 Normal Map</a><br  />
-<a href="http://learnopengl.com/#!Advanced-Lighting/Normal-Mapping">Normal Map Detail</a><br  />
-</p>
-</div>
-</div>
-</div>
-<div id="outline-container-orgheadline99" class="outline-2">
-<h2 id="orgheadline99">ShaderForge</h2>
-<div class="outline-text-2" id="text-orgheadline99">
-</div><div id="outline-container-orgheadline96" class="outline-3">
-<h3 id="orgheadline96">基本操作</h3>
-<div class="outline-text-3" id="text-orgheadline96">
-</div><div id="outline-container-orgheadline95" class="outline-4">
-<h4 id="orgheadline95">删除连线</h4>
-<div class="outline-text-4" id="text-orgheadline95">
-<p>
-Alt+鼠标右键点击 连线的端点。（注意：点击连线无用）<br  />
+<a href="http://www.songho.ca/opengl/gl_normaltransform.html">Normal 变换矩阵推导</a><br />
+<a href="http://blog.csdn.net/candycat1992/article/details/41605257">Unity 中的 Normal Map</a><br />
+<a href="http://http.developer.nvidia.com/CgTutorial/cg_tutorial_chapter08.html">Cg 中的 Normal Map</a><br />
+<a href="http://learnopengl.com/#!Advanced-Lighting/Normal-Mapping">Normal Map Detail</a><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline98" class="outline-3">
-<h3 id="orgheadline98">ErrorFixed</h3>
-<div class="outline-text-3" id="text-orgheadline98">
-</div><div id="outline-container-orgheadline97" class="outline-4">
-<h4 id="orgheadline97">在 iOS 平台下 Shader 出错</h4>
-<div class="outline-text-4" id="text-orgheadline97">
+<div id="outline-container-orgeb2a090" class="outline-2">
+<h2 id="orgeb2a090">ShaderForge</h2>
+<div class="outline-text-2" id="text-orgeb2a090">
+</div>
+<div id="outline-container-orgea595f6" class="outline-3">
+<h3 id="orgea595f6">基本操作</h3>
+<div class="outline-text-3" id="text-orgea595f6">
+</div>
+<div id="outline-container-orga07a208" class="outline-4">
+<h4 id="orga07a208">删除连线</h4>
+<div class="outline-text-4" id="text-orga07a208">
 <p>
-在 ShaderSettings 选项下勾选 iOS 平台支持。<br  />
+Alt+鼠标右键点击 连线的端点。（注意：点击连线无用）<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org0a1f2cd" class="outline-3">
+<h3 id="org0a1f2cd">ErrorFixed</h3>
+<div class="outline-text-3" id="text-org0a1f2cd">
+</div>
+<div id="outline-container-org4045730" class="outline-4">
+<h4 id="org4045730">在 iOS 平台下 Shader 出错</h4>
+<div class="outline-text-4" id="text-org4045730">
+<p>
+在 ShaderSettings 选项下勾选 iOS 平台支持。<br />
 </p>
 </div>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline120" class="outline-2">
-<h2 id="orgheadline120">Q&amp;A</h2>
-<div class="outline-text-2" id="text-orgheadline120">
-</div><div id="outline-container-orgheadline100" class="outline-3">
-<h3 id="orgheadline100">unity 坐标系是左手还是右手？</h3>
-<div class="outline-text-3" id="text-orgheadline100">
+<div id="outline-container-org0374e71" class="outline-2">
+<h2 id="org0374e71">Q&amp;A</h2>
+<div class="outline-text-2" id="text-org0374e71">
+</div>
+<div id="outline-container-org689fe63" class="outline-3">
+<h3 id="org689fe63">unity 坐标系是左手还是右手？</h3>
+<div class="outline-text-3" id="text-org689fe63">
 <p>
-unity 为左手坐标系<br  />
-DirectX 为左手坐标系<br  />
-OpenGL 为右手坐标系<br  />
+unity 为左手坐标系<br />
+DirectX 为左手坐标系<br />
+OpenGL 为右手坐标系<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline106" class="outline-3">
-<h3 id="orgheadline106">SurfaceShader 中 如何定义多个 Pass，它们的执行与否，以及执行顺序？</h3>
-<div class="outline-text-3" id="text-orgheadline106">
-</div><div id="outline-container-orgheadline101" class="outline-4">
-<h4 id="orgheadline101">定义多个 Pass</h4>
-<div class="outline-text-4" id="text-orgheadline101">
-<p>
-定义多个 Pass 的方法，参考如下开源项目：<br  />
-<a href="https://github.com/inbgche/ShaderMixingSample">https://github.com/inbgche/ShaderMixingSample</a><br  />
-为了防止项目被 delete，我 fork 了一份，地址如下：<br  />
-<a href="https://github.com/wolfand11/ShaderMixingSample">https://github.com/wolfand11/ShaderMixingSample</a><br  />
-</p>
-
-<p>
-Rules for Multi-pass Shaders in Unity (原文不存在时，可去有道云笔记中寻找备份)<br  />
-<a href="https://albertshih.blogspot.jp/2014/11/rules-for-multi-pass-shaders-in-unity.html">https://albertshih.blogspot.jp/2014/11/rules-for-multi-pass-shaders-in-unity.html</a><br  />
-</p>
+<div id="outline-container-org0d313f5" class="outline-3">
+<h3 id="org0d313f5">SurfaceShader 中 如何定义多个 Pass，它们的执行与否，以及执行顺序？</h3>
+<div class="outline-text-3" id="text-org0d313f5">
 </div>
-</div>
-<div id="outline-container-orgheadline102" class="outline-4">
-<h4 id="orgheadline102">Pass 是否执行</h4>
-<div class="outline-text-4" id="text-orgheadline102">
+<div id="outline-container-org686312e" class="outline-4">
+<h4 id="org686312e">定义多个 Pass</h4>
+<div class="outline-text-4" id="text-org686312e">
 <p>
-可以通过配制每个 pass 的 LightMode Tag，来选择具体执行哪些 pass。<br  />
-以 surface shader 举例说明：<br  />
-surface shader 展开来后，可以看到如下 pass。<br  />
-pass{ Tags{"LightMode"="Vertex"} }<br  />
-pass{ Tags{"LightMode"="ForwardBass"} }<br  />
-pass{ Tags{"LightMode"="Deferred"} }<br  />
-这三个 pass 是相互排斥的，永远只可能执行其中一个 pass。<br  />
-那 unity 是根据什么来选择执行哪个 pass 的呢？<br  />
-unity 通过摄像机下的 Rendering path 来选择相应的 pass。<br  />
-Rendering path= Legacy Vertex Lit 时，选择"LightMode"="Vertex"的 pass。ForwardBass 与 Deferred 将不会被执行。<br  />
-Rendering path= ForwardBass 时，优先选择"LightMode"="ForwardBass"的 pass，ForwardBass 不存在时，选择 Vertex。Deferred 将不会被执行。<br  />
-Rendering path= Deferred 时，优先选择"LightMode"="Deferred"的 pass，Deferred 不存在时，选择 ForwardBass，ForwardBass 不存在时选择 Vertex。<br  />
+定义多个 Pass 的方法，参考如下开源项目：<br />
+<a href="https://github.com/inbgche/ShaderMixingSample">https://github.com/inbgche/ShaderMixingSample</a><br />
+为了防止项目被 delete，我 fork 了一份，地址如下：<br />
+<a href="https://github.com/wolfand11/ShaderMixingSample">https://github.com/wolfand11/ShaderMixingSample</a><br />
 </p>
 
 <p>
-<a href="https://zhidao.baidu.com/question/459788806667126965.html">https://zhidao.baidu.com/question/459788806667126965.html</a><br  />
-</p>
-</div>
-<div id="outline-container-orgheadline103" class="outline-5">
-<h5 id="orgheadline103">没有 LightMode Tag 时，Pass 执行与否如何决定</h5>
-<div class="outline-text-5" id="text-orgheadline103">
-<p>
-无 LightModeTag 时，Pass 都会执行，且按照顺序从上到下依次执行<br  />
+Rules for Multi-pass Shaders in Unity (原文不存在时，可去有道云笔记中寻找备份)<br />
+<a href="https://albertshih.blogspot.jp/2014/11/rules-for-multi-pass-shaders-in-unity.html">https://albertshih.blogspot.jp/2014/11/rules-for-multi-pass-shaders-in-unity.html</a><br />
 </p>
 </div>
 </div>
-</div>
-<div id="outline-container-orgheadline104" class="outline-4">
-<h4 id="orgheadline104">Pass 的执行顺序</h4>
-<div class="outline-text-4" id="text-orgheadline104">
+<div id="outline-container-orgf701d8b" class="outline-4">
+<h4 id="orgf701d8b">Pass 是否执行</h4>
+<div class="outline-text-4" id="text-orgf701d8b">
 <p>
-多个 Pass 的执行顺序是，从上到下依次进行的<br  />
-参考上面的 ShaderMixingSample 可以深入了解<br  />
+可以通过配制每个 pass 的 LightMode Tag，来选择具体执行哪些 pass。<br />
+以 surface shader 举例说明：<br />
+surface shader 展开来后，可以看到如下 pass。<br />
+pass{ Tags{"LightMode"<code>"Vertex"} }
+pass{ Tags{"LightMode"</code>"ForwardBass"} }<br />
+pass{ Tags{"LightMode"="Deferred"} }<br />
+这三个 pass 是相互排斥的，永远只可能执行其中一个 pass。<br />
+那 unity 是根据什么来选择执行哪个 pass 的呢？<br />
+unity 通过摄像机下的 Rendering path 来选择相应的 pass。<br />
+Rendering path= Legacy Vertex Lit 时，选择"LightMode"<code>"Vertex"的 pass。ForwardBass 与 Deferred 将不会被执行。
+Rendering path</code> ForwardBass 时，优先选择"LightMode"<code>"ForwardBass"的 pass，ForwardBass 不存在时，选择 Vertex。Deferred 将不会被执行。
+Rendering path</code> Deferred 时，优先选择"LightMode"="Deferred"的 pass，Deferred 不存在时，选择 ForwardBass，ForwardBass 不存在时选择 Vertex。<br />
+</p>
+
+<p>
+<a href="https://zhidao.baidu.com/question/459788806667126965.html">https://zhidao.baidu.com/question/459788806667126965.html</a><br />
+</p>
+</div>
+<div id="outline-container-org124d7a8" class="outline-5">
+<h5 id="org124d7a8">没有 LightMode Tag 时，Pass 执行与否如何决定</h5>
+<div class="outline-text-5" id="text-org124d7a8">
+<p>
+无 LightModeTag 时，Pass 都会执行，且按照顺序从上到下依次执行<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org00e5270" class="outline-4">
+<h4 id="org00e5270">Pass 的执行顺序</h4>
+<div class="outline-text-4" id="text-org00e5270">
+<p>
+多个 Pass 的执行顺序是，从上到下依次进行的<br />
+参考上面的 ShaderMixingSample 可以深入了解<br />
 </p>
 </div>
 </div>
 
-<div id="outline-container-orgheadline105" class="outline-4">
-<h4 id="orgheadline105">Tips</h4>
-<div class="outline-text-4" id="text-orgheadline105">
+<div id="outline-container-orge239977" class="outline-4">
+<h4 id="orge239977">Tips</h4>
+<div class="outline-text-4" id="text-orge239977">
 <ul class="org-ul">
-<li>需要注意的是，SurfaceShader 中定义多个 Pass 时，不需要写 Pass{}，因为 SurfaceShader 编译时，会自动添加 Pass{}.具体信息可以参考如下链接：<br  /></li>
+<li>需要注意的是，SurfaceShader 中定义多个 Pass 时，不需要写 Pass{}，因为 SurfaceShader 编译时，会自动添加 Pass{}.具体信息可以参考如下链接：<br /></li>
 </ul>
 <p>
-<a href="http://www.cnblogs.com/wantnon/p/4456787.html">http://www.cnblogs.com/wantnon/p/4456787.html</a><br  />
-<a href="https://forum.unity.com/threads/achieving-a-multi-pass-effect-with-a-surface-shader.96393/">https://forum.unity.com/threads/achieving-a-multi-pass-effect-with-a-surface-shader.96393/</a><br  />
+<a href="http://www.cnblogs.com/wantnon/p/4456787.html">http://www.cnblogs.com/wantnon/p/4456787.html</a><br />
+<a href="https://forum.unity.com/threads/achieving-a-multi-pass-effect-with-a-surface-shader.96393/">https://forum.unity.com/threads/achieving-a-multi-pass-effect-with-a-surface-shader.96393/</a><br />
 </p>
 <ul class="org-ul">
-<li>需要注意的是，SurfaceShader 中 LightMode Tag 会被忽略，LightMode Tag 只能在 Pass 中使用，SurfaceShader 编译时，会自动添加 Pass{}<br  /></li>
+<li>需要注意的是，SurfaceShader 中 LightMode Tag 会被忽略，LightMode Tag 只能在 Pass 中使用，SurfaceShader 编译时，会自动添加 Pass{}<br /></li>
 </ul>
 <p>
-<a href="https://forum.unity.com/threads/lightmode-always-not-ignore-lighting-in-surface-shader.446692/">https://forum.unity.com/threads/lightmode-always-not-ignore-lighting-in-surface-shader.446692/</a><br  />
+<a href="https://forum.unity.com/threads/lightmode-always-not-ignore-lighting-in-surface-shader.446692/">https://forum.unity.com/threads/lightmode-always-not-ignore-lighting-in-surface-shader.446692/</a><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline107" class="outline-3">
-<h3 id="orgheadline107">如何实现半透明渲染？</h3>
-<div class="outline-text-3" id="text-orgheadline107">
+<div id="outline-container-org4a59206" class="outline-3">
+<h3 id="org4a59206">如何实现半透明渲染？</h3>
+<div class="outline-text-3" id="text-org4a59206">
 <ul class="org-ul">
-<li>SurfaceShader <a href="https://blog.csdn.net/candycat1992/article/details/28630459">https://blog.csdn.net/candycat1992/article/details/28630459</a><br  /></li>
-<li>CG <a href="https://en.wikibooks.org/wiki/Cg_Programming/Unity/Transparency">https://en.wikibooks.org/wiki/Cg_Programming/Unity/Transparency</a><br  /></li>
-<li>Unity 中的透明效果之开启深度写入的半透明效果 <a href="https://blog.csdn.net/u012079615/article/details/78670340">https://blog.csdn.net/u012079615/article/details/78670340</a><br  /></li>
+<li>SurfaceShader <a href="https://blog.csdn.net/candycat1992/article/details/28630459">https://blog.csdn.net/candycat1992/article/details/28630459</a><br /></li>
+<li>CG <a href="https://en.wikibooks.org/wiki/Cg_Programming/Unity/Transparency">https://en.wikibooks.org/wiki/Cg_Programming/Unity/Transparency</a><br /></li>
+<li>Unity 中的透明效果之开启深度写入的半透明效果 <a href="https://blog.csdn.net/u012079615/article/details/78670340">https://blog.csdn.net/u012079615/article/details/78670340</a><br /></li>
 </ul>
 </div>
 </div>
-<div id="outline-container-orgheadline108" class="outline-3">
-<h3 id="orgheadline108">AlphaTest AlphaBlend 性能消耗</h3>
-<div class="outline-text-3" id="text-orgheadline108">
+<div id="outline-container-org0c084de" class="outline-3">
+<h3 id="org0c084de">AlphaTest AlphaBlend 性能消耗</h3>
+<div class="outline-text-3" id="text-org0c084de">
 <p>
-AlphaBlend 和 AlphaTest 效果不是等价的。<br  />
+AlphaBlend 和 AlphaTest 效果不是等价的。<br />
 </p>
 
 <p>
-iOS 平台上 AlphaTest 性能比较费的原因是，当一个执行 AlphaTest 的图元被提交时，early depth 测试（类似于 PowerVR 的隐藏表面移除 HSR) 可以忽略被遮挡的片段（有其他片段离摄像机更近）。不透明图元可以在该管线阶段同时执行深度写入，而需要执行 AlphaTest 的图元此时无法写入深度缓冲区，只有片段着色器执行完后，片段的可见性明确后，才可以写入深度缓冲区。这些被延迟的深度写入会影响性能，因为后续的图元无法被处理，直到需要执行 AlphaTest 的图元的深度数据被更新到深度缓存区中。<br  />
+iOS 平台上 AlphaTest 性能比较费的原因是，当一个执行 AlphaTest 的图元被提交时，early depth 测试（类似于 PowerVR 的隐藏表面移除 HSR) 可以忽略被遮挡的片段（有其他片段离摄像机更近）。不透明图元可以在该管线阶段同时执行深度写入，而需要执行 AlphaTest 的图元此时无法写入深度缓冲区，只有片段着色器执行完后，片段的可见性明确后，才可以写入深度缓冲区。这些被延迟的深度写入会影响性能，因为后续的图元无法被处理，直到需要执行 AlphaTest 的图元的深度数据被更新到深度缓存区中。<br />
 </p>
 
 <p>
-<a href="https://www.zhihu.com/question/27875435">https://www.zhihu.com/question/27875435</a><br  />
+<a href="https://www.zhihu.com/question/27875435">https://www.zhihu.com/question/27875435</a><br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline113" class="outline-3">
-<h3 id="orgheadline113">Deferred Renderring，Deferred Shading，Deferred Lighting 是什么关系？</h3>
-<div class="outline-text-3" id="text-orgheadline113">
-</div><div id="outline-container-orgheadline109" class="outline-4">
-<h4 id="orgheadline109">Deferred Rendering</h4>
-<div class="outline-text-4" id="text-orgheadline109">
+<div id="outline-container-org35e52af" class="outline-3">
+<h3 id="org35e52af">Deferred Renderring，Deferred Shading，Deferred Lighting 是什么关系？</h3>
+<div class="outline-text-3" id="text-org35e52af">
+</div>
+<div id="outline-container-org4846f2b" class="outline-4">
+<h4 id="org4846f2b">Deferred Rendering</h4>
+<div class="outline-text-4" id="text-org4846f2b">
 <p>
-Deferred Rendering 只是延迟渲染算法的统称。延迟渲染分很多不同类型，Deferred Shading 和 Deferred Lighting 等才是具体的延迟渲染算法。<br  />
+Deferred Rendering 只是延迟渲染算法的统称。延迟渲染分很多不同类型，Deferred Shading 和 Deferred Lighting 等才是具体的延迟渲染算法。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline110" class="outline-4">
-<h4 id="orgheadline110">Deferred Shading</h4>
-<div class="outline-text-4" id="text-orgheadline110">
+<div id="outline-container-orgb4c55be" class="outline-4">
+<h4 id="orgb4c55be">Deferred Shading</h4>
+<div class="outline-text-4" id="text-orgb4c55be">
 <p>
-在 3D 计算机图形学领域中，延迟着色是一种屏幕空间着色技术。之所以被称作延迟的是因为在第一阶段的 vertex 和 pixel 着色器中并没有真正执行渲染，渲染被延迟到了第二个阶段。<br  />
-延迟着色第一个阶段的渲染，只是将着色计算需要的数据进行收集。通过渲染到贴图这种方式，将 Positions，normals 以及每个表面的材质等信息被渲染到 G-buffer 中。<br  />
-延迟着色第二个阶段的渲染，在一个 pixel 着色器中，利用前一阶段生成的 G-buffer，在屏幕空间中，来计算每个像素的直接和间接光照。<br  />
+在 3D 计算机图形学领域中，延迟着色是一种屏幕空间着色技术。之所以被称作延迟的是因为在第一阶段的 vertex 和 pixel 着色器中并没有真正执行渲染，渲染被延迟到了第二个阶段。<br />
+延迟着色第一个阶段的渲染，只是将着色计算需要的数据进行收集。通过渲染到贴图这种方式，将 Positions，normals 以及每个表面的材质等信息被渲染到 G-buffer 中。<br />
+延迟着色第二个阶段的渲染，在一个 pixel 着色器中，利用前一阶段生成的 G-buffer，在屏幕空间中，来计算每个像素的直接和间接光照。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline111" class="outline-4">
-<h4 id="orgheadline111">Deferred Lighting</h4>
-<div class="outline-text-4" id="text-orgheadline111">
+<div id="outline-container-org42d2c45" class="outline-4">
+<h4 id="org42d2c45">Deferred Lighting</h4>
+<div class="outline-text-4" id="text-org42d2c45">
 <p>
-Deferred lighting 是对 Deferred Shading 的一种修改。该技术使用了三个阶段来代替延迟着色中的两个阶段。<br  />
-延迟光照第一阶段的渲染，只有计算每个像素光照所必须的属性会被写入 G-Buffer.<br  />
-延迟光照第二阶段的渲染，在屏幕空间中，该延迟渲染阶段只输出漫反射和镜面反射光照数据(将这些数据写入到 L-Buffer)<br  />
-延迟光照第三阶段的渲染，在 L-Buffer 的基础上重新渲染场景并进行最终的渲染<br  />
+Deferred lighting 是对 Deferred Shading 的一种修改。该技术使用了三个阶段来代替延迟着色中的两个阶段。<br />
+延迟光照第一阶段的渲染，只有计算每个像素光照所必须的属性会被写入 G-Buffer.<br />
+延迟光照第二阶段的渲染，在屏幕空间中，该延迟渲染阶段只输出漫反射和镜面反射光照数据(将这些数据写入到 L-Buffer)<br />
+延迟光照第三阶段的渲染，在 L-Buffer 的基础上重新渲染场景并进行最终的渲染<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline112" class="outline-4">
-<h4 id="orgheadline112">参考资料</h4>
-<div class="outline-text-4" id="text-orgheadline112">
+<div id="outline-container-orgdd73b9d" class="outline-4">
+<h4 id="orgdd73b9d">参考资料</h4>
+<div class="outline-text-4" id="text-orgdd73b9d">
 <p>
-<a href="http://chengkehan.github.io/DeferredRendering.html">http://chengkehan.github.io/DeferredRendering.html</a><br  />
-<a href="http://blog.csdn.net/bugrunner/article/details/7436600">http://blog.csdn.net/bugrunner/article/details/7436600</a><br  />
-<a href="https://en.wikipedia.org/wiki/Deferred_shading">https://en.wikipedia.org/wiki/Deferred_shading</a><br  />
-</p>
-
-<p>
-Deferred Shading   <a href="https://docs.unity3d.com/Manual/RenderTech-DeferredShading.html">https://docs.unity3d.com/Manual/RenderTech-DeferredShading.html</a><br  />
-Deferred Lighting  <a href="https://docs.unity3d.com/Manual/RenderTech-DeferredLighting.html">https://docs.unity3d.com/Manual/RenderTech-DeferredLighting.html</a><br  />
-</p>
-</div>
-</div>
-</div>
-<div id="outline-container-orgheadline114" class="outline-3">
-<h3 id="orgheadline114">为什么 Unity 中 skybox 是在所有不透明物体和所有透明物体之间被绘制的？</h3>
-<div class="outline-text-3" id="text-orgheadline114">
-<p>
-一般来讲 skybox 可以在 background 渲染队列中进行渲染，但是，这样会导致像素的 OverDraw，因此在不透明物体后再绘制 Skybox 可以减少这种 OverDraw。<br  />
-</p>
-</div>
-</div>
-<div id="outline-container-orgheadline115" class="outline-3">
-<h3 id="orgheadline115">为什么光照和表面的交互用乘法？</h3>
-<div class="outline-text-3" id="text-orgheadline115">
-<p>
-物体的颜色表示的是物体对光照中不同频率光的吸收和反射，例如 白色的光照射红色的物体，红色物体会吸收绿光和蓝光，反射红光，所以看到物体是红色的。<br  />
-这种作用方式可以用乘法表示，物体颜色(1,0,0) * 光照颜色(1,1,1) = 看到颜色(1, 0, 0)<br  />
-</p>
-</div>
-</div>
-<div id="outline-container-orgheadline116" class="outline-3">
-<h3 id="orgheadline116">为什么光的衰减和离光源的距离的平方成反比？</h3>
-<div class="outline-text-3" id="text-orgheadline116">
-<p>
-在点光源，聚光灯等模拟中，通常会为光照添加衰减，这个衰减系数和光源距离的平方相关，具体原因查看下面文章。<br  />
-基于物理着色：BRDF <a href="https://zhuanlan.zhihu.com/p/21376124">https://zhuanlan.zhihu.com/p/21376124</a><br  />
-</p>
-</div>
-</div>
-<div id="outline-container-orgheadline117" class="outline-3">
-<h3 id="orgheadline117">内置着色器下载</h3>
-<div class="outline-text-3" id="text-orgheadline117">
-<p>
-Unity 内置 Shader 可以在官网下载：<a href="https://unity3d.com/cn/get-unity/download/archive">https://unity3d.com/cn/get-unity/download/archive</a><br  />
-进入上面页面，点击下载按钮的下拉菜单，选择 内置着色器。<br  />
-</p>
-</div>
-</div>
-<div id="outline-container-orgheadline118" class="outline-3">
-<h3 id="orgheadline118">贴图 UV 坐标系</h3>
-<div class="outline-text-3" id="text-orgheadline118">
-<p>
-unity 中贴图 UV 坐标系原点在 左下角。<br  />
-unreal 中贴图 UV 坐标系原点在 左上角。<br  />
-photoshop 中贴图 UV 坐标系原点在 左上角。<br  />
-</p>
-</div>
-</div>
-<div id="outline-container-orgheadline119" class="outline-3">
-<h3 id="orgheadline119">What is tangent.w? How to know whether it's 1 or -1? tangent.w VS unity_WorldTransformParams.w?</h3>
-<div class="outline-text-3" id="text-orgheadline119">
-<p>
-<a href="https://forum.unity.com/threads/what-is-tangent-w-how-to-know-whether-its-1-or-1-tangent-w-vs-unity_worldtransformparams-w.468395/">https://forum.unity.com/threads/what-is-tangent-w-how-to-know-whether-its-1-or-1-tangent-w-vs-unity_worldtransformparams-w.468395/</a><br  />
-</p>
-</div>
-</div>
-</div>
-<div id="outline-container-orgheadline121" class="outline-2">
-<h2 id="orgheadline121">参考资料</h2>
-<div class="outline-text-2" id="text-orgheadline121">
-<p>
-Unity3D Shader 入门 <a href="https://onevcat.com/2013/07/shader-tutorial-1/">https://onevcat.com/2013/07/shader-tutorial-1/</a><br  />
+<a href="http://chengkehan.github.io/DeferredRendering.html">http://chengkehan.github.io/DeferredRendering.html</a><br />
+<a href="http://blog.csdn.net/bugrunner/article/details/7436600">http://blog.csdn.net/bugrunner/article/details/7436600</a><br />
+<a href="https://en.wikipedia.org/wiki/Deferred_shading">https://en.wikipedia.org/wiki/Deferred_shading</a><br />
 </p>
 
 <p>
-经过半年努力，终于完成了年初设定的目标。功能开发相关工作比较容易，认真负责就可以做到，项目初步的性能优化工作相对来说要有一些挑战性，关键是既需要全方位整体考虑项目性能瓶颈，又需要将优化方案落实到项目各个方面。优化初期，利用过往经验经行优化后，依然没有达到当初设置的优化目标，后来，通过和别人的交流，项目成员一起努力，终于找到了进一步的优化方向，最终才达到初步优化目标。<br  />
-后续项目优化的工作依然艰巨，将继续努力达成目标。<br  />
+Deferred Shading   <a href="https://docs.unity3d.com/Manual/RenderTech-DeferredShading.html">https://docs.unity3d.com/Manual/RenderTech-DeferredShading.html</a><br />
+Deferred Lighting  <a href="https://docs.unity3d.com/Manual/RenderTech-DeferredLighting.html">https://docs.unity3d.com/Manual/RenderTech-DeferredLighting.html</a><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org71e946b" class="outline-3">
+<h3 id="org71e946b">为什么 Unity 中 skybox 是在所有不透明物体和所有透明物体之间被绘制的？</h3>
+<div class="outline-text-3" id="text-org71e946b">
+<p>
+一般来讲 skybox 可以在 background 渲染队列中进行渲染，但是，这样会导致像素的 OverDraw，因此在不透明物体后再绘制 Skybox 可以减少这种 OverDraw。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org8abccf7" class="outline-3">
+<h3 id="org8abccf7">为什么光照和表面的交互用乘法？</h3>
+<div class="outline-text-3" id="text-org8abccf7">
+<p>
+物体的颜色表示的是物体对光照中不同频率光的吸收和反射，例如 白色的光照射红色的物体，红色物体会吸收绿光和蓝光，反射红光，所以看到物体是红色的。<br />
+这种作用方式可以用乘法表示，物体颜色(1,0,0) * 光照颜色(1,1,1) = 看到颜色(1, 0, 0)<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgb7e093a" class="outline-3">
+<h3 id="orgb7e093a">为什么光的衰减和离光源的距离的平方成反比？</h3>
+<div class="outline-text-3" id="text-orgb7e093a">
+<p>
+在点光源，聚光灯等模拟中，通常会为光照添加衰减，这个衰减系数和光源距离的平方相关，具体原因查看下面文章。<br />
+基于物理着色：BRDF <a href="https://zhuanlan.zhihu.com/p/21376124">https://zhuanlan.zhihu.com/p/21376124</a><br />
+</p>
+</div>
+</div>
+<div id="outline-container-orge98aa50" class="outline-3">
+<h3 id="orge98aa50">内置着色器下载</h3>
+<div class="outline-text-3" id="text-orge98aa50">
+<p>
+Unity 内置 Shader 可以在官网下载：<a href="https://unity3d.com/cn/get-unity/download/archive">https://unity3d.com/cn/get-unity/download/archive</a><br />
+进入上面页面，点击下载按钮的下拉菜单，选择 内置着色器。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orge5968a6" class="outline-3">
+<h3 id="orge5968a6">贴图 UV 坐标系</h3>
+<div class="outline-text-3" id="text-orge5968a6">
+<p>
+unity 中贴图 UV 坐标系原点在 左下角。<br />
+unreal 中贴图 UV 坐标系原点在 左上角。<br />
+photoshop 中贴图 UV 坐标系原点在 左上角。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgbd16198" class="outline-3">
+<h3 id="orgbd16198">What is tangent.w? How to know whether it's 1 or -1? tangent.w VS unity_WorldTransformParams.w?</h3>
+<div class="outline-text-3" id="text-orgbd16198">
+<p>
+<a href="https://forum.unity.com/threads/what-is-tangent-w-how-to-know-whether-its-1-or-1-tangent-w-vs-unity_worldtransformparams-w.468395/">https://forum.unity.com/threads/what-is-tangent-w-how-to-know-whether-its-1-or-1-tangent-w-vs-unity_worldtransformparams-w.468395/</a><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc50848e" class="outline-2">
+<h2 id="orgc50848e">参考资料</h2>
+<div class="outline-text-2" id="text-orgc50848e">
+<p>
+Unity3D Shader 入门 <a href="https://onevcat.com/2013/07/shader-tutorial-1/">https://onevcat.com/2013/07/shader-tutorial-1/</a><br />
 </p>
 </div>
 </div>

@@ -308,6 +308,43 @@ function RadixSort(arr, max_digit_number, max_one_digit, is_min_to_max)
     return arr
 end
 
+function RadixSortV2(arr, max_digit_number, max_one_digit, is_min_to_max)
+    local result = {}
+    local tmp
+    local counter = {}
+    for i=0,max_digit_number-1 do
+        result = {}
+        for j=1,max_one_digit do
+            counter[j] = {}
+        end
+        
+        for j=1,#arr do
+            tmp = math.floor(arr[j] / math.pow(max_one_digit,i))%max_one_digit+1
+            table.insert(counter[tmp], j)
+        end
+
+        tmp = 0
+        for j=1,max_one_digit do
+            for k=1,#counter[j] do
+                local idx = counter[j][k]
+                table.insert(result, arr[idx])
+            end
+        end
+
+        for j=1,#result do
+            arr[j] = result[j]
+        end
+    end
+
+    if not is_min_to_max then
+        for i=1,#result do
+            arr[i] = result[#result+1-i]
+        end
+    end
+
+    return arr
+end
+
 ------------------------------------------------------------------------------------------------
 --BucketSort
 function BucketSort(arr, bucket_size, is_min_to_max)

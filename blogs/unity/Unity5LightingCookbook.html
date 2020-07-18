@@ -3,23 +3,23 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2020-01-14 周二 10:48 -->
+<!-- 2020-07-07 周二 20:20 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Unity 5 Lighting Cookbook</title>
 <meta name="generator" content="Org mode" />
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
            <meta name="viewport" content="width=device-width, initial-scale=1" />
-           <link rel="stylesheet" title="Standard" href="https://wolfand11.coding.me/res/css/worg.css" type="text/css" />
-           <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.coding.me/res/css/worg-zenburn.css" type="text/css" />
-           <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.coding.me/res/css/worg-classic.css" type="text/css" />
-           <link rel="icon" href="http://wolfand11.coding.me/res/favicon.ico" type="image/ico" />
+           <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/css/worg.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/css/worg-zenburn.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
+           <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
 <script type="text/javascript">
 /*
 @licstart  The following is the entire license notice for the
 JavaScript code in this tag.
 
-Copyright (C) 2012-2019 Free Software Foundation, Inc.
+Copyright (C) 2012-2020 Free Software Foundation, Inc.
 
 The JavaScript code in this tag is free software: you can
 redistribute it and/or modify it under the terms of the GNU
@@ -65,36 +65,36 @@ for the JavaScript code in this tag.
 <div id="org-div-home-and-up">
  <a accesskey="h" href=""> UP </a>
  |
- <a accesskey="H" href="https://wolfand11.coding.me"> HOME </a>
+ <a accesskey="H" href="https://wolfand11.gitee.io"> HOME </a>
 </div><div id="content">
 <h1 class="title">Unity 5 Lighting Cookbook</h1>
 <div id="table-of-contents">
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org42054fd">Standard realtime lighting 标准的实时光照</a>
+<li><a href="#org5089b2a">Standard realtime lighting 标准的实时光照</a>
 <ul>
-<li><a href="#org2795fd2">Ambient Light 环境光</a></li>
-<li><a href="#orge0f1e60">Environment Reflection 环境反射</a></li>
-<li><a href="#org641aafd">Standard Lights</a></li>
+<li><a href="#org540b80a">Ambient Light 环境光</a></li>
+<li><a href="#org2523302">Environment Reflection 环境反射</a></li>
+<li><a href="#orge0dd5f2">Standard Lights</a></li>
 </ul>
 </li>
-<li><a href="#org85eab32">Precomputed realtime lighting 预计算的实时光照</a>
+<li><a href="#org156cbd1">Precomputed realtime lighting 预计算的实时光照</a>
 <ul>
-<li><a href="#org1c77d5a">Light Bounces 光照回弹</a></li>
-<li><a href="#orgd7567c1">Emissive Materials</a></li>
-<li><a href="#org813503c">Ambient Light in precomputed realtime lighting</a></li>
+<li><a href="#orgacd86ef">Light Bounces 光照回弹</a></li>
+<li><a href="#org21319dc">Emissive Materials</a></li>
+<li><a href="#orgaf1d2fb">Ambient Light in precomputed realtime lighting</a></li>
 </ul>
 </li>
-<li><a href="#org1c58f21">Baked lightmaps 烘焙光照</a></li>
-<li><a href="#org3762e4a">General GI settings 通用的全局照明设置</a></li>
-<li><a href="#org123a2c5">Combining different lighting methods 组合不同的光照方法</a>
+<li><a href="#org57ce53d">Baked lightmaps 烘焙光照</a></li>
+<li><a href="#orgcee16b4">General GI settings 通用的全局照明设置</a></li>
+<li><a href="#org7444acf">Combining different lighting methods 组合不同的光照方法</a>
 <ul>
-<li><a href="#org041820f">Precomputed realtime lighting + Baked lightmaps</a></li>
-<li><a href="#org5a02318">Standard realtime lighthting + Baked lightmaps</a></li>
+<li><a href="#org54e708e">Precomputed realtime lighting + Baked lightmaps</a></li>
+<li><a href="#org8b42f30">Standard realtime lighthting + Baked lightmaps</a></li>
 </ul>
 </li>
-<li><a href="#orgb665a74">Generating lightmap files 生成光照贴图</a></li>
+<li><a href="#org683b0d7">Generating lightmap files 生成光照贴图</a></li>
 </ul>
 </div>
 </div>
@@ -114,17 +114,17 @@ for the JavaScript code in this tag.
 为了防止上面的 github 地址失效，我 fork 了一份，地址为 <a href="https://github.com/wolfand11/unity-5-lighting-cookbook">https://github.com/wolfand11/unity-5-lighting-cookbook</a><br />
 </p>
 
-<div id="outline-container-org42054fd" class="outline-2">
-<h2 id="org42054fd">Standard realtime lighting 标准的实时光照</h2>
-<div class="outline-text-2" id="text-org42054fd">
+<div id="outline-container-org5089b2a" class="outline-2">
+<h2 id="org5089b2a">Standard realtime lighting 标准的实时光照</h2>
+<div class="outline-text-2" id="text-org5089b2a">
 <p>
 标准的实时光照包含了环境光照，环境反射以及实时光照和阴影。它不需要任何全局照明或预处理工作等等。Lighting-&gt;Scene 下的 Precomputed Realtime GI 和 Baked GI 选项都可以关闭。<br />
 <img src="./Unity5LightingCookbook/Unity-5-Lighting-Cookbook-Standard-Lighting.png" alt="Unity-5-Lighting-Cookbook-Standard-Lighting.png" /><br />
 </p>
 </div>
-<div id="outline-container-org2795fd2" class="outline-3">
-<h3 id="org2795fd2">Ambient Light 环境光</h3>
-<div class="outline-text-3" id="text-org2795fd2">
+<div id="outline-container-org540b80a" class="outline-3">
+<h3 id="org540b80a">Ambient Light 环境光</h3>
+<div class="outline-text-3" id="text-org540b80a">
 <p>
 环境光会影响到所有物体。<br />
 <img src="./Unity5LightingCookbook/Unity-5-Lighting-Cookbook-Ambient-Light.png" alt="Unity-5-Lighting-Cookbook-Ambient-Light.png" /><br />
@@ -132,9 +132,9 @@ for the JavaScript code in this tag.
 </p>
 </div>
 </div>
-<div id="outline-container-orge0f1e60" class="outline-3">
-<h3 id="orge0f1e60">Environment Reflection 环境反射</h3>
-<div class="outline-text-3" id="text-orge0f1e60">
+<div id="outline-container-org2523302" class="outline-3">
+<h3 id="org2523302">Environment Reflection 环境反射</h3>
+<div class="outline-text-3" id="text-org2523302">
 <p>
 反射路径会随着摄像机的角度而改变，独立于环境光被应用，也会影响菲涅尔效果。<br />
 如果反射探针被应用，他们将成为 Reflection Source ，并且这些反射探针的 Intensity 会影响物体，所以全局的反射设置不会影响这些物体。Reflection Bounces 定义了反射可以在多个探针之间可以回弹多少次（例如：一个探针采集的物体在另一个探针的影响下）。<br />
@@ -145,9 +145,9 @@ for the JavaScript code in this tag.
 </p>
 </div>
 </div>
-<div id="outline-container-org641aafd" class="outline-3">
-<h3 id="org641aafd">Standard Lights</h3>
-<div class="outline-text-3" id="text-org641aafd">
+<div id="outline-container-orge0dd5f2" class="outline-3">
+<h3 id="orge0dd5f2">Standard Lights</h3>
+<div class="outline-text-3" id="text-orge0dd5f2">
 <p>
 场景中，所有的标准实时光照应用方向光和阴影到物体上。<br />
 默认情况下，场景中的第一个方向光被当做太阳。默认的天空盒会基于太阳的水平倾斜度来调整它的强度和颜色。也可以选择特定的方向光作为太阳来影响默认的天空盒。<br />
@@ -157,9 +157,9 @@ for the JavaScript code in this tag.
 </div>
 </div>
 </div>
-<div id="outline-container-org85eab32" class="outline-2">
-<h2 id="org85eab32">Precomputed realtime lighting 预计算的实时光照</h2>
-<div class="outline-text-2" id="text-org85eab32">
+<div id="outline-container-org156cbd1" class="outline-2">
+<h2 id="org156cbd1">Precomputed realtime lighting 预计算的实时光照</h2>
+<div class="outline-text-2" id="text-org156cbd1">
 <p>
 预计算的实时光照添加了实时的光照回弹，颜色渗透以及发光材质。任何属性都可以动态的修改（灯光颜色、强度、材质颜色、材质发射颜色等），场景中的光照会实时地对应获得更新。<br />
 </p>
@@ -169,18 +169,18 @@ Lighting &gt; Scene &gt; Precomputed Realtime GI enabled, Baked GI disabled.<br 
 <img src="./Unity5LightingCookbook/Unity-5-Lighting-Cookbook-Precomputed-Realtime-GI.png" alt="Unity-5-Lighting-Cookbook-Precomputed-Realtime-GI.png" /><br />
 </p>
 </div>
-<div id="outline-container-org1c77d5a" class="outline-3">
-<h3 id="org1c77d5a">Light Bounces 光照回弹</h3>
-<div class="outline-text-3" id="text-org1c77d5a">
+<div id="outline-container-orgacd86ef" class="outline-3">
+<h3 id="orgacd86ef">Light Bounces 光照回弹</h3>
+<div class="outline-text-3" id="text-orgacd86ef">
 <p>
 每个灯光可以被配置为从物体反弹并且影响其他的物体。<br />
 <img src="./Unity5LightingCookbook/Unity-5-Lighting-Cookbook-Light-Bounces.png" alt="Unity-5-Lighting-Cookbook-Light-Bounces.png" /><br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgd7567c1" class="outline-3">
-<h3 id="orgd7567c1">Emissive Materials</h3>
-<div class="outline-text-3" id="text-orgd7567c1">
+<div id="outline-container-org21319dc" class="outline-3">
+<h3 id="org21319dc">Emissive Materials</h3>
+<div class="outline-text-3" id="text-org21319dc">
 <p>
 被标记为 Static 物体包含一个发射材质会依据它自己的几何形状来发光。<br />
 <img src="./Unity5LightingCookbook/Unity-5-Lighting-Cookbook-Emissive-Object.png" alt="Unity-5-Lighting-Cookbook-Emissive-Object.png" /><br />
@@ -193,18 +193,18 @@ CPU 的使用会影响运行时动态光照改变的反应。在编辑器中烘�
 </p>
 </div>
 </div>
-<div id="outline-container-org813503c" class="outline-3">
-<h3 id="org813503c">Ambient Light in precomputed realtime lighting</h3>
-<div class="outline-text-3" id="text-org813503c">
+<div id="outline-container-orgaf1d2fb" class="outline-3">
+<h3 id="orgaf1d2fb">Ambient Light in precomputed realtime lighting</h3>
+<div class="outline-text-3" id="text-orgaf1d2fb">
 <p>
 环境光会影响到一个静态几何体的一些不同部位。这些部位会被光源从外部照射到，背面也包括在内。例如，在室内场景中由静态几何体定义了封闭的外壳，环境光对静态网格将不会有任何影响。如果光通过物体的任何缝隙或部位进入静态几何体内部，则该静态物体将会受到对应环境光的影响。<br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-org1c58f21" class="outline-2">
-<h2 id="org1c58f21">Baked lightmaps 烘焙光照</h2>
-<div class="outline-text-2" id="text-org1c58f21">
+<div id="outline-container-org57ce53d" class="outline-2">
+<h2 id="org57ce53d">Baked lightmaps 烘焙光照</h2>
+<div class="outline-text-2" id="text-org57ce53d">
 <p>
 环境光，标准光照（烘焙或混合），光照回弹以及发射材质都被烘焙到光照贴图中。只有环境反射可以在运行时修改。<br />
 </p>
@@ -222,9 +222,9 @@ Lighting &gt; Scene &gt; Baked GI 开启, Precomputed Realtime GI 关闭.<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org3762e4a" class="outline-2">
-<h2 id="org3762e4a">General GI settings 通用的全局照明设置</h2>
-<div class="outline-text-2" id="text-org3762e4a">
+<div id="outline-container-orgcee16b4" class="outline-2">
+<h2 id="orgcee16b4">General GI settings 通用的全局照明设置</h2>
+<div class="outline-text-2" id="text-orgcee16b4">
 <p>
 <img src="./Unity5LightingCookbook/Unity-5-Lighting-Cookbook-General-GI.png" alt="Unity-5-Lighting-Cookbook-General-GI.png" /><br />
 间接光照包括环境光、光照回弹、发射材质(在靠近的物体上的光照效果，不是发射物体他们自己上的)的光照效果，但不包括环境反射的光照效果。Scene 视图窗口中选择 Irradiance 可以显示场景中的间接灯光：<br />
@@ -244,9 +244,9 @@ Atlas size (atlas 尺寸): 烘焙模式下，光照贴图的尺寸.<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org123a2c5" class="outline-2">
-<h2 id="org123a2c5">Combining different lighting methods 组合不同的光照方法</h2>
-<div class="outline-text-2" id="text-org123a2c5">
+<div id="outline-container-org7444acf" class="outline-2">
+<h2 id="org7444acf">Combining different lighting methods 组合不同的光照方法</h2>
+<div class="outline-text-2" id="text-org7444acf">
 <p>
 Unity5 的教程-Lighting and Rendering 对于理解 Unity5 中全局照明来说是必读的.下面引号中的内容就是摘自这篇教程。<br />
 这篇教程的地址：<br />
@@ -256,9 +256,9 @@ Unity5 的教程-Lighting and Rendering 对于理解 Unity5 中全局照明来�
 <li>新的地址 <a href="https://learn.unity.com/tutorial/intermediate-lighting-rendering">https://learn.unity.com/tutorial/intermediate-lighting-rendering</a><br /></li>
 </ul>
 </div>
-<div id="outline-container-org041820f" class="outline-3">
-<h3 id="org041820f">Precomputed realtime lighting + Baked lightmaps</h3>
-<div class="outline-text-3" id="text-org041820f">
+<div id="outline-container-org54e708e" class="outline-3">
+<h3 id="org54e708e">Precomputed realtime lighting + Baked lightmaps</h3>
+<div class="outline-text-3" id="text-org54e708e">
 <p>
 预计算实时光+烘培光照贴图同时开启，这样的做法不是一个好主意，即使默认情况下会同时开启这两种光照：<br />
 </p>
@@ -269,9 +269,9 @@ Unity5 的教程-Lighting and Rendering 对于理解 Unity5 中全局照明来�
 </pre>
 </div>
 </div>
-<div id="outline-container-org5a02318" class="outline-3">
-<h3 id="org5a02318">Standard realtime lighthting + Baked lightmaps</h3>
-<div class="outline-text-3" id="text-org5a02318">
+<div id="outline-container-org8b42f30" class="outline-3">
+<h3 id="org8b42f30">Standard realtime lighthting + Baked lightmaps</h3>
+<div class="outline-text-3" id="text-org8b42f30">
 <p>
 标准实时光照 + 烘培光照贴图。对于处于相同的恒定光照条件下的静态和动态的物体来说，这是一个实用的方法：<br />
 </p>
@@ -281,9 +281,9 @@ Unity5 的教程-Lighting and Rendering 对于理解 Unity5 中全局照明来�
 </div>
 </div>
 </div>
-<div id="outline-container-orgb665a74" class="outline-2">
-<h2 id="orgb665a74">Generating lightmap files 生成光照贴图</h2>
-<div class="outline-text-2" id="text-orgb665a74">
+<div id="outline-container-org683b0d7" class="outline-2">
+<h2 id="org683b0d7">Generating lightmap files 生成光照贴图</h2>
+<div class="outline-text-2" id="text-org683b0d7">
 <p>
 默认情况下，每次光照贴图计算阶段被触发时(例如，移动静态元素)，光照贴图文件在内部被生成和存储。<br />
 通过关闭 Lighting 窗口中的自动选项，然后，点击 Build 按钮，这样光照贴图也可以被手动计算。生成的图片会被存储在和场景同名的文件夹下。烘焙数据包含了光照贴图和反射探针。<br />

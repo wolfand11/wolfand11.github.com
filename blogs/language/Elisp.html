@@ -3,23 +3,23 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2020-01-14 周二 10:46 -->
+<!-- 2020-07-07 周二 20:18 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Programing in Elisp</title>
 <meta name="generator" content="Org mode" />
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
            <meta name="viewport" content="width=device-width, initial-scale=1" />
-           <link rel="stylesheet" title="Standard" href="https://wolfand11.coding.me/res/css/worg.css" type="text/css" />
-           <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.coding.me/res/css/worg-zenburn.css" type="text/css" />
-           <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.coding.me/res/css/worg-classic.css" type="text/css" />
-           <link rel="icon" href="http://wolfand11.coding.me/res/favicon.ico" type="image/ico" />
+           <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/css/worg.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/css/worg-zenburn.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
+           <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
 <script type="text/javascript">
 /*
 @licstart  The following is the entire license notice for the
 JavaScript code in this tag.
 
-Copyright (C) 2012-2019 Free Software Foundation, Inc.
+Copyright (C) 2012-2020 Free Software Foundation, Inc.
 
 The JavaScript code in this tag is free software: you can
 redistribute it and/or modify it under the terms of the GNU
@@ -65,32 +65,45 @@ for the JavaScript code in this tag.
 <div id="org-div-home-and-up">
  <a accesskey="h" href=""> UP </a>
  |
- <a accesskey="H" href="https://wolfand11.coding.me"> HOME </a>
+ <a accesskey="H" href="https://wolfand11.gitee.io"> HOME </a>
 </div><div id="content">
 <h1 class="title">Programing in Elisp</h1>
 <div id="table-of-contents">
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orgb11f0ca">语法知识</a>
+<li><a href="#org6c7d20a">语法知识</a>
 <ul>
-<li><a href="#org3d92f31">List</a></li>
-<li><a href="#orga33133f">Base Special List</a>
+<li><a href="#orgde89054">List</a></li>
+<li><a href="#org21ea52e">Base Special List</a>
 <ul>
-<li><a href="#org9d88c86">defun</a></li>
-<li><a href="#org89c6652">let</a></li>
-<li><a href="#orga30e95c">set setq setf</a></li>
-<li><a href="#org7535eb9">if</a></li>
-<li><a href="#org9a2ee8a">interactive</a></li>
-<li><a href="#org2baf134">save-excursion</a></li>
-<li><a href="#org8308255">eval-last-sexp</a></li>
+<li><a href="#org00467fd">quote</a></li>
+<li><a href="#org682f33e">Backquote</a></li>
+<li><a href="#org0c70795">defun</a></li>
+<li><a href="#org17a1510">let</a></li>
+<li><a href="#orgaa59e73">set setq setf</a></li>
+<li><a href="#org35cd72a">if</a></li>
+<li><a href="#org45ff51a">interactive</a></li>
+<li><a href="#org5178a0f">save-excursion</a></li>
+<li><a href="#org189baff">eval-last-sexp</a></li>
 </ul>
 </li>
-<li><a href="#org552467b">Buffer-related List</a></li>
-<li><a href="#orgff07549">Evaluation 表达式求值</a></li>
+<li><a href="#org9d47298">Buffer-related List</a></li>
+<li><a href="#orgb3d6ccd">Evaluation 表达式求值</a></li>
+<li><a href="#orgb75191e">字符串操作</a>
+<ul>
+<li><a href="#orgc694462">concat</a></li>
 </ul>
 </li>
-<li><a href="#org97e25d0">Emacs 相关命令</a></li>
+</ul>
+</li>
+<li><a href="#org6ba29aa">Emacs 相关功能</a>
+<ul>
+<li><a href="#org70c2aeb">自定义启动参数</a></li>
+</ul>
+</li>
+<li><a href="#orgcac6295">Emacs 相关命令</a></li>
+<li><a href="#orgcbbf282">参考资料</a></li>
 </ul>
 </div>
 </div>
@@ -103,16 +116,16 @@ lisp note.<br />
 </p>
 
 </div>
-<div id="outline-container-orgb11f0ca" class="outline-2">
-<h2 id="orgb11f0ca">语法知识</h2>
-<div class="outline-text-2" id="text-orgb11f0ca">
+<div id="outline-container-org6c7d20a" class="outline-2">
+<h2 id="org6c7d20a">语法知识</h2>
+<div class="outline-text-2" id="text-org6c7d20a">
 </div>
-<div id="outline-container-org3d92f31" class="outline-3">
-<h3 id="org3d92f31">List</h3>
-<div class="outline-text-3" id="text-org3d92f31">
+<div id="outline-container-orgde89054" class="outline-3">
+<h3 id="orgde89054">List</h3>
+<div class="outline-text-3" id="text-orgde89054">
 <pre class="example">
-List      由括号括起来的原子，或括号括起来的 list，或括号括起来的原子和 list,或者一个空括号。元素之间通过空格分隔。
-原子       可以是数字、单字符符号、多字符符号、字符串
+原子        可以是数字、单字符符号、多字符符号、字符串
+List        由括号括起来的原子，或括号括起来的 list，或括号括起来的原子和 list,或者一个空括号。元素之间通过空格分隔。
 符号表达式  原子和列表的书面或计算机表示被称作符号表达式。
 
 Example:
@@ -122,51 +135,105 @@ Example:
 
 Tips:
 (1) 空列表既是一个列表，也是一个原子; nil 等价于()
-(2) 元素直接的空格可以任意多，解析器在处理的时候会去掉所有多余的空格只留下一个。
+(2) 元素之间的空格可以任意多，解析器在处理的时候会去掉所有多余的空格只留下一个。
 (3) 所谓 s 表达式(s-expression)就是符号表达式(symbolic expression)
 
 </pre>
 </div>
 </div>
-<div id="outline-container-orga33133f" class="outline-3">
-<h3 id="orga33133f">Base Special List</h3>
-<div class="outline-text-3" id="text-orga33133f">
+<div id="outline-container-org21ea52e" class="outline-3">
+<h3 id="org21ea52e">Base Special List</h3>
+<div class="outline-text-3" id="text-org21ea52e">
 </div>
-<div id="outline-container-org9d88c86" class="outline-4">
-<h4 id="org9d88c86">defun</h4>
-<div class="outline-text-4" id="text-org9d88c86">
+<div id="outline-container-org00467fd" class="outline-4">
+<h4 id="org00467fd">quote</h4>
+<div class="outline-text-4" id="text-org00467fd">
+<p>
+如果不想元素被求值可以写为<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-elisp">'(a b &#8230;)
+
+<span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">This is equivalent to</span>
+(<span style="color: #4f97d7; font-weight: bold;">quote</span> (list a b &#8230;))
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org682f33e" class="outline-4">
+<h4 id="org682f33e">Backquote</h4>
+<div class="outline-text-4" id="text-org682f33e">
+<div class="org-src-container">
+<pre class="src src-elisp">`(a list of (+ 2 3) elements)
+<span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">&#8658; (a list of (+ 2 3) elements)</span>
+
+'(a list of (+ 2 3) elements)
+<span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">&#8658; (a list of (+ 2 3) elements)</span>
+
+`(a list of ,(+ 2 3) elements)
+<span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">&#8658; (a list of 5 elements)</span>
+
+(<span style="color: #4f97d7; font-weight: bold;">setq</span> some-list '(2 3))
+<span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">&#8658; (2 3)</span>
+
+(cons 1 (append some-list '(4) some-list))
+<span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">&#8658; (1 2 3 4 2 3)</span>
+
+`(1 ,@some-list 4 ,@some-list)
+<span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">&#8658; (1 2 3 4 2 3)</span>
+
+(<span style="color: #4f97d7; font-weight: bold;">setq</span> list '(hack foo bar))
+<span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">&#8658; (hack foo bar)</span>
+(cons 'use
+      (cons 'the
+            (cons 'words (append (cdr list) '(as elements)))))
+<span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">&#8658; (use the words foo bar as elements)</span>
+
+`(use the words ,@(cdr list) as elements)
+<span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">&#8658; (use the words foo bar as elements)</span>
+</pre>
+</div>
+
+<ul class="org-ul">
+<li><a href="https://www.gnu.org/software/emacs/manual/html_node/elisp/Backquote.html">https://www.gnu.org/software/emacs/manual/html_node/elisp/Backquote.html</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org0c70795" class="outline-4">
+<h4 id="org0c70795">defun</h4>
+<div class="outline-text-4" id="text-org0c70795">
 <p>
 定义函数 (defun func-name argument-list body)<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org89c6652" class="outline-4">
-<h4 id="org89c6652">let</h4>
-<div class="outline-text-4" id="text-org89c6652">
+<div id="outline-container-org17a1510" class="outline-4">
+<h4 id="org17a1510">let</h4>
+<div class="outline-text-4" id="text-org17a1510">
 <p>
 定义局部变量，该变量只在 let 列表内可用。 (let ((local-var value) &#x2026;) body)<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orga30e95c" class="outline-4">
-<h4 id="orga30e95c">set setq setf</h4>
-<div class="outline-text-4" id="text-orga30e95c">
+<div id="outline-container-orgaa59e73" class="outline-4">
+<h4 id="orgaa59e73">set setq setf</h4>
+<div class="outline-text-4" id="text-orgaa59e73">
 <p>
 定义全局变量。(set 'var value) (setq var value) (setf var value)<br />
 </p>
 <div class="org-src-container">
-<pre class="src src-elisp"><span style="color: #4f97d7;">(</span>set ls '<span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">1</span> <span style="color: #a45bad;">2</span> <span style="color: #a45bad;">3</span> <span style="color: #a45bad;">4</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>  =&gt; Error - ls has no value
-<span style="color: #4f97d7;">(</span>set 'ls '<span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">1</span> <span style="color: #a45bad;">2</span> <span style="color: #a45bad;">3</span> <span style="color: #a45bad;">4</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span> =&gt; OK
-<span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">setq</span> ls '<span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">1</span> <span style="color: #a45bad;">2</span> <span style="color: #a45bad;">3</span> <span style="color: #a45bad;">4</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span> =&gt; OK - make ls to <span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">quote</span> ls<span style="color: #4f97d7;">)</span> and then have the usual set
-<span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">setf</span> ls '<span style="color: #bc6ec5;">(</span><span style="color: #a45bad;">1</span> <span style="color: #a45bad;">2</span> <span style="color: #a45bad;">3</span> <span style="color: #a45bad;">4</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span> =&gt; OK - same as setq so far BUT
-<span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">setf</span> <span style="color: #bc6ec5;">(</span>car ls<span style="color: #bc6ec5;">)</span> <span style="color: #a45bad;">10</span><span style="color: #4f97d7;">)</span>   =&gt; Makes ls '<span style="color: #4f97d7;">(</span><span style="color: #a45bad;">10</span> <span style="color: #a45bad;">2</span> <span style="color: #a45bad;">3</span> <span style="color: #a45bad;">4</span><span style="color: #4f97d7;">)</span> - not duplicated by setq/set
+<pre class="src src-elisp">(set ls '(1 2 3 4))  =&gt; Error - ls has no value
+(set 'ls '(1 2 3 4)) =&gt; OK
+(<span style="color: #4f97d7; font-weight: bold;">setq</span> ls '(1 2 3 4)) =&gt; OK - make ls to (<span style="color: #4f97d7; font-weight: bold;">quote</span> ls) and then have the usual set
+(<span style="color: #4f97d7; font-weight: bold;">setf</span> ls '(1 2 3 4)) =&gt; OK - same as setq so far BUT
+(<span style="color: #4f97d7; font-weight: bold;">setf</span> (car ls) 10)   =&gt; Makes ls '(10 2 3 4) - not duplicated by setq/set
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-org7535eb9" class="outline-4">
-<h4 id="org7535eb9">if</h4>
-<div class="outline-text-4" id="text-org7535eb9">
+<div id="outline-container-org35cd72a" class="outline-4">
+<h4 id="org35cd72a">if</h4>
+<div class="outline-text-4" id="text-org35cd72a">
 <p>
 分支语句。 (if do-someing do-other-thing)<br />
 </p>
@@ -182,35 +249,39 @@ elisp 中除去()和 nil 外都为 true
 </pre>
 </div>
 </div>
-<div id="outline-container-org9a2ee8a" class="outline-4">
-<h4 id="org9a2ee8a">interactive</h4>
-<div class="outline-text-4" id="text-org9a2ee8a">
+<div id="outline-container-org45ff51a" class="outline-4">
+<h4 id="org45ff51a">interactive</h4>
+<div class="outline-text-4" id="text-org45ff51a">
 <p>
 使函数变为交互函数。 (interactive arg)<br />
 </p>
-<pre class="example">
-Example:
-(defun AddTwo (var1)
-  "add two with argument"
-  (interactive "p")
-  (let ((two_value 2) result (info "result is %d"))
-    (setq result (+ var1 two_value))
+<div class="org-src-container">
+<pre class="src src-elisp"><span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">Example:</span>
+(<span style="color: #4f97d7; font-weight: bold;">defun</span> <span style="color: #bc6ec5; font-weight: bold;">AddTwo</span> (var1)
+  <span style="color: #9f8766;">"add two with argument"</span>
+  (<span style="color: #4f97d7; font-weight: bold;">interactive</span> <span style="color: #2d9574;">"p"</span>)
+  (<span style="color: #4f97d7; font-weight: bold;">let</span> ((two_value 2) result (info <span style="color: #2d9574;">"result is %d"</span>))
+    (<span style="color: #4f97d7; font-weight: bold;">setq</span> result (+ var1 two_value))
     (message info (+ var1 two_value))))
-
 </pre>
 </div>
+
+<ul class="org-ul">
+<li><a href="http://www.ergoemacs.org/emacs/elisp_interactive_form.html">http://www.ergoemacs.org/emacs/elisp_interactive_form.html</a><br /></li>
+</ul>
 </div>
-<div id="outline-container-org2baf134" class="outline-4">
-<h4 id="org2baf134">save-excursion</h4>
-<div class="outline-text-4" id="text-org2baf134">
+</div>
+<div id="outline-container-org5178a0f" class="outline-4">
+<h4 id="org5178a0f">save-excursion</h4>
+<div class="outline-text-4" id="text-org5178a0f">
 <p>
 保存恢复 point 和 mark 变量<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org8308255" class="outline-4">
-<h4 id="org8308255">eval-last-sexp</h4>
-<div class="outline-text-4" id="text-org8308255">
+<div id="outline-container-org189baff" class="outline-4">
+<h4 id="org189baff">eval-last-sexp</h4>
+<div class="outline-text-4" id="text-org189baff">
 <p>
 对前面的表达式求值<br />
 </p>
@@ -218,12 +289,12 @@ Example:
 </div>
 </div>
 
-<div id="outline-container-org552467b" class="outline-3">
-<h3 id="org552467b">Buffer-related List</h3>
+<div id="outline-container-org9d47298" class="outline-3">
+<h3 id="org9d47298">Buffer-related List</h3>
 </div>
-<div id="outline-container-orgff07549" class="outline-3">
-<h3 id="orgff07549">Evaluation 表达式求值</h3>
-<div class="outline-text-3" id="text-orgff07549">
+<div id="outline-container-orgb3d6ccd" class="outline-3">
+<h3 id="orgb3d6ccd">Evaluation 表达式求值</h3>
+<div class="outline-text-3" id="text-orgb3d6ccd">
 <pre class="example">
 Number 求值
 直接返回数值
@@ -246,11 +317,46 @@ Tips:
 </pre>
 </div>
 </div>
-</div>
 
-<div id="outline-container-org97e25d0" class="outline-2">
-<h2 id="org97e25d0">Emacs 相关命令</h2>
-<div class="outline-text-2" id="text-org97e25d0">
+<div id="outline-container-orgb75191e" class="outline-3">
+<h3 id="orgb75191e">字符串操作</h3>
+<div class="outline-text-3" id="text-orgb75191e">
+</div>
+<div id="outline-container-orgc694462" class="outline-4">
+<h4 id="orgc694462">concat</h4>
+<div class="outline-text-4" id="text-orgc694462">
+<div class="org-src-container">
+<pre class="src src-elisp">(message (concat <span style="color: #2d9574;">"a"</span> <span style="color: #2d9574;">"b"</span> <span style="color: #2d9574;">"c"</span>))
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org6ba29aa" class="outline-2">
+<h2 id="org6ba29aa">Emacs 相关功能</h2>
+<div class="outline-text-2" id="text-org6ba29aa">
+</div>
+<div id="outline-container-org70c2aeb" class="outline-3">
+<h3 id="org70c2aeb">自定义启动参数</h3>
+<div class="outline-text-3" id="text-org70c2aeb">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">define handler</span>
+(<span style="color: #4f97d7; font-weight: bold;">defun</span> <span style="color: #bc6ec5; font-weight: bold;">wolf-args-fn</span> (switch)
+  (<span style="color: #4f97d7; font-weight: bold;">let</span> (arg0 (pop command-line-args-left))
+    (<span style="color: #4f97d7; font-weight: bold;">progn</span>
+      (message (concat <span style="color: #2d9574;">"wolf-args "</span> arg0)))))
+
+<span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">register handler</span>
+(add-to-list 'command-switch-alist '(<span style="color: #2d9574;">"-wolf-args"</span> . wolf-args-fn))
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgcac6295" class="outline-2">
+<h2 id="orgcac6295">Emacs 相关命令</h2>
+<div class="outline-text-2" id="text-orgcac6295">
 <pre class="example">
 1、lisp 代码缩排：
 M-C-\ 一个区域内正确缩排命令
@@ -262,6 +368,16 @@ C-x C-e
 3、查看 variable function 信息
 C-h v
 </pre>
+</div>
+</div>
+
+<div id="outline-container-orgcbbf282" class="outline-2">
+<h2 id="orgcbbf282">参考资料</h2>
+<div class="outline-text-2" id="text-orgcbbf282">
+<ul class="org-ul">
+<li><a href="https://www.gnu.org/software/emacs/manual/html_node/elisp/">https://www.gnu.org/software/emacs/manual/html_node/elisp/</a><br /></li>
+<li><a href="http://ergoemacs.org/emacs/elisp_basics.html">http://ergoemacs.org/emacs/elisp_basics.html</a><br /></li>
+</ul>
 </div>
 </div>
 </div>

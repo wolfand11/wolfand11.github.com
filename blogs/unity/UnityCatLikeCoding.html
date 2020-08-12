@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2020-07-07 周二 20:20 -->
+<!-- 2020-08-06 周四 16:10 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>UnityCatLikeCoding</title>
@@ -108,6 +108,7 @@ for the JavaScript code in this tag.
 <li><a href="#orgab79e27">贴图坐标系</a></li>
 <li><a href="#org9e4b42f">MipMap 和 FilterMode</a></li>
 <li><a href="#org5b1b147">TRANSFORM_TEX</a></li>
+<li><a href="#org4db8015">tex2Dbias tex2Dlod</a></li>
 <li><a href="#org63edc06">lerp 函数意义</a></li>
 <li><a href="#org5e3672a">ddx ddy</a></li>
 <li><a href="#org0b9e57f">fwidth</a></li>
@@ -118,7 +119,7 @@ for the JavaScript code in this tag.
 <ul>
 <li><a href="#orgc7e83c0">Screen space pixel position: VPOS</a></li>
 <li><a href="#org0bf2bc3">Face orientation: VFACE</a></li>
-<li><a href="#orge890b4d">参考资料</a></li>
+<li><a href="#orga87da47">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#orgc38edea">Unity 定义的变量</a></li>
@@ -135,7 +136,7 @@ for the JavaScript code in this tag.
 <li><a href="#org305567d">Linear Color Space 原理</a></li>
 <li><a href="#orgfecc5e9">DetailTex 叠加到 MainTex 上为什么需要乘二？</a></li>
 <li><a href="#orgc8945da">SetVector SetColor</a></li>
-<li><a href="#orgb4512e4">参考资料</a></li>
+<li><a href="#orgc993876">参考资料</a></li>
 </ul>
 </li>
 </ul>
@@ -195,16 +196,17 @@ for the JavaScript code in this tag.
 <ul>
 <li><a href="#org063e6df">方向光阴影</a>
 <ul>
+<li><a href="#orgcf8167e">ShadowBias</a></li>
 <li><a href="#orgc5b7f87">开启屏幕空间阴影</a></li>
 <li><a href="#org7df3e80">关闭屏幕空间阴影</a></li>
 <li><a href="#orgb97eafd">ShadowQuality</a></li>
 <li><a href="#orgb0cc079">ForwardAddPass 阴影支持</a></li>
-<li><a href="#orge04e89a">参考资料</a></li>
+<li><a href="#org8385bed">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#orgc18faea">Spot Light Shadow</a></li>
 <li><a href="#orgfaf2973">相关宏定义</a></li>
-<li><a href="#org9bc9a88">参考资料</a></li>
+<li><a href="#orgdcd0be7">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#org6b6f538">Reflection</a>
@@ -233,7 +235,7 @@ for the JavaScript code in this tag.
 <li><a href="#org7000f1c">Occlusion</a></li>
 </ul>
 </li>
-<li><a href="#org4c2b31c">Transparency</a>
+<li><a href="#org00a77ee">Transparency</a>
 <ul>
 <li><a href="#org8d7c0f8">Cutout</a></li>
 <li><a href="#org083834a">Semitransparent</a></li>
@@ -258,7 +260,7 @@ for the JavaScript code in this tag.
 <li><a href="#org521e665">Mixing Rendering Modes</a></li>
 </ul>
 </li>
-<li><a href="#org1d99983">Support Deferred Path</a>
+<li><a href="#org35b13c3">Support Deferred Path</a>
 <ul>
 <li><a href="#org343a040">创建 deferred pass</a></li>
 <li><a href="#orgd86fc27">deferred pass frag output</a></li>
@@ -281,14 +283,14 @@ for the JavaScript code in this tag.
 <li><a href="#orgce217af">Linear Fog</a></li>
 <li><a href="#org88e453c">Exponential Fog</a></li>
 <li><a href="#orgff4cf0e">Exponential Squared Fog</a></li>
-<li><a href="#org3c75645">Depth-Based Fog</a></li>
+<li><a href="#orgac64bce">Depth-Based Fog</a></li>
 <li><a href="#orgebada73">代码实现</a></li>
 </ul>
 </li>
 <li><a href="#org963bb07">Deferred Fog</a>
 <ul>
 <li><a href="#orga36f85d">Shader Source Code</a></li>
-<li><a href="#org19abbda">Depth-Based Fog</a></li>
+<li><a href="#org0a522a2">Depth-Based Fog</a></li>
 <li><a href="#org25a8c2b">Distance Based Fog</a></li>
 </ul>
 </li>
@@ -296,7 +298,7 @@ for the JavaScript code in this tag.
 </li>
 <li><a href="#org193b5d1">Deferred Lights</a>
 <ul>
-<li><a href="#orgfc3aadc">Q&amp;A</a>
+<li><a href="#org892adb8">Q&amp;A</a>
 <ul>
 <li><a href="#org0f2e50a"><span class="todo TODO">TODO</span> 为什么 DeferredShading 中 Directional 对应的顶点数据不是摄像机近平面四个角，或者是摄像机和四个角连线上的点？</a></li>
 <li><a href="#org399bdc1">为什么 DeferredShading 中片段着色器返回 0，依然可以渲染出物体？</a></li>
@@ -309,11 +311,11 @@ for the JavaScript code in this tag.
 <ul>
 <li><a href="#org76a4669">Lightmapping 光照贴图</a>
 <ul>
-<li><a href="#org27b5cc8">简介</a></li>
+<li><a href="#org07ad597">简介</a></li>
 <li><a href="#orgd263f9d">Unity 中使用光照贴图的步骤</a></li>
 <li><a href="#orgdd64fde">Lightmapping Settings</a></li>
 <li><a href="#org3e9539e">Indirect Light</a></li>
-<li><a href="#org34aa068">Transparency</a></li>
+<li><a href="#org3ffbf5e">Transparency</a></li>
 </ul>
 </li>
 <li><a href="#org856b934">使用光照贴图</a></li>
@@ -325,7 +327,7 @@ for the JavaScript code in this tag.
 </li>
 <li><a href="#org8d0f0c8">Directional Lightmaps 具有方向的光照贴图</a>
 <ul>
-<li><a href="#org911a294">简介</a></li>
+<li><a href="#org90f04ee">简介</a></li>
 <li><a href="#orgfec2e02">方向性</a></li>
 <li><a href="#org90c67fa">使用烘培的方向贴图</a></li>
 </ul>
@@ -336,7 +338,7 @@ for the JavaScript code in this tag.
 <li><a href="#org65b943d">为什么 LightProb 对于动态物体不生效？</a></li>
 </ul>
 </li>
-<li><a href="#org753feca">Q&amp;A</a>
+<li><a href="#org1e14a42">Q&amp;A</a>
 <ul>
 <li><a href="#org2209830">使用 lightmap 时，顶点着色器中传入的 lightmap uv 是如何求得的？又是如何传入顶点着色器的？</a></li>
 <li><a href="#orgbb99a98">什么错误导致 lightmap 中不包含 Emission 颜色？</a></li>
@@ -357,19 +359,19 @@ for the JavaScript code in this tag.
 <li><a href="#orga74f0af">Using a Shadowmask</a>
 <ul>
 <li><a href="#org1af958f">Sampling the Shadowmask</a></li>
-<li><a href="#org4a6a650">Support Deferred Path</a></li>
+<li><a href="#org476c3c2">Support Deferred Path</a></li>
 <li><a href="#org16cc4da">Distance Shadowmask Mode</a></li>
 <li><a href="#org2383d54">Multiple Lights</a></li>
 </ul>
 </li>
 <li><a href="#org294822e">Subtractive Shadows</a>
 <ul>
-<li><a href="#orgd6afcb1">简介</a></li>
+<li><a href="#org700693d">简介</a></li>
 <li><a href="#org5f929ae">实现</a></li>
 </ul>
 </li>
 <li><a href="#orgaa5cc02">总结</a></li>
-<li><a href="#orgf93636c">Q&amp;A</a>
+<li><a href="#org18028c2">Q&amp;A</a>
 <ul>
 <li><a href="#orge273f47"><span class="todo TODO">TODO</span> 如果烘培灯光和实时灯光分开，烘培灯光的 Mode 使用 Baked，实时灯光的 Mode 使用 Realtime，这样做是否合理？</a></li>
 <li><a href="#orgf121e74">烘培灯光的情况下，如何解决静态物体无法在动态的物体上投影的问题？</a></li>
@@ -385,7 +387,7 @@ for the JavaScript code in this tag.
 <ul>
 <li><a href="#orgbda86b2">Realtime Globall Illumination</a>
 <ul>
-<li><a href="#orgeaa9d4f">简介</a></li>
+<li><a href="#org8a1ed55">简介</a></li>
 <li><a href="#org53e80a3">Baking Realtime GI</a></li>
 <li><a href="#org64f567e">Sampling Realtime Lightmaps</a></li>
 <li><a href="#orgbe6c70c">Emissive Light</a></li>
@@ -397,7 +399,7 @@ for the JavaScript code in this tag.
 <li><a href="#org85f0fef">Baked GI and Lod Group</a></li>
 <li><a href="#org6293ddf">Realtime GI and Lod Group</a></li>
 <li><a href="#orgf404f1e">Cross-fading Between Lod Levels</a></li>
-<li><a href="#org3123e7f">Q&amp;A</a></li>
+<li><a href="#org66028d3">Q&amp;A</a></li>
 </ul>
 </li>
 </ul>
@@ -406,7 +408,7 @@ for the JavaScript code in this tag.
 <ul>
 <li><a href="#org915d4a7">Batching Instances</a>
 <ul>
-<li><a href="#org24649ee">简介</a></li>
+<li><a href="#org2ed2b7f">简介</a></li>
 <li><a href="#org4087eda">Support GPU Instancing</a></li>
 <li><a href="#org2f425f4">Batch Size</a></li>
 </ul>
@@ -416,7 +418,7 @@ for the JavaScript code in this tag.
 </li>
 <li><a href="#org3882fcb">Parallax</a>
 <ul>
-<li><a href="#org2e98651">参考资料</a></li>
+<li><a href="#org1f986b9">参考资料</a></li>
 </ul>
 </li>
 </ul>
@@ -426,7 +428,7 @@ for the JavaScript code in this tag.
 <li><a href="#org9d60a92">Flat and Wireframe Shading</a>
 <ul>
 <li><a href="#org0a9b99d">Barycentric Coordinates</a></li>
-<li><a href="#orge852fa9">Q&amp;A</a>
+<li><a href="#org658eb34">Q&amp;A</a>
 <ul>
 <li><a href="#org78bff50">为什么通过 ddx ddy 方式计算三角面的 normal 物体会完全变黑？</a></li>
 </ul>
@@ -435,7 +437,7 @@ for the JavaScript code in this tag.
 </li>
 <li><a href="#org5863c6e">Tessellation</a>
 <ul>
-<li><a href="#org941ccfa">Q&amp;A</a>
+<li><a href="#org5c74cbc">Q&amp;A</a>
 <ul>
 <li><a href="#org38ed3eb">ERROR: 'patchconstantfunc(function name)' attribute expected, where 'function name' is the name of the patch constant value evaluation function at &#x2026;&#x2026;</a></li>
 <li><a href="#org37ce392">ERROR: 'vert': cannot convert from 'struct TessControlPoint' to 'struct appdata'</a></li>
@@ -447,7 +449,7 @@ for the JavaScript code in this tag.
 <li><a href="#orgc6241cc">Bloom</a>
 <ul>
 <li><a href="#org1f9c251">利用 Downsampling Upsampling 模糊图片的原理</a></li>
-<li><a href="#org1b8e99c">Q&amp;A</a>
+<li><a href="#orgc0949e1">Q&amp;A</a>
 <ul>
 <li><a href="#org0576c75"><span class="todo TODO">TODO</span> 自定义的 Bloom 如何放到 Builtin Uber 中一起计算？在 Builtin Uber 中一起计算的好处是什么？</a></li>
 </ul>
@@ -457,7 +459,7 @@ for the JavaScript code in this tag.
 <li><a href="#orgdf337d2">Depth of Field</a>
 <ul>
 <li><a href="#orgbd11ad0">Bokeh</a></li>
-<li><a href="#orgebb54f8">Q&amp;A</a>
+<li><a href="#orge77f17e">Q&amp;A</a>
 <ul>
 <li><a href="#org113003b"><span class="todo TODO">TODO</span> 为什么开启 MSAA 的时候，DOF 效果会错误？</a></li>
 </ul>
@@ -468,8 +470,8 @@ for the JavaScript code in this tag.
 <ul>
 <li><a href="#org2dc801f">SSAA MSAA</a>
 <ul>
-<li><a href="#org6797589">Q&amp;A</a></li>
-<li><a href="#org13e7dc4">参考资料</a></li>
+<li><a href="#org445bc75">Q&amp;A</a></li>
+<li><a href="#org9da6269">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#orge5f001b">参考资源</a></li>
@@ -495,7 +497,7 @@ for the JavaScript code in this tag.
 <li><a href="#org2b1c321">TestReplaceShader</a>
 <ul>
 <li><a href="#org3d95766">SetReplacementShader VS RenderWithShader</a></li>
-<li><a href="#org3090308">Q&amp;A</a>
+<li><a href="#org5d9b0b6">Q&amp;A</a>
 <ul>
 <li><a href="#org2c6791d">Warnning: Attempting to render from camera 'Main Camera' that is currently being used to render. Create a copy of the camera (Camera.CopyFrom) if you wish to do this. UnityEngine.Camera:RenderWithShader(Shader, String)</a></li>
 </ul>
@@ -505,12 +507,12 @@ for the JavaScript code in this tag.
 <li><a href="#org3d80cdc">BilinearFiltering</a></li>
 <li><a href="#org2414a76">SphereMapping</a>
 <ul>
-<li><a href="#org03587f4">参考资料</a></li>
+<li><a href="#org64b1bf3">参考资料</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#org533dbf8">Q&amp;A</a>
+<li><a href="#orgb0329e0">Q&amp;A</a>
 <ul>
 <li><a href="#org5bd851b">如何判断投影矩阵是否为透视投影？</a></li>
 <li><a href="#orgba699cb">为什么 Unity 标准材质中只有点光源可以在顶点着色器中计算？</a></li>
@@ -521,7 +523,7 @@ for the JavaScript code in this tag.
 <li><a href="#org0f186c7">为什么 FrameDebug 中显示 unity_SpecCube0 为 UnityBlackCube？</a></li>
 </ul>
 </li>
-<li><a href="#orgef9d2a1">参考资料</a></li>
+<li><a href="#orgb9f9731">参考资料</a></li>
 </ul>
 </div>
 </div>
@@ -678,6 +680,21 @@ Bilinear texture filtering  会对靠近采样点的四个图元进行加权平�
 <span style="color: #bc6ec5;">#define</span> TRANSFORM_TEX(tex,name) (tex.xy * name##<span style="color: #7590db;">_ST</span>.xy + name##<span style="color: #7590db;">_ST</span>.zw)
 </pre>
 </div>
+</div>
+</div>
+<div id="outline-container-org4db8015" class="outline-6">
+<h6 id="org4db8015">tex2Dbias tex2Dlod</h6>
+<div class="outline-text-6" id="text-org4db8015">
+<p>
+tex2Dbias(s, t) : Samples a 2D texture after biasing the mip level by t.w.<br />
+tex2Dlod(s, t)  : Samples a 2D texture with mipmaps. The mipmap LOD is specified in t.w.<br />
+</p>
+
+<ul class="org-ul">
+<li>tex2Dbias <a href="https://docs.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-tex2dbias">https://docs.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-tex2dbias</a><br /></li>
+<li>tex2Dlod <a href="https://docs.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-tex2dlod">https://docs.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-tex2dlod</a><br /></li>
+<li><a href="https://forum.unity.com/threads/tex2dlod-vs-tex2dbias.249140/">https://forum.unity.com/threads/tex2dlod-vs-tex2dbias.249140/</a><br /></li>
+</ul>
 </div>
 </div>
 <div id="outline-container-org63edc06" class="outline-6">
@@ -876,9 +893,9 @@ VPOS 和 SV_POSITION 不能同时出现在 vout 中，需要使用 fin 将两者
 </div>
 </div>
 </div>
-<div id="outline-container-orge890b4d" class="outline-6">
-<h6 id="orge890b4d">参考资料</h6>
-<div class="outline-text-6" id="text-orge890b4d">
+<div id="outline-container-orga87da47" class="outline-6">
+<h6 id="orga87da47">参考资料</h6>
+<div class="outline-text-6" id="text-orga87da47">
 <ul class="org-ul">
 <li><a href="https://docs.microsoft.com/zh-cn/windows/win32/direct3dhlsl/dx-graphics-hlsl-semantics?redirectedfrom=MSDN">https://docs.microsoft.com/zh-cn/windows/win32/direct3dhlsl/dx-graphics-hlsl-semantics?redirectedfrom=MSDN</a><br /></li>
 <li><a href="https://docs.unity3d.com/Manual/SL-ShaderSemantics.html">https://docs.unity3d.com/Manual/SL-ShaderSemantics.html</a><br /></li>
@@ -1276,9 +1293,9 @@ LinearSpace 下，SetVector SetColor 效果会有明显差别。下图为设置�
 </ul>
 </div>
 </div>
-<div id="outline-container-orgb4512e4" class="outline-6">
-<h6 id="orgb4512e4">参考资料</h6>
-<div class="outline-text-6" id="text-orgb4512e4">
+<div id="outline-container-orgc993876" class="outline-6">
+<h6 id="orgc993876">参考资料</h6>
+<div class="outline-text-6" id="text-orgc993876">
 <ul class="org-ul">
 <li>Gamma 空间是什么，为什么我们需要它 <a href="https://blog.csdn.net/qq_18229381/article/details/78053018">https://blog.csdn.net/qq_18229381/article/details/78053018</a><br /></li>
 </ul>
@@ -1736,8 +1753,8 @@ Unity 在 Base Pass 中实现顶点光照。引擎会寻找包含 VERTEXLIGHT_ON
 </div>
 
 <ul class="org-ul">
-<li><a id="org8934264"></a>参考资料<br />
-<div class="outline-text-7" id="text-org8934264">
+<li><a id="orge89dfc7"></a>参考资料<br />
+<div class="outline-text-7" id="text-orge89dfc7">
 <ul class="org-ul">
 <li><a href="https://zh.wikipedia.org/wiki/%E7%90%83%E8%B0%90%E5%87%BD%E6%95%B0">https://zh.wikipedia.org/wiki/%E7%90%83%E8%B0%90%E5%87%BD%E6%95%B0</a><br /></li>
 <li><a href="https://baike.baidu.com/item/%E7%90%83%E8%B0%90%E5%87%BD%E6%95%B0">https://baike.baidu.com/item/%E7%90%83%E8%B0%90%E5%87%BD%E6%95%B0</a><br /></li>
@@ -2184,11 +2201,27 @@ Whiteout Blending : 对上面得到的 normal 乘 \(M_zD_z\) ，然后丢弃掉�
 <h5 id="org063e6df">方向光阴影</h5>
 <div class="outline-text-5" id="text-org063e6df">
 </div>
+<div id="outline-container-orgcf8167e" class="outline-6">
+<h6 id="orgcf8167e">ShadowBias</h6>
+<div class="outline-text-6" id="text-orgcf8167e">
+<ul class="org-ul">
+<li><a href="https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping">https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping</a><br /></li>
+</ul>
+</div>
+</div>
 <div id="outline-container-orgc5b7f87" class="outline-6">
 <h6 id="orgc5b7f87">开启屏幕空间阴影</h6>
 <div class="outline-text-6" id="text-orgc5b7f87">
 </div>
 <ul class="org-ul">
+<li><a id="org90ae6bf"></a>开启关闭的方法<br />
+<div class="outline-text-7" id="text-org90ae6bf">
+<ul class="org-ul">
+<li>关闭 在 ProjectSetting/Graphic 中，将 Screen Space Shadows 设置为 No Support，Tier 中取消勾选 Cascaded Shadows 。<br /></li>
+<li>开启 在 ProjectSetting/Graphic 中，将 Screen Space Shadows 设置为 Built-in shader，Tier 中勾选 Cascaded Shadows 。<br /></li>
+</ul>
+</div>
+</li>
 <li><a id="org98a608b"></a>Rendering to Depth Texture<br />
 <div class="outline-text-7" id="text-org98a608b">
 <p>
@@ -2202,8 +2235,8 @@ Unity 绘制场景中物体将其深度写入到 DepthTexture<br />
 </div>
 </div>
 </li>
-<li><a id="orgec92292"></a>Rendering To Shadow Maps<br />
-<div class="outline-text-7" id="text-orgec92292">
+<li><a id="org6c9930c"></a>Rendering To Shadow Maps<br />
+<div class="outline-text-7" id="text-org6c9930c">
 <p>
 Unity 在光源位置对场景进行绘制，将物体深度写入到 Shadowmap<br />
 开启 shadow cascades 后，会多次绘制阴影。开启 2 级会绘制两次，开启 4 级会绘制 4 次。<br />
@@ -2236,8 +2269,8 @@ Unity 使用 Hidden/Internal-ScreenSpaceShadows shader 绘制一个全屏的矩�
 </p>
 </div>
 </li>
-<li><a id="org5c1f1cf"></a>最终结果<br />
-<div class="outline-text-7" id="text-org5c1f1cf">
+<li><a id="org6440205"></a>最终结果<br />
+<div class="outline-text-7" id="text-org6440205">
 <p>
 下图为两个方向光绘制场景时对应的 drawcall：<br />
 <img src="./UnityCatLikeCoding/01_07sh_4cascades_drawcall.png" alt="01_07sh_4cascades_drawcall.png" /><br />
@@ -2265,8 +2298,8 @@ Unity 使用 Hidden/Internal-ScreenSpaceShadows shader 绘制一个全屏的矩�
 <div class="outline-text-6" id="text-org7df3e80">
 </div>
 <ul class="org-ul">
-<li><a id="org0bea9f4"></a>Rendering To Shadow Maps<br />
-<div class="outline-text-7" id="text-org0bea9f4">
+<li><a id="org5690e07"></a>Rendering To Shadow Maps<br />
+<div class="outline-text-7" id="text-org5690e07">
 <p>
 下图为第一个方向光视角下渲染的阴影贴图：<br />
 <img src="./UnityCatLikeCoding/01_07sh_noss_shadows_1.png" alt="01_07sh_noss_shadows_1.png" /><br />
@@ -2275,8 +2308,8 @@ Unity 使用 Hidden/Internal-ScreenSpaceShadows shader 绘制一个全屏的矩�
 </p>
 </div>
 </li>
-<li><a id="org1bc334d"></a>最终结果<br />
-<div class="outline-text-7" id="text-org1bc334d">
+<li><a id="orgbebdb49"></a>最终结果<br />
+<div class="outline-text-7" id="text-orgbebdb49">
 <p>
 下图为两个方向光绘制场景时对应的 drawcall：<br />
 <img src="./UnityCatLikeCoding/01_07sh_noss_shadows_3.png" alt="01_07sh_noss_shadows_3.png" /><br />
@@ -2315,9 +2348,9 @@ Unity 使用 Hidden/Internal-ScreenSpaceShadows shader 绘制一个全屏的矩�
 </div>
 </div>
 </div>
-<div id="outline-container-orge04e89a" class="outline-6">
-<h6 id="orge04e89a">参考资料</h6>
-<div class="outline-text-6" id="text-orge04e89a">
+<div id="outline-container-org8385bed" class="outline-6">
+<h6 id="org8385bed">参考资料</h6>
+<div class="outline-text-6" id="text-org8385bed">
 <ul class="org-ul">
 <li><a href="https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping">https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping</a><br /></li>
 </ul>
@@ -2398,9 +2431,9 @@ Unity 使用 Hidden/Internal-ScreenSpaceShadows shader 绘制一个全屏的矩�
 </ul>
 </div>
 </div>
-<div id="outline-container-org9bc9a88" class="outline-5">
-<h5 id="org9bc9a88">参考资料</h5>
-<div class="outline-text-5" id="text-org9bc9a88">
+<div id="outline-container-orgdcd0be7" class="outline-5">
+<h5 id="orgdcd0be7">参考资料</h5>
+<div class="outline-text-5" id="text-orgdcd0be7">
 <ul class="org-ul">
 <li>Signed Distance Field Shadow in Unity <a href="https://zhuanlan.zhihu.com/p/37918356">https://zhuanlan.zhihu.com/p/37918356</a><br /></li>
 <li>Unity 平面阴影(王者荣耀阴影实现) <a href="https://zhuanlan.zhihu.com/p/42781261">https://zhuanlan.zhihu.com/p/42781261</a><br /></li>
@@ -2714,9 +2747,9 @@ sampler2D _OcclusionMap;
 </div>
 </div>
 </div>
-<div id="outline-container-org4c2b31c" class="outline-4">
-<h4 id="org4c2b31c">Transparency</h4>
-<div class="outline-text-4" id="text-org4c2b31c">
+<div id="outline-container-org00a77ee" class="outline-4">
+<h4 id="org00a77ee">Transparency</h4>
+<div class="outline-text-4" id="text-org00a77ee">
 </div>
 <div id="outline-container-org8d7c0f8" class="outline-5">
 <h5 id="org8d7c0f8">Cutout</h5>
@@ -2898,8 +2931,8 @@ point light 和 spot light 类似，只是使用球体来表示 point light 照�
 </div>
 </li>
 
-<li><a id="org6b1e227"></a>Q&amp;A<br />
-<div class="outline-text-7" id="text-org6b1e227">
+<li><a id="org5d598fc"></a>Q&amp;A<br />
+<div class="outline-text-7" id="text-org5d598fc">
 <ul class="org-ul">
 <li>渲染灯光对应的物体时，为什么需要关闭正反面剔除？<br />
 <ul class="org-ul">
@@ -2933,9 +2966,9 @@ Unity 的延迟渲染不支持半透明物体，半透明物体需要 Forward re
 </div>
 </div>
 
-<div id="outline-container-org1d99983" class="outline-5">
-<h5 id="org1d99983">Support Deferred Path</h5>
-<div class="outline-text-5" id="text-org1d99983">
+<div id="outline-container-org35b13c3" class="outline-5">
+<h5 id="org35b13c3">Support Deferred Path</h5>
+<div class="outline-text-5" id="text-org35b13c3">
 </div>
 <div id="outline-container-org343a040" class="outline-6">
 <h6 id="org343a040">创建 deferred pass</h6>
@@ -3140,9 +3173,9 @@ ExponentialSquaredFog 计算公式 \(f = 2^{-(fogCoor*fogDensity)^{2}}\) <br />
 </p>
 </div>
 </div>
-<div id="outline-container-org3c75645" class="outline-6">
-<h6 id="org3c75645">Depth-Based Fog</h6>
-<div class="outline-text-6" id="text-org3c75645">
+<div id="outline-container-orgac64bce" class="outline-6">
+<h6 id="orgac64bce">Depth-Based Fog</h6>
+<div class="outline-text-6" id="text-orgac64bce">
 <p>
 Unity Shader 使用裁剪空间坐标的 w 分量作为 Fog Coordinate，裁剪空间坐标的 w 分量为投影变换前摄像机坐标系下坐标的 z 分量。这种计算雾的方式也称为基于深度的雾计算。<br />
 基于深度的雾计算比基于距离的雾计算效率更高。基于距离的雾比基于深度的雾效果要好，基于深度的雾在摄像机旋转视角时，雾效会变化。下图说明了其中的原理：<br />
@@ -3370,8 +3403,8 @@ Unity Shader 使用裁剪空间坐标的 w 分量作为 Fog Coordinate，裁剪�
 </div>
 </div>
 </div>
-<div id="outline-container-org19abbda" class="outline-6">
-<h6 id="org19abbda">Depth-Based Fog</h6>
+<div id="outline-container-org0a522a2" class="outline-6">
+<h6 id="org0a522a2">Depth-Based Fog</h6>
 </div>
 <div id="outline-container-org25a8c2b" class="outline-6">
 <h6 id="org25a8c2b">Distance Based Fog</h6>
@@ -3389,9 +3422,9 @@ Unity Shader 使用裁剪空间坐标的 w 分量作为 Fog Coordinate，裁剪�
 <h4 id="org193b5d1">Deferred Lights</h4>
 <div class="outline-text-4" id="text-org193b5d1">
 </div>
-<div id="outline-container-orgfc3aadc" class="outline-5">
-<h5 id="orgfc3aadc">Q&amp;A</h5>
-<div class="outline-text-5" id="text-orgfc3aadc">
+<div id="outline-container-org892adb8" class="outline-5">
+<h5 id="org892adb8">Q&amp;A</h5>
+<div class="outline-text-5" id="text-org892adb8">
 </div>
 <div id="outline-container-org0f2e50a" class="outline-6">
 <h6 id="org0f2e50a"><span class="todo TODO">TODO</span> 为什么 DeferredShading 中 Directional 对应的顶点数据不是摄像机近平面四个角，或者是摄像机和四个角连线上的点？</h6>
@@ -3449,9 +3482,9 @@ DeferredShading 为了不覆盖之前 ColorBuffer 中的内容，其混合模式
 <h5 id="org76a4669">Lightmapping 光照贴图</h5>
 <div class="outline-text-5" id="text-org76a4669">
 </div>
-<div id="outline-container-org27b5cc8" class="outline-6">
-<h6 id="org27b5cc8">简介</h6>
-<div class="outline-text-6" id="text-org27b5cc8">
+<div id="outline-container-org07ad597" class="outline-6">
+<h6 id="org07ad597">简介</h6>
+<div class="outline-text-6" id="text-org07ad597">
 <p>
 计算光照是比较昂贵的开销。虽然延迟渲染允许我们使用很多灯光，但是阴影依然是一个限制因素。如果我们的场景是动态的，我们无法避免这些计算。但是如果灯光和场景不会改变，我们就可以计算一次灯光后重用它。这样我们就可以放置很多灯光在场景中，而不需要在运行时渲染这些灯光。我们也可以使用区域灯光，这种灯光只能在烘培光照贴图的情况下使用。<br />
 </p>
@@ -3534,9 +3567,9 @@ Ambient Occlusion : 它是间接光照在角落和褶皱处的阴影。它是一
 </div>
 </div>
 
-<div id="outline-container-org34aa068" class="outline-6">
-<h6 id="org34aa068">Transparency</h6>
-<div class="outline-text-6" id="text-org34aa068">
+<div id="outline-container-org3ffbf5e" class="outline-6">
+<h6 id="org3ffbf5e">Transparency</h6>
+<div class="outline-text-6" id="text-org3ffbf5e">
 <p>
 对于单面透明物体，需要创建 Lightmap Parameters，将 IsTransparent 参数指定为 True，将 Lightmap Parameters 指定给单面透明物体。半透明物体会让间接光照通过，而不透明物体会阻挡间接光照。<br />
 <img src="./UnityCatLikeCoding/01_16sl_transparentObj_bake_error.png" alt="01_16sl_transparentObj_bake_error.png" /><br />
@@ -3801,9 +3834,9 @@ v2f <span style="color: #bc6ec5; font-weight: bold;">vert</span>(appdata v)
 <h5 id="org8d0f0c8">Directional Lightmaps 具有方向的光照贴图</h5>
 <div class="outline-text-5" id="text-org8d0f0c8">
 </div>
-<div id="outline-container-org911a294" class="outline-6">
-<h6 id="org911a294">简介</h6>
-<div class="outline-text-6" id="text-org911a294">
+<div id="outline-container-org90f04ee" class="outline-6">
+<h6 id="org90f04ee">简介</h6>
+<div class="outline-text-6" id="text-org90f04ee">
 <p>
 lightmapper 值使用了顶点的集合数据，它没有考虑法线贴图。光照贴图的精度太低了，无法捕捉到传统法线贴图提供的细节。这意味着静态光照将会比较平。<br />
 <img src="./UnityCatLikeCoding/01_16sl_normal-maps-realtime.png" alt="01_16sl_normal-maps-realtime.png" /><br />
@@ -3905,9 +3938,9 @@ SceneView 下 Gizmos/3D Icon 被缩放到最小了。<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org753feca" class="outline-5">
-<h5 id="org753feca">Q&amp;A</h5>
-<div class="outline-text-5" id="text-org753feca">
+<div id="outline-container-org1e14a42" class="outline-5">
+<h5 id="org1e14a42">Q&amp;A</h5>
+<div class="outline-text-5" id="text-org1e14a42">
 </div>
 <div id="outline-container-org2209830" class="outline-6">
 <h6 id="org2209830">使用 lightmap 时，顶点着色器中传入的 lightmap uv 是如何求得的？又是如何传入顶点着色器的？</h6>
@@ -3957,8 +3990,8 @@ lightmap 缓存极其不稳定，有时候隐藏了烘培依然不可以，需�
 </ul>
 </div>
 <ul class="org-ul">
-<li><a id="orgae56b19"></a>参考资料<br />
-<div class="outline-text-7" id="text-orgae56b19">
+<li><a id="orgfa15dbb"></a>参考资料<br />
+<div class="outline-text-7" id="text-orgfa15dbb">
 <ul class="org-ul">
 <li><a href="https://docs.unity3d.com/Manual/MetaPass.html">https://docs.unity3d.com/Manual/MetaPass.html</a><br /></li>
 </ul>
@@ -4107,9 +4140,9 @@ lightmap 缓存极其不稳定，有时候隐藏了烘培依然不可以，需�
 </div>
 </div>
 </div>
-<div id="outline-container-org4a6a650" class="outline-6">
-<h6 id="org4a6a650">Support Deferred Path</h6>
-<div class="outline-text-6" id="text-org4a6a650">
+<div id="outline-container-org476c3c2" class="outline-6">
+<h6 id="org476c3c2">Support Deferred Path</h6>
+<div class="outline-text-6" id="text-org476c3c2">
 <p>
 DeferredShading 中将 ShadowMask 写入到 GBuffer4 中<br />
 DeferredLighting 中读取 GBuffer4 内容，对直接光照进行衰减<br />
@@ -4217,9 +4250,9 @@ Unity2017 版本之前 Distance Shadowmask 在 Lighting Setting 中设置，Unit
 <h5 id="org294822e">Subtractive Shadows</h5>
 <div class="outline-text-5" id="text-org294822e">
 </div>
-<div id="outline-container-orgd6afcb1" class="outline-6">
-<h6 id="orgd6afcb1">简介</h6>
-<div class="outline-text-6" id="text-orgd6afcb1">
+<div id="outline-container-org700693d" class="outline-6">
+<h6 id="org700693d">简介</h6>
+<div class="outline-text-6" id="text-org700693d">
 <p>
 Subtractive mode 只适用于 forward path。Subtractive Mode 的理念是静态物体依然通过 lightmaps 照亮，并且同时将动态物体的阴影因素考虑进去，这是通过减低阴影区域光照贴图的亮度来实现的。<br />
 Subtractive mode 只适用于一个方向光，因此只支持主方向光的阴影。<br />
@@ -4341,9 +4374,9 @@ UnityLight <span style="color: #bc6ec5; font-weight: bold;">CreateLight</span> (
 </div>
 </div>
 
-<div id="outline-container-orgf93636c" class="outline-5">
-<h5 id="orgf93636c">Q&amp;A</h5>
-<div class="outline-text-5" id="text-orgf93636c">
+<div id="outline-container-org18028c2" class="outline-5">
+<h5 id="org18028c2">Q&amp;A</h5>
+<div class="outline-text-5" id="text-org18028c2">
 </div>
 <div id="outline-container-orge273f47" class="outline-6">
 <h6 id="orge273f47"><span class="todo TODO">TODO</span> 如果烘培灯光和实时灯光分开，烘培灯光的 Mode 使用 Baked，实时灯光的 Mode 使用 Realtime，这样做是否合理？</h6>
@@ -4449,9 +4482,9 @@ indirect.specular 的计算则分是否开启屏幕空间反射，不开启时�
 <h5 id="orgbda86b2">Realtime Globall Illumination</h5>
 <div class="outline-text-5" id="text-orgbda86b2">
 </div>
-<div id="outline-container-orgeaa9d4f" class="outline-6">
-<h6 id="orgeaa9d4f">简介</h6>
-<div class="outline-text-6" id="text-orgeaa9d4f">
+<div id="outline-container-org8a1ed55" class="outline-6">
+<h6 id="org8a1ed55">简介</h6>
+<div class="outline-text-6" id="text-org8a1ed55">
 <p>
 烘培光照虽然对静态几何体(通过光照贴图)和动态几何体(通过光照探针)起作用，但是烘培光照无法处理动态光照(Realtime Mode Light)。Mixed Mode Light 可以实时调节一些参数，但是过多的调整会让没有改变的烘培间接光照变得很明显。所以，当你有一个室外的场景时，太阳是不能改变的，它不能像真实生活中一样东升西落在空中穿行，因为这需要不断改变全局照明，所以只能让场景冻结在某个时间点上。<br />
 为了让间接光照支持光照方向的实时改变，Unity 使用 Enlighten 系统来计算实时全局照明。其就像烘培间接光一样工作，不同的是 Enlighten 实在运行时计算光照贴图和光照探针的。<br />
@@ -4669,9 +4702,9 @@ LLPV（light probe proxy volume）可以解决该问题。其会传递给 shader
 </div>
 </div>
 </div>
-<div id="outline-container-org3123e7f" class="outline-6">
-<h6 id="org3123e7f">Q&amp;A</h6>
-<div class="outline-text-6" id="text-org3123e7f">
+<div id="outline-container-org66028d3" class="outline-6">
+<h6 id="org66028d3">Q&amp;A</h6>
+<div class="outline-text-6" id="text-org66028d3">
 </div>
 <ul class="org-ul">
 <li><a id="org42536ee"></a><span class="todo TODO">TODO</span> 为什么不将 LOD1 像 LOD0 那样处理，再渲染一次 LOD1 得到精确的亮度数据写入光照贴图中？<br /></li>
@@ -4688,9 +4721,9 @@ LLPV（light probe proxy volume）可以解决该问题。其会传递给 shader
 <h5 id="org915d4a7">Batching Instances</h5>
 <div class="outline-text-5" id="text-org915d4a7">
 </div>
-<div id="outline-container-org24649ee" class="outline-6">
-<h6 id="org24649ee">简介</h6>
-<div class="outline-text-6" id="text-org24649ee">
+<div id="outline-container-org2ed2b7f" class="outline-6">
+<h6 id="org2ed2b7f">简介</h6>
+<div class="outline-text-6" id="text-org2ed2b7f">
 <p>
 向 GPU 提交绘制命令会花费时间。将数据（mesh 和材质属性）提交给 GPU 也会耗费时间。<br />
 Static Batching:  Unity 可以将很多静态的物体合并为一个大的静态物体，这可以减少 DrawCall，但是只有使用相同材质的物体才能以这种方式合并。这样做的代价是需要存储更多的 Mesh 数据。<br />
@@ -4871,9 +4904,9 @@ vert_out <span style="color: #bc6ec5; font-weight: bold;">vert</span> (appdata v
 <h4 id="org3882fcb">Parallax</h4>
 <div class="outline-text-4" id="text-org3882fcb">
 </div>
-<div id="outline-container-org2e98651" class="outline-5">
-<h5 id="org2e98651">参考资料</h5>
-<div class="outline-text-5" id="text-org2e98651">
+<div id="outline-container-org1f986b9" class="outline-5">
+<h5 id="org1f986b9">参考资料</h5>
+<div class="outline-text-5" id="text-org1f986b9">
 <ul class="org-ul">
 <li>Parallax-Mapping <a href="https://learnopengl.com/Advanced-Lighting/Parallax-Mapping">https://learnopengl.com/Advanced-Lighting/Parallax-Mapping</a><br /></li>
 <li>Learn about Parallax en <a href="https://github.com/UPBGE/upbge/issues/1009">https://github.com/UPBGE/upbge/issues/1009</a><br /></li>
@@ -4895,9 +4928,9 @@ vert_out <span style="color: #bc6ec5; font-weight: bold;">vert</span> (appdata v
 <h5 id="org0a9b99d">Barycentric Coordinates</h5>
 </div>
 
-<div id="outline-container-orge852fa9" class="outline-5">
-<h5 id="orge852fa9">Q&amp;A</h5>
-<div class="outline-text-5" id="text-orge852fa9">
+<div id="outline-container-org658eb34" class="outline-5">
+<h5 id="org658eb34">Q&amp;A</h5>
+<div class="outline-text-5" id="text-org658eb34">
 </div>
 <div id="outline-container-org78bff50" class="outline-6">
 <h6 id="org78bff50">为什么通过 ddx ddy 方式计算三角面的 normal 物体会完全变黑？</h6>
@@ -4913,9 +4946,9 @@ cross 操作需要注意向量的正反方向，将所得向量取反就可以�
 <h4 id="org5863c6e">Tessellation</h4>
 <div class="outline-text-4" id="text-org5863c6e">
 </div>
-<div id="outline-container-org941ccfa" class="outline-5">
-<h5 id="org941ccfa">Q&amp;A</h5>
-<div class="outline-text-5" id="text-org941ccfa">
+<div id="outline-container-org5c74cbc" class="outline-5">
+<h5 id="org5c74cbc">Q&amp;A</h5>
+<div class="outline-text-5" id="text-org5c74cbc">
 </div>
 <div id="outline-container-org38ed3eb" class="outline-6">
 <h6 id="org38ed3eb">ERROR: 'patchconstantfunc(function name)' attribute expected, where 'function name' is the name of the patch constant value evaluation function at &#x2026;&#x2026;</h6>
@@ -4953,9 +4986,9 @@ TessControlPoint 中成员使用了 float 类型，appdata 中使用的 half 类
 </ul>
 </div>
 </div>
-<div id="outline-container-org1b8e99c" class="outline-5">
-<h5 id="org1b8e99c">Q&amp;A</h5>
-<div class="outline-text-5" id="text-org1b8e99c">
+<div id="outline-container-orgc0949e1" class="outline-5">
+<h5 id="orgc0949e1">Q&amp;A</h5>
+<div class="outline-text-5" id="text-orgc0949e1">
 </div>
 <div id="outline-container-org0576c75" class="outline-6">
 <h6 id="org0576c75"><span class="todo TODO">TODO</span> 自定义的 Bloom 如何放到 Builtin Uber 中一起计算？在 Builtin Uber 中一起计算的好处是什么？</h6>
@@ -4978,9 +5011,9 @@ CoC(Circal Of Confusion) 决定了 Bokeh 效果在每个点上的强度，Apertu
 </div>
 </div>
 
-<div id="outline-container-orgebb54f8" class="outline-5">
-<h5 id="orgebb54f8">Q&amp;A</h5>
-<div class="outline-text-5" id="text-orgebb54f8">
+<div id="outline-container-orge77f17e" class="outline-5">
+<h5 id="orge77f17e">Q&amp;A</h5>
+<div class="outline-text-5" id="text-orge77f17e">
 </div>
 <div id="outline-container-org113003b" class="outline-6">
 <h6 id="org113003b"><span class="todo TODO">TODO</span> 为什么开启 MSAA 的时候，DOF 效果会错误？</h6>
@@ -5100,9 +5133,9 @@ glfwPollEvents();
 </div>
 </div>
 
-<div id="outline-container-org6797589" class="outline-6">
-<h6 id="org6797589">Q&amp;A</h6>
-<div class="outline-text-6" id="text-org6797589">
+<div id="outline-container-org445bc75" class="outline-6">
+<h6 id="org445bc75">Q&amp;A</h6>
+<div class="outline-text-6" id="text-org445bc75">
 </div>
 <ul class="org-ul">
 <li><a id="orgcbe785f"></a>DepthBuffer 和 StencilBuffer 中的内容经过 MSAA 处理会出错，Unity 是怎么做的？<br />
@@ -5123,9 +5156,9 @@ MSAA 中一个像素的多个采样点拥有自己的 Depth\Stencil 值。<br />
 </ul>
 </div>
 
-<div id="outline-container-org13e7dc4" class="outline-6">
-<h6 id="org13e7dc4">参考资料</h6>
-<div class="outline-text-6" id="text-org13e7dc4">
+<div id="outline-container-org9da6269" class="outline-6">
+<h6 id="org9da6269">参考资料</h6>
+<div class="outline-text-6" id="text-org9da6269">
 <ul class="org-ul">
 <li><a href="https://learnopengl.com/Advanced-OpenGL/Anti-Aliasing">https://learnopengl.com/Advanced-OpenGL/Anti-Aliasing</a><br /></li>
 <li>深入剖析 MSAA <a href="https://www.cnblogs.com/ghl_carmack/p/8245032.html">https://www.cnblogs.com/ghl_carmack/p/8245032.html</a><br /></li>
@@ -5204,9 +5237,9 @@ replacementTag 指定替换条件，具体分如下两种情况：<br />
 </div>
 </div>
 
-<div id="outline-container-org3090308" class="outline-4">
-<h4 id="org3090308">Q&amp;A</h4>
-<div class="outline-text-4" id="text-org3090308">
+<div id="outline-container-org5d9b0b6" class="outline-4">
+<h4 id="org5d9b0b6">Q&amp;A</h4>
+<div class="outline-text-4" id="text-org5d9b0b6">
 </div>
 <div id="outline-container-org2c6791d" class="outline-5">
 <h5 id="org2c6791d">Warnning: Attempting to render from camera 'Main Camera' that is currently being used to render. Create a copy of the camera (Camera.CopyFrom) if you wish to do this. UnityEngine.Camera:RenderWithShader(Shader, String)</h5>
@@ -5253,9 +5286,9 @@ replacementTag 指定替换条件，具体分如下两种情况：<br />
 <h3 id="org2414a76">SphereMapping</h3>
 <div class="outline-text-3" id="text-org2414a76">
 </div>
-<div id="outline-container-org03587f4" class="outline-4">
-<h4 id="org03587f4">参考资料</h4>
-<div class="outline-text-4" id="text-org03587f4">
+<div id="outline-container-org64b1bf3" class="outline-4">
+<h4 id="org64b1bf3">参考资料</h4>
+<div class="outline-text-4" id="text-org64b1bf3">
 <ul class="org-ul">
 <li>环境贴图 <a href="http://www.twinklingstar.cn/2014/1322/environment-mapping/">http://www.twinklingstar.cn/2014/1322/environment-mapping/</a><br /></li>
 <li>详解球面环境映射 <a href="https://zhuanlan.zhihu.com/p/84494845">https://zhuanlan.zhihu.com/p/84494845</a><br /></li>
@@ -5267,9 +5300,9 @@ replacementTag 指定替换条件，具体分如下两种情况：<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org533dbf8" class="outline-2">
-<h2 id="org533dbf8">Q&amp;A</h2>
-<div class="outline-text-2" id="text-org533dbf8">
+<div id="outline-container-orgb0329e0" class="outline-2">
+<h2 id="orgb0329e0">Q&amp;A</h2>
+<div class="outline-text-2" id="text-orgb0329e0">
 </div>
 <div id="outline-container-org5bd851b" class="outline-3">
 <h3 id="org5bd851b">如何判断投影矩阵是否为透视投影？</h3>
@@ -5404,9 +5437,9 @@ FrameDebug 中显示的矩阵是行主序的：<br />
 </div>
 </div>
 </div>
-<div id="outline-container-orgef9d2a1" class="outline-2">
-<h2 id="orgef9d2a1">参考资料</h2>
-<div class="outline-text-2" id="text-orgef9d2a1">
+<div id="outline-container-orgb9f9731" class="outline-2">
+<h2 id="orgb9f9731">参考资料</h2>
+<div class="outline-text-2" id="text-orgb9f9731">
 <p>
 官网<br />
 <a href="https://catlikecoding.com/">https://catlikecoding.com/</a><br />

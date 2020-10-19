@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2020-07-07 周二 20:18 -->
+<!-- 2020-10-19 周一 17:08 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>TileBasedDeferredRendering</title>
@@ -72,18 +72,18 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org5d86ea0">TileBasedDeferredRendering</a>
+<li><a href="#orga30c4e5">TileBasedDeferredRendering</a>
 <ul>
-<li><a href="#orgd9a733c">Use Tile-Based Deferred Rendering Efficiently</a>
+<li><a href="#orgef63141">Use Tile-Based Deferred Rendering Efficiently</a>
 <ul>
-<li><a href="#org283a181">避免 Logical Buffer Load 和 Store 操作</a></li>
-<li><a href="#org06bdebc">Use Hidden Surface Removal Effectively</a></li>
-<li><a href="#org094e4f3">参考资料</a></li>
+<li><a href="#org4cda73d">避免 Logical Buffer Load 和 Store 操作</a></li>
+<li><a href="#org4c89541">Use Hidden Surface Removal Effectively</a></li>
+<li><a href="#orgec90f6d">参考资料</a></li>
 </ul>
 </li>
-<li><a href="#org937b64b">Q&amp;A</a>
+<li><a href="#orgbf364d6">Q&amp;A</a>
 <ul>
-<li><a href="#org77a3642">为什么 TBDR 可以实现 hidden surface removal ？</a></li>
+<li><a href="#org9c6e625">为什么 TBDR 可以实现 hidden surface removal ？</a></li>
 </ul>
 </li>
 </ul>
@@ -101,26 +101,26 @@ TileBasedDeferredRendering note.<br />
 
 </div>
 
-<div id="outline-container-org5d86ea0" class="outline-2">
-<h2 id="org5d86ea0">TileBasedDeferredRendering</h2>
-<div class="outline-text-2" id="text-org5d86ea0">
+<div id="outline-container-orga30c4e5" class="outline-2">
+<h2 id="orga30c4e5">TileBasedDeferredRendering</h2>
+<div class="outline-text-2" id="text-orga30c4e5">
 </div>
-<div id="outline-container-orgd9a733c" class="outline-3">
-<h3 id="orgd9a733c">Use Tile-Based Deferred Rendering Efficiently</h3>
-<div class="outline-text-3" id="text-orgd9a733c">
+<div id="outline-container-orgef63141" class="outline-3">
+<h3 id="orgef63141">Use Tile-Based Deferred Rendering Efficiently</h3>
+<div class="outline-text-3" id="text-orgef63141">
 </div>
-<div id="outline-container-org283a181" class="outline-4">
-<h4 id="org283a181">避免 Logical Buffer Load 和 Store 操作</h4>
-<div class="outline-text-4" id="text-org283a181">
+<div id="outline-container-org4cda73d" class="outline-4">
+<h4 id="org4cda73d">避免 Logical Buffer Load 和 Store 操作</h4>
+<div class="outline-text-4" id="text-org4cda73d">
 <p>
 TBDR 图形处理器在绘制一个 Tile 时，会先将 framebuffer 对应的块从共享内存传输到 tile 内存中。这种内存的传输操作被称为 Logical Buffer Load。通常，在渲染下一帧时是不需要前一帧的内容的。为了避免加载前一帧缓冲区内容，可以在开始渲染新的一帧前调用 glClear。<br />
 类似的，当 GPU 结束一个 Tile 的渲染后，必须将 tile 的像素数据写回共享内存。这种内存的传输操作被称为 Logical Buffer Store。渲染每帧必须至少有一次这样的数据传输，被显示在屏幕上的颜色渲染缓冲区必须被传输到共享内存，这样才会被 CoreAnimation 展示，其他的帧缓冲区（例如 depth stencil multisampling buffers）不需要保留，因为这些缓冲区的内容在下一帧会被重新创建。OpenGL ES 会自动将这些缓冲区写回共享内存，这会导致性能消耗。可以调用 glInvalidateFramebuffer（OpenGL ES 3.0）或者 glDiscardFramebufferEXT(OpenGL 1.1 or 2.0)来显示指定不写回共享内存。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org06bdebc" class="outline-4">
-<h4 id="org06bdebc">Use Hidden Surface Removal Effectively</h4>
-<div class="outline-text-4" id="text-org06bdebc">
+<div id="outline-container-org4c89541" class="outline-4">
+<h4 id="org4c89541">Use Hidden Surface Removal Effectively</h4>
+<div class="outline-text-4" id="text-org4c89541">
 <p>
 当 blending 或者 alpha testing 开启，或者 fragment shader 中使用了 discard 或者使用 gl_FragDepth 输出变量。此时，GPU 无法使用深度缓冲区断定片段的可见性，因此必须为所有图元覆盖的每个像素点执行片段着色器。<br />
 如果无法避免使用 blending、alpha testing、discard 指令，可以通过使用下面的策略来减少性能消耗：<br />
@@ -134,22 +134,22 @@ TBDR 图形处理器在绘制一个 Tile 时，会先将 framebuffer 对应的�
 </ul>
 </div>
 </div>
-<div id="outline-container-org094e4f3" class="outline-4">
-<h4 id="org094e4f3">参考资料</h4>
-<div class="outline-text-4" id="text-org094e4f3">
+<div id="outline-container-orgec90f6d" class="outline-4">
+<h4 id="orgec90f6d">参考资料</h4>
+<div class="outline-text-4" id="text-orgec90f6d">
 <ul class="org-ul">
 <li><a href="https://developer.apple.com/library/archive/documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/Performance/Performance.html">https://developer.apple.com/library/archive/documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/Performance/Performance.html</a><br /></li>
 </ul>
 </div>
 </div>
 </div>
-<div id="outline-container-org937b64b" class="outline-3">
-<h3 id="org937b64b">Q&amp;A</h3>
-<div class="outline-text-3" id="text-org937b64b">
+<div id="outline-container-orgbf364d6" class="outline-3">
+<h3 id="orgbf364d6">Q&amp;A</h3>
+<div class="outline-text-3" id="text-orgbf364d6">
 </div>
-<div id="outline-container-org77a3642" class="outline-4">
-<h4 id="org77a3642">为什么 TBDR 可以实现 hidden surface removal ？</h4>
-<div class="outline-text-4" id="text-org77a3642">
+<div id="outline-container-org9c6e625" class="outline-4">
+<h4 id="org9c6e625">为什么 TBDR 可以实现 hidden surface removal ？</h4>
+<div class="outline-text-4" id="text-org9c6e625">
 <p>
 因为 TBDR 中，当提交渲染指令到硬件后，渲染指令会被缓存到一个列表中。硬件不会处理这些指令，直到你显示 renderbuffer 或者 flush 指令 buff 时，才会开始处理顶点并且对像素着色。所以 TBDR 一次性处理了场景的所有顶点，这样 GPU 就可以在片段被处理之前知道场景中所有对象的遮挡关系从而进行隐藏表面消除。<br />
 </p>

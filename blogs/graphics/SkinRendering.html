@@ -1,0 +1,675 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2020-12-31 周四 20:08 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Skin Rendering</title>
+<meta name="generator" content="Org mode" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+           <meta name="viewport" content="width=device-width, initial-scale=1" />
+           <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/css/worg.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/css/worg-zenburn.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
+           <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2020 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href=""> UP </a>
+ |
+ <a accesskey="H" href="https://wolfand11.gitee.io"> HOME </a>
+</div><div id="content">
+<h1 class="title">Skin Rendering</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org71520ae">皮肤医学结构</a>
+<ul>
+<li><a href="#orgf503ad1">表皮的分层</a>
+<ul>
+<li><a href="#org3ac622f">角质层 Stratum corneum</a></li>
+<li><a href="#orgaaa047b">透明层 Stratum lucidum</a></li>
+<li><a href="#org1982927">颗粒层 Stratum granulosum</a></li>
+<li><a href="#orge43e7e4">棘层 Stratum spinosum</a></li>
+<li><a href="#org6962c1b">基底层 Stratum basale</a></li>
+</ul>
+</li>
+<li><a href="#orgb93d9a3">皮肤结构图</a></li>
+</ul>
+</li>
+<li><a href="#org2aebfb1">Advanced Techniques for Realistic Real-Time Skin Rendering</a>
+<ul>
+<li><a href="#org17d9201">14.1 The Appearance of Skin</a>
+<ul>
+<li><a href="#org4b92888">Skin Surface Reflectance</a></li>
+<li><a href="#orgaeb74f5">Skin Subsurface Reflectance</a></li>
+</ul>
+</li>
+<li><a href="#org8720fe0">14.2 An Overview of the Skin-Rendering System</a></li>
+<li><a href="#org30e93f7">14.3 Specular Surface Reflectance</a>
+<ul>
+<li><a href="#org84b5bc4">Implementing a Physically Based Specular Reflectance Model for Skin</a>
+<ul>
+<li><a href="#org7fa82e5">Rendering with a BRDF</a></li>
+<li><a href="#org23a417a">Fresnel Reflectance for Rendering Skin</a></li>
+<li><a href="#org483988a">Factoring BRDFs for Efficient Evaluation</a></li>
+<li><a href="#org2299369">Specular Reflectance from Skin Is White</a></li>
+<li><a href="#orgaad1433">Varying Specular Parameters over the Face</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org77e6533">14.4 Scattering Theory</a>
+<ul>
+<li><a href="#org5743b12">Diffusion Profiles</a></li>
+<li><a href="#orgb58ecc7">Rendering with Diffusion Profiles</a></li>
+<li><a href="#orgc929059">The Shape of Diffusion Profiles</a></li>
+<li><a href="#org9464746">A Sum of Gaussians Diffusion Profile</a></li>
+<li><a href="#org6e50c14">Fitting Predicted or Measured Profiles</a></li>
+</ul>
+</li>
+<li><a href="#org1944b7c">实现总结</a>
+<ul>
+<li><a href="#orgcea80d2">高光</a></li>
+<li><a href="#orgb126fb3">Diffuse</a></li>
+</ul>
+</li>
+<li><a href="#orgb74b1cd">参考资料</a></li>
+</ul>
+</li>
+<li><a href="#orga284d87">高斯卷积核求解</a></li>
+<li><a href="#orgf6999f3">Pre-Intergrating the Effects of Scattering</a>
+<ul>
+<li><a href="#org837401f">Introduce</a></li>
+<li><a href="#org432a6fd">Background and Previous Work</a></li>
+<li><a href="#org51ed167">Pre-integrating the Effect of Scattering</a></li>
+<li><a href="#org7e4d0e1">Scattering and Diffuse Light</a></li>
+<li><a href="#org84b60ba">Scattering and Normal Maps</a></li>
+<li><a href="#org1cbe758">Shadow Scattering</a></li>
+<li><a href="#orgee40969">Conclusion and Future Work</a></li>
+</ul>
+</li>
+<li><a href="#org44d4c67">CLX2 Skin</a>
+<ul>
+<li><a href="#org53b9012">refract light</a></li>
+</ul>
+</li>
+<li><a href="#orge77cd14">Misc</a>
+<ul>
+<li><a href="#orgb343e8d">Normal Map Mipmap</a></li>
+<li><a href="#orge46b232">NoLWrap</a></li>
+</ul>
+</li>
+<li><a href="#org339bb35">参考资料</a></li>
+</ul>
+</div>
+</div>
+<p>
+Skin Rendering note.<br />
+</p>
+<div class="HTML">
+<p>
+&lt;!&#x2013; more &#x2013;&gt;<br />
+</p>
+
+</div>
+
+<div id="outline-container-org71520ae" class="outline-2">
+<h2 id="org71520ae">皮肤医学结构</h2>
+<div class="outline-text-2" id="text-org71520ae">
+<p>
+皮肤分为 表皮 epidermis，真皮 dermis 和皮下组织 subcutaneous tissue<br />
+</p>
+</div>
+<div id="outline-container-orgf503ad1" class="outline-3">
+<h3 id="orgf503ad1">表皮的分层</h3>
+<div class="outline-text-3" id="text-orgf503ad1">
+</div>
+<div id="outline-container-org3ac622f" class="outline-4">
+<h4 id="org3ac622f">角质层 Stratum corneum</h4>
+<div class="outline-text-4" id="text-org3ac622f">
+<p>
+位于表皮的最外层，由 5-20 层的扁平无核细胞组成，胞内细胞器结构消失，充满角蛋白。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgaaa047b" class="outline-4">
+<h4 id="orgaaa047b">透明层 Stratum lucidum</h4>
+<div class="outline-text-4" id="text-orgaaa047b">
+<p>
+仅见于掌跖。由 2-3 层扁平无核细胞组成。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org1982927" class="outline-4">
+<h4 id="org1982927">颗粒层 Stratum granulosum</h4>
+<div class="outline-text-4" id="text-org1982927">
+<p>
+由 2-4 层梭形细胞组成，细胞内含有透明角质颗粒。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orge43e7e4" class="outline-4">
+<h4 id="orge43e7e4">棘层 Stratum spinosum</h4>
+<div class="outline-text-4" id="text-orge43e7e4">
+<p>
+由 4-10 层多角形细胞组成，细胞间桥明显呈棘状。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org6962c1b" class="outline-4">
+<h4 id="org6962c1b">基底层 Stratum basale</h4>
+<div class="outline-text-4" id="text-org6962c1b">
+<p>
+位于表皮的最下层，为一层立方形或圆柱状细胞，细胞的长轴与基底膜带垂直，胞核呈卵圆形，胞浆内含有黑素颗粒，核分裂象常见。<br />
+具有不断分裂增殖的能力，因此又称为生发层。由基底层移行至颗粒层最上层约需 14 天，再移行至角质层表面脱落又需 14 天，称为表皮通过时间。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgb93d9a3" class="outline-3">
+<h3 id="orgb93d9a3">皮肤结构图</h3>
+<div class="outline-text-3" id="text-orgb93d9a3">
+<p>
+<img src="SkinRendering/001_Skin_Structure_Image_01.jpg" alt="001_Skin_Structure_Image_01.jpg" /><br />
+<img src="SkinRendering/001_Skin_Structure_Image_02.jpg" alt="001_Skin_Structure_Image_02.jpg" /><br />
+</p>
+
+<ul class="org-ul">
+<li>皮肤结构 <a href="http://www.leo-pharma.cn/Home/Dermatology/general_knowledge/Skin_Structure.aspx">http://www.leo-pharma.cn/Home/Dermatology/general_knowledge/Skin_Structure.aspx</a><br /></li>
+<li>皮肤的结构-表皮 <a href="http://www.truebuty.com/scstructure.html">http://www.truebuty.com/scstructure.html</a><br /></li>
+<li><a href="https://opentextbc.ca/anatomyandphysiology/chapter/5-1-layers-of-the-skin/">https://opentextbc.ca/anatomyandphysiology/chapter/5-1-layers-of-the-skin/</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org2aebfb1" class="outline-2">
+<h2 id="org2aebfb1">Advanced Techniques for Realistic Real-Time Skin Rendering</h2>
+<div class="outline-text-2" id="text-org2aebfb1">
+<ul class="org-ul">
+<li>原文链接 Advanced Techniques for Realistic Real-Time Skin Rendering <a href="https://developer.nvidia.com/gpugems/GPUGems3/gpugems3_ch14.html">https://developer.nvidia.com/gpugems/GPUGems3/gpugems3_ch14.html</a><br /></li>
+</ul>
+</div>
+<div id="outline-container-org17d9201" class="outline-3">
+<h3 id="org17d9201">14.1 The Appearance of Skin</h3>
+<div class="outline-text-3" id="text-org17d9201">
+</div>
+<div id="outline-container-org4b92888" class="outline-4">
+<h4 id="org4b92888">Skin Surface Reflectance</h4>
+<div class="outline-text-4" id="text-org4b92888">
+<p>
+光照的一小部分在皮肤表面会直接反射(大约 6%)。这是因为皮肤最上层的菲涅耳交互引起的，皮肤最上层是粗糙且油滑的。我们可以通过镜面反射函数来模拟。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgaeb74f5" class="outline-4">
+<h4 id="orgaeb74f5">Skin Subsurface Reflectance</h4>
+<div class="outline-text-4" id="text-orgaeb74f5">
+<p>
+在皮肤表面，没有被直接反射的光照会进入次表面层。光照在薄薄的次表面层中的散射和吸收为皮肤提供了颜色和柔软的表现。光线进入次表面层，部分被吸收，大部分被散射，在光线入射点周围返回并离开表面.有时候，光线会穿过比较薄的区域（例如，耳朵部位）<br />
+进一步复杂化这个过程，皮肤的多层对光线的吸收和散射是不同的。图像研究人员已经得出精细的模型，使用多达 5 个不同的分层来描述皮肤的光学散射。真实的皮肤更加复杂，单单表皮就分为了 5 层。以这种复杂度来模拟散射可能有些过度了，但是真实感渲染需要在油滑层下最少有不同的两层。<br />
+在皮肤渲染中，一个特定类型的散射模型被证明非常成功。在皮肤表面下，进入的光线因为散射（光子的散射通常在组织层）迅速变为漫反射，并且在少量的散射后，即使是一束完全相干光也会均等的向所有方向流动。这极大简化了散射问题，被称为是漫反射模型。然而，漫反射模型在数学上依然是复杂的，可以阅读相关的论文。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org8720fe0" class="outline-3">
+<h3 id="org8720fe0">14.2 An Overview of the Skin-Rendering System</h3>
+<div class="outline-text-3" id="text-org8720fe0">
+<p>
+下面的各部分展现了实时皮肤渲染系统的细节，它是镜面反射项和次表面散射项的总和。下面描述了这两项的 GPU 实现细节，对漫反射散射理论的评论，以及对一个新的散射描述公式的介绍。<br />
+14.3 专注于最上层皮肤和光的交互，镜面表面反射，讨论了 Kelemen 和 Szirmay-Kalos 在 2001 年分析的 BRDF 的高效实现。这个模型和 Torrance/Sparrow 模型非常接近，但是计算更省，而且可以给出相同的表现。<br />
+</p>
+
+<p>
+14.4 评论现有的散射理论，主要集中在散射描述上，它们是如何被用于图片渲染中的次表面散射，特别是它们的精确形状是如何在产生真实感皮肤表现中起作用的。我们展示了一个新的高斯求和公式用于漫反射描述，它有很多优点，其中包含了新的渲染算法，该算法将在 14.5 中展示。新的公式可以非常接近知名的偶极和多极分析漫反射描述，我们还讨论如何让高斯求和精确符合已知的漫反射描述。三层皮肤模型的高斯求和描述用于渲染该片文章的所有图片，读者可以以此为起点做更深入研究。<br />
+</p>
+
+<p>
+14.5 作为开始，通过分开地、层次化地卷积辐照度贴图，我们修改贴图空间的漫反射从而利用高斯求和漫反射描述的优点。然而，一系列中间高斯卷积贴图会被保持，并且在最终渲染阶段组合起来从而快速精确地近似多层模型的散射预计值。在贴图空间进行卷积时产生的扭曲会被矫正，矫正的方法是使用一个拉伸的贴图来局部矫正卷积核。然而，我们的拉伸矫正贴图独立地分别矫正 U 和 V 方向上的扭曲，这可以使用一个简单的片段着色器来快速计算。<br />
+穿过薄的表面区域(例如 耳朵部位)是通过下面方法来完成的。修改半透明阴影贴图来计算通过表面的深度，并且将阴影区域和面向光照的表面的地方链接起来，在此处，多个辐照度卷积可以通过访问计算局部散射时的贴图来获得。第三个维度的可分离出来的高斯卷积，可以用来计算想要的 3D 卷积，这样也重用了 2D 的辐照度卷积。<br />
+</p>
+
+<p>
+14.6 同样的可分离的、层次化的用于加速计算次表面散射的技术，用于加速 2D 卷积，使用带一个宽度的，不可分开的泛光过滤来近似作为两个高斯卷积的和。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org30e93f7" class="outline-3">
+<h3 id="org30e93f7">14.3 Specular Surface Reflectance</h3>
+<div class="outline-text-3" id="text-org30e93f7">
+</div>
+<div id="outline-container-org84b5bc4" class="outline-4">
+<h4 id="org84b5bc4">Implementing a Physically Based Specular Reflectance Model for Skin</h4>
+<div class="outline-text-4" id="text-org84b5bc4">
+</div>
+<div id="outline-container-org7fa82e5" class="outline-5">
+<h5 id="org7fa82e5">Rendering with a BRDF</h5>
+<div class="outline-text-5" id="text-org7fa82e5">
+<div class="org-src-container">
+<pre class="src src-shader">specularLight += lightColor[i] * lightShadow[i] * rho_s * specBRDF( N, V, L[i], eta, m) * <span style="color: #4f97d7;">saturate</span>( <span style="color: #4f97d7;">dot</span>( N, L[i] ) );
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21442;&#25968;&#35828;&#26126;&#65306;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">rho_s &#29992;&#20110;&#24378;&#24230;&#32553;&#25918;&#31995;&#25968;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">N &#34920;&#38754;&#27861;&#32447;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">V &#35270;&#32447;&#26041;&#21521;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">L &#20809;&#29031;&#26041;&#21521;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">eta &#25240;&#23556;&#29575;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">m &#31895;&#31961;&#24230;</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org23a417a" class="outline-5">
+<h5 id="org23a417a">Fresnel Reflectance for Rendering Skin</h5>
+<div class="outline-text-5" id="text-org23a417a">
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #bc6ec5; font-weight: bold;">fresnelReflectance</span>( <span style="color: #ce537a; font-weight: bold;">float3</span> H, <span style="color: #ce537a; font-weight: bold;">float3</span> V, <span style="color: #ce537a; font-weight: bold;">float</span> F0 )
+{
+  <span style="color: #ce537a; font-weight: bold;">float</span> base = 1.0 - <span style="color: #4f97d7;">dot</span>( V, H );
+  <span style="color: #ce537a; font-weight: bold;">float</span> exponential = <span style="color: #4f97d7;">pow</span>( base, 5.0 );
+  <span style="color: #4f97d7; font-weight: bold;">return</span> exponential + F0 * ( 1.0 - exponential );
+}
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21442;&#25968;&#35828;&#26126;&#65306;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">H &#26159;&#26631;&#20934;&#30340;&#21322;&#35282;&#21521;&#37327; &#20837;&#23556;&#20809;&#26041;&#21521;&#21644;&#35270;&#32447;&#26041;&#21521;&#20013;&#38388;&#21521;&#37327;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">F0 &#26159;&#36890;&#24120;&#24773;&#20917;&#19979;&#20837;&#23556;&#20809;&#20135;&#29983;&#30340;&#21453;&#23556;&#65288;&#23545;&#20110;&#30382;&#32932;&#26469;&#35828;&#26159; 0.028&#65289;</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org483988a" class="outline-5">
+<h5 id="org483988a">Factoring BRDFs for Efficient Evaluation</h5>
+<div class="outline-text-5" id="text-org483988a">
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#39044;&#35745;&#31639; Beckmann Texture</span>
+<span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #bc6ec5; font-weight: bold;">PHBeckmann</span>( <span style="color: #ce537a; font-weight: bold;">float</span> ndoth, <span style="color: #ce537a; font-weight: bold;">float</span> m )
+{
+  <span style="color: #ce537a; font-weight: bold;">float</span> alpha = <span style="color: #4f97d7;">acos</span>( ndoth );
+  <span style="color: #ce537a; font-weight: bold;">float</span> ta = <span style="color: #4f97d7;">tan</span>( alpha );
+  <span style="color: #ce537a; font-weight: bold;">float</span> val = 1.0/(m*m*<span style="color: #4f97d7;">pow</span>(ndoth,4.0))*<span style="color: #4f97d7;">exp</span>(-(ta*ta)/(m*m));
+  <span style="color: #4f97d7; font-weight: bold;">return</span> val;
+}
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Render a screen-aligned quad to precompute a 512x512 texture.</span>
+<span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #bc6ec5; font-weight: bold;">KSTextureCompute</span>(<span style="color: #ce537a; font-weight: bold;">float2</span> tex : <span style="color: #a45bad;">TEXCOORD0</span>)
+{
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Scale the value to fit within [0,1] &#8211; invert upon lookup.</span>
+   <span style="color: #4f97d7; font-weight: bold;">return</span> 0.5 * <span style="color: #4f97d7;">pow</span>( PHBeckmann( tex.x, tex.y ), 0.1 );
+}
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20351;&#29992;&#39044;&#35745;&#31639;&#36148;&#22270;&#26469;&#35745;&#31639; Kelemen/Szirmay-Kalos &#38236;&#38754;&#39640;&#20809;</span>
+<span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #bc6ec5; font-weight: bold;">KS_Skin_Specular</span>( <span style="color: #ce537a; font-weight: bold;">float3</span> N, <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Bumped surface normal</span>
+    <span style="color: #ce537a; font-weight: bold;">float3</span> L, <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Points to light</span>
+    <span style="color: #ce537a; font-weight: bold;">float3</span> V, <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Points to eye</span>
+    <span style="color: #ce537a; font-weight: bold;">float</span> m,  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Roughness</span>
+    <span style="color: #ce537a; font-weight: bold;">float</span> rho_s, <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Specular brightness</span>
+    <span style="color: #4f97d7; font-weight: bold;">uniform</span> texobj2D beckmannTex )
+{
+    <span style="color: #ce537a; font-weight: bold;">float</span> result = 0.0;
+    <span style="color: #ce537a; font-weight: bold;">float</span> ndotl = <span style="color: #4f97d7;">dot</span>( N, L );
+    <span style="color: #4f97d7; font-weight: bold;">if</span>( ndotl &gt; 0.0 )
+    {
+        <span style="color: #ce537a; font-weight: bold;">float3</span> h = L + V; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Unnormalized half-way vector</span>
+        <span style="color: #ce537a; font-weight: bold;">float3</span> H = <span style="color: #4f97d7;">normalize</span>( h );
+        <span style="color: #ce537a; font-weight: bold;">float</span> ndoth = <span style="color: #4f97d7;">dot</span>( N, H );
+        <span style="color: #ce537a; font-weight: bold;">float</span> PH = <span style="color: #4f97d7;">pow</span>( 2.0*f1tex2D(beckmannTex,<span style="color: #ce537a; font-weight: bold;">float2</span>(ndoth,m)), 10.0 );
+        <span style="color: #ce537a; font-weight: bold;">float</span> F = fresnelReflectance( H, V, 0.028 );
+        <span style="color: #ce537a; font-weight: bold;">float</span> frSpec = <span style="color: #4f97d7;">max</span>( PH * F / <span style="color: #4f97d7;">dot</span>( h, h ), 0 );
+        result = ndotl * rho_s * frSpec; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">BRDF * dot(N,L) * rho_s</span>
+    }
+    <span style="color: #4f97d7; font-weight: bold;">return</span> result;
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org2299369" class="outline-5">
+<h5 id="org2299369">Specular Reflectance from Skin Is White</h5>
+<div class="outline-text-5" id="text-org2299369">
+<p>
+皮肤最上层的薄层细胞和油是绝缘体材质，它们反射光但是不会修改光的颜色。因此，基于物理的皮肤渲染应该使用白色作为镜面高光颜色，也就是说如果光照是白色那么皮肤的镜面高光就是白色，如果光照时有色光，则皮肤的镜面高光也是这种颜色，不需要考虑皮肤下面的颜色。<br />
+如果所有的渲染是在线性颜色空间并且显示正确，镜面高光颜色就不需要调节为除白色的其他颜色。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgaad1433" class="outline-5">
+<h5 id="orgaad1433">Varying Specular Parameters over the Face</h5>
+<div class="outline-text-5" id="text-orgaad1433">
+<p>
+上面 BRDF 中用到的 强度缩放系数(rho_s)和粗燥度(m) 可以事先测量，记录在一张贴图中。<br />
+使用变化的值可以让嘴唇和鼻子更亮。<br />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org77e6533" class="outline-3">
+<h3 id="org77e6533">14.4 Scattering Theory</h3>
+<div class="outline-text-3" id="text-org77e6533">
+<p>
+次表面散射理论的关键概念，来自于一个相当复杂的数学分析，其分析了光线在半透明材质中的传播和散射，但是，其符合直观感觉容易解释。<br />
+本章描述的技术只能用于漫反射模型。特别是，我们不处理单散射效果，这种效果中散射在表面下只发生一次。在渲染皮肤时，忽略单散射通常时可以接受的（例外情况，请看 14.71），但是对于很多材质(例如 大理石、翡翠、烟)，单散射会对表现有明显影响。这些材质的真实感渲染必须包含单散射，使用的方法性能消耗高，也比此处用的方法限制多。<br />
+</p>
+</div>
+<div id="outline-container-org5743b12" class="outline-4">
+<h4 id="org5743b12">Diffusion Profiles</h4>
+<div class="outline-text-4" id="text-org5743b12">
+<p>
+diffusion profile 提供了光线在半透明材质表面下的散射方式。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgb58ecc7" class="outline-4">
+<h4 id="orgb58ecc7">Rendering with Diffusion Profiles</h4>
+<div class="outline-text-4" id="text-orgb58ecc7">
+<p>
+因为入射光线在皮肤中很快变为漫射，我们可以在表面的每一点对所有入射光求和，并忽略它们的方向，除了 N.L 项和可选的透射比项(我们将在 14.5.2 中进行讨论)。<br />
+</p>
+
+<p>
+Jensen 在 2001 年同时提供了一个高效的技术使用 diffusion profiles 来渲染曲面。这个想法非常简单，它只使用表面上两点之间的空间距离 r 来求解 diffusion profiles.这使得任何两点之间的散射都不需要考虑它们之间的几何变化。虽然不是物理精确的，相对于散射效果的半径来说，在皮肤表面上遇到的曲面曲率都非常低，而且近似效果非常好。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgc929059" class="outline-4">
+<h4 id="orgc929059">The Shape of Diffusion Profiles</h4>
+<div class="outline-text-4" id="text-orgc929059">
+<p>
+精确的渲染需要知道我们所要模拟的材质所对应的精确的 diffusion profiles 的形状。偶极和多极 漫射模型都是基于测量所得的散射参数进行计算的。相对简单的偶极模型对于很多材质是有效的。渲染牛奶、大理石、番茄酱时，我们可以查询测量所得的散射系数，然后使用偶极模型来计算 diffusion profiles.<br />
+</p>
+
+<p>
+然而对于由多层组合成的材质，每一层有不同的散射属性，profiles 的形状将会变得很复杂，无法通过偶极来表示。使用更加复杂的多极模型可以有效改进多层材质的表现。简单的偶极形状用于单一的无限厚的层的散射，其导致蜡一样的效果。偶极无法捕捉表皮层很薄的狭窄的散射做组合的反射。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org9464746" class="outline-4">
+<h4 id="org9464746">A Sum of Gaussians Diffusion Profile</h4>
+<div class="outline-text-4" id="text-org9464746">
+<p>
+尽管单个高斯函数无法精确符合任何 diffusion profile，通过将多个高斯函数求和，可以提供一个很好的近似。这在实践上非常有用。高斯函数有一些非常好的属性，使用高斯函数之和来表示 diffusion profiles 使得我们可以高效求解次表面散射。<br />
+</p>
+
+<p>
+本章采用的渲染技术使用了一个高斯函数和公式。这需要将偶极或多极 profile 映射为高斯函数之和。对于每个 diffusion profile R(r)，我们使用权重 \(w_i\) 以及方差 \(v_i\) 得到 k 个高斯函数如下：<br />
+</p>
+\begin{align}  
+R(r) \approx \sum_{i=1}^{k}w_iG(v_i,r)
+\end{align}  
+<p>
+我们采用下面的定义作为高斯的方差<br />
+</p>
+\begin{align}  
+G(v,r) := \frac{1}{2\pi v}e^{-r^2/(2v)}
+\end{align}  
+</div>
+</div>
+<div id="outline-container-org6e50c14" class="outline-4">
+<h4 id="org6e50c14">Fitting Predicted or Measured Profiles</h4>
+</div>
+</div>
+<div id="outline-container-org1944b7c" class="outline-3">
+<h3 id="org1944b7c">实现总结</h3>
+<div class="outline-text-3" id="text-org1944b7c">
+</div>
+<div id="outline-container-orgcea80d2" class="outline-4">
+<h4 id="orgcea80d2">高光</h4>
+<div class="outline-text-4" id="text-orgcea80d2">
+<p>
+高光使用了基于物理的 BRDF，为了加速计算，对 BRDF 进行了预计算。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-c"><span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #bc6ec5; font-weight: bold;">PHBeckmann</span>(<span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #7590db;">nDotH</span>, <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #7590db;">roughness</span>)
+{
+  <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #7590db;">alpha</span> = acos(nDotH);
+  <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #7590db;">ta</span> = tan(alpha);
+  <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #7590db;">r2</span> = roughness * roughness;
+  <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #7590db;">val</span> = 1.0 / (r2*pow(nDotH, 4.0))*exp(-(ta*ta) / r2);
+  <span style="color: #4f97d7; font-weight: bold;">return</span> 0.5*pow(val, 0.1);
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgb126fb3" class="outline-4">
+<h4 id="orgb126fb3">Diffuse</h4>
+<div class="outline-text-4" id="text-orgb126fb3">
+<ul class="org-ul">
+<li>计算 RhodtTexture，计算 BRDF 在半球空间的积分，得到剩余的被散射的比例<br /></li>
+<li>计算 IrradianceTexture，计算被散射的能量<br /></li>
+<li>计算 StretchCorrectionTexture，矫正贴图空间的模糊(曲率比较大的地方，相邻点的空间距离比其贴图上的距离要小)<br /></li>
+<li>计算 SeamMaskTexture，将所有 StretchTexture 的 alpha 通道相乘得到 SeamMask<br /></li>
+<li>在贴图空间，对 IrradianceTexture 进行高斯模糊来模拟散射。一共使用 6 个高斯函数，RGB 通道使用不同的权重。6个高斯函数近似 multi-dipole profiles<br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgb74b1cd" class="outline-3">
+<h3 id="orgb74b1cd">参考资料</h3>
+<div class="outline-text-3" id="text-orgb74b1cd">
+<ul class="org-ul">
+<li>Advanced Techniques for Realistic Real-Time Skin Rendering <a href="https://developer.nvidia.com/gpugems/GPUGems3/gpugems3_ch14.html">https://developer.nvidia.com/gpugems/GPUGems3/gpugems3_ch14.html</a><br /></li>
+<li>角色渲染技术——皮肤 <a href="https://zhuanlan.zhihu.com/p/27014447">https://zhuanlan.zhihu.com/p/27014447</a><br /></li>
+<li>GPU Gems 3 真实感皮肤渲染技术总结 <a href="https://zhuanlan.zhihu.com/p/42433792">https://zhuanlan.zhihu.com/p/42433792</a><br /></li>
+<li>如何通俗易懂地解释卷积？  <a href="https://www.zhihu.com/question/22298352">https://www.zhihu.com/question/22298352</a><br /></li>
+<li>理解图像卷积操作的意义 <a href="https://blog.csdn.net/chaipp0607/article/details/72236892?locationNum=9&amp;fps=1">https://blog.csdn.net/chaipp0607/article/details/72236892?locationNum=9&amp;fps=1</a><br /></li>
+<li>高斯函数 <a href="https://www.zhihu.com/question/33214189">https://www.zhihu.com/question/33214189</a><br /></li>
+<li>Gaussian filter, or Gaussian blur <a href="http://www.librow.com/articles/article-9">http://www.librow.com/articles/article-9</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orga284d87" class="outline-2">
+<h2 id="orga284d87">高斯卷积核求解</h2>
+<div class="outline-text-2" id="text-orga284d87">
+<ul class="org-ul">
+<li>高斯卷积核计算器 <a href="http://dev.theomader.com/gaussian-kernel-calculator/">http://dev.theomader.com/gaussian-kernel-calculator/</a><br /></li>
+<li>将 2D 卷积核转化为 1D <a href="https://blogs.mathworks.com/steve/2006/11/28/separable-convolution-part-2/">https://blogs.mathworks.com/steve/2006/11/28/separable-convolution-part-2/</a><br /></li>
+<li>2D GaussianBlur To 1D <a href="https://stackoverflow.com/questions/25216834/converting-2d-mask-to-1d-in-gaussian-blur">https://stackoverflow.com/questions/25216834/converting-2d-mask-to-1d-in-gaussian-blur</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgf6999f3" class="outline-2">
+<h2 id="orgf6999f3">Pre-Intergrating the Effects of Scattering</h2>
+<div class="outline-text-2" id="text-orgf6999f3">
+</div>
+<div id="outline-container-org837401f" class="outline-3">
+<h3 id="org837401f">Introduce</h3>
+</div>
+<div id="outline-container-org432a6fd" class="outline-3">
+<h3 id="org432a6fd">Background and Previous Work</h3>
+</div>
+<div id="outline-container-org51ed167" class="outline-3">
+<h3 id="org51ed167">Pre-integrating the Effect of Scattering</h3>
+<div class="outline-text-3" id="text-org51ed167">
+<p>
+我们没有通过收集渲染位置处所有方向的入射光来实现次表面散射。而是探索预积分皮肤中的次表面散射效果。<br />
+只有三件事情会引入可见的散射：<br />
+</p>
+<ol class="org-ol">
+<li>模型曲率的变化<br /></li>
+<li>normal map 中的突起<br /></li>
+<li>遮挡光导致的阴影<br /></li>
+</ol>
+</div>
+</div>
+<div id="outline-container-org7e4d0e1" class="outline-3">
+<h3 id="org7e4d0e1">Scattering and Diffuse Light</h3>
+<div class="outline-text-3" id="text-org7e4d0e1">
+<p>
+nDotL 是主要导致入射光变化的原因，其使得散射变得明显。<br />
+我们考虑通过球谐光照模拟所有方向上的光，以此来预计算表面上任意一点的散射光效果。但是球谐方式只能高效地表示低频率变化的光，对于高频变化的光需要很多系数。因此，我们放弃了预计算散射效果，而选择预计算表面形状子集的散射衰减，并在渲染时确定最好的衰减.<br />
+我们在运行时可以计算表面的曲率，其最大程度决定了光滑表面的散射效果。<br />
+为了测量曲面上的散射，我们添加了曲率作为第二个参数。我们简单从一个方向照射给定曲率的球面，并测量各个角度上累计的光照。<br />
+下图为散射光公式推导：<br />
+<img src="./SkinRendering/004_scatter_factor_equation.jpg" alt="004_scatter_factor_equation.jpg" /><br />
+</p>
+
+<p>
+当前模型假设所有的皮肤和球相似，但是皮肤可以为任意拓扑结构。换句话说，当前模型假设给定点的散射由该点自身的曲率决定，而事实上是由该点周围所有点的曲率决定。因此，该模型在平滑的表面上(曲率变化不大的表面上)效果可以，但是曲率变化比较大时，就不适用了。幸运的是，大多数皮肤模型都有两层：使用几何表示光滑的表面，使用 normal map 表示表面细节。<br />
+</p>
+
+<ul class="org-ul">
+<li>如何简明地解释曲率（curvature）？ <a href="https://www.zhihu.com/question/25952605">https://www.zhihu.com/question/25952605</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org84b60ba" class="outline-3">
+<h3 id="org84b60ba">Scattering and Normal Maps</h3>
+<div class="outline-text-3" id="text-org84b60ba">
+<p>
+从实际的物体抓取 normal 贴图时，发现 normal 会向表面法线偏转，而且不同波长的光偏转程度不同，红光比绿光偏转程度大。还观察到使用多个波长的光抓取的多个 normal 进行渲染要比使用单个 normal 效果要好。<br />
+我们的做法为，假定原始的 normal map 是精确的表面法线，为每个波长对其进行多次 blur，从而得到每个波长对应的 normal。因此，不能为了得到更光滑的效果，而直接提供 blur 过的 normal map 做原始的 normal map。<br />
+使用 diffusion profile 直接对 normal map 进行 blur 是不可行的，因为光照对于表面法线不是线性过程。<br />
+可以通过模糊 normal 来近似皱纹、毛孔等小褶皱照成的散射。对于不同波长的光，diffusion profiles 不同，模糊 normal 的方式也不同。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org1cbe758" class="outline-3">
+<h3 id="org1cbe758">Shadow Scattering</h3>
+<div class="outline-text-3" id="text-org1cbe758">
+<p>
+光散射到阴影是真实感皮肤的重要特性之一。<br />
+我们可以将阴影映射算法当作一个衰减函数。当衰减为完全黑或完全白，对应着完全遮挡和完全不遮挡。我们可以重新设置完全黑和完全白之间的值。特别地，如果我们确定我们的阴影过滤器创建的半影尺寸足够容纳大部分的 diffusion profile，我们可以缩小原始半影的尺寸，将多出来的尺寸用于表示散射。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgee40969" class="outline-3">
+<h3 id="orgee40969">Conclusion and Future Work</h3>
+</div>
+</div>
+<div id="outline-container-org44d4c67" class="outline-2">
+<h2 id="org44d4c67">CLX2 Skin</h2>
+<div class="outline-text-2" id="text-org44d4c67">
+</div>
+<div id="outline-container-org53b9012" class="outline-3">
+<h3 id="org53b9012">refract light</h3>
+<div class="outline-text-3" id="text-org53b9012">
+<p>
+<a href="./SkinRendering/005_clx_refract.ggb">./SkinRendering/005_clx_refract.ggb</a><br />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orge77cd14" class="outline-2">
+<h2 id="orge77cd14">Misc</h2>
+<div class="outline-text-2" id="text-orge77cd14">
+</div>
+<div id="outline-container-orgb343e8d" class="outline-3">
+<h3 id="orgb343e8d">Normal Map Mipmap</h3>
+<div class="outline-text-3" id="text-orgb343e8d">
+<p>
+该文件展示了 normal map 的混合：<br />
+<a href="./SkinRendering/111_normal_map_lerp.ggb">./SkinRendering/111_normal_map_lerp.ggb</a><br />
+</p>
+
+<ul class="org-ul">
+<li>Normal Map Mipmap <a href="https://www.jianshu.com/p/efabea28ed1a">https://www.jianshu.com/p/efabea28ed1a</a><br /></li>
+<li>Mipmapping_Normal_Maps <a href="https://developer.download.nvidia.com/whitepapers/2006/Mipmapping_Normal_Maps.pdf">https://developer.download.nvidia.com/whitepapers/2006/Mipmapping_Normal_Maps.pdf</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orge46b232" class="outline-3">
+<h3 id="orge46b232">NoLWrap</h3>
+<div class="outline-text-3" id="text-orge46b232">
+<p>
+下面文件展示了 nol wrap 的曲线：<br />
+<a href="./SkinRendering/111_nol_wrap.ggb">./SkinRendering/111_nol_wrap.ggb</a><br />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org339bb35" class="outline-2">
+<h2 id="org339bb35">参考资料</h2>
+<div class="outline-text-2" id="text-org339bb35">
+<ul class="org-ul">
+<li>《GPU Gems 3》：真实感皮肤渲染技术总结 <a href="https://zhuanlan.zhihu.com/p/42433792">https://zhuanlan.zhihu.com/p/42433792</a><br /></li>
+<li>低成本皮肤渲染 Pre-integrated Skin <a href="https://zhuanlan.zhihu.com/p/35628106">https://zhuanlan.zhihu.com/p/35628106</a><br /></li>
+<li>Pre-Integrated Skin <a href="http://simonstechblog.blogspot.com/2015/02/pre-integrated-skin-shading.html">http://simonstechblog.blogspot.com/2015/02/pre-integrated-skin-shading.html</a><br /></li>
+<li>separable-sss <a href="https://github.com/iryoku/separable-sss">https://github.com/iryoku/separable-sss</a><br /></li>
+<li>GPU Gem3 Advanced Techniques for Realistic Real-Time Skin Rendering<br /></li>
+<li>GPU Pro 1 Screen-Space Subsurface Scattering<br /></li>
+<li>GPU Pro 2 Part2 Chapter1 Pre-Integrated Skin Shading<br /></li>
+<li>GPU Pro 5 Part4 Chapter1 Realistic Real-Time Skin Rendering on Mobile<br /></li>
+<li>SoulShell：实时虚拟角色 <a href="https://zhuanlan.zhihu.com/soulshell">https://zhuanlan.zhihu.com/soulshell</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+</body>
+</html>

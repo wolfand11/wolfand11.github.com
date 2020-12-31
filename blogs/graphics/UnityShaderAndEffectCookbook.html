@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2020-11-03 周二 18:26 -->
+<!-- 2020-12-23 周三 11:29 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>UnityShaderAndEffectCookbook</title>
@@ -75,12 +75,13 @@ for the JavaScript code in this tag.
 <li><a href="#org3fc30fd">Basic</a>
 <ul>
 <li><a href="#org3b7ffa7">SurfaceShader 工作流程图</a></li>
-<li><a href="#org53f0a17">Properties</a></li>
+<li><a href="#orge7d7c34">Properties</a></li>
 <li><a href="#orgeefe926">SurfaceOutput</a></li>
 <li><a href="#orgdf4c690">Input</a></li>
 <li><a href="#org654ec76">shader 的代码结构</a>
 <ul>
-<li><a href="#orge7d7c34">Properties</a></li>
+<li><a href="#org91ceeef">Properties</a></li>
+<li><a href="#org8728e81">Category</a></li>
 <li><a href="#org324555c">SubShader</a>
 <ul>
 <li><a href="#orge48b40c">SubShader Tags</a>
@@ -143,14 +144,14 @@ for the JavaScript code in this tag.
 <li><a href="#orgff2ad7d">Additional Passes</a></li>
 </ul>
 </li>
-<li><a href="#orgc29cbd1">Performance Considerations</a></li>
+<li><a href="#org4b8178d">Performance Considerations</a></li>
 </ul>
 </li>
 <li><a href="#org4555d43">Deferred Shading path</a>
 <ul>
 <li><a href="#orgab9493d">Overview</a></li>
 <li><a href="#org9d542d1">Requirements</a></li>
-<li><a href="#org4b8178d">Performance Considerations</a></li>
+<li><a href="#org9540069">Performance Considerations</a></li>
 <li><a href="#org579447e">Implementation Details</a></li>
 <li><a href="#orgecd5bf4">G-Buffer Pass</a></li>
 <li><a href="#org0bd64e2">Lighting Pass</a></li>
@@ -199,7 +200,7 @@ for the JavaScript code in this tag.
 <li><a href="#org51d6330">Fresnel reflection</a>
 <ul>
 <li><a href="#orgb885beb">如何模拟菲涅尔效应效果？</a></li>
-<li><a href="#orgea40183">参考资料</a></li>
+<li><a href="#org5130b7d">参考资料</a></li>
 </ul>
 </li>
 </ul>
@@ -212,7 +213,8 @@ for the JavaScript code in this tag.
 <li><a href="#orgfd699cf">nolightmap</a></li>
 <li><a href="#org978f05b">halfasview</a></li>
 <li><a href="#orgd550283">使用 UnityObjectToClipPos 代替 mul(UNITY_MATRIX_MVP,v.vertex)</a></li>
-<li><a href="#orgfdf6f31">参考资料</a></li>
+<li><a href="#org69dc3f2">Shader Lod</a></li>
+<li><a href="#org41ec748">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#org385fa2f">LightingModel</a></li>
@@ -228,7 +230,7 @@ for the JavaScript code in this tag.
 <ul>
 <li>
 <ul>
-<li><a href="#org6957b15">参考资料</a></li>
+<li><a href="#orgbffc2de">参考资料</a></li>
 </ul>
 </li>
 </ul>
@@ -261,7 +263,7 @@ for the JavaScript code in this tag.
 </li>
 <li><a href="#orgf99e938">Pass 的执行顺序</a></li>
 <li><a href="#org4fcbda6">Enable Disable Pass</a></li>
-<li><a href="#org662d225">Tips</a></li>
+<li><a href="#org9e21cd0">Tips</a></li>
 </ul>
 </li>
 <li><a href="#org29914b4">如何实现半透明渲染？</a></li>
@@ -271,7 +273,7 @@ for the JavaScript code in this tag.
 <li><a href="#org7b8e719">Deferred Rendering</a></li>
 <li><a href="#org2c78c65">Deferred Shading</a></li>
 <li><a href="#org600fd9a">Deferred Lighting</a></li>
-<li><a href="#org69daa76">参考资料</a></li>
+<li><a href="#org5382770">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#orgc6f3291">为什么 Unity 中 skybox 是在所有不透明物体和所有透明物体之间被绘制的？</a></li>
@@ -282,7 +284,7 @@ for the JavaScript code in this tag.
 <li><a href="#org5cc3aff">What is tangent.w? How to know whether it's 1 or -1? tangent.w VS unity_WorldTransformParams.w?</a></li>
 </ul>
 </li>
-<li><a href="#org95b6957">参考资料</a></li>
+<li><a href="#orgc2729c7">参考资料</a></li>
 </ul>
 </div>
 </div>
@@ -309,9 +311,9 @@ for the JavaScript code in this tag.
 </div>
 </div>
 </div>
-<div id="outline-container-org53f0a17" class="outline-3">
-<h3 id="org53f0a17">Properties</h3>
-<div class="outline-text-3" id="text-org53f0a17">
+<div id="outline-container-orge7d7c34" class="outline-3">
+<h3 id="orge7d7c34">Properties</h3>
+<div class="outline-text-3" id="text-orge7d7c34">
 <p>
 通过 Properties，可以将 shader 的一些参数暴露给编辑器进行设置。<br />
 </p>
@@ -499,53 +501,91 @@ Tips:
         <span style="color: #7590db;">_MyFloatValue</span>(<span style="color: #2d9574;">"This is a Float"</span>, <span style="color: #4f97d7; font-weight: bold;">Float</span>) = 1.5
         <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">......</span>
     }
-    <span style="color: #4f97d7; font-weight: bold;">SubShader</span> 
+    <span style="color: #4f97d7; font-weight: bold;">CGINCLUDE</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">......</span>
+    <span style="color: #4f97d7; font-weight: bold;">ENDCG</span>
+    <span style="color: #4f97d7; font-weight: bold;">Category</span>
     {
-        <span style="color: #4f97d7; font-weight: bold;">Tags</span> { <span style="color: #2d9574;">"Queue"</span> = <span style="color: #2d9574;">"Transparent"</span> <span style="color: #2d9574;">"RenderType"</span>=<span style="color: #2d9574;">"Opaque"</span>}
-        <span style="color: #4f97d7; font-weight: bold;">ZWrite</span> Off <span style="color: #4f97d7; font-weight: bold;">ColorMask</span> RGB
+        <span style="color: #4f97d7; font-weight: bold;">Fog</span> { <span style="color: #4f97d7; font-weight: bold;">Mode</span> Off }
+        <span style="color: #4f97d7; font-weight: bold;">SubShader</span>
+        {
+            <span style="color: #4f97d7; font-weight: bold;">Tags</span> { <span style="color: #2d9574;">"Queue"</span> = <span style="color: #2d9574;">"Transparent"</span> <span style="color: #2d9574;">"RenderType"</span>=<span style="color: #2d9574;">"Opaque"</span>}
+            <span style="color: #4f97d7; font-weight: bold;">ZWrite</span> Off <span style="color: #4f97d7; font-weight: bold;">ColorMask</span> RGB
 
-        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">fixed functionality</span>
-        <span style="color: #4f97d7; font-weight: bold;">Pass</span> {
-            <span style="color: #4f97d7; font-weight: bold;">Name</span> <span style="color: #2d9574;">"RedObj"</span>
-            <span style="color: #4f97d7; font-weight: bold;">Color</span> (1, 0, 0, 1)
-        }
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">fixed functionality</span>
+            <span style="color: #4f97d7; font-weight: bold;">Pass</span> {
+                <span style="color: #4f97d7; font-weight: bold;">Name</span> <span style="color: #2d9574;">"RedObj"</span>
+                <span style="color: #4f97d7; font-weight: bold;">Color</span> (1, 0, 0, 1)
+            }
 
-        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">surface shader - surface shader &#19981;&#33021;&#25918;&#22312; Pass &#20013;</span>
-        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">unity &#20250;&#20026; surface shader &#33258;&#21160;&#29983;&#25104; pass</span>
-        <span style="color: #4f97d7; font-weight: bold;">CGPROGRAM</span>
-<span style="color: #bc6ec5;">        #pragma</span> surface surf Lambert alpha:fade
-        <span style="color: #2aa1ae; background-color: #292e34;">/** </span><span style="color: #2aa1ae; background-color: #292e34;">surface shader **/</span>
-        <span style="color: #4f97d7; font-weight: bold;">ENDCG</span>
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">surface shader - surface shader &#19981;&#33021;&#25918;&#22312; Pass &#20013;</span>
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">unity &#20250;&#20026; surface shader &#33258;&#21160;&#29983;&#25104; pass</span>
+            <span style="color: #4f97d7; font-weight: bold;">CGPROGRAM</span>
+<span style="color: #bc6ec5;">            #pragma</span> surface surf Lambert alpha:fade
+            <span style="color: #2aa1ae; background-color: #292e34;">/** </span><span style="color: #2aa1ae; background-color: #292e34;">surface shader **/</span>
+            <span style="color: #4f97d7; font-weight: bold;">ENDCG</span>
 
-        <span style="color: #4f97d7; font-weight: bold;">Pass</span> {
-            <span style="color: #4f97d7; font-weight: bold;">Name</span> <span style="color: #2d9574;">"FORWARD"</span>
-            <span style="color: #4f97d7; font-weight: bold;">Tags</span> { <span style="color: #2d9574;">"LightMode"</span> = <span style="color: #2d9574;">"ForwardBase"</span> }
-            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">......</span>
+            <span style="color: #4f97d7; font-weight: bold;">Pass</span> {
+                <span style="color: #4f97d7; font-weight: bold;">Name</span> <span style="color: #2d9574;">"FORWARD"</span>
+                <span style="color: #4f97d7; font-weight: bold;">Tags</span> { <span style="color: #2d9574;">"LightMode"</span> = <span style="color: #2d9574;">"ForwardBase"</span> }
+                <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">......</span>
+            }
+            <span style="color: #4f97d7; font-weight: bold;">GrabPass</span> {
+                <span style="color: #2d9574;">"TextureName"</span>
+                <span style="color: #4f97d7; font-weight: bold;">Name</span> <span style="color: #2d9574;">""</span>
+                <span style="color: #4f97d7; font-weight: bold;">Tags</span> {}
+                <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">......</span>
+            }
+            <span style="color: #4f97d7; font-weight: bold;">Pass</span> {
+                <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">......</span>
+            }
         }
-        <span style="color: #4f97d7; font-weight: bold;">GrabPass</span> {
-            <span style="color: #2d9574;">"TextureName"</span>
-            <span style="color: #4f97d7; font-weight: bold;">Name</span> <span style="color: #2d9574;">""</span>
-            <span style="color: #4f97d7; font-weight: bold;">Tags</span> {}
-            <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">......</span>
-        }
-        <span style="color: #4f97d7; font-weight: bold;">Pass</span> {
+        <span style="color: #4f97d7; font-weight: bold;">SubShader</span> {
             <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">......</span>
         }
     }
+    <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">....  other subshader</span>
     <span style="color: #4f97d7; font-weight: bold;">SubShader</span> {
         <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">......</span>
     }
-    <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">....  other subshader</span>
 }
 </pre>
 </div>
 </div>
-<div id="outline-container-orge7d7c34" class="outline-4">
-<h4 id="orge7d7c34">Properties</h4>
-<div class="outline-text-4" id="text-orge7d7c34">
+<div id="outline-container-org91ceeef" class="outline-4">
+<h4 id="org91ceeef">Properties</h4>
+<div class="outline-text-4" id="text-org91ceeef">
 <p>
 Properties 指定了 surface shader 中可供调节的变量，这些变量可以被显示在 Inspector 中。<br />
 </p>
+</div>
+</div>
+<div id="outline-container-org8728e81" class="outline-4">
+<h4 id="org8728e81">Category</h4>
+<div class="outline-text-4" id="text-org8728e81">
+<p>
+Category 将其中的所有指令组成一组。通常用于渲染状态继承。例如，你的 shader 可能有多个 subshaders，而每个 subshader 都需要将 fog 关闭，混合模式都需要为叠加，就可以通过下面方式实现：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #4f97d7; font-weight: bold;">Shader</span> <span style="color: #2d9574;">"example"</span> {
+    <span style="color: #4f97d7; font-weight: bold;">Category</span> {
+        <span style="color: #4f97d7; font-weight: bold;">Fog</span> { <span style="color: #4f97d7; font-weight: bold;">Mode</span> Off }
+        <span style="color: #4f97d7; font-weight: bold;">Blend</span> One One
+        <span style="color: #4f97d7; font-weight: bold;">SubShader</span> {
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">...</span>
+        }
+        <span style="color: #4f97d7; font-weight: bold;">SubShader</span> {
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">...</span>
+        }
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">...</span>
+    }
+}
+</pre>
+</div>
+
+<ul class="org-ul">
+<li><a href="https://docs.unity3d.com/Manual/SL-Other.html">https://docs.unity3d.com/Manual/SL-Other.html</a><br /></li>
+</ul>
 </div>
 </div>
 <div id="outline-container-org324555c" class="outline-4">
@@ -1357,8 +1397,8 @@ Pass 可以设置图形硬件的渲染状态。<br />
 </div>
 </li>
 
-<li><a id="orge1667d0"></a>Tips<br />
-<div class="outline-text-8" id="text-orge1667d0">
+<li><a id="org662d225"></a>Tips<br />
+<div class="outline-text-8" id="text-org662d225">
 <ul class="org-ul">
 <li>Comp Pass Fail ZFail<br /></li>
 <li>CompFront PassFront FailFront ZFailFront 显示指定渲染几何体正面时，使用的模板缓冲区操作。<br /></li>
@@ -1368,8 +1408,8 @@ Pass 可以设置图形硬件的渲染状态。<br />
 </li>
 </ul>
 </li>
-<li><a id="org289d3a3"></a>参考资料<br />
-<div class="outline-text-7" id="text-org289d3a3">
+<li><a id="org95b6957"></a>参考资料<br />
+<div class="outline-text-7" id="text-org95b6957">
 <ul class="org-ul">
 <li><a href="https://docs.unity3d.com/Manual/SL-Stencil.html">https://docs.unity3d.com/Manual/SL-Stencil.html</a><br /></li>
 <li><a href="https://learnopengl.com/Advanced-OpenGL/Stencil-testing">https://learnopengl.com/Advanced-OpenGL/Stencil-testing</a><br /></li>
@@ -1407,8 +1447,8 @@ Blend Off 关闭混合（默认）<br />
 </p>
 </div>
 <ul class="org-ul">
-<li><a id="org28e7c02"></a>参考资料<br />
-<div class="outline-text-7" id="text-org28e7c02">
+<li><a id="orgfe2245f"></a>参考资料<br />
+<div class="outline-text-7" id="text-orgfe2245f">
 <ul class="org-ul">
 <li><a href="https://docs.unity3d.com/Manual/SL-Blend.html">https://docs.unity3d.com/Manual/SL-Blend.html</a><br /></li>
 <li><a href="https://blog.csdn.net/ecidevilin/article/details/52864349">https://blog.csdn.net/ecidevilin/article/details/52864349</a><br /></li>
@@ -1600,9 +1640,9 @@ Additional Passes 用来渲染影响到物体的每个额外的 per-pixel 方式
 </div>
 </div>
 </div>
-<div id="outline-container-orgc29cbd1" class="outline-5">
-<h5 id="orgc29cbd1">Performance Considerations</h5>
-<div class="outline-text-5" id="text-orgc29cbd1">
+<div id="outline-container-org4b8178d" class="outline-5">
+<h5 id="org4b8178d">Performance Considerations</h5>
+<div class="outline-text-5" id="text-org4b8178d">
 <p>
 Spherical Harmonics 方式计算的光照渲染速度非常快。他们消耗很少的 CPU 资源，并且对于 GPU 基本是无消耗的（也就是说，Base Passes 总是计算 SH 方式计算的光照，但是，基于 SH 的工作方式，无论有多少光照按照 SH 方式计算，其消耗都是一样的）。<br />
 SH 方式计算光照的缺点有：<br />
@@ -1650,9 +1690,9 @@ Deferred Pass 用来渲染光照计算需要的所有的信息（在内置 shade
 </p>
 </div>
 </div>
-<div id="outline-container-org4b8178d" class="outline-5">
-<h5 id="org4b8178d">Performance Considerations</h5>
-<div class="outline-text-5" id="text-org4b8178d">
+<div id="outline-container-org9540069" class="outline-5">
+<h5 id="org9540069">Performance Considerations</h5>
+<div class="outline-text-5" id="text-org9540069">
 <p>
 在延迟渲染中渲染实时光照的开销和被照明的像素数量成比例，而和场景的复杂程度无关。所以小的点光源或聚光灯开销非常小，如果场景中的物体将它们整个或部分遮挡，渲染它们的开销将更小。<br />
 </p>
@@ -2143,9 +2183,9 @@ o.<span style="color: #4f97d7; font-weight: bold;">Specular</span> = <span style
 </div>
 </div>
 </div>
-<div id="outline-container-orgea40183" class="outline-4">
-<h4 id="orgea40183">参考资料</h4>
-<div class="outline-text-4" id="text-orgea40183">
+<div id="outline-container-org5130b7d" class="outline-4">
+<h4 id="org5130b7d">参考资料</h4>
+<div class="outline-text-4" id="text-org5130b7d">
 <p>
 菲涅耳反射 互动百科:<br />
 <a href="http://www.baike.com/wiki/%E8%8F%B2%E6%B6%85%E5%B0%94%E5%8F%8D%E5%B0%84">http://www.baike.com/wiki/%E8%8F%B2%E6%B6%85%E5%B0%94%E5%8F%8D%E5%B0%84</a><br />
@@ -2368,9 +2408,23 @@ UnityObjectToClipPos 的效率要比 mul(UNITY_MATRIX_MVP,v.vertex)高。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgfdf6f31" class="outline-3">
-<h3 id="orgfdf6f31">参考资料</h3>
-<div class="outline-text-3" id="text-orgfdf6f31">
+<div id="outline-container-org69dc3f2" class="outline-3">
+<h3 id="org69dc3f2">Shader Lod</h3>
+<div class="outline-text-3" id="text-org69dc3f2">
+<p>
+如果设置 someShader.maximumLOD 为大于等于 0 的值，则该 shader 就不会受 Shader.globalMaximumLOD 影响。<br />
+设置 someShader.maximumLOD = -1 后，该 shader 恢复受 Shader.globalMaximumLOD 影响。<br />
+</p>
+
+<ul class="org-ul">
+<li>Unity 中 Shader LOD 控制 <a href="https://zhuanlan.zhihu.com/p/21316674">https://zhuanlan.zhihu.com/p/21316674</a><br /></li>
+<li>Shader Level of Detail <a href="https://docs.unity3d.com/2018.3/Documentation/Manual/SL-ShaderLOD.html">https://docs.unity3d.com/2018.3/Documentation/Manual/SL-ShaderLOD.html</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org41ec748" class="outline-3">
+<h3 id="org41ec748">参考资料</h3>
+<div class="outline-text-3" id="text-org41ec748">
 <p>
 <a href="https://docs.unity3d.com/Manual/SL-SurfaceShaders.html">Shader 编译指令</a><br />
 <a href="https://docs.unity3d.com/Manual/MobileOptimizationPracticalGuide.html">Mobile Optimize Doc</a><br />
@@ -2463,9 +2517,9 @@ Normal Map 又叫 Ramp Map，其实就是法线贴图。<br />
 UnpackNormal 的作用是将 0-1 范围的数值(法线贴图存储的颜色值)映射为-1-1 范围的数值（法线向量）。<br />
 </p>
 </div>
-<div id="outline-container-org6957b15" class="outline-4">
-<h4 id="org6957b15">参考资料</h4>
-<div class="outline-text-4" id="text-org6957b15">
+<div id="outline-container-orgbffc2de" class="outline-4">
+<h4 id="orgbffc2de">参考资料</h4>
+<div class="outline-text-4" id="text-orgbffc2de">
 <p>
 <a href="http://www.songho.ca/opengl/gl_normaltransform.html">Normal 变换矩阵推导</a><br />
 <a href="http://blog.csdn.net/candycat1992/article/details/41605257">Unity 中的 Normal Map</a><br />
@@ -2600,9 +2654,9 @@ material.SetShaderPassEnabled(<span style="color: #2d9574;">"ShadowCaster"</span
 </ul>
 </div>
 </div>
-<div id="outline-container-org662d225" class="outline-4">
-<h4 id="org662d225">Tips</h4>
-<div class="outline-text-4" id="text-org662d225">
+<div id="outline-container-org9e21cd0" class="outline-4">
+<h4 id="org9e21cd0">Tips</h4>
+<div class="outline-text-4" id="text-org9e21cd0">
 <ul class="org-ul">
 <li>需要注意的是，SurfaceShader 中定义多个 Pass 时，不需要写 Pass{}，因为 SurfaceShader 编译时，会自动添加 Pass{}.具体信息可以参考如下链接：<br /></li>
 </ul>
@@ -2678,9 +2732,9 @@ Deferred lighting 是对 Deferred Shading 的一种修改。该技术使用了�
 </p>
 </div>
 </div>
-<div id="outline-container-org69daa76" class="outline-4">
-<h4 id="org69daa76">参考资料</h4>
-<div class="outline-text-4" id="text-org69daa76">
+<div id="outline-container-org5382770" class="outline-4">
+<h4 id="org5382770">参考资料</h4>
+<div class="outline-text-4" id="text-org5382770">
 <p>
 <a href="http://chengkehan.github.io/DeferredRendering.html">http://chengkehan.github.io/DeferredRendering.html</a><br />
 <a href="http://blog.csdn.net/bugrunner/article/details/7436600">http://blog.csdn.net/bugrunner/article/details/7436600</a><br />
@@ -2748,9 +2802,9 @@ photoshop 中贴图 UV 坐标系原点在 左上角。<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org95b6957" class="outline-2">
-<h2 id="org95b6957">参考资料</h2>
-<div class="outline-text-2" id="text-org95b6957">
+<div id="outline-container-orgc2729c7" class="outline-2">
+<h2 id="orgc2729c7">参考资料</h2>
+<div class="outline-text-2" id="text-orgc2729c7">
 <p>
 Unity3D Shader 入门 <a href="https://onevcat.com/2013/07/shader-tutorial-1/">https://onevcat.com/2013/07/shader-tutorial-1/</a><br />
 </p>

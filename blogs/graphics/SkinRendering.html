@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2020-12-31 周四 20:08 -->
+<!-- 2021-01-01 周五 11:42 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Skin Rendering</title>
@@ -145,7 +145,7 @@ for the JavaScript code in this tag.
 <li><a href="#orgb126fb3">Diffuse</a></li>
 </ul>
 </li>
-<li><a href="#orgb74b1cd">参考资料</a></li>
+<li><a href="#org339bb35">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#orga284d87">高斯卷积核求解</a></li>
@@ -171,7 +171,7 @@ for the JavaScript code in this tag.
 <li><a href="#orge46b232">NoLWrap</a></li>
 </ul>
 </li>
-<li><a href="#org339bb35">参考资料</a></li>
+<li><a href="#org8b24d60">参考资料</a></li>
 </ul>
 </div>
 </div>
@@ -517,9 +517,9 @@ G(v,r) := \frac{1}{2\pi v}e^{-r^2/(2v)}
 </div>
 </div>
 </div>
-<div id="outline-container-orgb74b1cd" class="outline-3">
-<h3 id="orgb74b1cd">参考资料</h3>
-<div class="outline-text-3" id="text-orgb74b1cd">
+<div id="outline-container-org339bb35" class="outline-3">
+<h3 id="org339bb35">参考资料</h3>
+<div class="outline-text-3" id="text-org339bb35">
 <ul class="org-ul">
 <li>Advanced Techniques for Realistic Real-Time Skin Rendering <a href="https://developer.nvidia.com/gpugems/GPUGems3/gpugems3_ch14.html">https://developer.nvidia.com/gpugems/GPUGems3/gpugems3_ch14.html</a><br /></li>
 <li>角色渲染技术——皮肤 <a href="https://zhuanlan.zhihu.com/p/27014447">https://zhuanlan.zhihu.com/p/27014447</a><br /></li>
@@ -591,10 +591,23 @@ nDotL 是主要导致入射光变化的原因，其使得散射变得明显。<b
 <h3 id="org84b60ba">Scattering and Normal Maps</h3>
 <div class="outline-text-3" id="text-org84b60ba">
 <p>
+皮肤上小的皱纹、毛孔通常通过normal map来表示。小折痕的法线总是会返回表面主法线，因此从小折痕反射的散射光和不散射表面上折痕更宽的地方反射的光看起来很像。因此可以通过模糊 normal 来近似皱纹、毛孔等小褶皱照成的散射。对于不同波长的光，diffusion profiles 不同，模糊 normal 的方式也不同。<br />
+</p>
+
+<p>
 从实际的物体抓取 normal 贴图时，发现 normal 会向表面法线偏转，而且不同波长的光偏转程度不同，红光比绿光偏转程度大。还观察到使用多个波长的光抓取的多个 normal 进行渲染要比使用单个 normal 效果要好。<br />
-我们的做法为，假定原始的 normal map 是精确的表面法线，为每个波长对其进行多次 blur，从而得到每个波长对应的 normal。因此，不能为了得到更光滑的效果，而直接提供 blur 过的 normal map 做原始的 normal map。<br />
-使用 diffusion profile 直接对 normal map 进行 blur 是不可行的，因为光照对于表面法线不是线性过程。<br />
-可以通过模糊 normal 来近似皱纹、毛孔等小褶皱照成的散射。对于不同波长的光，diffusion profiles 不同，模糊 normal 的方式也不同。<br />
+我们的做法为，假定原始的 normal map 是精确的表面法线，对其进行blur而得到每个波长对应的normal。因此，不能为了得到更光滑的效果，而直接提供 blur 过的 normal map 做原始的 normal map，否则再对其进行blur得到的每个波长的normal将不正确。<br />
+使用 diffusion profile 直接对 normal map 进行 blur 是不可行的，因为光照对于表面法线不是线性过程。需要使用LEAN或CLEAN。<br />
+</p>
+
+<p>
+值得注意的是，在法线贴图的过滤区域内，当法线的自阴影/入射光/散射光项为常数时，使用非归一化的normal是一个可行的近似，此时我们有如下关系式：<br />
+<img src="./SkinRendering/004_normal_filter_001.jpg" alt="004_normal_filter_001.jpg" /><br />
+上面关系式不是总成立的，因为diffuse lighting包含一个自阴影项max(0, N.L)来取代上式中的N.L。尽管如此，当法线过滤区域内都没阴影或都有阴影时，使用非归一化的法线依然是正确的。<br />
+</p>
+
+<p>
+我们开发了一种近似的方法，其只用一张包含mipmap的法线贴图。使用该优化方法时，specular normal的采样依然不变，但同时使用另一个采样器采样高一级的mipmap得到red normal。然后将specular normal和red normal变换到tangent空间，对他们进行混合得到green 和 blue normal。最后的diffuse-lighting计算需要执行三次。如果法线贴图包含很小的细节，甚至可以使用几何法线来代替red normal。<br />
 </p>
 </div>
 </div>
@@ -654,9 +667,9 @@ nDotL 是主要导致入射光变化的原因，其使得散射变得明显。<b
 </div>
 </div>
 
-<div id="outline-container-org339bb35" class="outline-2">
-<h2 id="org339bb35">参考资料</h2>
-<div class="outline-text-2" id="text-org339bb35">
+<div id="outline-container-org8b24d60" class="outline-2">
+<h2 id="org8b24d60">参考资料</h2>
+<div class="outline-text-2" id="text-org8b24d60">
 <ul class="org-ul">
 <li>《GPU Gems 3》：真实感皮肤渲染技术总结 <a href="https://zhuanlan.zhihu.com/p/42433792">https://zhuanlan.zhihu.com/p/42433792</a><br /></li>
 <li>低成本皮肤渲染 Pre-integrated Skin <a href="https://zhuanlan.zhihu.com/p/35628106">https://zhuanlan.zhihu.com/p/35628106</a><br /></li>

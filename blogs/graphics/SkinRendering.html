@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-01-01 周五 11:42 -->
+<!-- 2021-01-04 周一 11:05 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Skin Rendering</title>
@@ -145,7 +145,7 @@ for the JavaScript code in this tag.
 <li><a href="#orgb126fb3">Diffuse</a></li>
 </ul>
 </li>
-<li><a href="#org339bb35">参考资料</a></li>
+<li><a href="#org8b24d60">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#orga284d87">高斯卷积核求解</a></li>
@@ -160,9 +160,27 @@ for the JavaScript code in this tag.
 <li><a href="#orgee40969">Conclusion and Future Work</a></li>
 </ul>
 </li>
+<li><a href="#org1987432">Improve Pre-Intergrating</a>
+<ul>
+<li><a href="#orga214670">Env Light Pre-Intergrating Scattering</a></li>
+<li><a href="#orgc23e589">Approximate Pre-Intergrating Scattering</a></li>
+</ul>
+</li>
 <li><a href="#org44d4c67">CLX2 Skin</a>
 <ul>
 <li><a href="#org53b9012">refract light</a></li>
+</ul>
+</li>
+<li><a href="#org178c317">ScreenSpace Perceptual Rendering of Human Skin</a>
+<ul>
+<li><a href="#orgc8a05d9">实现细节</a>
+<ul>
+<li><a href="#orgecc29e1">Blur Kernel width</a></li>
+<li><a href="#org6079ebb">渲染流程和贴图空间 SSS 的对比</a></li>
+<li><a href="#org58c26c2">缺陷</a></li>
+</ul>
+</li>
+<li><a href="#org104b590">参考链接</a></li>
 </ul>
 </li>
 <li><a href="#orge77cd14">Misc</a>
@@ -171,7 +189,7 @@ for the JavaScript code in this tag.
 <li><a href="#orge46b232">NoLWrap</a></li>
 </ul>
 </li>
-<li><a href="#org8b24d60">参考资料</a></li>
+<li><a href="#orga3dcb0a">参考资料</a></li>
 </ul>
 </div>
 </div>
@@ -319,13 +337,13 @@ Skin Rendering note.<br />
 <div class="outline-text-5" id="text-org7fa82e5">
 <div class="org-src-container">
 <pre class="src src-shader">specularLight += lightColor[i] * lightShadow[i] * rho_s * specBRDF( N, V, L[i], eta, m) * <span style="color: #4f97d7;">saturate</span>( <span style="color: #4f97d7;">dot</span>( N, L[i] ) );
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21442;&#25968;&#35828;&#26126;&#65306;</span>
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">rho_s &#29992;&#20110;&#24378;&#24230;&#32553;&#25918;&#31995;&#25968;</span>
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">N &#34920;&#38754;&#27861;&#32447;</span>
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">V &#35270;&#32447;&#26041;&#21521;</span>
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">L &#20809;&#29031;&#26041;&#21521;</span>
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">eta &#25240;&#23556;&#29575;</span>
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">m &#31895;&#31961;&#24230;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// &#21442;&#25968;&#35828;&#26126;&#65306;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// rho_s &#29992;&#20110;&#24378;&#24230;&#32553;&#25918;&#31995;&#25968;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// N &#34920;&#38754;&#27861;&#32447;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// V &#35270;&#32447;&#26041;&#21521;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// L &#20809;&#29031;&#26041;&#21521;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// eta &#25240;&#23556;&#29575;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// m &#31895;&#31961;&#24230;</span>
 </pre>
 </div>
 </div>
@@ -341,9 +359,9 @@ Skin Rendering note.<br />
   <span style="color: #4f97d7; font-weight: bold;">return</span> exponential + F0 * ( 1.0 - exponential );
 }
 
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21442;&#25968;&#35828;&#26126;&#65306;</span>
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">H &#26159;&#26631;&#20934;&#30340;&#21322;&#35282;&#21521;&#37327; &#20837;&#23556;&#20809;&#26041;&#21521;&#21644;&#35270;&#32447;&#26041;&#21521;&#20013;&#38388;&#21521;&#37327;</span>
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">F0 &#26159;&#36890;&#24120;&#24773;&#20917;&#19979;&#20837;&#23556;&#20809;&#20135;&#29983;&#30340;&#21453;&#23556;&#65288;&#23545;&#20110;&#30382;&#32932;&#26469;&#35828;&#26159; 0.028&#65289;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// &#21442;&#25968;&#35828;&#26126;&#65306;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// H &#26159;&#26631;&#20934;&#30340;&#21322;&#35282;&#21521;&#37327; &#20837;&#23556;&#20809;&#26041;&#21521;&#21644;&#35270;&#32447;&#26041;&#21521;&#20013;&#38388;&#21521;&#37327;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// F0 &#26159;&#36890;&#24120;&#24773;&#20917;&#19979;&#20837;&#23556;&#20809;&#20135;&#29983;&#30340;&#21453;&#23556;&#65288;&#23545;&#20110;&#30382;&#32932;&#26469;&#35828;&#26159; 0.028&#65289;</span>
 </pre>
 </div>
 </div>
@@ -352,7 +370,7 @@ Skin Rendering note.<br />
 <h5 id="org483988a">Factoring BRDFs for Efficient Evaluation</h5>
 <div class="outline-text-5" id="text-org483988a">
 <div class="org-src-container">
-<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#39044;&#35745;&#31639; Beckmann Texture</span>
+<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// &#39044;&#35745;&#31639; Beckmann Texture</span>
 <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #bc6ec5; font-weight: bold;">PHBeckmann</span>( <span style="color: #ce537a; font-weight: bold;">float</span> ndoth, <span style="color: #ce537a; font-weight: bold;">float</span> m )
 {
   <span style="color: #ce537a; font-weight: bold;">float</span> alpha = <span style="color: #4f97d7;">acos</span>( ndoth );
@@ -360,35 +378,35 @@ Skin Rendering note.<br />
   <span style="color: #ce537a; font-weight: bold;">float</span> val = 1.0/(m*m*<span style="color: #4f97d7;">pow</span>(ndoth,4.0))*<span style="color: #4f97d7;">exp</span>(-(ta*ta)/(m*m));
   <span style="color: #4f97d7; font-weight: bold;">return</span> val;
 }
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Render a screen-aligned quad to precompute a 512x512 texture.</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// Render a screen-aligned quad to precompute a 512x512 texture.</span>
 <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #bc6ec5; font-weight: bold;">KSTextureCompute</span>(<span style="color: #ce537a; font-weight: bold;">float2</span> tex : <span style="color: #a45bad;">TEXCOORD0</span>)
 {
-  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Scale the value to fit within [0,1] &#8211; invert upon lookup.</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// Scale the value to fit within [0,1] &#8211; invert upon lookup.</span>
    <span style="color: #4f97d7; font-weight: bold;">return</span> 0.5 * <span style="color: #4f97d7;">pow</span>( PHBeckmann( tex.x, tex.y ), 0.1 );
 }
 </pre>
 </div>
 
 <div class="org-src-container">
-<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20351;&#29992;&#39044;&#35745;&#31639;&#36148;&#22270;&#26469;&#35745;&#31639; Kelemen/Szirmay-Kalos &#38236;&#38754;&#39640;&#20809;</span>
-<span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #bc6ec5; font-weight: bold;">KS_Skin_Specular</span>( <span style="color: #ce537a; font-weight: bold;">float3</span> N, <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Bumped surface normal</span>
-    <span style="color: #ce537a; font-weight: bold;">float3</span> L, <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Points to light</span>
-    <span style="color: #ce537a; font-weight: bold;">float3</span> V, <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Points to eye</span>
-    <span style="color: #ce537a; font-weight: bold;">float</span> m,  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Roughness</span>
-    <span style="color: #ce537a; font-weight: bold;">float</span> rho_s, <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Specular brightness</span>
+<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// &#20351;&#29992;&#39044;&#35745;&#31639;&#36148;&#22270;&#26469;&#35745;&#31639; Kelemen/Szirmay-Kalos &#38236;&#38754;&#39640;&#20809;</span>
+<span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #bc6ec5; font-weight: bold;">KS_Skin_Specular</span>( <span style="color: #ce537a; font-weight: bold;">float3</span> N, <span style="color: #2aa1ae; background-color: #292e34;">// Bumped surface normal</span>
+    <span style="color: #ce537a; font-weight: bold;">float3</span> L, <span style="color: #2aa1ae; background-color: #292e34;">// Points to light</span>
+    <span style="color: #ce537a; font-weight: bold;">float3</span> V, <span style="color: #2aa1ae; background-color: #292e34;">// Points to eye</span>
+    <span style="color: #ce537a; font-weight: bold;">float</span> m,  <span style="color: #2aa1ae; background-color: #292e34;">// Roughness</span>
+    <span style="color: #ce537a; font-weight: bold;">float</span> rho_s, <span style="color: #2aa1ae; background-color: #292e34;">// Specular brightness</span>
     <span style="color: #4f97d7; font-weight: bold;">uniform</span> texobj2D beckmannTex )
 {
     <span style="color: #ce537a; font-weight: bold;">float</span> result = 0.0;
     <span style="color: #ce537a; font-weight: bold;">float</span> ndotl = <span style="color: #4f97d7;">dot</span>( N, L );
     <span style="color: #4f97d7; font-weight: bold;">if</span>( ndotl &gt; 0.0 )
     {
-        <span style="color: #ce537a; font-weight: bold;">float3</span> h = L + V; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Unnormalized half-way vector</span>
+        <span style="color: #ce537a; font-weight: bold;">float3</span> h = L + V; <span style="color: #2aa1ae; background-color: #292e34;">// Unnormalized half-way vector</span>
         <span style="color: #ce537a; font-weight: bold;">float3</span> H = <span style="color: #4f97d7;">normalize</span>( h );
         <span style="color: #ce537a; font-weight: bold;">float</span> ndoth = <span style="color: #4f97d7;">dot</span>( N, H );
         <span style="color: #ce537a; font-weight: bold;">float</span> PH = <span style="color: #4f97d7;">pow</span>( 2.0*f1tex2D(beckmannTex,<span style="color: #ce537a; font-weight: bold;">float2</span>(ndoth,m)), 10.0 );
         <span style="color: #ce537a; font-weight: bold;">float</span> F = fresnelReflectance( H, V, 0.028 );
         <span style="color: #ce537a; font-weight: bold;">float</span> frSpec = <span style="color: #4f97d7;">max</span>( PH * F / <span style="color: #4f97d7;">dot</span>( h, h ), 0 );
-        result = ndotl * rho_s * frSpec; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">BRDF * dot(N,L) * rho_s</span>
+        result = ndotl * rho_s * frSpec; <span style="color: #2aa1ae; background-color: #292e34;">// BRDF * dot(N,L) * rho_s</span>
     }
     <span style="color: #4f97d7; font-weight: bold;">return</span> result;
 }
@@ -517,9 +535,9 @@ G(v,r) := \frac{1}{2\pi v}e^{-r^2/(2v)}
 </div>
 </div>
 </div>
-<div id="outline-container-org339bb35" class="outline-3">
-<h3 id="org339bb35">参考资料</h3>
-<div class="outline-text-3" id="text-org339bb35">
+<div id="outline-container-org8b24d60" class="outline-3">
+<h3 id="org8b24d60">参考资料</h3>
+<div class="outline-text-3" id="text-org8b24d60">
 <ul class="org-ul">
 <li>Advanced Techniques for Realistic Real-Time Skin Rendering <a href="https://developer.nvidia.com/gpugems/GPUGems3/gpugems3_ch14.html">https://developer.nvidia.com/gpugems/GPUGems3/gpugems3_ch14.html</a><br /></li>
 <li>角色渲染技术——皮肤 <a href="https://zhuanlan.zhihu.com/p/27014447">https://zhuanlan.zhihu.com/p/27014447</a><br /></li>
@@ -591,23 +609,27 @@ nDotL 是主要导致入射光变化的原因，其使得散射变得明显。<b
 <h3 id="org84b60ba">Scattering and Normal Maps</h3>
 <div class="outline-text-3" id="text-org84b60ba">
 <p>
-皮肤上小的皱纹、毛孔通常通过normal map来表示。小折痕的法线总是会返回表面主法线，因此从小折痕反射的散射光和不散射表面上折痕更宽的地方反射的光看起来很像。因此可以通过模糊 normal 来近似皱纹、毛孔等小褶皱照成的散射。对于不同波长的光，diffusion profiles 不同，模糊 normal 的方式也不同。<br />
+皮肤上小的皱纹、毛孔通常通过 normal map 来表示。小折痕的法线总是会返回表面主法线，因此从小折痕反射的散射光和不散射表面上折痕更宽的地方反射的光看起来很像。因此可以通过模糊 normal 来近似皱纹、毛孔等小褶皱照成的散射。对于不同波长的光，diffusion profiles 不同，模糊 normal 的方式也不同。<br />
 </p>
 
 <p>
 从实际的物体抓取 normal 贴图时，发现 normal 会向表面法线偏转，而且不同波长的光偏转程度不同，红光比绿光偏转程度大。还观察到使用多个波长的光抓取的多个 normal 进行渲染要比使用单个 normal 效果要好。<br />
-我们的做法为，假定原始的 normal map 是精确的表面法线，对其进行blur而得到每个波长对应的normal。因此，不能为了得到更光滑的效果，而直接提供 blur 过的 normal map 做原始的 normal map，否则再对其进行blur得到的每个波长的normal将不正确。<br />
-使用 diffusion profile 直接对 normal map 进行 blur 是不可行的，因为光照对于表面法线不是线性过程。需要使用LEAN或CLEAN。<br />
+我们的做法为，假定原始的 normal map 是精确的表面法线，对其进行 blur 而得到每个波长对应的 normal。因此，不能为了得到更光滑的效果，而直接提供 blur 过的 normal map 做原始的 normal map，否则再对其进行 blur 得到的每个波长的 normal 将不正确。<br />
+使用 diffusion profile 直接对 normal map 进行 blur 是不可行的，因为光照对于表面法线不是线性过程。需要使用 LEAN 或 CLEAN。<br />
 </p>
 
 <p>
-值得注意的是，在法线贴图的过滤区域内，当法线的自阴影/入射光/散射光项为常数时，使用非归一化的normal是一个可行的近似，此时我们有如下关系式：<br />
+值得注意的是，在法线贴图的过滤区域内，当法线的自阴影/入射光/散射光项为常数时，使用非归一化的 normal 是一个可行的近似，此时我们有如下关系式：<br />
 <img src="./SkinRendering/004_normal_filter_001.jpg" alt="004_normal_filter_001.jpg" /><br />
-上面关系式不是总成立的，因为diffuse lighting包含一个自阴影项max(0, N.L)来取代上式中的N.L。尽管如此，当法线过滤区域内都没阴影或都有阴影时，使用非归一化的法线依然是正确的。<br />
+上面关系式不是总成立的，因为 diffuse lighting 包含一个自阴影项 max(0, N.L)来取代上式中的 N.L。尽管如此，当法线过滤区域内都没阴影或都有阴影时，使用非归一化的法线依然是正确的。<br />
 </p>
 
 <p>
-我们开发了一种近似的方法，其只用一张包含mipmap的法线贴图。使用该优化方法时，specular normal的采样依然不变，但同时使用另一个采样器采样高一级的mipmap得到red normal。然后将specular normal和red normal变换到tangent空间，对他们进行混合得到green 和 blue normal。最后的diffuse-lighting计算需要执行三次。如果法线贴图包含很小的细节，甚至可以使用几何法线来代替red normal。<br />
+我们开发了一种近似的方法，其只用一张包含 mipmap 的法线贴图。使用该优化方法时，specular normal 的采样依然不变，但同时使用另一个采样器采样高一级的 mipmap 得到 red normal。然后将 specular normal 和 red normal 变换到 tangent 空间，对他们进行混合得到 green 和 blue normal。最后的 diffuse-lighting 计算需要执行三次。<br />
+</p>
+
+<p>
+如果法线贴图只包含很小的细节，甚至可以使用几何法线来代替 red normal。<br />
 </p>
 </div>
 </div>
@@ -615,13 +637,51 @@ nDotL 是主要导致入射光变化的原因，其使得散射变得明显。<b
 <h3 id="org1cbe758">Shadow Scattering</h3>
 <div class="outline-text-3" id="text-org1cbe758">
 <p>
-光散射到阴影是真实感皮肤的重要特性之一。<br />
-我们可以将阴影映射算法当作一个衰减函数。当衰减为完全黑或完全白，对应着完全遮挡和完全不遮挡。我们可以重新设置完全黑和完全白之间的值。特别地，如果我们确定我们的阴影过滤器创建的半影尺寸足够容纳大部分的 diffusion profile，我们可以缩小原始半影的尺寸，将多出来的尺寸用于表示散射。<br />
+光散射到阴影是真实感皮肤的重要特性之一。使用一点小技巧就可以预计算阴影边界上的散射效果。<br />
+</p>
+
+<p>
+我们可以将阴影映射算法当作一个衰减函数。当衰减为完全黑或完全白，对应着完全遮挡和完全不遮挡。我们可以重新设置完全黑和完全白之间的值。特别地，如果我们确定我们的阴影过滤器创建的半影尺寸足够容纳大部分的 diffusion profile，我们可以缩小原始半影的尺寸，多出来的尺寸用于基于 diffusion profile 的散射。<br />
+<img src="./SkinRendering/004_shadow_scatter.jpg" alt="004_shadow_scatter.jpg" /><br />
+</p>
+
+<p>
+为了计算精确的衰减，我们将阴影半影和 diffusion profile 进行预积分。我们将阴影半影 P()定义为一个一维衰减函数，该函数来自于使用阴影贴图映射的 blur kernel 对硬阴影边界的过滤。假定阴影映射的 kernel 为单调递减的，则对应的衰减函数也是单调递减，这样就可以对阴影半影 P()求反函数 P^-1()。这样就可以通过给定的阴影值获得对应的半影中的位置。例如，如果阴影映射为 BoxFilter，则阴影半影函数 P()就是一个线性的斜坡，此时对应的反函数 P^-1()也是一个线性的斜坡。<br />
+</p>
+
+<p>
+我们假定了阴影是透射在一个平面上的，如果表面倾斜度很大，半影尺寸将比我们预计算时使用的值大很多。因此，我们为阴影衰减贴图增加了第二个维度，其表示世界空间中的半影尺寸。最后，我们生成阴影 LUT 的公式如下：<br />
+</p>
+
+<p>
+半影宽度可以通过表面和对应光源的夹角得到，或者直接对阴影值进行求导。<br />
+当半影拉升到倾斜度高的表面时，此时提供了散射衰减空间更大。此时，可以对半影宽度值进行截取，保证其在 LUT 贴图范围内。<br />
 </p>
 </div>
 </div>
 <div id="outline-container-orgee40969" class="outline-3">
 <h3 id="orgee40969">Conclusion and Future Work</h3>
+</div>
+</div>
+<div id="outline-container-org1987432" class="outline-2">
+<h2 id="org1987432">Improve Pre-Intergrating</h2>
+<div class="outline-text-2" id="text-org1987432">
+</div>
+<div id="outline-container-orga214670" class="outline-3">
+<h3 id="orga214670">Env Light Pre-Intergrating Scattering</h3>
+<div class="outline-text-3" id="text-orga214670">
+<ul class="org-ul">
+<li><a href="https://blog.selfshadow.com/publications/s2013-shading-course/#course_content">https://blog.selfshadow.com/publications/s2013-shading-course/#course_content</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgc23e589" class="outline-3">
+<h3 id="orgc23e589">Approximate Pre-Intergrating Scattering</h3>
+<div class="outline-text-3" id="text-orgc23e589">
+<ul class="org-ul">
+<li><a href="http://simonstechblog.blogspot.com/2015/02/pre-integrated-skin-shading.html">http://simonstechblog.blogspot.com/2015/02/pre-integrated-skin-shading.html</a><br /></li>
+</ul>
+</div>
 </div>
 </div>
 <div id="outline-container-org44d4c67" class="outline-2">
@@ -637,7 +697,138 @@ nDotL 是主要导致入射光变化的原因，其使得散射变得明显。<b
 </div>
 </div>
 </div>
+<div id="outline-container-org178c317" class="outline-2">
+<h2 id="org178c317">ScreenSpace Perceptual Rendering of Human Skin</h2>
+<div class="outline-text-2" id="text-org178c317">
+</div>
+<div id="outline-container-orgc8a05d9" class="outline-3">
+<h3 id="orgc8a05d9">实现细节</h3>
+<div class="outline-text-3" id="text-orgc8a05d9">
+</div>
+<div id="outline-container-orgecc29e1" class="outline-4">
+<h4 id="orgecc29e1">Blur Kernel width</h4>
+<div class="outline-text-4" id="text-orgecc29e1">
+<p>
+Blur Kernel width 需要考虑下面两个情况<br />
+</p>
+<ul class="org-ul">
+<li>远处的物体应该使用窄的 kernel<br /></li>
+<li>depth map 中梯度变化大的也需要使用窄的 kernel<br /></li>
+</ul>
+<p>
+使用下面的公式来实现：<br />
+<img src="./SkinRendering/007_kernel_width.jpg" alt="007_kernel_width.jpg" /><br />
+</p>
 
+<p>
+从上面公式可以看到，深度梯度增加会减小 kenel 宽度；这就限制了背景像素和 skin 像素进行卷积。在物体的边界处，深度梯度会很大，kernel 宽度就会很小。<br />
+上面公式中的α值受下面一些因素影响：<br />
+</p>
+<ol class="org-ol">
+<li>物体在 3D 空间中的尺寸<br /></li>
+<li>摄像机的 FOV<br /></li>
+<li>viewport size<br /></li>
+</ol>
+
+<p>
+下图展示了α和β分别变化对最终渲染结果的影响：<br />
+<img src="./SkinRendering/007_alpha_beta_vary.jpg" alt="007_alpha_beta_vary.jpg" /><br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #bc6ec5; font-weight: bold;">BlurPS</span>(PassV2P input, <span style="color: #4f97d7; font-weight: bold;">uniform</span> <span style="color: #ce537a; font-weight: bold;">float2</span> <span style="color: #4f97d7;">step</span>) : SV_TARGET {
+    <span style="color: #2aa1ae; background-color: #292e34;">// Gaussian weights for the six samples around the current pixel:</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">//   -3 -2 -1 +1 +2 +3</span>
+    <span style="color: #ce537a; font-weight: bold;">float</span> w[6] = { 0.006,   0.061,   0.242,  0.242,  0.061, 0.006 };
+    <span style="color: #ce537a; font-weight: bold;">float</span> o[6] = {  -1.0, -0.6667, -0.3333, 0.3333, 0.6667,   1.0 };
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// Fetch color and linear depth for current pixel:</span>
+    <span style="color: #ce537a; font-weight: bold;">float4</span> colorM = colorTex.Sample(PointSampler, input.texcoord);
+    <span style="color: #ce537a; font-weight: bold;">float</span> depthM = depthTex.Sample(PointSampler, input.texcoord);
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// Accumulate center sample, multiplying it with its gaussian weight:</span>
+    <span style="color: #ce537a; font-weight: bold;">float4</span> colorBlurred = colorM;
+    colorBlurred.rgb *= 0.382;
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// Calculate the step that we will use to fetch the surrounding pixels,</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// where "step" is:</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">//     step = sssStrength * gaussianWidth * pixelSize * dir</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// The closer the pixel, the stronger the effect needs to be, hence</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// the factor 1.0 / depthM.</span>
+    <span style="color: #ce537a; font-weight: bold;">float2</span> finalStep = colorM.a * <span style="color: #4f97d7;">step</span> / depthM;
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// Accumulate the other samples:</span>
+    [unroll]
+    <span style="color: #4f97d7; font-weight: bold;">for</span> (<span style="color: #ce537a; font-weight: bold;">int</span> i = 0; i &lt; 6; i++) {
+        <span style="color: #2aa1ae; background-color: #292e34;">// Fetch color and depth for current sample:</span>
+        <span style="color: #ce537a; font-weight: bold;">float2</span> offset = input.texcoord + o[i] * finalStep;
+        <span style="color: #ce537a; font-weight: bold;">float3</span> color = colorTex.SampleLevel(LinearSampler, offset, 0).rgb;
+        <span style="color: #ce537a; font-weight: bold;">float</span> depth = depthTex.SampleLevel(PointSampler, offset, 0);
+
+        <span style="color: #2aa1ae; background-color: #292e34;">// If the difference in depth is huge, we lerp color back to "colorM":</span>
+        <span style="color: #ce537a; font-weight: bold;">float</span> s = <span style="color: #4f97d7;">min</span>(0.0125 * correction * <span style="color: #4f97d7;">abs</span>(depthM - depth), 1.0);
+        color = <span style="color: #4f97d7;">lerp</span>(color, colorM.rgb, s);
+
+        <span style="color: #2aa1ae; background-color: #292e34;">// Accumulate:</span>
+        colorBlurred.rgb += w[i] * color;
+    }
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// The result will be alpha blended with current buffer by using specific</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// RGB weights. For more details, I refer you to the GPU Pro chapter :)</span>
+    <span style="color: #4f97d7; font-weight: bold;">return</span> colorBlurred;
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org6079ebb" class="outline-4">
+<h4 id="org6079ebb">渲染流程和贴图空间 SSS 的对比</h4>
+<div class="outline-text-4" id="text-org6079ebb">
+
+<div class="figure">
+<p><img src="./SkinRendering/007_screenspace_sss_pipeline.jpg" alt="007_screenspace_sss_pipeline.jpg" /><br />
+</p>
+</div>
+
+
+<div class="figure">
+<p><img src="./SkinRendering/007_sssss_vs_tssss_pipeline.jpg" alt="007_sssss_vs_tssss_pipeline.jpg" /><br />
+</p>
+</div>
+
+
+<div class="figure">
+<p><img src="./SkinRendering/007_sssss_vs_tssss_pipeline_02.jpg" alt="007_sssss_vs_tssss_pipeline_02.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org58c26c2" class="outline-4">
+<h4 id="org58c26c2">缺陷</h4>
+<div class="outline-text-4" id="text-org58c26c2">
+
+<div class="figure">
+<p><img src="./SkinRendering/007_sssss_limits.jpg" alt="007_sssss_limits.jpg" /><br />
+</p>
+</div>
+
+<ul class="org-ul">
+<li>特定配置下会产生小的光晕、光环 例如，上图第一幅图鼻子和阴影接壤的地方。这是因为屏幕空间中相邻的像素在三维空间中可能并不相邻导致的。<br /></li>
+<li>该算法没有考虑薄的、曲率高的地方的一些特性。 例如上图第二副图中的耳朵部位，上图第三幅图为使用 TSSSS 渲染的结果，其通过修改 Translucent Shadow Map 考虑了薄部位的特性。<br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org104b590" class="outline-3">
+<h3 id="org104b590">参考链接</h3>
+<div class="outline-text-3" id="text-org104b590">
+<ul class="org-ul">
+<li><a href="http://www.iryoku.com/sssss/">http://www.iryoku.com/sssss/</a><br /></li>
+<li><a href="http://iryoku.com/translucency/">http://iryoku.com/translucency/</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
 <div id="outline-container-orge77cd14" class="outline-2">
 <h2 id="orge77cd14">Misc</h2>
 <div class="outline-text-2" id="text-orge77cd14">
@@ -653,6 +844,8 @@ nDotL 是主要导致入射光变化的原因，其使得散射变得明显。<b
 <ul class="org-ul">
 <li>Normal Map Mipmap <a href="https://www.jianshu.com/p/efabea28ed1a">https://www.jianshu.com/p/efabea28ed1a</a><br /></li>
 <li>Mipmapping_Normal_Maps <a href="https://developer.download.nvidia.com/whitepapers/2006/Mipmapping_Normal_Maps.pdf">https://developer.download.nvidia.com/whitepapers/2006/Mipmapping_Normal_Maps.pdf</a><br /></li>
+<li>Spectacular-Specular-LEAN-and-CLEAN video <a href="https://www.gdcvault.com/play/1014557/Spectacular-Specular-LEAN-and-CLEAN">https://www.gdcvault.com/play/1014557/Spectacular-Specular-LEAN-and-CLEAN</a><br /></li>
+<li>Spectacular-Specular-LEAN-and-CLEAN ppt <a href="https://fdocuments.in/document/spectacular-specular-lean-and-clean-specular-highlights-dan-baker-firaxis.html">https://fdocuments.in/document/spectacular-specular-lean-and-clean-specular-highlights-dan-baker-firaxis.html</a><br /></li>
 </ul>
 </div>
 </div>
@@ -667,9 +860,9 @@ nDotL 是主要导致入射光变化的原因，其使得散射变得明显。<b
 </div>
 </div>
 
-<div id="outline-container-org8b24d60" class="outline-2">
-<h2 id="org8b24d60">参考资料</h2>
-<div class="outline-text-2" id="text-org8b24d60">
+<div id="outline-container-orga3dcb0a" class="outline-2">
+<h2 id="orga3dcb0a">参考资料</h2>
+<div class="outline-text-2" id="text-orga3dcb0a">
 <ul class="org-ul">
 <li>《GPU Gems 3》：真实感皮肤渲染技术总结 <a href="https://zhuanlan.zhihu.com/p/42433792">https://zhuanlan.zhihu.com/p/42433792</a><br /></li>
 <li>低成本皮肤渲染 Pre-integrated Skin <a href="https://zhuanlan.zhihu.com/p/35628106">https://zhuanlan.zhihu.com/p/35628106</a><br /></li>

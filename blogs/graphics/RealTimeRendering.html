@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2021-01-13 周三 21:32 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Real Time Rendering</title>
+<meta name="generator" content="Org mode" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+           <meta name="viewport" content="width=device-width, initial-scale=1" />
+           <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/css/worg.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/css/worg-zenburn.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
+           <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2020 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href=""> UP </a>
+ |
+ <a accesskey="H" href="https://wolfand11.gitee.io"> HOME </a>
+</div><div id="content">
+<h1 class="title">Real Time Rendering</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgfba2b94">Real Time Rendering</a>
+<ul>
+<li><a href="#org11e8203">02 The Graphics Rendering Pipeline</a>
+<ul>
+<li><a href="#org5ee87cc">Architecture</a></li>
+<li><a href="#orga5823c9">The Application Stage</a></li>
+<li><a href="#org68b642d">Geometry Processing</a></li>
+<li><a href="#org00d1b51">Rasterization</a></li>
+<li><a href="#org88b60f8">Pixel Processing</a></li>
+</ul>
+</li>
+<li><a href="#org48492fb">03 The Graphics Processing Unit</a></li>
+<li><a href="#orgaeab8d2">23 Graphics Hardware</a>
+<ul>
+<li><a href="#orgb1b10ff">Rasterization</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<p>
+Real Time Rendering note.<br />
+</p>
+<div class="HTML">
+<p>
+&lt;!&#x2013; more &#x2013;&gt;<br />
+</p>
+
+</div>
+
+<div id="outline-container-orgfba2b94" class="outline-2">
+<h2 id="orgfba2b94">Real Time Rendering</h2>
+<div class="outline-text-2" id="text-orgfba2b94">
+</div>
+<div id="outline-container-org11e8203" class="outline-3">
+<h3 id="org11e8203">02 The Graphics Rendering Pipeline</h3>
+<div class="outline-text-3" id="text-org11e8203">
+<p>
+本章主要专注于 rendering pipeline 各个不同阶段的功能，而不是实现。<br />
+</p>
+</div>
+<div id="outline-container-org5ee87cc" class="outline-4">
+<h4 id="org5ee87cc">Architecture</h4>
+<div class="outline-text-4" id="text-org5ee87cc">
+<p>
+pipeline 的各个阶段是并行执行的，每个阶段只依赖前一阶段的结果。理想情况下，一个非管线系统被分为 n 个管线阶段后，会得到 n 倍的加速。这是使用管线的主要原因。例如，制作三明治可以被划分为三个阶段，准备面包、添加肉、添加佐料。每个人负责一个阶段，每个阶段的结果会传递给下一个阶段。如果每个人都需要花费 20 秒完成自己阶段的任务，则制作出一个三明治需要的最短时间为 20 秒(使用管线之前，制作出一个三明治需要 60 秒)。<br />
+</p>
+
+<p>
+虽然管线阶段是并行的，但整个管线的速率是由最慢的阶段决定的。例如，制作三明治时，添加肉的阶段如果需要 30 秒，则制作出一个三明治需要的最短时间就会变为 30 秒。将花费时间最长的阶段称为瓶颈(bottleneck)。<br />
+</p>
+
+<p>
+下图为实时渲染管线示意图，整个管线被分为 4 个主要阶段，而每个阶段内部通常也是一个又被分成多个阶段的子管线。<br />
+渲染的速度可以通过 frames per second 来表达，其表示每秒渲染的帧的数量。也可以通过赫兹（Hz）表达，其表示更新的频率。还可以直接使用时间来表达，其表示渲染一帧花费的时间。FPS 可用于描述特定的帧，也可用于描述一段时间内平均的性能。赫兹通常用于硬件，例如，显示器，其通常被设置为一个特定的比率。<br />
+<img src="./RealTimeRendering/02_01_architecture.jpg" alt="02_01_architecture.jpg" /><br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-orga5823c9" class="outline-4">
+<h4 id="orga5823c9">The Application Stage</h4>
+</div>
+<div id="outline-container-org68b642d" class="outline-4">
+<h4 id="org68b642d">Geometry Processing</h4>
+</div>
+<div id="outline-container-org00d1b51" class="outline-4">
+<h4 id="org00d1b51">Rasterization</h4>
+<div class="outline-text-4" id="text-org00d1b51">
+<p>
+Rasterization 阶段的目标是找到所有被图元覆盖的像素，其被分为两个子阶段：triangle setup(primitive assembly)和 triangle traversal。Rasterization 也被称为 Scan Conversion(扫描转化)，因为其将屏幕空间上多个二维的顶点转换为了屏幕上的像素。<br />
+</p>
+
+<p>
+Triangle Setup(Primitive Assembly)阶段：<br />
+Triangle Traversal 阶段：判断哪些像素或样本被三角形覆盖，对应生成片段(fragment)，通过插值生成片段属性（如果使用了透视摄像机，插值透视矫正也会执行）.<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org88b60f8" class="outline-4">
+<h4 id="org88b60f8">Pixel Processing</h4>
+</div>
+</div>
+<div id="outline-container-org48492fb" class="outline-3">
+<h3 id="org48492fb">03 The Graphics Processing Unit</h3>
+</div>
+
+<div id="outline-container-orgaeab8d2" class="outline-3">
+<h3 id="orgaeab8d2">23 Graphics Hardware</h3>
+<div class="outline-text-3" id="text-orgaeab8d2">
+</div>
+<div id="outline-container-orgb1b10ff" class="outline-4">
+<h4 id="orgb1b10ff">Rasterization</h4>
+<div class="outline-text-4" id="text-orgb1b10ff">
+<p>
+所有的像素被按照 2x2 的方式组合，这样就可以实现 ddx ddy 了。<br />
+</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

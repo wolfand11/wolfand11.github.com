@@ -1,0 +1,572 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2021-02-20 周六 19:48 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Advanced global illumination</title>
+<meta name="generator" content="Org mode" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+           <meta name="viewport" content="width=device-width, initial-scale=1" />
+           <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/css/worg.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/css/worg-zenburn.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
+           <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2020 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href=""> UP </a>
+ |
+ <a accesskey="H" href="https://wolfand11.gitee.io"> HOME </a>
+</div><div id="content">
+<h1 class="title">Advanced global illumination</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org25fa09f">Advanced global illumination</a>
+<ul>
+<li><a href="#org9d8998f">The Physics of Light Transport</a>
+<ul>
+<li><a href="#org7c9287b">Models of Light</a>
+<ul>
+<li><a href="#orgba47ecd">Quantum Optics 量子光学</a></li>
+<li><a href="#org8b52cfe">Wave Model 波动模型</a></li>
+<li><a href="#org540dd41">Geometric Optics 几何光学</a></li>
+</ul>
+</li>
+<li><a href="#orgccc7399">Radiometry</a>
+<ul>
+<li><a href="#orgb1babbd">Radiometric Quantities</a>
+<ul>
+<li><a href="#org46da503">Radiant Power or Flux 辐射功率|辐射通量</a></li>
+<li><a href="#orgfb4c2d6">Irradiance 辐射照度</a></li>
+<li><a href="#orga12353d">Radiant Exitance or Radiosity 辐射出射度|辐射度</a></li>
+<li><a href="#org13ed779">Radiance 辐射率</a></li>
+<li><a href="#org92cb082">Transport Theory 传播理论</a></li>
+</ul>
+</li>
+<li><a href="#orgacf34cf">Relationships between Radiometric Quantities</a></li>
+<li><a href="#orgbab33b6">Properties of Radiance 辐射率的属性</a></li>
+</ul>
+</li>
+<li><a href="#org68fd7bb">Light Emission</a></li>
+<li><a href="#orgb8f833a">Interaction of Light with Surfaces</a>
+<ul>
+<li><a href="#orgc8b52dd">BRDF</a></li>
+<li><a href="#orga3e2336">BRDF 的属性</a>
+<ul>
+<li><a href="#org2ffe438">范围</a></li>
+<li><a href="#org9c2c6bc">维度</a></li>
+<li><a href="#orge92ecfb">互换性</a></li>
+<li><a href="#orgc96f839">入射辐射率和反射辐射率的关系</a></li>
+<li><a href="#org7151c76">能量守恒</a></li>
+</ul>
+</li>
+<li><a href="#orge2d88a2">BRDF Example</a>
+<ul>
+<li><a href="#orgaff13f2">Diffuse Surfaces</a></li>
+<li><a href="#orgd006a27">Specular Surfaces</a></li>
+<li><a href="#org7d211f7">Glossy Surfaces</a></li>
+</ul>
+</li>
+<li><a href="#org2e2e4f0">Shading Models</a>
+<ul>
+<li><a href="#orgf1aa0ad">Lambert model</a></li>
+<li><a href="#org4eb0096">Phong model</a></li>
+<li><a href="#org804c82f">BlinnPhong model</a></li>
+<li><a href="#org7e41018">Modified BlinnPhong model</a></li>
+<li><a href="#orgce9d52b">Physically Based Shading Models</a></li>
+<li><a href="#org753b36c">Empirical Models</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org854325f">Rendering Equation</a>
+<ul>
+<li><a href="#org819cb4c">Hemispherical Formulation 半球公式</a></li>
+<li><a href="#org610dedb">Area Formulation 区域公式</a></li>
+<li><a href="#org8cae030">Direct and Indirect Illumination Formulation</a></li>
+</ul>
+</li>
+<li><a href="#orgee86aaf">Importance</a></li>
+<li><a href="#orge42ce7b">The Measurement Equation</a></li>
+</ul>
+</li>
+<li><a href="#orge798bff">Monte Carlo Methods</a></li>
+<li><a href="#orga5ae250">Strategies for Computing Light Transport</a></li>
+<li><a href="#org15ccf51">Stochastic Radiosity</a></li>
+<li><a href="#org8f6a1be">Hybrid Algorithms</a></li>
+<li><a href="#org4d5df30">The Quest for Ultimate Realism and Speed</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<p>
+Advanced global illumination note.<br />
+</p>
+<div class="HTML">
+<p>
+&lt;!&#x2013; more &#x2013;&gt;<br />
+</p>
+
+</div>
+
+<div id="outline-container-org25fa09f" class="outline-2">
+<h2 id="org25fa09f">Advanced global illumination</h2>
+<div class="outline-text-2" id="text-org25fa09f">
+</div>
+<div id="outline-container-org9d8998f" class="outline-3">
+<h3 id="org9d8998f">The Physics of Light Transport</h3>
+<div class="outline-text-3" id="text-org9d8998f">
+</div>
+<div id="outline-container-org7c9287b" class="outline-4">
+<h4 id="org7c9287b">Models of Light</h4>
+<div class="outline-text-4" id="text-org7c9287b">
+<p>
+为了捕捉光的不同行为，在模拟中使用多种光的模型。光的某些行为可以通过将光当作一种波来解释，例如：衍射 diffraction 和干涉 interference，光的另外一些行为可以通过将光当作粒子流来解释，例如：光电效应 photoelectric effect<br />
+</p>
+</div>
+<div id="outline-container-orgba47ecd" class="outline-5">
+<h5 id="orgba47ecd">Quantum Optics 量子光学</h5>
+<div class="outline-text-5" id="text-orgba47ecd">
+<p>
+量子光学是光的基础模型，其解释了光的波粒二象性。量子光学可以解释光在微小尺度上的行为，例如，电子的行为。但是，量子光学对于计算机图形学中生成图片来说，其考虑了太多的细节，这是没必要的。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org8b52cfe" class="outline-5">
+<h5 id="org8b52cfe">Wave Model 波动模型</h5>
+<div class="outline-text-5" id="text-org8b52cfe">
+<p>
+波动模型是简化的量子模型，其通过麦克斯韦方程来表述。该模型可以描述衍射、干涉和偏振，当和光交互的物体尺寸和光的波长可比时，就会引发这些现象。这些现象在日常生活中很常见，例如：水面浮油或鸟的羽毛上可以看到的鲜亮的颜色。但是，通常计算机图形学中会忽略这些效果。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org540dd41" class="outline-5">
+<h5 id="org540dd41">Geometric Optics 几何光学</h5>
+<div class="outline-text-5" id="text-org540dd41">
+<p>
+几何光学是最简单的，在计算机图形学中应用最广泛的模型。该模型假设光的波长比物体要小很多。该模型假设光可以被发射、反射、透射。该模型对光的行为还作了如下假设：<br />
+</p>
+<ol class="org-ol">
+<li>光沿直线传播。例如：光的衍射不会被考虑<br /></li>
+<li>光是瞬间穿过介质的。该假设要求光速为无限大的。该假设是实践上的要求，其保证光能量在场景中的分布是恒定的，这样全局光照算法就可以对其进行计算。<br /></li>
+<li>光不被外界因素影响。例如，重力和磁场。<br /></li>
+</ol>
+</div>
+</div>
+</div>
+<div id="outline-container-orgccc7399" class="outline-4">
+<h4 id="orgccc7399">Radiometry</h4>
+<div class="outline-text-4" id="text-orgccc7399">
+<p>
+全局光照算法的目标是计算场景中光能量的稳定分布。为了计算该分布，我们需要表示光能量的物理量。辐射度学(Radiometry)就是物理中度量光能量的研究领域。<br />
+光度学(Photometry)是度量感知到的光能量的研究领域，其和辐射度学不同。人类的视觉系统只可以感知波长为 380 纳米到 780 纳米范围的光。人眼对该范围光的敏感性已经被标准化，光度学会将这种敏感性考虑在内。光度学物理量可以从对应的辐射度学物理量推导而来，因此全局光照算法使用辐射度学物理量进行计算。<br />
+</p>
+</div>
+<div id="outline-container-orgb1babbd" class="outline-5">
+<h5 id="orgb1babbd">Radiometric Quantities</h5>
+<div class="outline-text-5" id="text-orgb1babbd">
+</div>
+<div id="outline-container-org46da503" class="outline-6">
+<h6 id="org46da503">Radiant Power or Flux 辐射功率|辐射通量</h6>
+</div>
+<div id="outline-container-orgfb4c2d6" class="outline-6">
+<h6 id="orgfb4c2d6">Irradiance 辐射照度</h6>
+</div>
+<div id="outline-container-orga12353d" class="outline-6">
+<h6 id="orga12353d">Radiant Exitance or Radiosity 辐射出射度|辐射度</h6>
+</div>
+<div id="outline-container-org13ed779" class="outline-6">
+<h6 id="org13ed779">Radiance 辐射率</h6>
+<div class="outline-text-6" id="text-org13ed779">
+
+<div class="figure">
+<p><img src="./AdvancedGlobalIllumination/00_02_radiance.jpg" alt="00_02_radiance.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org92cb082" class="outline-6">
+<h6 id="org92cb082">Transport Theory 传播理论</h6>
+<div class="outline-text-6" id="text-org92cb082">
+<p>
+传播理论可以处理物理量（例如，能量、电量、质量）的传播和流动。下面利用传播理论把光当作流动的光子来形式化表示辐射物理量。<br />
+假设光子的密度为 p(x)，其定义了在 x 位置单位体积中的光子数量。则微小体积 dV 内的管子数量为 p(x)dV。<br />
+<img src="./AdvancedGlobalIllumination/00_02_transport_theory.jpg" alt="00_02_transport_theory.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgacf34cf" class="outline-5">
+<h5 id="orgacf34cf">Relationships between Radiometric Quantities</h5>
+<div class="outline-text-5" id="text-orgacf34cf">
+
+<div class="figure">
+<p><img src="./AdvancedGlobalIllumination/00_02_radiometric_quntities_relationships.jpg" alt="00_02_radiometric_quntities_relationships.jpg" /><br />
+</p>
+</div>
+
+<p>
+辐射度学中的物理量具有波长依赖性。即这些物理量不仅依赖于位置和方向，而且依赖于光的波长。当显示指定波长时，例如，上图中最后的物理量辐射率，其被称为光谱辐射率（spectral radiance）.光谱辐射率的单位为辐射率的单位除波长的单位。<br />
+</p>
+
+<p>
+波长依赖性通常隐式地作为全局光照方程的一部分，而不显示提及。<br />
+</p>
+
+<ul class="org-ul">
+<li>Radiance and Spectral radiance <a href="https://en.wikipedia.org/wiki/Radiance">https://en.wikipedia.org/wiki/Radiance</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgbab33b6" class="outline-5">
+<h5 id="orgbab33b6">Properties of Radiance 辐射率的属性</h5>
+<div class="outline-text-5" id="text-orgbab33b6">
+<ul class="org-ul">
+<li>沿直线路径辐射率不变<br />
+<img src="./AdvancedGlobalIllumination/00_02_radiance_invairance.jpg" alt="00_02_radiance_invairance.jpg" /><br /></li>
+
+<li>传感器（例如：摄像机和人眼）对辐射率敏感<br />
+传感器对入射辐射率的响应是成比例的，比例常数取决于传感器的几何属性。<br /></li>
+</ul>
+
+<p>
+上面的两个属性解释了，为什么我们感知到的物体的颜色和亮度不会随距离物体的远近变化而变化。辐射率的这两个属性也决定了，全局光照算法需要计算的辐射率，将其展示给观察者。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org68fd7bb" class="outline-4">
+<h4 id="org68fd7bb">Light Emission</h4>
+<div class="outline-text-4" id="text-org68fd7bb">
+<p>
+光是加速电荷导致的电磁辐射。可以通过很多方式产生光；例如，类似太阳的热源，或者类似荧光的量子效应(材质吸收某波长的能量而发射出其他波长的额能量)。图形学中不考虑具体的量子机制来解释光，光被假定为从光源发出，并有特定的波长和特定的强度。<br />
+全局光照算法需要知道每个光源的空间、方向以及光谱强度分布。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgb8f833a" class="outline-4">
+<h4 id="orgb8f833a">Interaction of Light with Surfaces</h4>
+<div class="outline-text-4" id="text-orgb8f833a">
+</div>
+<div id="outline-container-orgc8b52dd" class="outline-5">
+<h5 id="orgc8b52dd">BRDF</h5>
+<div class="outline-text-5" id="text-orgc8b52dd">
+<p>
+只考虑光在表面上入射的点和出射的点相同的情况，该情况下表面的反射率属性可以通过 BRDF 函数来描述：<br />
+<img src="./AdvancedGlobalIllumination/00_02_brdf_define.jpg" alt="00_02_brdf_define.jpg" /><br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-orga3e2336" class="outline-5">
+<h5 id="orga3e2336">BRDF 的属性</h5>
+<div class="outline-text-5" id="text-orga3e2336">
+</div>
+<div id="outline-container-org2ffe438" class="outline-6">
+<h6 id="org2ffe438">范围</h6>
+<div class="outline-text-6" id="text-org2ffe438">
+<p>
+BRDF 可以为任意正值(其范围为[0,∞])，其值可随波长变化<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org9c2c6bc" class="outline-6">
+<h6 id="org9c2c6bc">维度</h6>
+<div class="outline-text-6" id="text-org9c2c6bc">
+<p>
+BRDF 是定义在表面上的 4 维函数，两个维度对应于入射方向，另外两个维度对应于出射方向。通常 BRDF 为各项异性的，即表面绕法线旋转，brdf 的值会改变，但是，也有很多材质是各项同性的。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orge92ecfb" class="outline-6">
+<h6 id="orge92ecfb">互换性</h6>
+<div class="outline-text-6" id="text-orge92ecfb">
+<p>
+如果入射方向和出射方向互换，brdf 保持不变。直观上来说就是，翻转光的方向，光的反射量不变。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgc96f839" class="outline-6">
+<h6 id="orgc96f839">入射辐射率和反射辐射率的关系</h6>
+<div class="outline-text-6" id="text-orgc96f839">
+
+<div class="figure">
+<p><img src="./AdvancedGlobalIllumination/00_02_brdf_radiance_irradiance_relation.jpg" alt="00_02_brdf_radiance_irradiance_relation.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org7151c76" class="outline-6">
+<h6 id="org7151c76">能量守恒</h6>
+<div class="outline-text-6" id="text-org7151c76">
+
+<div class="figure">
+<p><img src="./AdvancedGlobalIllumination/00_02_brdf_energy_conservation.jpg" alt="00_02_brdf_energy_conservation.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orge2d88a2" class="outline-5">
+<h5 id="orge2d88a2">BRDF Example</h5>
+<div class="outline-text-5" id="text-orge2d88a2">
+<p>
+材质表现为漫反射表面还是镜面或者光泽表面，依赖于 brdf 的性质。<br />
+<img src="./AdvancedGlobalIllumination/00_02_brdf_types.jpg" alt="00_02_brdf_types.jpg" /><br />
+</p>
+</div>
+
+<div id="outline-container-orgaff13f2" class="outline-6">
+<h6 id="orgaff13f2">Diffuse Surfaces</h6>
+<div class="outline-text-6" id="text-orgaff13f2">
+<p>
+一些材质会均匀地将光反射到半球空间中。反射辐射率独立于出射方向。这类材质的 brdf 为定值。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgd006a27" class="outline-6">
+<h6 id="orgd006a27">Specular Surfaces</h6>
+<div class="outline-text-6" id="text-orgd006a27">
+<p>
+完美的镜面表面只会将光反射或折射到特定方向上。<br />
+</p>
+</div>
+<ul class="org-ul">
+<li><a id="org2ff29a4"></a>镜面反射<br />
+<div class="outline-text-7" id="text-org2ff29a4">
+<p>
+镜面反射的反射方向可以通过反射定律得到，即反射角等于入射角。完美镜面反射，brdf 只在一个出射方向上不为 0，其他所有方向都为 0，其隐含的意思就是 brdf 在一个特定的出射方向上值为无穷大。<br />
+</p>
+</div>
+</li>
+<li><a id="org3f0fa33"></a>镜面折射<br />
+<div class="outline-text-7" id="text-org3f0fa33">
+<p>
+镜面折射的折射方向可以通过 Snell 定律得到，η1 sinθ1 = η2 sinθ2。<br />
+当光从稠密介质进入稀薄介质，光可以被折射回稠密介质。这个过程被称为全反射，此时的入射角被称为临界角(下面的θc 就是临界角)。<br />
+η1 sin(θc) = η2 sin(π/2)<br />
+</p>
+</div>
+</li>
+<li><a id="orga9cefb1"></a>Reciprocity for transparent surfaces 透明表面的互换性<br />
+<div class="outline-text-7" id="text-orga9cefb1">
+<p>
+由 Snell 定律可得，当一束光从稀薄介质进入稠密介质时，这束光会被压缩（光线会向 normal 方向偏转）。因此，单位区域内的光能量会变高。当光束离开稠密介质进入稀薄介质时，会发生相反的过程，光线会偏转到远离 normal 的方向。<br />
+在前面描述的过程中，光线密度变化为折射率的平方比值。当计算透明表面的辐射率时，需要考虑该因素。<br />
+</p>
+</div>
+</li>
+<li><a id="orgb868ed6"></a>菲涅尔方程<br />
+<div class="outline-text-7" id="text-orgb868ed6">
+<p>
+菲涅尔推导出了一系列方程，被称为菲涅尔方程，其可以描述在完美镜面表面上，入射光被反射和被折射的量。<br />
+当光入射到完美光滑表面上，被反射的光的量取决于光的波长、表面的几何属性以及入射光的方向。菲涅尔方程给出了被反射的光的量，其考虑了光的偏振。<br />
+<img src="./AdvancedGlobalIllumination/00_02_fresnel_equation.jpg" alt="00_02_fresnel_equation.jpg" /><br />
+上面的方程同时适用于金属和非金属，对于金属其折射率为复数：n+ik，而对于非金属其折射率为实数：n+0i.<br />
+</p>
+
+<p>
+在完美镜面表面上，菲涅尔方程假定光不是被反射就是被折射，其不考虑光的吸收，反射系数和折射系数的和加起来为 1.<br />
+</p>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-org7d211f7" class="outline-6">
+<h6 id="org7d211f7">Glossy Surfaces</h6>
+<div class="outline-text-6" id="text-org7d211f7">
+<p>
+大多数表面既不是理想的漫反射表面也不是理想的镜面反射表面，而是展现出这两种反射行为的组合，这类表面被称为光泽表面。很难使用解析形式来对这种表面的 brdf 进行建模。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org2e2e4f0" class="outline-5">
+<h5 id="org2e2e4f0">Shading Models</h5>
+<div class="outline-text-5" id="text-org2e2e4f0">
+<p>
+真实材质的 BRDF 非常复杂。在图形学中，有各种各样的模型用于描述复杂的 BRDF。<br />
+<img src="./AdvancedGlobalIllumination/00_02_shading_model_geometry.jpg" alt="00_02_shading_model_geometry.jpg" /><br />
+</p>
+</div>
+<div id="outline-container-orgf1aa0ad" class="outline-6">
+<h6 id="orgf1aa0ad">Lambert model</h6>
+<div class="outline-text-6" id="text-orgf1aa0ad">
+<p>
+理想漫反射材质的 BRDF 为常数。<br />
+<img src="./AdvancedGlobalIllumination/00_02_shading_model_lambert.jpg" alt="00_02_shading_model_lambert.jpg" /><br />
+</p>
+</div>
+</div>
+<div id="outline-container-org4eb0096" class="outline-6">
+<h6 id="org4eb0096">Phong model</h6>
+<div class="outline-text-6" id="text-org4eb0096">
+
+<div class="figure">
+<p><img src="./AdvancedGlobalIllumination/00_02_shading_model_phong.jpg" alt="00_02_shading_model_phong.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org804c82f" class="outline-6">
+<h6 id="org804c82f">BlinnPhong model</h6>
+<div class="outline-text-6" id="text-org804c82f">
+
+<div class="figure">
+<p><img src="./AdvancedGlobalIllumination/00_02_shading_model_blinn-phong.jpg" alt="00_02_shading_model_blinn-phong.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org7e41018" class="outline-6">
+<h6 id="org7e41018">Modified BlinnPhong model</h6>
+<div class="outline-text-6" id="text-org7e41018">
+<p>
+Phong 模型不是能量守恒的，Phong 模型也不满足 Helmholtz 的互换性，其无法捕捉真实材质的很多行为。<br />
+<img src="./AdvancedGlobalIllumination/00_02_shading_model_modified-blinn-phong.jpg" alt="00_02_shading_model_modified-blinn-phong.jpg" /><br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgce9d52b" class="outline-6">
+<h6 id="orgce9d52b">Physically Based Shading Models</h6>
+<div class="outline-text-6" id="text-orgce9d52b">
+
+<div class="figure">
+<p><img src="./AdvancedGlobalIllumination/00_02_shading_model_cook-torrance.jpg" alt="00_02_shading_model_cook-torrance.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org753b36c" class="outline-6">
+<h6 id="org753b36c">Empirical Models</h6>
+<div class="outline-text-6" id="text-org753b36c">
+<p>
+基于经验数据推导的模型。这类模型的目标是易于使用，以及直观的参数化 brdf。<br />
+<img src="./AdvancedGlobalIllumination/00_02_shading_model_ward-model.jpg" alt="00_02_shading_model_ward-model.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org854325f" class="outline-4">
+<h4 id="org854325f">Rendering Equation</h4>
+<div class="outline-text-4" id="text-org854325f">
+</div>
+<div id="outline-container-org819cb4c" class="outline-5">
+<h5 id="org819cb4c">Hemispherical Formulation 半球公式</h5>
+<div class="outline-text-5" id="text-org819cb4c">
+<p>
+半球公式是最常用的渲染方程之一。<br />
+</p>
+
+
+<div class="figure">
+<p><img src="./AdvancedGlobalIllumination/00_02_shading_equation_hemispherical.jpg" alt="00_02_shading_equation_hemispherical.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org610dedb" class="outline-5">
+<h5 id="org610dedb">Area Formulation 区域公式</h5>
+<div class="outline-text-5" id="text-org610dedb">
+<p>
+当考虑场景中物体的表面对 x 点处的入射辐射率贡献时，会使用 Area Formulation 形式的渲染方程。Area Formulation 形式的渲染方程不是在半球上进行积分，而是在从 x 点可见的表面上积分。<br />
+</p>
+
+
+<div class="figure">
+<p><img src="./AdvancedGlobalIllumination/00_02_shading_equation_area.jpg" alt="00_02_shading_equation_area.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org8cae030" class="outline-5">
+<h5 id="org8cae030">Direct and Indirect Illumination Formulation</h5>
+<div class="outline-text-5" id="text-org8cae030">
+
+<div class="figure">
+<p><img src="./AdvancedGlobalIllumination/00_02_shading_equation_direct-indirect.jpg" alt="00_02_shading_equation_direct-indirect.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgee86aaf" class="outline-4">
+<h4 id="orgee86aaf">Importance</h4>
+</div>
+<div id="outline-container-orge42ce7b" class="outline-4">
+<h4 id="orge42ce7b">The Measurement Equation</h4>
+</div>
+</div>
+<div id="outline-container-orge798bff" class="outline-3">
+<h3 id="orge798bff">Monte Carlo Methods</h3>
+</div>
+<div id="outline-container-orga5ae250" class="outline-3">
+<h3 id="orga5ae250">Strategies for Computing Light Transport</h3>
+</div>
+<div id="outline-container-org15ccf51" class="outline-3">
+<h3 id="org15ccf51">Stochastic Radiosity</h3>
+</div>
+<div id="outline-container-org8f6a1be" class="outline-3">
+<h3 id="org8f6a1be">Hybrid Algorithms</h3>
+</div>
+<div id="outline-container-org4d5df30" class="outline-3">
+<h3 id="org4d5df30">The Quest for Ultimate Realism and Speed</h3>
+</div>
+</div>
+</div>
+</body>
+</html>

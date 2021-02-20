@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-02-01 周一 21:30 -->
+<!-- 2021-02-20 周六 19:48 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Real Time Rendering</title>
@@ -79,14 +79,19 @@ for the JavaScript code in this tag.
 <li><a href="#org5ee87cc">Architecture</a></li>
 <li><a href="#orga5823c9">The Application Stage</a></li>
 <li><a href="#org68b642d">Geometry Processing</a></li>
-<li><a href="#orgb1b10ff">Rasterization</a></li>
+<li><a href="#org7f54be9">Rasterization</a></li>
 <li><a href="#org88b60f8">Pixel Processing</a></li>
 </ul>
 </li>
 <li><a href="#org48492fb">03 The Graphics Processing Unit</a></li>
+<li><a href="#org88a9939">09 Physically Based Shading</a>
+<ul>
+<li><a href="#org22c788e">The BRDF</a></li>
+</ul>
+</li>
 <li><a href="#orgaeab8d2">23 Graphics Hardware</a>
 <ul>
-<li><a href="#org7f54be9">Rasterization</a></li>
+<li><a href="#orge69c79d">Rasterization</a></li>
 </ul>
 </li>
 </ul>
@@ -140,9 +145,9 @@ pipeline 的各个阶段是并行执行的，每个阶段只依赖前一阶段�
 <div id="outline-container-org68b642d" class="outline-4">
 <h4 id="org68b642d">Geometry Processing</h4>
 </div>
-<div id="outline-container-orgb1b10ff" class="outline-4">
-<h4 id="orgb1b10ff">Rasterization</h4>
-<div class="outline-text-4" id="text-orgb1b10ff">
+<div id="outline-container-org7f54be9" class="outline-4">
+<h4 id="org7f54be9">Rasterization</h4>
+<div class="outline-text-4" id="text-org7f54be9">
 <p>
 Rasterization 阶段的目标是找到所有被图元覆盖的像素，其被分为两个子阶段：triangle setup(primitive assembly)和 triangle traversal。Rasterization 也被称为 Scan Conversion(扫描转化)，因为其将屏幕空间上多个二维的顶点转换为了屏幕上的像素。<br />
 </p>
@@ -160,14 +165,66 @@ Triangle Traversal 阶段：判断哪些像素或样本被三角形覆盖，对�
 <div id="outline-container-org48492fb" class="outline-3">
 <h3 id="org48492fb">03 The Graphics Processing Unit</h3>
 </div>
+<div id="outline-container-org88a9939" class="outline-3">
+<h3 id="org88a9939">09 Physically Based Shading</h3>
+<div class="outline-text-3" id="text-org88a9939">
+</div>
+<div id="outline-container-org22c788e" class="outline-4">
+<h4 id="org22c788e">The BRDF</h4>
+<div class="outline-text-4" id="text-org22c788e">
+
+<div class="figure">
+<p><img src="./RealTimeRendering/09_03_brdf.jpg" alt="09_03_brdf.jpg" /><br />
+</p>
+</div>
+
+<p>
+我们忽略了荧光和磷光现象，因此，可以假定入射光的波长和出射光的波长相同。光的反射量可以随波长变化，通常通过两个方式来模拟，第一种是将波长当作 BRDF 额外的输入变量，第二种是 BRDF 的输出为光谱分布。通常第一种方式被应用于离线渲染，实时渲染使用第二种方式。实时渲染中使用 RGB 三元素来表示光谱分布，因此 BRDF 返回的是 RGB 值。<br />
+</p>
+
+<p>
+物理规律要求任何 BRDF 模型需要遵守两个约束：<br />
+</p>
+<ol class="org-ol">
+<li>Helmholtz 互换性。即 f(l,v) = f(v,l)<br />
+实践中很多 BRDF 模型会违反该约束。违反该约束时，实时渲染通常不会有明显的 artifacts，但是离线渲染则不能违反该约束，因为其使用了双向路径追踪。<br /></li>
+<li>能量守恒。即出射能量要小于入射能量<br />
+离线渲染需要遵守该约束，以保证收敛性。实时渲染可以违反该约束，但是近似遵守能量守恒很重要，否则会导致画面过亮或者过暗。<br /></li>
+</ol>
+
+<p>
+directional-hemispherical reflectance R(l)是一个和 BRDF 相关的函数。其可用于测量 BRDF 遵守能量守恒的程度。其测量给定入射方向的光被反射到所有方向上的量：<br />
+<img src="./RealTimeRendering/09_03_dir-hemi-reflectance.jpg" alt="09_03_dir-hemi-reflectance.jpg" /><br />
+</p>
+
+<p>
+hemispherical-directional reflectance R(v)是一个类似的函数。其测量所有方向入射的光被反射到给定方向上的量：<br />
+<img src="./RealTimeRendering/09_03_hemi-dir-reflectance.jpg" alt="09_03_hemi-dir-reflectance.jpg" /><br />
+</p>
+
+<p>
+如果 brdf 遵守互换性，则 R(l)和 R(v)相等。当两则可以互换时，Directional albedo 通常作为 R(l)和 R(v)的统称。<br />
+</p>
+
+<p>
+由于能量守恒，R(l)的范围为[0,1]。R(l)=0 表示所有光都被吸收，R(l)=1 表示所有光都被反射。和 BRDF 一样，R(l)也会随波长变化，因此 R(l)也使用 RGB 值来表示。需要注意的是，作为一个分布函数，brdf 可以为任意正值，其范围为[0,∞]。<br />
+</p>
+
+<p>
+最简单的 BRDF 模型是 Lambertian。LambertianBRDF 为一个常数值，虽然其比较简单，但是实时渲染中通常使用其表示 local subsurface scattering。Lambertian 表面的 directional-hemispherical reflectance 也是一个常数 R(l) = πf(l, v)。Lambertian BRDF 对应的 R(l)通常被当作 diffuse color Cdiff 或 albedo ρ。此处，为了强调其于此表面散射的联系，我们将 R(l)称为 subsurface albedo ρss。<br />
+<img src="./RealTimeRendering/09_03_albedo.jpg" alt="09_03_albedo.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
 
 <div id="outline-container-orgaeab8d2" class="outline-3">
 <h3 id="orgaeab8d2">23 Graphics Hardware</h3>
 <div class="outline-text-3" id="text-orgaeab8d2">
 </div>
-<div id="outline-container-org7f54be9" class="outline-4">
-<h4 id="org7f54be9">Rasterization</h4>
-<div class="outline-text-4" id="text-org7f54be9">
+<div id="outline-container-orge69c79d" class="outline-4">
+<h4 id="orge69c79d">Rasterization</h4>
+<div class="outline-text-4" id="text-orge69c79d">
 <p>
 所有的像素被按照 2x2 的方式组合，这样就可以实现 ddx ddy 了。<br />
 </p>

@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2021-03-03 周三 14:12 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Stupid Spherical Harmonics Tricks</title>
+<meta name="generator" content="Org mode" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+           <meta name="viewport" content="width=device-width, initial-scale=1" />
+           <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/css/worg.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/css/worg-zenburn.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
+           <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2020 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href=""> UP </a>
+ |
+ <a accesskey="H" href="https://wolfand11.gitee.io"> HOME </a>
+</div><div id="content">
+<h1 class="title">Stupid Spherical Harmonics Tricks</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orge5acf3b">Stupid Spherical Harmonics Tricks</a>
+<ul>
+<li><a href="#orgb7853bd">Introduction</a></li>
+<li><a href="#orgf570504">Background</a>
+<ul>
+<li><a href="#org958b6f3">Define</a></li>
+<li><a href="#org3fb0717">Projection and Reconstruction</a></li>
+<li><a href="#orgd825ea8">Properties</a>
+<ul>
+<li><a href="#orgae23088">Basic Properties</a></li>
+<li><a href="#org38245ee">Convolution</a></li>
+<li><a href="#orgdd3fd17">Rotation</a></li>
+<li><a href="#org16f87df">Zonal Harmonics</a></li>
+<li><a href="#orgc4a138a">SH Products</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org0043ade">Irradiance Environment Maps</a></li>
+<li><a href="#orgfe37b6a">Lighting Models</a></li>
+<li><a href="#org9b706c8">Ringing</a></li>
+<li><a href="#org7b45cd1">SH Products</a></li>
+</ul>
+</li>
+<li><a href="#orgd267939">Misc</a></li>
+<li><a href="#org4797ab9">参考资料</a></li>
+</ul>
+</div>
+</div>
+<p>
+Stupid Spherical Harmonics Tricks note.<br />
+</p>
+<div class="HTML">
+<p>
+&lt;!&#x2013; more &#x2013;&gt;<br />
+</p>
+
+</div>
+
+<div id="outline-container-orge5acf3b" class="outline-2">
+<h2 id="orge5acf3b">Stupid Spherical Harmonics Tricks</h2>
+<div class="outline-text-2" id="text-orge5acf3b">
+</div>
+<div id="outline-container-orgb7853bd" class="outline-3">
+<h3 id="orgb7853bd">Introduction</h3>
+<div class="outline-text-3" id="text-orgb7853bd">
+<p>
+Harmonic 函数是 Laplace 方程的解，其广泛应用于多个领域。Spherical Harmonics 是在球坐标系下求解 Laplace 方程时，进行变量分解后（分解为角度部分和半径部分），角度部分的解。SH 已经被应用于物理学中，求解一些潜在的问题，例如，热学方程（模拟温度随时间的变化），以及引力场和电场。其也被应用于量子化学和量子物理学，用于模拟原子中的电子结构以及量子角动量。图形学中，其被应用于模拟散射现象。在计算机图形学中，其也被广泛使用，早期用于模拟体积散射效果，无全局阴影的环境反射，非漫反射的离线光照传输模拟，BRDF 表示，模拟光源的发射。近期的一些例子包括大气散射和计算机视觉。<br />
+</p>
+
+<p>
+尽管 Spherical Harmonics 看起来令人生畏，其实 SH 非常的简单明了。其是类似于单位环上的傅里叶基函数，并且很易于数值求解。和信号处理中使用的傅里叶基函数一样，当需要截断基函数时，要倍加小心，从而最小化"ringing" artifacts 的出现。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgf570504" class="outline-3">
+<h3 id="orgf570504">Background</h3>
+<div class="outline-text-3" id="text-orgf570504">
+</div>
+<div id="outline-container-org958b6f3" class="outline-4">
+<h4 id="org958b6f3">Define</h4>
+<div class="outline-text-4" id="text-org958b6f3">
+<p>
+Spherical Harmonics 定义了一组在球 S 上的正交基函数。<br />
+</p>
+<ul class="org-ul">
+<li>正交基函数 这组基函数中任意两个不同的基函数在定义域上乘积的积分为 0，而任何一个基函数和自己乘积的积分为 1。<br /></li>
+</ul>
+
+<p>
+尽管球面坐标对于求积分非常便利，但是也可以将球谐基函数表示为多项式形式。<br />
+<img src="./StupidSphericalHarmonics/sh-define-visualize.jpg" alt="sh-define-visualize.jpg" /><br />
+<img src="./StupidSphericalHarmonics/sh-visualize-01.jpg" alt="sh-visualize-01.jpg" /><br />
+上面图中，中间一列的函数被称为 zonal harmonics(ZH)，这些函数具有绕 z 轴和绕 zeros(函数值为 0 的点)旋转对称性，在球上平行于 XY 平面的点都等值。l=|m|的函数被称为 sectorial harmonics。<br />
+另一种可视化 SH 的方法如下，其使用参数化的展开到平面上的 cube map 来表示：<br />
+<img src="./StupidSphericalHarmonics/sh-visualize-02.jpg" alt="sh-visualize-02.jpg" /><br />
+</p>
+</div>
+</div>
+<div id="outline-container-org3fb0717" class="outline-4">
+<h4 id="org3fb0717">Projection and Reconstruction</h4>
+<div class="outline-text-4" id="text-org3fb0717">
+<p>
+因为 SH 基函数为正交函数，定义在球 S 上的标量函数 f 最小二乘法投影到球谐基函数上就可以得到 f 对应的球谐系数，利用这些系数就可以重建 f 函数。<br />
+随着基带数量增多，重建精确性会变高。本篇文章专注于 f 函数的低频近似，对于更高频的表示，其他类型的基函数可能是更好的选择。<br />
+<img src="./StupidSphericalHarmonics/scalar_func_sh.jpg" alt="scalar_func_sh.jpg" /><br />
+从上面最后一个公式可以清晰看出，求解 f 函数在 s 方向上的近似值，只需要对 n*n 个 f 函数的基函数投影系数 fi 点积基函数在 s 方向上的值 yi(s)。第一个系数 f0 表示函数 f 在球上上的平均值，有时候称其为 DC 项。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgd825ea8" class="outline-4">
+<h4 id="orgd825ea8">Properties</h4>
+<div class="outline-text-4" id="text-orgd825ea8">
+</div>
+<div id="outline-container-orgae23088" class="outline-5">
+<h5 id="orgae23088">Basic Properties</h5>
+<div class="outline-text-5" id="text-orgae23088">
+<ul class="org-ul">
+<li>旋转不变性<br /></li>
+</ul>
+<p>
+给定一个函数 g(s) = f(Q(s)) , 其表示对 s 进行 Q 表示的旋转操作后，求旋转后 s 对应的 f 函数的值。旋转不变性，表示只需要对 f(s)对应的基函数系数 fi 进行变换的到新的系数 fi'，就能保证使用新的系数 fi'，还原出函数 g(s)。<br />
+</p>
+
+<ul class="org-ul">
+<li>正交完备性<br /></li>
+</ul>
+<p>
+由于 SH 基函数的正交性，任意两个 SH 函数积的积分只需要对这两个函数的系数向量进行点积就可以了。<br />
+<img src="./StupidSphericalHarmonics/sh_func_product_integrate.jpg" alt="sh_func_product_integrate.jpg" /><br />
+</p>
+</div>
+</div>
+<div id="outline-container-org38245ee" class="outline-5">
+<h5 id="org38245ee">Convolution</h5>
+<div class="outline-text-5" id="text-org38245ee">
+<p>
+给定圆对称的核函数 h(z)，可以按照下列方式生成 h 和 f 的卷积函数。h必须是圆对称的，这样就可以保证卷积函数依然可以在球 S 上表示，而不是在旋转组 SO(3)上。<br />
+<img src="./StupidSphericalHarmonics/sh-convolution.jpg" alt="sh-convolution.jpg" /><br />
+这相当于简单使用 h 对应的 m=0 的项的系数，对 f 的每个基函数系数进行缩放。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgdd3fd17" class="outline-5">
+<h5 id="orgdd3fd17">Rotation</h5>
+<div class="outline-text-5" id="text-orgdd3fd17">
+<p>
+就像前面提到的一样，SH 对于旋转是封闭的。SH 旋转矩阵成块状结构，每个基的旋转是旋转矩阵中独立的块，独立块为（2l+1)*(2l+1) 大小的子矩阵。有很多种方式用于求解这些旋转矩阵，对于低阶情况（2阶及 2 阶一下）求解非常简单，对于高阶情况，将旋转矩阵分解为 zyz 欧拉角会更容易一些。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org16f87df" class="outline-5">
+<h5 id="org16f87df">Zonal Harmonics</h5>
+<div class="outline-text-5" id="text-org16f87df">
+<p>
+函数的 SH 投影绕轴具有旋转对称性时被称为 Zonal Harmonics。如果该轴为 Z 轴，则该函数的零值将形成恒定纬度的线，并且函数只依赖于𝜃。函数的基函数系数在每个基带上只有一个不为 0，此时 n 阶的函数就可以用 n 个系数来代替 n^2 个系数。<br />
+ZH 已经被用于近似 transfer，其是散射理论中表示 phase 函数的通用方法。在本文中，广泛使用 ZH 模拟光源。旋转 ZH 比旋转 SH 更加简单，给定函数的 ZH 系数 \(z_l\) , 通过下面公式可将其旋转到新的方向 d：<br />
+<img src="./StupidSphericalHarmonics/zh_rotation.jpg" alt="zh_rotation.jpg" /><br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgc4a138a" class="outline-5">
+<h5 id="orgc4a138a">SH Products</h5>
+<div class="outline-text-5" id="text-orgc4a138a">
+<p>
+使用 n 阶球谐表示两个函数 f 和 g，这两个函数的乘积投影到 SH 基函数上得到对应基函数的系数如下：<br />
+<img src="./StupidSphericalHarmonics/sh-products.jpg" alt="sh-products.jpg" /><br />
+因为 SH 为多项式，多项式积的最大的阶数为 2n-2，这意味着其具有 2n-1 阶的非零系数。随着相乘的函数数量增加，将越来越难处理，通常的做法是早点截断相乘。非零系数的数量很大，因此生成高效代码时需要非常小心。一个特殊情况是，如果 f 函数是固定的（例如：distant lighting 的情况），你可以计算一个乘积矩阵，其可以显著减低消耗。该矩阵式对称矩阵，可以使用下面方程来构建该矩阵：<br />
+<img src="./StupidSphericalHarmonics/product-matrix.jpg" alt="product-matrix.jpg" /><br />
+计算和函数 g 的乘积只需要使用上面矩阵和 g 对应的基函数系数向量相乘就可以了。<br />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org0043ade" class="outline-3">
+<h3 id="org0043ade">Irradiance Environment Maps</h3>
+</div>
+
+<div id="outline-container-orgfe37b6a" class="outline-3">
+<h3 id="orgfe37b6a">Lighting Models</h3>
+</div>
+<div id="outline-container-org9b706c8" class="outline-3">
+<h3 id="org9b706c8">Ringing</h3>
+</div>
+<div id="outline-container-org7b45cd1" class="outline-3">
+<h3 id="org7b45cd1">SH Products</h3>
+</div>
+</div>
+<div id="outline-container-orgd267939" class="outline-2">
+<h2 id="orgd267939">Misc</h2>
+</div>
+<div id="outline-container-org4797ab9" class="outline-2">
+<h2 id="org4797ab9">参考资料</h2>
+<div class="outline-text-2" id="text-org4797ab9">
+<ul class="org-ul">
+<li>Notes on Spherical Harmonics in CG (1) <a href="https://zhuanlan.zhihu.com/p/73897562">https://zhuanlan.zhihu.com/p/73897562</a><br /></li>
+<li>球谐光照——球谐函数 <a href="https://zhuanlan.zhihu.com/p/153352797">https://zhuanlan.zhihu.com/p/153352797</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+</body>
+</html>

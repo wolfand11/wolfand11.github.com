@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-03-03 周三 14:12 -->
+<!-- 2021-03-04 周四 21:26 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Stupid Spherical Harmonics Tricks</title>
@@ -107,15 +107,48 @@ for the JavaScript code in this tag.
 <li><a href="#org38245ee">Convolution</a></li>
 <li><a href="#orgdd3fd17">Rotation</a></li>
 <li><a href="#org16f87df">Zonal Harmonics</a></li>
-<li><a href="#orgc4a138a">SH Products</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#org0043ade">Irradiance Environment Maps</a></li>
-<li><a href="#orgfe37b6a">Lighting Models</a></li>
-<li><a href="#org9b706c8">Ringing</a></li>
 <li><a href="#org7b45cd1">SH Products</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org0043ade">Irradiance Environment Maps</a>
+<ul>
+<li><a href="#orgc469582">Irradiance Env Map 原理</a></li>
+<li><a href="#orgdfe6a05">SH 近似分析</a></li>
+</ul>
+</li>
+<li><a href="#orgfe37b6a">Lighting Models</a>
+<ul>
+<li><a href="#org74fd920">Projection from Cube Maps</a>
+<ul>
+<li><a href="#orgf9b5e97">采样 CubeMap 的原理</a></li>
+</ul>
+</li>
+<li><a href="#orgb545667">Analytic Models</a>
+<ul>
+<li><a href="#orgbf2c8e9">Normalization</a></li>
+</ul>
+</li>
+<li><a href="#orge2c2659">Extracting Conventional Lights from SH</a></li>
+<li><a href="#orgfe7ed43"><span class="todo TODO">TODO</span> Extracting Multiple Lights</a></li>
+</ul>
+</li>
+<li><a href="#org9b706c8">Ringing</a>
+<ul>
+<li><a href="#org19040df">Windowing</a></li>
+<li><a href="#orgfa969fb">Minimizing a functional</a></li>
+<li><a href="#org22f735c">Content Sensitive Windowing</a></li>
+</ul>
+</li>
+<li><a href="#orgb9e0f45">SH Products</a>
+<ul>
+<li><a href="#org55c190c">Products with a Constant Function</a></li>
+<li><a href="#org5398be8">Products with varying Orders</a></li>
+<li><a href="#org921187e">Product with Zonal Harmonics</a></li>
+<li><a href="#org2d40b1c">Product with Analytic Function</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#orgd267939">Misc</a></li>
@@ -170,6 +203,11 @@ Spherical Harmonics 定义了一组在球 S 上的正交基函数。<br />
 上面图中，中间一列的函数被称为 zonal harmonics(ZH)，这些函数具有绕 z 轴和绕 zeros(函数值为 0 的点)旋转对称性，在球上平行于 XY 平面的点都等值。l=|m|的函数被称为 sectorial harmonics。<br />
 另一种可视化 SH 的方法如下，其使用参数化的展开到平面上的 cube map 来表示：<br />
 <img src="./StupidSphericalHarmonics/sh-visualize-02.jpg" alt="sh-visualize-02.jpg" /><br />
+</p>
+
+<p>
+下图为 SH 基函数列表：<br />
+<img src="./StupidSphericalHarmonics/sh-base-function-table.jpg" alt="sh-base-function-table.jpg" /><br />
 </p>
 </div>
 </div>
@@ -236,9 +274,9 @@ ZH 已经被用于近似 transfer，其是散射理论中表示 phase 函数的�
 </div>
 </div>
 
-<div id="outline-container-orgc4a138a" class="outline-5">
-<h5 id="orgc4a138a">SH Products</h5>
-<div class="outline-text-5" id="text-orgc4a138a">
+<div id="outline-container-org7b45cd1" class="outline-5">
+<h5 id="org7b45cd1">SH Products</h5>
+<div class="outline-text-5" id="text-org7b45cd1">
 <p>
 使用 n 阶球谐表示两个函数 f 和 g，这两个函数的乘积投影到 SH 基函数上得到对应基函数的系数如下：<br />
 <img src="./StupidSphericalHarmonics/sh-products.jpg" alt="sh-products.jpg" /><br />
@@ -252,16 +290,255 @@ ZH 已经被用于近似 transfer，其是散射理论中表示 phase 函数的�
 </div>
 <div id="outline-container-org0043ade" class="outline-3">
 <h3 id="org0043ade">Irradiance Environment Maps</h3>
+<div class="outline-text-3" id="text-org0043ade">
+</div>
+<div id="outline-container-orgc469582" class="outline-4">
+<h4 id="orgc469582">Irradiance Env Map 原理</h4>
+<div class="outline-text-4" id="text-orgc469582">
+
+<div class="figure">
+<p><img src="./StupidSphericalHarmonics/irradiance_env_map.jpg" alt="irradiance_env_map.jpg" /><br />
+</p>
 </div>
 
+<p>
+使用 SH 可以很高效地计算上面公式中的积分，并且计算结果精确性足够。3阶 SH 近似已经足够好，但是如果光源是 HDR 的话，可能需要考虑使用 5 阶 SH。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgdfe6a05" class="outline-4">
+<h4 id="orgdfe6a05">SH 近似分析</h4>
+<div class="outline-text-4" id="text-orgdfe6a05">
+
+<div class="figure">
+<p><img src="./StupidSphericalHarmonics/sh-approximation-clamped-cosine.jpg" alt="sh-approximation-clamped-cosine.jpg" /><br />
+</p>
+</div>
+
+<p>
+从上图可以看出，3阶 SH 在 theta = 0 时（北极处），近似值多了 1/16，并且在南极处有奇怪的 lobe，该 lobe 的长度为 1/16.<br />
+尽管上面的近似是精确的，但是，该近似可能会导致错误，特别是光源很亮的情况下。<br />
+</p>
+</div>
+</div>
+</div>
 <div id="outline-container-orgfe37b6a" class="outline-3">
 <h3 id="orgfe37b6a">Lighting Models</h3>
+<div class="outline-text-3" id="text-orgfe37b6a">
+<p>
+在 SH 中表示 lighting，有很多种方式。最简单的方式就是将 cube map 上存储的 lighting 投影到 SH 上，但是，也有一些求解不费的解析模型，将其显示给美术人员(artists)会很有用。<br />
+</p>
+</div>
+<div id="outline-container-org74fd920" class="outline-4">
+<h4 id="org74fd920">Projection from Cube Maps</h4>
+<div class="outline-text-4" id="text-org74fd920">
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21033;&#29992;&#33945;&#29305;&#21345;&#27931;&#20272;&#35745;&#37327;&#35745;&#31639; l&#21644;&#29699;&#35856;&#31215;&#20989;&#25968;&#30340;&#31215;&#20998;&#65292;&#24471;&#21040;l&#23545;&#24212;&#30340;&#29699;&#35856;&#21442;&#25968;</span>
+  <span style="color: #ce537a; font-weight: bold;">float</span> f[],s[];
+  <span style="color: #ce537a; font-weight: bold;">float</span> fWtSum=0;
+  Foreach(cube map face)
+  {
+      Foreach(texel)
+      {
+          <span style="color: #ce537a; font-weight: bold;">float</span> fTmp = 1 + u^2 + v^2;
+          <span style="color: #ce537a; font-weight: bold;">float</span> fWt = 4/(<span style="color: #4f97d7;">sqrt</span>(fTmp)*fTmp);
+          s = EvalSHBasis(texel,s);
+          f += t(texel)*fWt*s; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">vector</span>
+          fWtSum += fWt;
+      }
+  }
+  f *= 1/fWtSum; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">area of sphere</span>
+</pre>
+</div>
+<p>
+设当前采样方向为 texel = (x, y, z)<br />
+</p>
+<ul class="org-ul">
+<li>u,v 为对应面的 uv 坐标，当前 face 为+X，则(u,v) = (y,z)。<br /></li>
+<li>t(texel) 为 texel 方向对应的贴图颜色。<br /></li>
+<li>EvalSHBasis(texel, s) 计算 texel 方向上的 SH 基函数的值。<br /></li>
+<li>fWt 为单前采样的权重<br /></li>
+<li>fWtSum 为采样的权重和<br /></li>
+<li>fTmp 为采样方向的长度平方 \(r^2=w^2+u^2+v^2\) （此处假设了 cubeMap 对应的立方体边长为 2）<br /></li>
+<li>s[] 中存储 texel 方向上 SH 基函数的值。假设使用 3 阶球谐，则一共有用到 9 个 SH 基函数，s中一共需要 9 个元素。<br /></li>
+<li>f[] 中存储的就是 l 对应的 SH 基函数系数。假设使用 3 阶球谐，则一共有用到 9 个 SH 基函数，使用 rgb 表示辐射率 L，f 中一共需要 27 个元素。<br /></li>
+</ul>
+
+<p>
+fWt 计算分析：<br />
+fWt 可以理解为立体角，立体角定义为 dA/r^2, 这里直接使用面积沿半径方向的投影近似 dA=cosθ=S/r，w=1 所以立方体边长为 2，所以面积 S=4，半径为 sqrt(r^2)=sqrt(fTmp)，所以 dA=4/sqrt(fTmp)，fWt=dA/r^2=4/(sqrt(fTmp)*fTmp)。<br />
+</p>
+
+
+<div class="figure">
+<p><img src="./StupidSphericalHarmonics/proj_cube_map_equation.jpg" alt="proj_cube_map_equation.jpg" /><br />
+</p>
+</div>
+
+<ul class="org-ul">
+<li>上面解释参考了该文 <a href="https://zhuanlan.zhihu.com/p/63755519">https://zhuanlan.zhihu.com/p/63755519</a><br /></li>
+</ul>
+
+<p>
+下图为使用这种技术将 CubeMap 转化为 1-6 阶 SH 函数，然后使用 SH 函数重建 CubeMap 的结果，最后一张图为原始 CubeMap：<br />
+<img src="./StupidSphericalHarmonics/proj_cube_map_example.jpg" alt="proj_cube_map_example.jpg" /><br />
+</p>
+</div>
+<div id="outline-container-orgf9b5e97" class="outline-5">
+<h5 id="orgf9b5e97">采样 CubeMap 的原理</h5>
+<div class="outline-text-5" id="text-orgf9b5e97">
+<p>
+设采样向量为(x,y,z)<br />
+计算 x,y,z 中绝对值最大的分量，假设 z 分量绝对值最大，且 z 分量为正数。则，此时应该对 CubeMap +Z 面对应的贴图进行采样。<br />
+计算（u,v)。假设 CubeMap 正方体为单位正方体，将 z 分量缩放为 0.5，需要的缩放因子 scale=0.5/z，因此，(x*scale,y*scale,z*scale) 为采样向量(x,y,z)对应的 CubeMap 上的点，假设该点为 P。则点 P(x*scale,y*scale,z*scale)的范围为(-0.5,-0.5,0.5)-&gt;(0.5,0.5,0.5)。将点 P 映射到(0,0,0.5)-&gt;(1,1,0.5)，即可得到 (u,v) = scale*(x,y,z)+0.5。<br />
+</p>
+
+<p>
+下图展示了采样 CubeMap 的原理：<br />
+<img src="./StupidSphericalHarmonics/sample_CubeMap.jpg" alt="sample_CubeMap.jpg" /><br />
+<a href="./StupidSphericalHarmonics/sample_CubeMap.ggb">./StupidSphericalHarmonics/sample_CubeMap.ggb</a><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgb545667" class="outline-4">
+<h4 id="orgb545667">Analytic Models</h4>
+<div class="outline-text-4" id="text-orgb545667">
+<p>
+方向光计算起来很简单，你只需要求解指定方向的球谐基函数，并且进行合适的缩放。<br />
+球形光源上，球面每个点发出的辐射能量都相同，因此对于场景中任意一点 P，在 P 点选择任意一个方向，光照在该方向两侧分布是对称的，所以可以使用 ZonalHarmonics 高效求解球形光源。如下图所示：<br />
+<img src="./StupidSphericalHarmonics/sphere_light_zh.jpg" alt="sphere_light_zh.jpg" /><br />
+</p>
+
+<p>
+上面的技术还可用于模拟锥形常量光源。Softer Cone 则可以通过在可见项上加一个衰减来模拟。<br />
+<img src="./StupidSphericalHarmonics/cone_light_zh.jpg" alt="cone_light_zh.jpg" /><br />
+从上图可以看出，添加了衰减的 cone 更精确。<br />
+</p>
+</div>
+<div id="outline-container-orgbf2c8e9" class="outline-5">
+<h5 id="orgbf2c8e9">Normalization</h5>
+<div class="outline-text-5" id="text-orgbf2c8e9">
+<p>
+如果光照的范围为[0,1]，则将 radiance 向量 L 进行归一化会很方便，这样当一个没有被遮挡的接收者，且其法线直接指向光源，那么该接收者反射的辐射率 L 为 1。(Tips: 归一化保证了能量守恒)<br />
+<img src="./StupidSphericalHarmonics/lighting-normalize.jpg" alt="lighting-normalize.jpg" /><br />
+</p>
+
+<p>
+计算归一化因子时，只利用渲染中所使用的 SH 基函数（例如，假设渲染使用 3 阶 SH，则计算归一化因子只使用前 9 个 SH 基函数）。当把 T 和+Z 对齐时，可以计算出 T 对应的前 6 个 SH 基函数系数如下：<br />
+<img src="./StupidSphericalHarmonics/cosine-normalize-sh.jpg" alt="cosine-normalize-sh.jpg" /><br />
+</p>
+
+<p>
+对于 Analytic 灯光，可以使用 Analytic 归一化项。<br />
+</p>
+<ul class="org-ul">
+<li>夹角为α的 cone 灯光其归一化项为： 1/sin^2(α)<br /></li>
+<li>方向光的归一化项为： 16π/17 （此处假设没有高于 4 阶的光，对于 5 阶或 6 阶来说，方向光的归一化项为 32π/31 ）<br /></li>
+<li>ambient 环境光的归一化项为：2sqrt(π)<br /></li>
+</ul>
+
+<p>
+上面 clamped cosine SH 基函数系数推导，方向光归一化系数的推导，可以参考下面文章：<br />
+</p>
+<ul class="org-ul">
+<li><a href="http://simonstechblog.blogspot.com/2012/02/extracting-dominant-light-from.html#sh_extractDominantLight">http://simonstechblog.blogspot.com/2012/02/extracting-dominant-light-from.html#sh_extractDominantLight</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orge2c2659" class="outline-4">
+<h4 id="orge2c2659">Extracting Conventional Lights from SH</h4>
+<div class="outline-text-4" id="text-orge2c2659">
+<p>
+给定一个 SH 光照向量（假设使用 3 阶 SH 表示，则该向量有 3*9=27 个分量），可以使用一个方向光和一个环境光来近似该 SH 光照。通过让下面错误函数足够小，来实现近似：<br />
+</p>
+
+
+<div class="figure">
+<p><img src="./StupidSphericalHarmonics/extract-light.jpg" alt="extract-light.jpg" /><br />
+</p>
+</div>
+
+<ul class="org-ul">
+<li>Extracting dominant light from Spherical Harmonics <a href="http://simonstechblog.blogspot.com/2012/02/extracting-dominant-light-from.html#sh_extractDominantLight">http://simonstechblog.blogspot.com/2012/02/extracting-dominant-light-from.html#sh_extractDominantLight</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgfe7ed43" class="outline-4">
+<h4 id="orgfe7ed43"><span class="todo TODO">TODO</span> Extracting Multiple Lights</h4>
+</div>
 </div>
 <div id="outline-container-org9b706c8" class="outline-3">
 <h3 id="org9b706c8">Ringing</h3>
+<div class="outline-text-3" id="text-org9b706c8">
+<p>
+Ringging 也被称为基普斯现象，是信号处理中常见的问题。当不连续的信号投影到有限的傅里叶基函数，在不连续的地方会出现过冲和下冲（overshoot and undershoot）。对于连续函数，如果做截断处理，也会展现出类似的现象。我们在 lighting models 和 SH 表示 irradiance evironment maps 中(该部分内容将 clamped cosine function 投影到 SH 基函数)已经见到这种问题。有两种方法用于解决这类问题：<br />
+</p>
+<ol class="org-ol">
+<li>使用 sigma 因子对截断的投影系数进行窗口化。在 SH 中可以简单应用该方法。<br /></li>
+<li>最小化某种形式的变函数，而不仅仅使用标准的最小二乘误差函数。<br /></li>
+</ol>
 </div>
-<div id="outline-container-org7b45cd1" class="outline-3">
-<h3 id="org7b45cd1">SH Products</h3>
+<div id="outline-container-org19040df" class="outline-4">
+<h4 id="org19040df">Windowing</h4>
+</div>
+<div id="outline-container-orgfa969fb" class="outline-4">
+<h4 id="orgfa969fb">Minimizing a functional</h4>
+</div>
+<div id="outline-container-org22f735c" class="outline-4">
+<h4 id="org22f735c">Content Sensitive Windowing</h4>
+</div>
+</div>
+<div id="outline-container-orgb9e0f45" class="outline-3">
+<h3 id="orgb9e0f45">SH Products</h3>
+<div class="outline-text-3" id="text-orgb9e0f45">
+<p>
+计算两个 SH 表示的函数的积非常有用。下面一些情形会使用到 SH Products：<br />
+</p>
+<ol class="org-ol">
+<li>基于巨大的飞行物体，在 skylight 模型上挖一个洞（可见项和 light 相乘）。<br /></li>
+<li>在近似全局照明时，通常会将 SH 光照和 SH 可见性函数相乘。<br /></li>
+<li>缩放或修改 SH light probe。通过乘一个[0,1]范围的常数，可以近似云。<br /></li>
+</ol>
+
+<p>
+在频率空间计算乘积非常复杂，其归结为应用一个 triple product tensor 乘两个 SH 向量。<br />
+</p>
+</div>
+<div id="outline-container-org55c190c" class="outline-4">
+<h4 id="org55c190c">Products with a Constant Function</h4>
+<div class="outline-text-4" id="text-org55c190c">
+<p>
+如果其中一个函数被使用多次，你可以构建一个被称为乘积矩阵的 dense matrix，其可以将三次乘积转化为简单的矩阵和向量乘积，这可以有效减低消耗。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org5398be8" class="outline-4">
+<h4 id="org5398be8">Products with varying Orders</h4>
+<div class="outline-text-4" id="text-org5398be8">
+<p>
+输出的阶数比较低是很常见的情况，例如：2次就可以表示局部的辐射率环境。这种情况下，可以有效减低复杂度，例如，计算两个 6 阶的 SH 函数，输出结果为 6 阶时，需要计算 2527 次乘和 1995 次加，而输出结果为 3 阶时，需要计算 933 次乘和 676 次加。<br />
+当两个函数中，有一个阶数比较低时，也可以减少消耗。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org921187e" class="outline-4">
+<h4 id="org921187e">Product with Zonal Harmonics</h4>
+<div class="outline-text-4" id="text-org921187e">
+<p>
+如果其中一个函数为 Zonal Harmonic，你可以将另一个函数旋转到同一个 frame（因为对称性，旋转只需要两个 Euler 角），计算乘积然后再旋转回来。ZH 的稀疏明显减少了工作量，这样可以提高性能。两个 6 阶函数，其中一个为 ZH 且朝向 z，只需要 380 次乘和 249 次加。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org2d40b1c" class="outline-4">
+<h4 id="org2d40b1c">Product with Analytic Function</h4>
+<div class="outline-text-4" id="text-org2d40b1c">
+<p>
+如果其中一个函数有解析形式，解析方式计算乘积矩阵会更精确。<br />
+</p>
+</div>
+</div>
 </div>
 </div>
 <div id="outline-container-orgd267939" class="outline-2">
@@ -273,6 +550,7 @@ ZH 已经被用于近似 transfer，其是散射理论中表示 phase 函数的�
 <ul class="org-ul">
 <li>Notes on Spherical Harmonics in CG (1) <a href="https://zhuanlan.zhihu.com/p/73897562">https://zhuanlan.zhihu.com/p/73897562</a><br /></li>
 <li>球谐光照——球谐函数 <a href="https://zhuanlan.zhihu.com/p/153352797">https://zhuanlan.zhihu.com/p/153352797</a><br /></li>
+<li>SphericalHarmonics <a href="https://en.wikipedia.org/wiki/Spherical_harmonics">https://en.wikipedia.org/wiki/Spherical_harmonics</a><br /></li>
 </ul>
 </div>
 </div>

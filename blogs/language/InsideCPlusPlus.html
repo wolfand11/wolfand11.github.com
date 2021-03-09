@@ -1,0 +1,2331 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2021-03-09 周二 22:25 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Inside The C++ Object Model</title>
+<meta name="generator" content="Org mode" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+           <meta name="viewport" content="width=device-width, initial-scale=1" />
+           <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/css/worg.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/css/worg-zenburn.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
+           <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2020 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href=""> UP </a>
+ |
+ <a accesskey="H" href="https://wolfand11.gitee.io"> HOME </a>
+</div><div id="content">
+<h1 class="title">Inside The C++ Object Model</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org2610f5f">Object Lessons</a>
+<ul>
+<li><a href="#org7cd2e66">C++对象模型</a>
+<ul>
+<li><a href="#orgf2d0ea3">简单对象模型</a></li>
+<li><a href="#orgf5322af">表格对象驱动模型</a></li>
+<li><a href="#org4bb660a">C++对象模型</a>
+<ul>
+<li><a href="#org7b5d02f">加入继承</a>
+<ul>
+<li><a href="#org6708d31">简单对象模型</a></li>
+<li><a href="#orge0b335c">基类表模型</a></li>
+<li><a href="#org66e2cbf">C++对象模型</a></li>
+</ul>
+</li>
+<li><a href="#org81c8646">对象模型如何影响程序</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org30cb39c">关键字带来的差异</a></li>
+<li><a href="#org7f6297d">对象的差异</a>
+<ul>
+<li><a href="#orgc4ce75b">指针的类型</a></li>
+<li><a href="#org098cec8">OB 与 OO</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org11ee7ff">The Semantics of Constructors</a>
+<ul>
+<li><a href="#org08d951e">Default Constructor Construction</a>
+<ul>
+<li><a href="#org91cb882">成员类对象带有默认的构造函数</a></li>
+<li><a href="#orgef524a5">基类带有默认的构造函数</a></li>
+<li><a href="#orga54990d">类带有一个或多个虚函数</a></li>
+<li><a href="#orgbe5326f">类带有一个或多个虚基类</a></li>
+</ul>
+</li>
+<li><a href="#org3bd8c5e">Copy Constructor Construction</a>
+<ul>
+<li><a href="#org765503a">基于位的 copy 语义(Bitwise copy Semantics)</a></li>
+<li><a href="#orgcfb6d5f">什么时候类不展现基于位的 copy 语义</a>
+<ul>
+<li><a href="#org003a615">当类内含一个成员对象，而后者的类定义了一个 copy 构造函数。</a></li>
+<li><a href="#orgcc6454a">当类继承自一个基类而后者存在有一个 copy constructor。</a></li>
+<li><a href="#orga4b0b1c">当类声明了一个或多个虚函数。</a></li>
+<li><a href="#org39d62b5">当类派生自一个继承串链，其中有一个或多个虚基类。</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orga4963a6">程序转化语义学</a>
+<ul>
+<li><a href="#orgd8c8e35">明确的初始化操作</a></li>
+<li><a href="#org0086b83">参数的初始化</a></li>
+<li><a href="#org1965297">返回值的初始化</a>
+<ul>
+<li><a href="#org3f1747c">返回值优化</a>
+<ul>
+<li><a href="#org0d6b6af">在使用者层面做优化</a></li>
+<li><a href="#orgc63898c">在编译器层面做优化</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org2ab9126">成员们的初始化列表</a></li>
+</ul>
+</li>
+<li><a href="#org21ff246">The Semantics of Data</a>
+<ul>
+<li><a href="#org56b0354">数据成员的绑定</a></li>
+<li><a href="#orgef630e5">数据成员的布局</a></li>
+<li><a href="#org449f5f4">数据成员的存取</a>
+<ul>
+<li><a href="#org227580d">静态数据成员</a></li>
+<li><a href="#orge2d453e">非静态数据成员</a></li>
+</ul>
+</li>
+<li><a href="#org645b6b9">继承的数据成员</a>
+<ul>
+<li><a href="#orge6ed98c">没有多态的继承</a></li>
+<li><a href="#org27fae53">加上多态以后</a></li>
+<li><a href="#orge19e32b">多重继承</a></li>
+<li><a href="#org8fa9458">虚拟继承</a></li>
+</ul>
+</li>
+<li><a href="#org3d55efe">数据成员的效率</a></li>
+<li><a href="#org45e8262">指向数据成员的指针</a>
+<ul>
+<li><a href="#org68335f8">如何确定 vptr 是放在类的起始处还是尾端。</a></li>
+<li><a href="#orgd8c56a3">指向数据成员的指针的效率问题</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org47427fd">The Semantics of Function</a>
+<ul>
+<li><a href="#orga69537a">成员函数的各种调用方式</a>
+<ul>
+<li><a href="#org161741d">非静态成员函数</a></li>
+<li><a href="#orgc85622a">虚成员函数</a></li>
+<li><a href="#orgeb43584">静态成员函数</a></li>
+</ul>
+</li>
+<li><a href="#org31d449d">虚拟成员函数</a>
+<ul>
+<li><a href="#org64606f0">无继承或单继承下的虚函数</a></li>
+<li><a href="#org7b5b87c">多重继承下的虚函数</a></li>
+<li><a href="#orgc3b3303">虚拟继承下的虚函数</a></li>
+</ul>
+</li>
+<li><a href="#org51782d6">函数的效能</a></li>
+<li><a href="#orgca33bce">指向成员函数的指针</a>
+<ul>
+<li><a href="#orgcd4257d">支持指向虚成员函数的指针</a></li>
+<li><a href="#org5d7b408">多重继承下，指向成员函数的指针</a></li>
+<li><a href="#org1b0824a">指向成员函数之指针的效率</a></li>
+</ul>
+</li>
+<li><a href="#org432f6f4">Inline Function</a>
+<ul>
+<li><a href="#org337e065">形式参数</a></li>
+<li><a href="#org40f868b">局部变量</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgaf22f24">Semantics of Construction,Destruction,and Copy</a>
+<ul>
+<li><a href="#orgea2a01d">无继承情况下的对象构造</a>
+<ul>
+<li><a href="#org40f4a27">Plain Ol' Data</a></li>
+<li><a href="#org29d732c">抽象数据类型</a></li>
+<li><a href="#org1a74a90">包含虚函数</a></li>
+</ul>
+</li>
+<li><a href="#orgce91164">继承体系下的对象构造</a>
+<ul>
+<li><a href="#org78ea6a8">vptr 初始化语义</a></li>
+</ul>
+</li>
+<li><a href="#orgb270e46">对象复制语义</a></li>
+<li><a href="#orgdbc6058">对象的效能</a></li>
+<li><a href="#orgfc3576b">对象解构语义</a></li>
+</ul>
+</li>
+<li><a href="#org226e410">Runtime Semantics</a>
+<ul>
+<li><a href="#org5b9b192">对象的构造和解构</a>
+<ul>
+<li><a href="#org2e3e3ba">全局对象</a></li>
+<li><a href="#org16753af">局部静态对象</a></li>
+<li><a href="#org344c684">对象数组</a></li>
+<li><a href="#org186ca06">Default Constructors 和数组</a></li>
+</ul>
+</li>
+<li><a href="#org259c757">new delete 运算符</a>
+<ul>
+<li><a href="#org83cb84d">内置类型</a></li>
+<li><a href="#orgd2e1213">类对象</a></li>
+<li><a href="#orgf507daf">new</a></li>
+<li><a href="#org72cb545">delete</a></li>
+<li><a href="#org14604cc">new []</a></li>
+<li><a href="#orged53dd6">delete []</a></li>
+<li><a href="#org739186a">placement operator new 的语意</a></li>
+</ul>
+</li>
+<li><a href="#org1320301">临时性对象</a></li>
+</ul>
+</li>
+<li><a href="#org27e1b8c">On the Cusp of the Object Model</a>
+<ul>
+<li><a href="#orga44c619">模板</a></li>
+<li><a href="#org2492aae">异常处理</a></li>
+<li><a href="#org7f6f0e1">执行期类型识别</a></li>
+</ul>
+</li>
+<li><a href="#org7287e75">Q&amp;A:</a>
+<ul>
+<li><a href="#orgdf2e099">c++中的类型转换有哪些？</a>
+<ul>
+<li><a href="#orgb8e9197">一、类型转换的意义：</a></li>
+<li><a href="#org4bcddb9">二、什么是类型转换：</a></li>
+<li><a href="#org146bb01">三、类型转换分类：</a>
+<ul>
+<li><a href="#orgd831d4a">从是否需要在类型转换的地方写代码来使用类型转换，可以将类型转换分为：隐式类型转换、显示转换。</a>
+<ul>
+<li><a href="#org04b960b">隐式转换</a></li>
+<li><a href="#org4cacc22">显式转换</a></li>
+</ul>
+</li>
+<li><a href="#org2863430">从是否需要编写代码来实现类型转换的具体实现细节，可以将类型转换分为：标准转换、类类型转换。</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org377d40b">extern 和 static 的区别？</a>
+<ul>
+<li><a href="#orgf876eaa">static</a>
+<ul>
+<li><a href="#orga5a12dd">改变生命期</a></li>
+<li><a href="#org04dec12">改变作用域/可见性</a></li>
+<li><a href="#org9a3419b">类静态成员</a></li>
+</ul>
+</li>
+<li><a href="#orgfd258c7">extern</a>
+<ul>
+<li><a href="#org8138efd">声明变量</a></li>
+<li><a href="#org99efc92">声明 c++函数</a></li>
+<li><a href="#org1f7d87a">链接指示</a>
+<ul>
+<li><a href="#org9eaba41">链接指示有两种形式</a></li>
+<li><a href="#org1f18731">链接指示支持的语言</a></li>
+<li><a href="#orgede1950">链接指示的运用</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org2779a49">字节对齐是什么？</a></li>
+<li><a href="#orgbfc32d7">内置类型变量在内存中如何布局？</a></li>
+<li><a href="#org6cf2534">类在内存中的布局是怎样的？</a></li>
+<li><a href="#org3d7e511">对象在内存中的布局是怎样的？</a></li>
+<li><a href="#orgc4eb689">什么时候需要在成员函数中显式使用 this?</a></li>
+<li><a href="#org018fc69">关于 inline 的问题</a>
+<ul>
+<li><a href="#orge311984">什么时候使用 inline 什么时候不能使用 inline？</a></li>
+<li><a href="#org8a83311">虚函数是否可以指定为 inline？</a></li>
+</ul>
+</li>
+<li><a href="#org5c3ba60">memcpy 和 memset 的使用</a></li>
+<li><a href="#org180e651">virtual 机制和类对象、类指针、类引用</a></li>
+<li><a href="#org5f892bd">Name Mangling</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<p>
+总的来说这本书讲了编译器在你的 C++代码上又做了哪些手脚？<br />
+</p>
+
+<div id="outline-container-org2610f5f" class="outline-2">
+<h2 id="org2610f5f">Object Lessons</h2>
+<div class="outline-text-2" id="text-org2610f5f">
+</div>
+<div id="outline-container-org7cd2e66" class="outline-3">
+<h3 id="org7cd2e66">C++对象模型</h3>
+<div class="outline-text-3" id="text-org7cd2e66">
+<p>
+c++有两种类数据成员：静态和非静态，以及三种类成员函数：静态，非静态以及虚函数。<br />
+如何模型出各种数据成员和函数成员呢？<br />
+</p>
+</div>
+<div id="outline-container-orgf2d0ea3" class="outline-4">
+<h4 id="orgf2d0ea3">简单对象模型</h4>
+<div class="outline-text-4" id="text-orgf2d0ea3">
+<p>
+<img src="./InsideCPlusPlus/lesson1_simple_object_model.png" alt="lesson1_simple_object_model.png" /><br />
+一个对象是一系列的 slots，每个 slot 指向一个成员。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgf5322af" class="outline-4">
+<h4 id="orgf5322af">表格对象驱动模型</h4>
+<div class="outline-text-4" id="text-orgf5322af">
+<p>
+<img src="./InsideCPlusPlus/lesson1_member_table_object_model.png" alt="lesson1_member_table_object_model.png" /><br />
+把所有与成员相关的信息抽出来，放在一个数据成员表和一个成员函数表中。一个对象内含有指向这两个表格的指针。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org4bb660a" class="outline-4">
+<h4 id="org4bb660a">C++对象模型</h4>
+<div class="outline-text-4" id="text-org4bb660a">
+<p>
+<img src="./InsideCPlusPlus/lesson1_c++_object_model.png" alt="lesson1_c++_object_model.png" /><br />
+在此模型中，非静态数据成员被配置于每一个对象之内，静态数据成员则被放在所有对象之外，静态和非静态函数成员也被放在所有对象之外。虚函数通过下面<br />
+两个步骤支持：<br />
+</p>
+<ol class="org-ol">
+<li>每个类产生出一堆指向虚函数的指针，放在表格中。这个表被称为虚表。<br /></li>
+<li>每个类对象被添加一个指针，指向相关的虚表。通常这个指针被称为 vptr。vptr 的设定和重置都由每一个类的 constructor,destructor 和<br /></li>
+</ol>
+<p>
+copy assignment 运算符自动完成。每个类所关联的 type_info 对象也经由虚表被指出来，通常放在虚表的第一个 slot 处。<br />
+</p>
+
+<p>
+优缺点：<br />
+C++对象模型的主要缺点是，如果应用程序代码本身没有改变，只是用到的类的非静态数据成员有改变，这些应用程序的代码也需要重新编译。<br />
+表格对象驱动模型没有上述缺点，因为它提供了一层间接层，但是表格对象驱动模型空间和执行效率比较差。<br />
+</p>
+</div>
+
+<div id="outline-container-org7b5d02f" class="outline-5">
+<h5 id="org7b5d02f">加入继承</h5>
+<div class="outline-text-5" id="text-org7b5d02f">
+</div>
+<div id="outline-container-org6708d31" class="outline-6">
+<h6 id="org6708d31">简单对象模型</h6>
+<div class="outline-text-6" id="text-org6708d31">
+<p>
+简单对象模型中，每一个基类子对象可以由派生类内的一个 slot 指出。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orge0b335c" class="outline-6">
+<h6 id="orge0b335c">基类表模型</h6>
+<div class="outline-text-6" id="text-orge0b335c">
+<p>
+基表模型中，产生出一个基类表，表格中的每一个 slot 内含一个相关的 base class 地址。<br />
+每一个类对象内含有一个 bptr，它被初始化，指向其基表。<br />
+<img src="./InsideCPlusPlus/lesson1_base_class_tabel_model.png" alt="lesson1_base_class_tabel_model.png" /><br />
+</p>
+</div>
+</div>
+<div id="outline-container-org66e2cbf" class="outline-6">
+<h6 id="org66e2cbf">C++对象模型</h6>
+<div class="outline-text-6" id="text-org66e2cbf">
+<p>
+C++基类子对象的数据被直接放到派生类对象中。对于虚基类，则在类对象中为每个关联的虚基类对象加上一个指针。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org81c8646" class="outline-5">
+<h5 id="org81c8646">对象模型如何影响程序</h5>
+<div class="outline-text-5" id="text-org81c8646">
+<p>
+不同的对象模型，会导致“现有的程序代码必须修改”以及“必须加入新的程序代码”两个结果。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #bc6ec5; font-weight: bold;">foobar</span>() {
+   <span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #7590db;">xx</span>;
+   <span style="color: #ce537a; font-weight: bold;">X</span> *<span style="color: #7590db;">px</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">X</span>;
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">foo() is virtual function</span>
+   xx.foo();
+   px-&gt;foo();
+   <span style="color: #4f97d7; font-weight: bold;">delete</span> px;
+   <span style="color: #4f97d7; font-weight: bold;">return</span> xx; 
+};
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19978;&#38754;&#30340;&#20195;&#30721;&#20250;&#34987;&#36716;&#25442;&#20026;&#19979;&#38754;&#30340;&#20195;&#30721;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Pseudo C++ code</span>
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">foobar</span>( <span style="color: #ce537a; font-weight: bold;">X</span> &amp;<span style="color: #7590db;">_result</span> )
+{
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">construct _result</span>
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">_result replaces local xx ...</span>
+   _result.<span style="color: #a45bad;">X</span>::X();
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">expand X *px = new X;</span>
+   px = _new( <span style="color: #4f97d7; font-weight: bold;">sizeof</span>( X ));
+   <span style="color: #4f97d7; font-weight: bold;">if</span> ( px != 0 )
+      px-&gt;<span style="color: #a45bad;">X</span>::X();
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">expand xx.foo(): suppress virtual mechanism</span>
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">replace xx with _result</span>
+   foo( &amp;_result );
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">expand px-&gt;foo() using virtual mechanism</span>
+   ( *px-&gt;_vtbl[ 2 ] )( px )
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">expand delete px;</span>
+   <span style="color: #4f97d7; font-weight: bold;">if</span> ( px != 0 ) {
+      ( *px-&gt;_vtbl[ 1 ] )( px ); <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">destructor</span>
+       _delete( px );
+   }
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">replace named return statement</span>
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">no need to destroy local object xx</span>
+   <span style="color: #4f97d7; font-weight: bold;">return</span>;
+};
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org30cb39c" class="outline-3">
+<h3 id="org30cb39c">关键字带来的差异</h3>
+<div class="outline-text-3" id="text-org30cb39c">
+<p>
+在 C 所支持的 struct 和 C++所支持的 class 之间，有观念上的重要差异，但是，关键词本身并不提供这种差异。<br />
+C struct 在 C++中的一个合理用途，是当你需要传递“一个复杂的类对象的全部或部分”到某个 C 函数中去时，struct 声明可以将数据封装起来，并保证<br />
+拥有与 C 兼容的空间布局。这项保证只在组合的情况下才存在。如果是继承而不是组合，编译器会决定是否应该有额外的数据成员被安插到 base struct 子<br />
+对象中。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org7f6297d" class="outline-3">
+<h3 id="org7f6297d">对象的差异</h3>
+<div class="outline-text-3" id="text-org7f6297d">
+<p>
+C++以下列方法支持多态：<br />
+</p>
+<ol class="org-ol">
+<li>经由一组隐含的转换操作。例如把一个派生类指针转化为一个指向其 public base type 的指针。<br />
+shape* ps = new circle();<br /></li>
+<li>经由 virtual function 机制：<br />
+ps-&gt;rotate();<br /></li>
+<li>经由 dynamic_cast 和 typeid 运算符：<br />
+if( circle* pc = dynamic_cast&lt;circle*&gt;(ps) ) &#x2026;<br /></li>
+</ol>
+</div>
+<div id="outline-container-orgc4ce75b" class="outline-4">
+<h4 id="orgc4ce75b">指针的类型</h4>
+<div class="outline-text-4" id="text-orgc4ce75b">
+<p>
+不同类型的指针，以内存需求的观点来说，没有什么不同。它们都需要足够的内存来放置一个机器地址。指向不同类型之各指针间的差异，既不在其指针表示法不同，<br />
+也不再其内容不同，而是在其所寻址出来的 object 类型不同。也就是说，“指针类型”会教导编译器如何解释某个特定地址中的内存内容及其大小。<br />
+一个 void*的指针不包含其所指对象类型的信息，所以只能够含有一个地址，而不能够通过它操作所指对象。<br />
+转型其实是一种编译器指令。大部分情况下它并不改变一个指针所含的真正地址，它只影响“被指出之内存的大小和其内容”的解释方式。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org098cec8" class="outline-4">
+<h4 id="org098cec8">OB 与 OO</h4>
+<div class="outline-text-4" id="text-org098cec8">
+<p>
+一个基于对象(object-based)的设计可能比一个对等的面向对象(OO)的设计速度更快而且空间更紧凑。速度快是因为所有的函数引发操作都在编译时期解析完<br />
+成，对象建构起来时不需要设置 virtual 机制；空间紧凑则是因为每个类对象不需要负担为了支持 virtual 机制而需要的额外负荷。不过，OB 设计比较没<br />
+有弹性。需要在弹性和效率之间进行权衡来进行取舍。<br />
+</p>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org11ee7ff" class="outline-2">
+<h2 id="org11ee7ff">The Semantics of Constructors</h2>
+<div class="outline-text-2" id="text-org11ee7ff">
+</div>
+<div id="outline-container-org08d951e" class="outline-3">
+<h3 id="org08d951e">Default Constructor Construction</h3>
+<div class="outline-text-3" id="text-org08d951e">
+<p>
+什么时候才会合成出一个 Default Constructor? 当编译器需要的时候!而且，被合成出来的 constructor 只执行编译器所需要的行动。<br />
+对于类 X，如果没有任何用户定义的构造函数，会有一个默认的构造函数被声明。编译器不需要的默认构造函数被称为 trivial default constructor(无用的默认构造函数)，由于编译器需要而由编译器合成的默认构造函数被称为 nontrivial default constructor(有用的默认构造函数)。<br />
+下面四种情况下，编译器需要合成默认构造函数：<br />
+</p>
+</div>
+<div id="outline-container-org91cb882" class="outline-4">
+<h4 id="org91cb882">成员类对象带有默认的构造函数</h4>
+<div class="outline-text-4" id="text-org91cb882">
+<p>
+如果一个类没有任何构造函数，但它内含一个成员对象，而这个成员对象有默认构造函数。那么编译器需要为此类合成出一个默认构造函数。不过这个合成操作只有在默认构造函数被调用时才会发生。<br />
+如果一个类 A 有默认构造函数，它内含一个成员对象 b（类型为 class B），该成员对象也有默认构造函数，但是在类 A 的默认构造函数中，没有调用类 B 的默认构造函数。此时，编译器会扩展类 A 的默认构造函数，将对类 B 的默认构造函数调用插入进去。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">programmer defined default constructor</span>
+<span style="color: #a45bad;">Bar</span>::<span style="color: #bc6ec5; font-weight: bold;">Bar</span>() { str = 0; }
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19978;&#38754;&#30340;&#20195;&#30721;&#20250;&#34987;&#36716;&#25442;&#20026;&#19979;&#38754;&#30340;&#20195;&#30721;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Augmented default constructor</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Pseudo C++ Code</span>
+<span style="color: #a45bad;">Bar</span>::<span style="color: #bc6ec5; font-weight: bold;">Bar</span>()
+{
+   foo.<span style="color: #a45bad;">Foo</span>::Foo(); <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">augmented compiler code</span>
+   str = 0;        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">explicit user code</span>
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgef524a5" class="outline-4">
+<h4 id="orgef524a5">基类带有默认的构造函数</h4>
+<div class="outline-text-4" id="text-orgef524a5">
+<p>
+如果一个没有任何构造函数的类派生自一个带有默认构造函数的基类。那么编译器需要为此类合成出一个默认构造函数。它将调用上一层基类的默认构造函数。<br />
+如果类包含多个构造函数，但其中没有默认构造函数。那么编译器会扩展现有的每一个构造函数，将调用默认构造函数的程序代码加入进去。编译器不会合成一个新的构造函数，因为有其他用户定义的构造函数存在。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orga54990d" class="outline-4">
+<h4 id="orga54990d">类带有一个或多个虚函数</h4>
+<div class="outline-text-4" id="text-orga54990d">
+<p>
+为了支持虚函数机制，编译器必须为每个含有虚函数类的对象设置虚指针（vptr）初值,放置适当的虚表地址。对于类所定义的每一个构造函数，编译器会安插一些代码来做这样的事情。对于那些未声明任何构造函数的类，编译器会为它们合成一个默认构造函数，以便正确地初始化每一个类对象的 vptr。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgbe5326f" class="outline-4">
+<h4 id="orgbe5326f">类带有一个或多个虚基类</h4>
+<div class="outline-text-4" id="text-orgbe5326f">
+<p>
+对于类所定义的每一个构造函数，编译器会安插那些“允许每一个 virtual base class 的执行期存取操作”的码。如果一个类没有任何构造函数，编译器<br />
+会为它们合成一个默认构造函数。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">X</span> { <span style="color: #4f97d7; font-weight: bold;">public</span>: <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">i</span>; };
+<span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">A</span> : <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">virtual</span> <span style="color: #ce537a; font-weight: bold;">X</span>   { <span style="color: #4f97d7; font-weight: bold;">public</span>: <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">j</span>; };
+<span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">B</span> : <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">virtual</span> <span style="color: #ce537a; font-weight: bold;">X</span>   { <span style="color: #4f97d7; font-weight: bold;">public</span>: <span style="color: #ce537a; font-weight: bold;">double</span> <span style="color: #7590db;">d</span>; };
+<span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">C</span> : <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">A</span>, <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">B</span> { <span style="color: #4f97d7; font-weight: bold;">public</span>: <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">k</span>; };
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">cannot resolve location of pa-&gt;X::i at compile-time</span>
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">foo</span>( <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">A</span>* <span style="color: #7590db;">pa</span> ) { pa-&gt;i = 1024; }
+<span style="color: #bc6ec5; font-weight: bold;">main</span>() {
+   foo( <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">A</span> );
+   foo( <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">C</span> );
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">...</span>
+}
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19978;&#38754; foo &#30340;&#20195;&#30721;&#20250;&#34987;&#36716;&#25442;&#20026;&#19979;&#38754;&#30340;&#20195;&#30721;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">possible compiler transformation</span>
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">foo</span>( <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">A</span>* <span style="color: #7590db;">pa</span> ) { pa-&gt;__vbcX-&gt;i = 1024; }
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org3bd8c5e" class="outline-3">
+<h3 id="org3bd8c5e">Copy Constructor Construction</h3>
+<div class="outline-text-3" id="text-org3bd8c5e">
+<p>
+有三种情况，会以一个 object 的内容作为另一个类对象的初值：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">X</span> { ... };
+<span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #7590db;">x</span>;
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#31532;&#19968;&#31181;&#24773;&#20917;&#65292;&#26174;&#24335;&#29992;&#19968;&#20010;&#23545;&#35937;&#21021;&#22987;&#21270;&#21478;&#19968;&#20010;&#23545;&#35937;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">explicit initialization of one class object with another</span>
+<span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #7590db;">xx</span> = x;
+
+<span style="color: #4f97d7; font-weight: bold;">extern</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">foo</span>( <span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #7590db;">x</span> );
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">bar</span>()
+{
+  <span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #7590db;">xx</span>;
+
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#31532;&#20108;&#31181;&#24773;&#20917;&#65292;&#38544;&#24335;&#21021;&#22987;&#21270;&#20989;&#25968;&#21442;&#25968;</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">implicit initialization of foo()'s</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">first argument with xx</span>
+  foo( xx );
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">... </span>
+}
+
+<span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #bc6ec5; font-weight: bold;">foo_bar</span>()
+{
+  <span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #7590db;">xx</span>;
+
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#31532;&#19977;&#31181;&#24773;&#20917;&#65292;&#20989;&#25968;&#36820;&#22238;&#19968;&#20010;&#31867;&#23545;&#35937;</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">...;</span>
+  <span style="color: #4f97d7; font-weight: bold;">return</span> xx; 
+}
+</pre>
+</div>
+
+<p>
+如果类没有声明一个 copy constructor，就会有隐含的声明和隐含的定义。和以前一样 C++标准把 copy constructor 区分为 trivial 和<br />
+nontrivial 两种。只有 nontrivial 的实体才会被合成于程序中。<br />
+决定一个 copy constructor 是否为 nontrivial 的标准在于 class 是否展现出 bitwise copy semantics。<br />
+</p>
+</div>
+<div id="outline-container-org765503a" class="outline-4">
+<h4 id="org765503a">基于位的 copy 语义(Bitwise copy Semantics)</h4>
+<div class="outline-text-4" id="text-org765503a">
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19979;&#38754;&#30340;&#22768;&#26126;&#23637;&#29616;&#20102;&#22522;&#20110;&#20301;&#30340; copy &#35821;&#20041;</span>
+<span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Word</span> {
+<span style="color: #4f97d7; font-weight: bold;">public</span>:
+   <span style="color: #bc6ec5; font-weight: bold;">Word</span>( <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">char</span>* );
+   ~<span style="color: #bc6ec5; font-weight: bold;">Word</span>() { <span style="color: #4f97d7; font-weight: bold;">delete</span> [] str; }
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">...</span>
+<span style="color: #4f97d7; font-weight: bold;">private</span>:
+  <span style="color: #ce537a; font-weight: bold;">int</span>   <span style="color: #7590db;">cnt</span>;
+  <span style="color: #ce537a; font-weight: bold;">char</span> *<span style="color: #7590db;">str</span>; 
+};
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19979;&#38754;&#30340;&#22768;&#26126;&#27809;&#26377;&#23637;&#29616;&#20102;&#22522;&#20110;&#20301;&#30340; copy &#35821;&#20041;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">declaration does not exhibits bitwise copy semantics</span>
+<span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Word</span> {
+<span style="color: #4f97d7; font-weight: bold;">public</span>:
+   <span style="color: #bc6ec5; font-weight: bold;">Word</span>( <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">String</span>&amp; );
+   ~<span style="color: #bc6ec5; font-weight: bold;">Word</span>();
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">...</span>
+<span style="color: #4f97d7; font-weight: bold;">private</span>:
+   <span style="color: #ce537a; font-weight: bold;">int</span>    <span style="color: #7590db;">cnt</span>;
+   <span style="color: #ce537a; font-weight: bold;">String</span> <span style="color: #7590db;">str</span>;
+};
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">where String declares an explicit copy constructor:</span>
+<span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">String</span> {
+<span style="color: #4f97d7; font-weight: bold;">public</span>:
+   <span style="color: #bc6ec5; font-weight: bold;">String</span>( <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">char</span> * );
+   <span style="color: #bc6ec5; font-weight: bold;">String</span>( <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">String</span>&amp; );
+   ~<span style="color: #bc6ec5; font-weight: bold;">String</span>();
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">...</span>
+};
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">In this case, the compiler needs to synthesize a copy constructor in order to invoke the</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">copy constructor of the member class String object:</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">A synthesized copy constructor</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Pseudo C++ Code</span>
+<span style="color: #4f97d7; font-weight: bold;">inline</span> <span style="color: #a45bad;">Word</span>::<span style="color: #bc6ec5; font-weight: bold;">Word</span>( <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">Word</span>&amp; <span style="color: #7590db;">wd</span> )
+{
+   str.<span style="color: #a45bad;">String</span>::String( wd.str );
+   cnt = wd.cnt;
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgcfb6d5f" class="outline-4">
+<h4 id="orgcfb6d5f">什么时候类不展现基于位的 copy 语义</h4>
+<div class="outline-text-4" id="text-orgcfb6d5f">
+</div>
+<div id="outline-container-org003a615" class="outline-5">
+<h5 id="org003a615">当类内含一个成员对象，而后者的类定义了一个 copy 构造函数。</h5>
+<div class="outline-text-5" id="text-org003a615">
+<p>
+编译器需要将成员的 copy 构造调用操作安插到被合成的 copy 构造函数中。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgcc6454a" class="outline-5">
+<h5 id="orgcc6454a">当类继承自一个基类而后者存在有一个 copy constructor。</h5>
+<div class="outline-text-5" id="text-orgcc6454a">
+<p>
+编译器需要将基类的 copy 构造调用操作安插到被合成的 copy 构造函数中。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orga4b0b1c" class="outline-5">
+<h5 id="orga4b0b1c">当类声明了一个或多个虚函数。</h5>
+<div class="outline-text-5" id="text-orga4b0b1c">
+<p>
+编译器需要重新设定虚指针。<br />
+合成出来的类 A 的 copy 构造函数会明确设定对象的 vptr 指向类 A 的虚表，而不是直接从右手边的类对象中将其 vptr 直接 copy 过来。<br />
+(这样可以避免使用一个派生类对象来初始化基类对象时，基类对象的 vptr 错误指向派生类对象的虚表)<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org39d62b5" class="outline-5">
+<h5 id="org39d62b5">当类派生自一个继承串链，其中有一个或多个虚基类。</h5>
+<div class="outline-text-5" id="text-org39d62b5">
+<p>
+编译器需要处理虚基类子对象。<br />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orga4963a6" class="outline-3">
+<h3 id="orga4963a6">程序转化语义学</h3>
+<div class="outline-text-3" id="text-orga4963a6">
+</div>
+<div id="outline-container-orgd8c8e35" class="outline-4">
+<h4 id="orgd8c8e35">明确的初始化操作</h4>
+<div class="outline-text-4" id="text-orgd8c8e35">
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">foo_bar</span>() {
+   <span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #7590db;">x1</span>( x0 );
+   <span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #7590db;">x2</span> = x0;
+   <span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #7590db;">x3</span> = x( x0 );
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">...</span>
+}
+
+<span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">&#19978;&#38754;&#30340;&#20195;&#30721;&#20250;&#34987;&#36716;&#25442;&#20026;&#19979;&#38754;&#30340;&#20195;&#30721;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Possible program transformation</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Pseudo C++ Code</span>
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">foo_bar</span>() {
+   <span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #7590db;">x1</span>; <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">&#23450;&#20041;&#34987;&#37325;&#20889;&#65292;&#21021;&#22987;&#21270;&#25805;&#20316;&#34987;&#21093;&#31163;</span>
+   <span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #7590db;">x2</span>; <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">&#21516;&#19978;</span>
+   <span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #7590db;">x3</span>; <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">&#21516;&#19978;</span>
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">compiler inserted invocations</span>
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">of copy constructor for X</span>
+   x1.<span style="color: #a45bad;">X</span>::X( x0 );
+   x2.<span style="color: #a45bad;">X</span>::X( x0 );
+   x3.<span style="color: #a45bad;">X</span>::X( x0 );
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">... </span>
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org0086b83" class="outline-4">
+<h4 id="org0086b83">参数的初始化</h4>
+<div class="outline-text-4" id="text-org0086b83">
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #7590db;">xx</span>;
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">...</span>
+foo( xx );
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19978;&#38754;&#30340;&#20195;&#30721;&#20250;&#34987;&#36716;&#25442;&#20026;&#19979;&#38754;&#30340;&#20195;&#30721;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Pseudo C++ code</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">compiler generated temporary</span>
+<span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #7590db;">__temp0</span>;
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">compiler invocation of copy constructor</span>
+__temp0.<span style="color: #a45bad;">X</span>::X ( xx );
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">rewrite function call to take temporary</span>
+foo( __temp0 );
+
+&#24182;&#19988; foo &#20250;&#34987;&#20462;&#25913;&#20026;
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">foo</span>( <span style="color: #ce537a; font-weight: bold;">X</span>&amp; <span style="color: #7590db;">x0</span> );
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org1965297" class="outline-4">
+<h4 id="org1965297">返回值的初始化</h4>
+<div class="outline-text-4" id="text-org1965297">
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #bc6ec5; font-weight: bold;">bar</span>() {
+   <span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #7590db;">xx</span>;
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">process xx ...</span>
+   <span style="color: #4f97d7; font-weight: bold;">return</span> xx;
+}
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19978;&#38754;&#30340;&#20195;&#30721;&#20250;&#34987;&#36716;&#25442;&#20026;&#19979;&#38754;&#30340;&#20195;&#30721;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">function transformation to reflect application of copy constructor</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Pseudo C++ Code</span>
+<span style="color: #ce537a; font-weight: bold;">void</span>
+<span style="color: #bc6ec5; font-weight: bold;">bar</span>( <span style="color: #ce537a; font-weight: bold;">X</span>&amp; <span style="color: #7590db;">__result</span> )
+{
+   <span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #7590db;">xx</span>;
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">compiler generated invocation</span>
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">of default constructor</span>
+   xx.<span style="color: #a45bad;">X</span>::X();
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">... process xx</span>
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">compiler generated invocation</span>
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">of copy constructor</span>
+   __result.<span style="color: #a45bad;">X</span>::X( xx );
+   <span style="color: #4f97d7; font-weight: bold;">return</span>; 
+}
+
+<span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">&#24182;&#19988;&#25152;&#26377;&#35843;&#29992; bar &#30340;&#20989;&#25968;&#38656;&#35201;&#36827;&#34892;&#20462;&#25913;&#65306;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#24773;&#20917; 1</span>
+<span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #7590db;">xx</span> = bar();
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">is transformed into the following two statements. // note: no default constructor applied</span>
+<span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #7590db;">xx</span>;
+bar( xx );
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#24773;&#20917; 2</span>
+bar().memfunc();
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">compiler generated temporary</span>
+<span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #7590db;">__temp0</span>;
+( bar( __temp0 ), __temp0 ).memfunc();
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#24773;&#20917; 3</span>
+<span style="color: #ce537a; font-weight: bold;">void</span> ( *<span style="color: #bc6ec5; font-weight: bold;">pf</span> )( <span style="color: #ce537a; font-weight: bold;">X</span>&amp; );
+pf = bar;
+</pre>
+</div>
+</div>
+<div id="outline-container-org3f1747c" class="outline-5">
+<h5 id="org3f1747c">返回值优化</h5>
+<div class="outline-text-5" id="text-org3f1747c">
+</div>
+<div id="outline-container-org0d6b6af" class="outline-6">
+<h6 id="org0d6b6af">在使用者层面做优化</h6>
+<div class="outline-text-6" id="text-org0d6b6af">
+<p>
+定义一个计算用的 constructor。这样可能导致计算用途的 construtor 大量扩散。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #bc6ec5; font-weight: bold;">bar</span>()
+{
+   <span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #7590db;">xx</span>;
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">... process xx</span>
+   <span style="color: #4f97d7; font-weight: bold;">return</span> xx; 
+}
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;&#19978;&#38754;&#30340;&#20195;&#30721;&#20889;&#20026;&#19979;&#38754;&#36825;&#31181;&#24418;&#24335;</span>
+<span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #bc6ec5; font-weight: bold;">bar</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">T</span>&amp;<span style="color: #7590db;">y</span>, <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">T</span>&amp;<span style="color: #7590db;">z</span>)
+{
+   <span style="color: #4f97d7; font-weight: bold;">return</span> X(y, z);
+}
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#28982;&#21518;&#32534;&#35793;&#22120;&#20250;&#23558;&#20854;&#36716;&#21270;&#20026;</span>
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">bar</span>( <span style="color: #ce537a; font-weight: bold;">X</span> &amp;<span style="color: #7590db;">__result</span>, <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">T</span>&amp;<span style="color: #7590db;">y</span>, <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">T</span>&amp;<span style="color: #7590db;">z</span>)
+{
+   __result.<span style="color: #a45bad;">X</span>::X(y, z);
+   <span style="color: #4f97d7; font-weight: bold;">return</span>; 
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc63898c" class="outline-6">
+<h6 id="orgc63898c">在编译器层面做优化</h6>
+<div class="outline-text-6" id="text-orgc63898c">
+<p>
+对于所有的 return 语句返回有名字对象的情况，编译器可以对其进行优化，方法为将返回值按照参数传递给该函数，这样的优化操作被称为 Named Return Value 优化。<br />
+因为 Named Return Value 优化是为了避免 copy constructor 的调用，所以当用户没有定义类的 copy 构造函数时，该优化不会实施，显式定义一个 copy 构造函数会激活 Named Return Value 优化。<br />
+Named Return Value 优化提供了重要的效率改善，也受到了一些批评，受到批评的原因有：<br />
+1 该优化由编译器默默完成，是否真的实施并不清楚。<br />
+2 一旦函数变得复杂，优化就变得比较难以实施，有可能该优化就不会实施。<br />
+3 该优化移除了函数内局部对象的构造和析构，改变了程序内容。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #bc6ec5; font-weight: bold;">bar</span>()
+{
+   <span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #7590db;">xx</span>;
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">... process xx</span>
+   <span style="color: #4f97d7; font-weight: bold;">return</span> xx; 
+}
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19978;&#38754;&#30340;&#20195;&#30721;&#20250;&#34987;&#36716;&#25442;&#20026;&#19979;&#38754;&#30340;&#20195;&#30721;</span>
+<span style="color: #ce537a; font-weight: bold;">void</span>
+<span style="color: #bc6ec5; font-weight: bold;">bar</span>( <span style="color: #ce537a; font-weight: bold;">X</span> &amp;<span style="color: #7590db;">__result</span> )
+{
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">default constructor invocation</span>
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Pseudo C++ Code</span>
+   __result.<span style="color: #a45bad;">X</span>::X();
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">... process in __result directly</span>
+   <span style="color: #4f97d7; font-weight: bold;">return</span>; 
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org2ab9126" class="outline-3">
+<h3 id="org2ab9126">成员们的初始化列表</h3>
+<div class="outline-text-3" id="text-org2ab9126">
+<p>
+下列情况下，为了让你的程序能够被顺利编译，你必须使用 member initialization list:<br />
+1 当初始化一个引用成员时；<br />
+2 当初始化一个 const 成员时；<br />
+3 当调用一个基类的构造函数时，而它拥有一组参数；<br />
+4 当调用一个成员类的构造函数时，而它拥有一组参数；<br />
+</p>
+
+<p>
+编译器会对初始化列表一一处理并可能重新排序，以反映出成员在类的声明顺序，它会将初始化操作安插到构造函数体内，并置于任何显式的用户代码之前。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org21ff246" class="outline-2">
+<h2 id="org21ff246">The Semantics of Data</h2>
+<div class="outline-text-2" id="text-org21ff246">
+<p>
+影响类对象大小的三个因素：<br />
+1 语言本身所造成的额外负担。由于支持某些语言特性（主要是各种 virtual 特性），编译器自动加上了额外的数据成员。<br />
+2 编译器对特殊情况提供的优化处理<br />
+3 Alignment 的限制<br />
+</p>
+</div>
+
+<div id="outline-container-org56b0354" class="outline-3">
+<h3 id="org56b0354">数据成员的绑定</h3>
+<div class="outline-text-3" id="text-org56b0354">
+<p>
+对成员函数本身的分析，会直到整个类的声明都出现了才开始。但是对于成员函数的参数列表并不是这样的，参数列表中的名称还是会在它们第一次被遇到时被适当地决议完成。所以，应该将嵌套在类内的类型声明放置在类的起始位置。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgef630e5" class="outline-3">
+<h3 id="orgef630e5">数据成员的布局</h3>
+<div class="outline-text-3" id="text-orgef630e5">
+<p>
+静态数据成员存放在程序的数据段中，和个别的类对象无关。<br />
+C++标准要求，在同一个 access section 中，成员的排列只需符合较晚出现的成员在类对象中有较高的地址。也就是说各个成员并不一定得连续排列。<br />
+成员变量之间可能会由于字节对齐而填充一些字节。<br />
+编译器合成的内部数据成员，可能会放置在对象的最后，也可能放在最前，对此 C++标准并没有规定。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19979;&#38754;&#30340;&#20195;&#30721;&#21487;&#20197;&#21028;&#26029;&#31867;&#25104;&#21592;&#30340;&#20986;&#29616;&#39034;&#24207;</span>
+<span style="color: #4f97d7; font-weight: bold;">template</span>&lt; <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">class_type</span>,
+          <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">data_type1</span>,
+          <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">data_type2</span> &gt;
+<span style="color: #ce537a; font-weight: bold;">char</span>*
+<span style="color: #bc6ec5; font-weight: bold;">access_order</span>(
+   <span style="color: #ce537a; font-weight: bold;">data_type1</span> <span style="color: #a45bad;">class_type</span>::*<span style="color: #7590db;">mem1</span>,
+   <span style="color: #ce537a; font-weight: bold;">data_type2</span> <span style="color: #a45bad;">class_type</span>::*<span style="color: #7590db;">mem2</span> )
+{
+   assert ( mem1 != mem2 );
+   <span style="color: #4f97d7; font-weight: bold;">return</span>
+      mem1 &lt; mem2
+         ? <span style="color: #2d9574;">"member 1 occurs first"</span>
+         : <span style="color: #2d9574;">"member 2 occurs first"</span>;
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org449f5f4" class="outline-3">
+<h3 id="org449f5f4">数据成员的存取</h3>
+<div class="outline-text-3" id="text-org449f5f4">
+</div>
+<div id="outline-container-org227580d" class="outline-4">
+<h4 id="org227580d">静态数据成员</h4>
+<div class="outline-text-4" id="text-org227580d">
+<p>
+每一个静态数据成员只有一个实体，存放在程序的数据段之中，每次程序取用静态数据成员，就会被内部转化为对该唯一的 extern 实体的直接参考操作。<br />
+对一个静态数据成员取地址，会得到一个指向其数据类型的指针，而不是一个指向类成员的指针。<br />
+编译器会对每个静态数据成员编码（name-mangling）,从而获得一个独一无二的名称，避免重名。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orge2d453e" class="outline-4">
+<h4 id="orge2d453e">非静态数据成员</h4>
+<div class="outline-text-4" id="text-orge2d453e">
+<p>
+非静态数据成员直接存放在每一个类对象之中。对一个非静态数据成员进行存取操作，编译器需要把类对象的起始地址加上数据成员的偏移量。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp">origin._y = 0.0;
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#37027;&#20040;&#22320;&#22336;&amp;origin._y &#23558;&#31561;&#20110; &amp;origin+(&amp;Point3d::y-1);</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Tips&#65306;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25351;&#21521;&#25968;&#25454;&#25104;&#21592;&#30340;&#25351;&#38024;&#65292;&#20854;&#20540;&#24635;&#26159;&#34987;&#21152;&#19978; 1&#65292;&#36825;&#26679;&#21487;&#20197;&#20351;&#32534;&#35793;&#31995;&#32479;&#21306;&#20998;&#8220;&#19968;&#20010;&#25351;&#21521;&#25968;&#25454;&#25104;&#21592;&#30340;&#25351;&#38024;&#65292;&#29992;&#20197;&#25351;&#20986;&#31867;&#30340;&#31532;&#19968;&#20010;&#25104;&#21592;&#8221;&#21644;&#8220;&#19968;&#20010;&#25351;&#21521;&#25968;&#25454;&#25104;&#21592;&#30340;&#25351;&#38024;&#65292;&#27809;&#26377;&#25351;&#20986;&#20219;&#20309;&#25104;&#21592;&#20004;&#31181;&#24773;&#20917;&#8221;&#12290;</span>
+</pre>
+</div>
+<p>
+每一个非静态数据成员的偏移量在编译时期即可获得，甚至该成员属于一个基类子对象。所以存取一个非静态数据成员，其效率和存取一个 C 结构体成员或一个没有继承的成员是一样的。<br />
+如果非静态数据成员为一个虚基类成员，那么通过指针对该成员的存取速度会变慢。因为无法确定指针必然指向哪种类类型，所以这个存取操作必须延迟到执行期，经由一个额外的间接引导，才能够解决。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org645b6b9" class="outline-3">
+<h3 id="org645b6b9">继承的数据成员</h3>
+<div class="outline-text-3" id="text-org645b6b9">
+<p>
+C++标准没有强制指定派生类成员和基类成员的排列次序。大部分编译器，基类成员总是先出现，但虚基类除外。<br />
+</p>
+</div>
+<div id="outline-container-orge6ed98c" class="outline-4">
+<h4 id="orge6ed98c">没有多态的继承</h4>
+<div class="outline-text-4" id="text-orge6ed98c">
+<p>
+把一个类分解为两层或者更多层，有可能会为了表现类体系之抽象化而膨胀所需空间。因为 C++语言保证出现在派生类中的基类子对象有其完整原样性。<br />
+Tips:<br />
+具体信息需要看原书中举的实例。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org27fae53" class="outline-4">
+<h4 id="org27fae53">加上多态以后</h4>
+<div class="outline-text-4" id="text-org27fae53">
+<p>
+支持多态后产生的额外负担：<br />
+1 导入一个和 Point2d 相关的虚表，用来存放它所声明的每一个虚函数地址。这个虚表的元素数目一般而言是被声明的虚函数的数目，再加上一个或两<br />
+个 slots(用以支持 runtime type identification)<br />
+2 在每一个类对象中导入一个 vptr，提供执行期的链接，使每一个对象能够找到相应的虚表。<br />
+3 加强 constructor，使它能够为 vptr 设定初值，让它指向所对应的虚表。<br />
+4 加强 destructor，使它能够抹消指向类之相关虚表的指针。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orge19e32b" class="outline-4">
+<h4 id="orge19e32b">多重继承</h4>
+<div class="outline-text-4" id="text-orge19e32b">
+<p>
+1 多重继承的问题主要发生于派生类对象和其第二或后继基类对象之间的转换。<br />
+对一个多重派生对象，将其地址指定给最左端（也就是第一个）基类的指针，情况将和单一继承相同，因为二者都指向相同的起始地址。<br />
+至于第二或后继基类的地址指定操作，则需要将地址进行修改，加上（或减去，如果 downcast 的话）介于中间的子类对象的大小。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #ce537a; font-weight: bold;">Vertex3d</span> <span style="color: #7590db;">v3d</span>;
+<span style="color: #ce537a; font-weight: bold;">Vertex</span>  *<span style="color: #7590db;">pv</span>;
+<span style="color: #ce537a; font-weight: bold;">Point2d</span> *<span style="color: #7590db;">pp</span>;
+<span style="color: #ce537a; font-weight: bold;">Point3d</span> *<span style="color: #7590db;">p3d</span>;
+
+pv = &amp;v3d;
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19978;&#38754;&#30340;&#20195;&#30721;&#20250;&#34987;&#36716;&#25442;&#20026;&#19979;&#38754;&#30340;&#20195;&#30721; Pseudo C++ Code</span>
+pv = (<span style="color: #ce537a; font-weight: bold;">Vertex</span>*)(((<span style="color: #ce537a; font-weight: bold;">char</span>*)&amp;v3d) + <span style="color: #4f97d7; font-weight: bold;">sizeof</span>( Point3d ));
+
+pv = p3d;
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19978;&#38754;&#30340;&#20195;&#30721;&#20250;&#34987;&#36716;&#25442;&#20026;&#19979;&#38754;&#30340;&#20195;&#30721; Pseudo C++ Code</span>
+pv = p3d
+   ? (<span style="color: #ce537a; font-weight: bold;">Vertex</span>*)((<span style="color: #ce537a; font-weight: bold;">char</span>*)p3d) + <span style="color: #4f97d7; font-weight: bold;">sizeof</span>( Point3d )
+   : 0;
+</pre>
+</div>
+<p>
+2 对于第二或后继基类中的数据成员的存储是不需要付出额外成本的，因为成员的位置在编译时就固定下了，因此存取成员只是一个简单的 offset 运算。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org8fa9458" class="outline-4">
+<h4 id="org8fa9458">虚拟继承</h4>
+<div class="outline-text-4" id="text-org8fa9458">
+<p>
+类如果内含一个或多个虚基类子对象，将被分割为两个部分：一个不变局部和一个共享局部。不变局部中的数据，不管后继如何衍化，总是拥有固定的 offset（从<br />
+对象的开头算起），所以这部分数据可以被直接存取。至于共享局部，所表现的就是虚拟基类子对象。这部分数据，其位置会因为每次的派生操作而有变化，所以他<br />
+们只可以被间接存取。一般的布局策略是先安排好派生类的不变部分，然后再建立其共享部分。<br />
+通过对象对虚基类中的数据成员的存取可以被优化为一个直接存取操作。<br />
+Tips:<br />
+原书中描述了几种实现方式，具体细节需要看原书。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org3d55efe" class="outline-3">
+<h3 id="org3d55efe">数据成员的效率</h3>
+<div class="outline-text-3" id="text-org3d55efe">
+<p>
+具体细节看原书吧<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org45e8262" class="outline-3">
+<h3 id="org45e8262">指向数据成员的指针</h3>
+<div class="outline-text-3" id="text-org45e8262">
+<p>
+指向数据成员的指针表示了该成员在类对象中的偏移量。<br />
+</p>
+</div>
+<div id="outline-container-org68335f8" class="outline-4">
+<h4 id="org68335f8">如何确定 vptr 是放在类的起始处还是尾端。</h4>
+<div class="outline-text-4" id="text-org68335f8">
+<p>
+定义一个类其中放置两个数据成员，不包含虚函数，打印类成员变量的指针。为这个类定义一个虚函数，再次打印成员变量的指针。如果有变化说明 vptr 被放<br />
+在了类的起始地址，如果没有变化说明 vptr 被放在类成员的末尾了。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgd8c56a3" class="outline-4">
+<h4 id="orgd8c56a3">指向数据成员的指针的效率问题</h4>
+<div class="outline-text-4" id="text-orgd8c56a3">
+<p>
+以指向成员的指针来存取数据会导致效率变慢。<br />
+具体细节看原书吧。<br />
+</p>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org47427fd" class="outline-2">
+<h2 id="org47427fd">The Semantics of Function</h2>
+<div class="outline-text-2" id="text-org47427fd">
+</div>
+<div id="outline-container-orga69537a" class="outline-3">
+<h3 id="orga69537a">成员函数的各种调用方式</h3>
+<div class="outline-text-3" id="text-orga69537a">
+</div>
+<div id="outline-container-org161741d" class="outline-4">
+<h4 id="org161741d">非静态成员函数</h4>
+<div class="outline-text-4" id="text-org161741d">
+<p>
+C++的设计准则之一就是非静态成员函数至少和一般的非成员函数有相同的效率。选择成员函数不应该带来什么额外的负担。<br />
+成员函数被内化为非成员函数，转化步骤如下：<br />
+</p>
+
+<p>
+1 改写函数的签名以安插一个额外的参数到成员函数中，用以提供一个存取管道，使类对象得以调用该函数。该额外参数被称为 this 指针。<br />
+</p>
+
+<p>
+2 将“每一个对非静态数据成员的存取操作”改为“经由 this 指针来存取”<br />
+3 将成员函数重新写成一个外部函数。对函数名称进行 mangling 处理，使它在程序中成为独一无二的语汇<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp">
+&#21407;&#22987;&#25104;&#21592;&#20989;&#25968;
+<span style="color: #ce537a; font-weight: bold;">Point3d</span> <span style="color: #a45bad;">Point3d</span>::<span style="color: #bc6ec5; font-weight: bold;">magnitude</span>()
+{
+   <span style="color: #4f97d7; font-weight: bold;">return</span> sqrt(
+         _x * _x + _y * _y + _z * _z
+   );
+}
+step 1
+Point3d <span style="color: #a45bad;">Point3d</span>::magnitude( <span style="color: #ce537a; font-weight: bold;">Point3d</span> *<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #4f97d7; font-weight: bold;">this</span> )
+<span style="color: #ce537a; font-weight: bold;">Point3d</span> <span style="color: #a45bad;">Point3d</span>::<span style="color: #bc6ec5; font-weight: bold;">magnitude</span>( <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">Point3d</span> *<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #4f97d7; font-weight: bold;">this</span> )
+step 2
+{
+  <span style="color: #4f97d7; font-weight: bold;">return</span> sqrt(
+    <span style="color: #4f97d7; font-weight: bold;">this</span>-&gt;_x * <span style="color: #4f97d7; font-weight: bold;">this</span>-&gt;_x +
+    <span style="color: #4f97d7; font-weight: bold;">this</span>-&gt;_y * <span style="color: #4f97d7; font-weight: bold;">this</span>-&gt;_y +
+    <span style="color: #4f97d7; font-weight: bold;">this</span>-&gt;_z * <span style="color: #4f97d7; font-weight: bold;">this</span>-&gt;_z );
+}
+step 3
+<span style="color: #4f97d7; font-weight: bold;">extern</span> magnitude__7Point3dFv( <span style="color: #4f97d7; font-weight: bold;">register</span> <span style="color: #ce537a; font-weight: bold;">Point3d</span> *<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #4f97d7; font-weight: bold;">this</span> );
+
+<span style="color: #ce537a; font-weight: bold;">&#20195;&#30721;&#20013;&#30340;&#36716;&#21270;</span>
+<span style="color: #bc6ec5; font-weight: bold;">obj</span>.magnitude(); &#21464;&#20026; <span style="color: #ce537a; font-weight: bold;">magnitude__7Point3dFv</span>( &amp;<span style="color: #7590db;">obj</span> );
+ptr-&gt;magnitude(); <span style="color: #ce537a; font-weight: bold;">&#21464;&#20026;</span> <span style="color: #bc6ec5; font-weight: bold;">magnitude__7Point3dFv</span>( ptr );
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc85622a" class="outline-4">
+<h4 id="orgc85622a">虚成员函数</h4>
+<div class="outline-text-4" id="text-orgc85622a">
+<div class="org-src-container">
+<pre class="src src-cpp">ptr-&gt;normalize();
+&#19978;&#38754;&#30340;&#20195;&#30721;&#20250;&#34987;&#36716;&#25442;&#20026;&#19979;&#38754;&#30340;&#20195;&#30721;
+( * ptr-&gt;vptr[ 1 ])( ptr );
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgeb43584" class="outline-4">
+<h4 id="orgeb43584">静态成员函数</h4>
+<div class="outline-text-4" id="text-orgeb43584">
+<p>
+对一个静态成员函数取地址获得的是这个函数在内存中的地址。由于静态成员函数没有 this 指针，所以其地址的类型并不是一个指向类成员函数的指针。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org31d449d" class="outline-3">
+<h3 id="org31d449d">虚拟成员函数</h3>
+<div class="outline-text-3" id="text-org31d449d">
+</div>
+<div id="outline-container-org64606f0" class="outline-4">
+<h4 id="org64606f0">无继承或单继承下的虚函数</h4>
+<div class="outline-text-4" id="text-org64606f0">
+<p>
+这一节原书讲的很精彩，看原书内容吧<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org7b5b87c" class="outline-4">
+<h4 id="org7b5b87c">多重继承下的虚函数</h4>
+<div class="outline-text-4" id="text-org7b5b87c">
+<p>
+在多重继承下支持虚函数，其复杂度围绕在第二个即后继的 base 类身上，以及必须在执行期调整 this 指针这一点上。<br />
+在多重继承下，一个派生类内含有多个额外的虚函数表。所以，虚表指针成员也需要 name mangling 技术。<br />
+有三种情况，第二或后继的 base class 会影响对虚函数的支持。<br />
+1 通过一个指向第二基类的指针，调用派生类虚函数。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #ce537a; font-weight: bold;">Base2</span> *<span style="color: #7590db;">ptr</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Derived</span>;
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">invokes Derived::~Derived</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">ptr must be adjusted backward by sizeof( Base1 )</span>
+<span style="color: #4f97d7; font-weight: bold;">delete</span> ptr;
+</pre>
+</div>
+<p>
+2 通过一个指向派生类的指针，调用第二基类中继承而来的虚函数。在这种情况下，派生类指针必须再次调整，以指向第二个基类子对象。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #ce537a; font-weight: bold;">Derived</span> *<span style="color: #7590db;">pder</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Derived</span>;
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">invokes Base2::mumble()</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">pder must be adjusted forward by sizeof( Base1 )</span>
+pder-&gt;mumble();
+</pre>
+</div>
+<p>
+3 允许一个虚函数的返回值类型有所变化，可能是基类，也可能是派生类。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #ce537a; font-weight: bold;">Base2</span> *<span style="color: #7590db;">pb1</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Derived</span>;
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">invokes Derived* Derived::clone()</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">return must be adjusted to address Base2 subobject</span>
+<span style="color: #ce537a; font-weight: bold;">Base2</span> *<span style="color: #7590db;">pb2</span> = pb1-&gt;clone();
+</pre>
+</div>
+<p>
+这一节原书讲的很精彩，看原书内容吧<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgc3b3303" class="outline-4">
+<h4 id="orgc3b3303">虚拟继承下的虚函数</h4>
+<div class="outline-text-4" id="text-orgc3b3303">
+<p>
+这种情况很复杂，没有谈。<br />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org51782d6" class="outline-3">
+<h3 id="org51782d6">函数的效能</h3>
+<div class="outline-text-3" id="text-org51782d6">
+<p>
+具体细节看原书吧。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgca33bce" class="outline-3">
+<h3 id="orgca33bce">指向成员函数的指针</h3>
+<div class="outline-text-3" id="text-orgca33bce">
+<p>
+取一个非静态成员函数的地址，如果该函数为非虚函数，则得到它在内存中的真正地址。然而这个值也不是完全的，它需要被绑定于某个类对象的地址上，才能够<br />
+通过它来调用该函数。<br />
+指向成员函数的指针的声明语法，以及指向成员选择运算符的指针，其作用是作为 this 指针的空间保留者。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp">&#25351;&#21521;&#25104;&#21592;&#20989;&#25968;&#30340;&#25351;&#38024;&#65292;&#20854;&#22768;&#26126;&#35821;&#27861;&#22914;&#19979;&#65306;
+<span style="color: #ce537a; font-weight: bold;">double</span>            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">return type</span>
+( <span style="color: #a45bad;">Point</span>::*        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">class the function is member</span>
+<span style="color: #ce537a; font-weight: bold;">pmf</span> )             <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">name of pointer to member</span>
+();               <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">argument list</span>
+
+<span style="color: #ce537a; font-weight: bold;">&#23450;&#20041;&#21021;&#22987;&#21270;&#25104;&#21592;&#20989;&#25968;&#25351;&#38024;</span>
+<span style="color: #ce537a; font-weight: bold;">double</span> (<span style="color: #a45bad;">Point</span>::*coord)() = &amp;<span style="color: #a45bad;">Point</span>::x;
+
+&#36890;&#36807;&#25351;&#21521;&#25104;&#21592;&#20989;&#25968;&#30340;&#25351;&#38024;&#26469;&#35843;&#29992;&#25104;&#21592;&#20989;&#25968;
+( origin.*coord )();   &#25110;&#32773;
+( ptr-&gt;*coord )();     &#25110;&#32773;
+( coord )( &amp; origin ); &#25110;&#32773;
+( coord )( ptr );
+
+<span style="color: #a45bad;">Tips</span>:
+&#21462;&#26500;&#36896;&#20989;&#25968;&#21644;&#26512;&#26500;&#20989;&#25968;&#30340;&#22320;&#22336;&#26159;&#19981;&#34987;&#20801;&#35768;&#30340;&#65292;&#26080;&#27861;&#36890;&#36807;&#32534;&#35793;&#12290;
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19979;&#38754;&#20195;&#30721;&#26080;&#27861;&#36890;&#36807;&#32534;&#35793;</span>
+printf(<span style="color: #2d9574;">"Point::Point = %p\n"</span>, &amp;<span style="color: #a45bad;">Point</span>::Point);
+printf(<span style="color: #2d9574;">"Point::~Point = %p\n"</span>, &amp;<span style="color: #a45bad;">Point</span>::~Point);
+</pre>
+</div>
+
+<p>
+使用一个成员函数指针，如果并不用于 virtual 函数、多重继承、虚基类等情况的话，并不会比使用一个非成员函数指针的成本更高。<br />
+</p>
+</div>
+<div id="outline-container-orgcd4257d" class="outline-4">
+<h4 id="orgcd4257d">支持指向虚成员函数的指针</h4>
+<div class="outline-text-4" id="text-orgcd4257d">
+<p>
+对一个 virtual 成员函数取地址，所能获得的只是一个索引值。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org5d7b408" class="outline-4">
+<h4 id="org5d7b408">多重继承下，指向成员函数的指针</h4>
+<div class="outline-text-4" id="text-org5d7b408">
+<p>
+为了让成员函数的指针也能够支持多重继承和虚拟继承，设计了下面结构体<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">fully general structure to support</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">pointer to member functions under MI</span>
+<span style="color: #4f97d7; font-weight: bold;">struct</span> <span style="color: #ce537a; font-weight: bold;">__mptr</span> {
+   <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">delta</span>;               <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">this &#25351;&#38024;&#30340; offset &#20540;</span>
+   <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">index</span>;               <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#34394;&#34920;&#32034;&#24341;</span>
+   <span style="color: #4f97d7; font-weight: bold;">union</span> {
+      <span style="color: #ce537a; font-weight: bold;">ptrtofunc</span>  <span style="color: #7590db;">faddr</span>;     <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#38750;&#34394;&#25104;&#21592;&#20989;&#25968;&#22320;&#22336;</span>
+      <span style="color: #ce537a; font-weight: bold;">int</span>        <span style="color: #7590db;">v_offset</span>;  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#34394;&#22522;&#31867;&#65288;&#25110;&#22810;&#37325;&#32487;&#25215;&#20013;&#31532;&#20108;&#25110;&#21518;&#32487;&#30340;&#65289;&#22522;&#31867;&#30340; vptr &#20301;&#32622;</span>
+   };
+};
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org1b0824a" class="outline-4">
+<h4 id="org1b0824a">指向成员函数之指针的效率</h4>
+<div class="outline-text-4" id="text-org1b0824a">
+<p>
+具体细节看原书吧<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org432f6f4" class="outline-3">
+<h3 id="org432f6f4">Inline Function</h3>
+<div class="outline-text-3" id="text-org432f6f4">
+<p>
+把存取函数声明为 inline，就可以保持直接存取成员的高效率，而且兼顾了函数的封装性。<br />
+关键词 inline 只是一项请求。如果这项请求被编译器接受，编译器就必须认为它可以用一个表达式合理地将这个函数扩展开来。<br />
+</p>
+</div>
+<div id="outline-container-org337e065" class="outline-4">
+<h4 id="org337e065">形式参数</h4>
+<div class="outline-text-4" id="text-org337e065">
+<p>
+面对“会带有副作用的实际参数”，通常都需要引入临时性对象。如果实际参数是一个常量表达式，在替换之前先完成求值操作，后继 inline 替换，就直接将<br />
+常量绑上去。如果既不是个常量表达式，也不是个带有副作用的表达式，就直接替换之。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">inline</span> <span style="color: #ce537a; font-weight: bold;">int</span>
+<span style="color: #bc6ec5; font-weight: bold;">bar</span>()
+{
+   <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">minval</span>;
+   <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">val1</span> = 1024;
+   <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">val2</span> = 2048;
+<span style="color: #2aa1ae; background-color: #292e34;">/*</span><span style="color: #2aa1ae; background-color: #292e34;">(1)*/</span>minval = min( val1, val2 );
+<span style="color: #2aa1ae; background-color: #292e34;">/*</span><span style="color: #2aa1ae; background-color: #292e34;">(2)*/</span>minval = min( 1024, 2048 );
+<span style="color: #2aa1ae; background-color: #292e34;">/*</span><span style="color: #2aa1ae; background-color: #292e34;">(3)*/</span>minval = min( foo(), bar()+1 );
+   <span style="color: #4f97d7; font-weight: bold;">return</span> minval;
+}
+
+<span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">(1) simple argument substitution</span>
+minval = val1 &lt; val2 ? val1 : val2;
+
+<span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">(2)     constant folding following substitution</span>
+minval = 1024;
+
+<span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">(3)     side-effects and introduction of temporary</span>
+<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">t1</span>;
+<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">t2</span>;
+minval =
+   ( t1 = foo() ), ( t2 = bar() + 1 ),
+   t1 &lt; t2 ? t1 : t2;
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org40f868b" class="outline-4">
+<h4 id="org40f868b">局部变量</h4>
+<div class="outline-text-4" id="text-org40f868b">
+<p>
+一般而言，inline 函数中的每个局部变量都必须被放在函数调用的一个封闭区段中，拥有一个独一无二的名称。如果 inline 函数以单一表达式扩展多次，<br />
+那么每次扩展都需要自己的一组局部变量。如果 inline 函数以分离的多个式子被扩展多次，那么只需要一组局部变量，就可以重复使用。<br />
+</p>
+
+<p>
+参数带有副作用，或是以一个单以表达式做多重调用，或是在 inline 函数中有多个局部变量，都会产生临时性对象。此外，inline 中再有 inline，可<br />
+能会使一个表面上看起来平凡的 inline 却因其连锁复杂度而没有办法扩展开来。inline 函数提供了强而又力的工具，然而，与 non-inline 函数比起来，<br />
+它们需要更加小心地处理。<br />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgaf22f24" class="outline-2">
+<h2 id="orgaf22f24">Semantics of Construction,Destruction,and Copy</h2>
+<div class="outline-text-2" id="text-orgaf22f24">
+<p>
+可以定义和调用一个纯虚函数，不过它只能被静态地调用，不能经由虚拟机制调用。<br />
+</p>
+<pre class="example">
+虽然可以定义和调用一个纯虚函数，但是最好不要这样做，让纯虚函数保持其接口的语义，即指定子类必须需要重新实现的功能。
+如果需要有默认实现，那么只用虚函数就可以了。然后将抽象类的析构函数指定为纯虚函数，提供默认实现。
+</pre>
+</div>
+<div id="outline-container-orgea2a01d" class="outline-3">
+<h3 id="orgea2a01d">无继承情况下的对象构造</h3>
+<div class="outline-text-3" id="text-orgea2a01d">
+</div>
+<div id="outline-container-org40f4a27" class="outline-4">
+<h4 id="org40f4a27">Plain Ol' Data</h4>
+<div class="outline-text-4" id="text-org40f4a27">
+<p>
+这种情况下构造函数和析构函数要么不会被合成出来，要么不会被调用。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org29d732c" class="outline-4">
+<h4 id="org29d732c">抽象数据类型</h4>
+<div class="outline-text-4" id="text-org29d732c">
+<p>
+这种情况下构造函数会被调用。析构函数没有被合成出来，也不会被调用。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org1a74a90" class="outline-4">
+<h4 id="org1a74a90">包含虚函数</h4>
+<div class="outline-text-4" id="text-org1a74a90">
+<p>
+这种情况下可能会生成 copy 构造函数、copy 赋值操作符。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgce91164" class="outline-3">
+<h3 id="orgce91164">继承体系下的对象构造</h3>
+<div class="outline-text-3" id="text-orgce91164">
+<p>
+定义一个类的对象时，实际发生了什么事情？如果类有一个构造函数，它会被调用。<br />
+构造函数的调用真正伴随了什么？编译器会扩充每一个构造函数，扩充程度和类的继承体系有关。一般而言扩充操作大致如下：<br />
+1 记录在成员初始化列表中的数据成员初始化操作会被放进构造函数中，并以成员的声明顺序为顺序。<br />
+2 如果有一个成员并没有出现在成员初始化列表中，它有一个默认构造函数，那么该默认构造函数会被调用。<br />
+3 在那之前，如果类对象有虚表指针，它们必须设定初值，指向适当的虚表。<br />
+4 在那之前，所有上一层的基类构造函数必须调用，以基类的声明顺序为顺序<br />
+4.1 如果基类被列于成员初始化列表中，那么任何明确指定的参数都应该传递过去<br />
+4.2 如果基类没有被列于成员初始化列表中，而它有默认构造函数，那么就调用之。<br />
+4.3 如果基类是多重继承下的第二或后继基类，那么 this 执着必须有所调整。<br />
+5 在那之前，所有虚基类构造函数必须被调用，从左到右，从最深到最浅。<br />
+5.1 如果类被列于成员初始化列表中，那么任何明确指定的参数都应该传递过去。若没有列于成员初始化列表中，有默认构造函数，就调用之。<br />
+5.2 类中的每一个虚基类子对象的偏移量必须在执行期可被存取。<br />
+5.3 如果类对象是 most derived 类(最浅的类)，其构造函数被调用；某些用以支持这个行为的机制必须被放进了。<br />
+</p>
+</div>
+<div id="outline-container-org78ea6a8" class="outline-4">
+<h4 id="org78ea6a8">vptr 初始化语义</h4>
+<div class="outline-text-4" id="text-org78ea6a8">
+<p>
+vptr 初始化操作在基类构造函数调用完后，但是在程序员提供的代码或成员初始化列表中所列成员初始化操作之前进行。这样可以保证在构造函数中调用虚函数<br />
+可以调用正确的虚函数实体。 但是在构造函数中调用成员函数可能并不安全，因为函数本身可能还得依赖未被设立初值的成员。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgb270e46" class="outline-3">
+<h3 id="orgb270e46">对象复制语义</h3>
+<div class="outline-text-3" id="text-orgb270e46">
+<p>
+一个类对于默认 copy 赋值操作，在下面情况下不会表现出基于位 copy 的语意：<br />
+1 当类内带一个成员对象，而其类有一个 copy 赋值操作符函数时。<br />
+2 当一个类的基类有一个 copy 赋值操作符函数时。<br />
+3 当一个类声明了任何虚函数（一定不能够 copy 右端类对象的 vptr，因为它可能是一个派生类对象）<br />
+4 当类继承自一个虚基类时。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgdbc6058" class="outline-3">
+<h3 id="orgdbc6058">对象的效能</h3>
+<div class="outline-text-3" id="text-orgdbc6058">
+<p>
+具体细节看原书吧<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgfc3576b" class="outline-3">
+<h3 id="orgfc3576b">对象解构语义</h3>
+<div class="outline-text-3" id="text-orgfc3576b">
+<p>
+一个由程序员定义的析构函数被扩展的方式类似于构造函数被扩展的方式，但顺序相反：<br />
+1 如果对象内带一个 vptr，那么首先重设相关的 virtual table<br />
+2 析构函数本身现在被执行，也就是说 vptr 会在程序员的代码执行前被重设。<br />
+3 如果类拥有成员函数对象，而后者拥有析构函数，那么它们会以其声明的相反顺序被调用。<br />
+4 如果有任何直接非虚基类拥有析构函数，那么它们会以其声明的相反顺序被调用。<br />
+5 如果有任何虚基类拥有析构函数，而当前讨论的这个类是最尾端的类，那么它们会以其原来的构造顺序的相反顺序被调用。<br />
+</p>
+
+<p>
+和构造函数一样，目前对于析构函数的一种最佳实现策略就是维护两份析构实体：<br />
+1 一个完全对象实体，总是设定好 vptr，并调用虚基类析构函数。<br />
+2 一个虚基类子对象实体，除非在析构函数中调用一个虚函数，否则绝不会调用虚基类析构函数并设置 vptr；<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org226e410" class="outline-2">
+<h2 id="org226e410">Runtime Semantics</h2>
+<div class="outline-text-2" id="text-org226e410">
+</div>
+<div id="outline-container-org5b9b192" class="outline-3">
+<h3 id="org5b9b192">对象的构造和解构</h3>
+<div class="outline-text-3" id="text-org5b9b192">
+<p>
+一般而言将对象尽量放置在使用它的那个程序区段附近，这样可以节省不必要的对象产生操作和摧毁操作。<br />
+</p>
+</div>
+<div id="outline-container-org2e3e3ba" class="outline-4">
+<h4 id="org2e3e3ba">全局对象</h4>
+<div class="outline-text-4" id="text-org2e3e3ba">
+<p>
+C++保证一定会在 main()函数中第一次用到某个全局对象之前，将该全局对象构造出来，而在 main()函数结束之前把该全局对象销毁掉。如果该全局对象<br />
+有构造函数和析构函数的话，它需要今天的初始化操作和内存释放操作。<br />
+C++程序中所有全局对象都被放置在程序的数据段中。如果明确指定给它一个值，object 将以该值为初值。否则 object 所配置到的内存内容都为 0。<br />
+全局对象的构造函数一直到程序激活时才会实施。必须对一个放置在程序数据段中的对象的初始化表达式做求值，这正是为什么一个 object 需要静态初<br />
+始化的原因。<br />
+支持非类对象的静态初始化，在某种程度上是支持虚基类的一个副产品。<br />
+使用被静态初始化的对象有一些缺点。<br />
+1 如果异常处理被支持，这些对象不能够被放置在 try 区段之内。<br />
+2 为了控制需要跨越模块做静态初始化对象的相依顺序而扯出来的复杂度。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org16753af" class="outline-4">
+<h4 id="org16753af">局部静态对象</h4>
+<div class="outline-text-4" id="text-org16753af">
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">generated temporary static object guard</span>
+<span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #4f97d7; font-weight: bold;">struct</span> <span style="color: #ce537a; font-weight: bold;">Matrix</span> *<span style="color: #7590db;">__0__F3</span> = 0 ;
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">the C analog to a reference is a pointer</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">identity()'s name is mangled based on signature</span>
+<span style="color: #4f97d7; font-weight: bold;">struct</span> <span style="color: #ce537a; font-weight: bold;">Matrix</span>*
+<span style="color: #bc6ec5; font-weight: bold;">identity__Fv</span> ()
+{
+   <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #4f97d7; font-weight: bold;">struct</span> <span style="color: #ce537a; font-weight: bold;">Matrix</span> <span style="color: #7590db;">__1mat_identity</span> ;
+
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">if the guard is set, do nothing, else</span>
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">(a) invoke the constructor: __ct__6MatrixFv</span>
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">(b) set the guard to address the object</span>
+   __0__F3
+   ? 0
+   : (__ct__1MatrixFv ( &amp; __1mat_identity ),
+     (__0__F3 = (&amp;__1mat_identity)));
+   ...
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org344c684" class="outline-4">
+<h4 id="org344c684">对象数组</h4>
+<div class="outline-text-4" id="text-org344c684">
+<p>
+定义一个类对象数组时，如果该类没有明确定义一个默认构造函数，也没有编译器合成的有用的默认构造函数，此时只需要配置足够的内存就可以了。<br />
+如果类对象有默认构造函数，则需要在每个创建的类上执行该默认构造函数。<br />
+如果类对象有析构函数，则数组生命期结束时，会执行每个元素的析构函数。<br />
+</p>
+<pre class="example">
+void*
+vec_new(
+   void *array,      // address of start of array
+   size_t elem_size, // size of each class object
+   int elem_count,   // number of elements in array
+   void (*constructor)( void* ),
+   void (*destructor)( void*, char )
+}
+
+void*
+vec_delete(
+   void *array,      // address of start of array
+   size_t elem_size, // size of each class object
+   int elem_count,   // number of elements in array
+   void (*destructor)( void*, char )
+}
+</pre>
+</div>
+</div>
+<div id="outline-container-org186ca06" class="outline-4">
+<h4 id="org186ca06">Default Constructors 和数组</h4>
+<div class="outline-text-4" id="text-org186ca06">
+<p>
+为了支持数组对象初始化时，可调用类的含有默认参数的构造函数。编译器生成了一个不带任何参数的默认构造函数，然后在该函数内指定默认参数调用用户的<br />
+构造函数。<br />
+</p>
+<pre class="example">
+class complex {
+   complex(double=0.0, double=0.0);
+   ... 
+};
+
+// 编译器会合成下面的构造函数
+complex::complex()
+{
+   complex( 0.0, 0.0 );
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org259c757" class="outline-3">
+<h3 id="org259c757">new delete 运算符</h3>
+<div class="outline-text-3" id="text-org259c757">
+</div>
+<div id="outline-container-org83cb84d" class="outline-4">
+<h4 id="org83cb84d">内置类型</h4>
+<div class="outline-text-4" id="text-org83cb84d">
+<div class="org-src-container">
+<pre class="src src-c++"><span style="color: #ce537a; font-weight: bold;">int</span> *<span style="color: #7590db;">pi</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">int</span>(5);
+<span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">&#19978;&#38754;&#30340;&#20195;&#30721;&#20250;&#34987;&#36716;&#25442;&#20026;&#19979;&#38754;&#30340;&#20195;&#30721;</span>
+<span style="color: #ce537a; font-weight: bold;">int</span> *<span style="color: #7590db;">pi</span>;
+<span style="color: #4f97d7; font-weight: bold;">if</span> ( pi = __new( <span style="color: #4f97d7; font-weight: bold;">sizeof</span>( <span style="color: #ce537a; font-weight: bold;">int</span> )))
+    *pi = 5;
+
+<span style="color: #4f97d7; font-weight: bold;">delete</span> pi;
+<span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">&#19978;&#38754;&#30340;&#20195;&#30721;&#20250;&#34987;&#36716;&#25442;&#20026;&#19979;&#38754;&#30340;&#20195;&#30721;</span>
+<span style="color: #4f97d7; font-weight: bold;">if</span> ( pi != 0 )
+   __delete( pi );
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgd2e1213" class="outline-4">
+<h4 id="orgd2e1213">类对象</h4>
+<div class="outline-text-4" id="text-orgd2e1213">
+<div class="org-src-container">
+<pre class="src src-c++"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">1 new &#23545;&#35937;</span>
+<span style="color: #ce537a; font-weight: bold;">Point3d</span> *<span style="color: #7590db;">origin</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Point3d</span>;
+
+<span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">&#19978;&#38754;&#30340;&#20195;&#30721;&#20250;&#34987;&#36716;&#25442;&#20026;&#19979;&#38754;&#30340;&#20195;&#30721;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">Pseudo C++ code</span>
+<span style="color: #ce537a; font-weight: bold;">Point3d</span> *<span style="color: #7590db;">origin</span>;
+<span style="color: #4f97d7; font-weight: bold;">if</span> ( origin = __new( <span style="color: #4f97d7; font-weight: bold;">sizeof</span>( Point3d )))
+     origin = <span style="color: #a45bad;">Point3d</span>::Point3d( origin );
+
+<span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">&#22914;&#26524;&#25903;&#25345;&#24322;&#24120;&#22788;&#29702; &#21017;&#20250;&#36716;&#25442;&#20026;</span>
+<span style="color: #4f97d7; font-weight: bold;">if</span> ( origin = __new( <span style="color: #4f97d7; font-weight: bold;">sizeof</span>( Point3d ))) {
+   <span style="color: #4f97d7; font-weight: bold;">try</span> {
+      origin = <span style="color: #a45bad;">Point3d</span>::Point3d( origin );
+   }
+   <span style="color: #4f97d7; font-weight: bold;">catch</span>( ... ) {
+     <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">invoke delete lib function to</span>
+     <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">free memory allocated by new ...</span>
+     __delete( origin );
+     <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">propagate original exception upward</span>
+     <span style="color: #4f97d7; font-weight: bold;">throw</span>; 
+   }
+}
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">2 delete &#23545;&#35937;</span>
+<span style="color: #4f97d7; font-weight: bold;">delete</span> origin;
+
+<span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">&#19978;&#38754;&#30340;&#20195;&#30721;&#20250;&#34987;&#36716;&#25442;&#20026;&#19979;&#38754;&#30340;&#20195;&#30721;</span>
+<span style="color: #4f97d7; font-weight: bold;">if</span> ( origin != 0 ) {
+     <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Pseudo C++ code</span>
+     <span style="color: #a45bad;">Point3d</span>::~Point3d( origin );
+     __delete( origin );
+}
+<span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">&#22914;&#26524;&#25903;&#25345;&#24322;&#24120;&#22788;&#29702; &#21017;&#20250;&#36716;&#25442;&#20026;</span>
+<span style="color: #4f97d7; font-weight: bold;">if</span> ( origin != 0) {
+   <span style="color: #4f97d7; font-weight: bold;">try</span> {
+      <span style="color: #a45bad;">Point3d</span>::~Point3d( origin );
+   }
+   <span style="color: #4f97d7; font-weight: bold;">catch</span>( ... )
+   {
+      __delete( origin );
+      <span style="color: #4f97d7; font-weight: bold;">throw</span>; 
+   }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf507daf" class="outline-4">
+<h4 id="orgf507daf">new</h4>
+<div class="outline-text-4" id="text-orgf507daf">
+<div class="org-src-container">
+<pre class="src src-c++"><span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">&#19979;&#38754;&#36825;&#26679;&#30340;&#20889;&#27861;&#34429;&#28982;&#27491;&#30830;&#65292;&#20294;&#26159;&#27599;&#19968;&#27425; new &#30340;&#35843;&#29992;&#24517;&#39035;&#36820;&#22238;&#19968;&#20010;&#29420;&#19968;&#26080;&#20108;&#30340;&#25351;&#38024;&#65292;&#25152;&#20197;&#22914;&#26524;&#30003;&#35831; 0 &#23383;&#33410;&#30340;&#20869;&#23384;&#65292;new &#25805;&#20316;&#20250;&#23558; size &#21464;&#20026; 1.</span>
+<span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">T</span>[ 0 ];
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">new &#30340;&#23454;&#29616;&#65292;&#27809;&#26377;&#32771;&#34385;&#24322;&#24120;&#22788;&#29702;</span>
+<span style="color: #4f97d7; font-weight: bold;">extern</span> <span style="color: #ce537a; font-weight: bold;">void</span>*
+<span style="color: #4f97d7; font-weight: bold;">operator</span> <span style="color: #4f97d7; font-weight: bold;">new</span>( <span style="color: #ce537a; font-weight: bold;">size_t</span> <span style="color: #7590db;">size</span> )
+{
+   <span style="color: #4f97d7; font-weight: bold;">if</span> ( size == 0 )
+        size = 1;
+   <span style="color: #ce537a; font-weight: bold;">void</span> *<span style="color: #7590db;">last_alloc</span>;
+   <span style="color: #4f97d7; font-weight: bold;">while</span> ( <span style="color: #a45bad;">!</span>( last_alloc = malloc( size )))
+   {
+      <span style="color: #4f97d7; font-weight: bold;">if</span> ( _new_handler )
+         ( *_new_handler )();
+      <span style="color: #4f97d7; font-weight: bold;">else</span> <span style="color: #4f97d7; font-weight: bold;">return</span> 0;
+   }
+   <span style="color: #4f97d7; font-weight: bold;">return</span> last_alloc;
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org72cb545" class="outline-4">
+<h4 id="org72cb545">delete</h4>
+<div class="outline-text-4" id="text-org72cb545">
+<div class="org-src-container">
+<pre class="src src-c++"><span style="color: #4f97d7; font-weight: bold;">extern</span> <span style="color: #ce537a; font-weight: bold;">void</span>
+<span style="color: #4f97d7; font-weight: bold;">operator</span> <span style="color: #4f97d7; font-weight: bold;">delete</span>( <span style="color: #ce537a; font-weight: bold;">void</span> *<span style="color: #7590db;">ptr</span> )
+{
+   <span style="color: #4f97d7; font-weight: bold;">if</span> ( ptr )
+      free( (<span style="color: #ce537a; font-weight: bold;">char</span>*) ptr );
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org14604cc" class="outline-4">
+<h4 id="org14604cc">new []</h4>
+<div class="outline-text-4" id="text-org14604cc">
+<div class="org-src-container">
+<pre class="src src-c++"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">array_key is the address of the new array</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">mustn't either be 0 or already entered</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">elem_count is the count; it may be 0</span>
+<span style="color: #4f97d7; font-weight: bold;">typedef</span> <span style="color: #ce537a; font-weight: bold;">void</span> *<span style="color: #ce537a; font-weight: bold;">PV</span>;
+<span style="color: #4f97d7; font-weight: bold;">extern</span> <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #bc6ec5; font-weight: bold;">__insert_new_array</span>(<span style="color: #ce537a; font-weight: bold;">PV</span> <span style="color: #7590db;">array_key</span>, <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">elem_count</span>);
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">fetches (and removes) the array_key from table</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">either returns the elem_count, or -1</span>
+<span style="color: #4f97d7; font-weight: bold;">extern</span> <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #bc6ec5; font-weight: bold;">__remove_old_array</span>(<span style="color: #ce537a; font-weight: bold;">PV</span> <span style="color: #7590db;">array_key</span>);
+
+<span style="color: #ce537a; font-weight: bold;">PV</span> <span style="color: #bc6ec5; font-weight: bold;">__vec_new</span>(<span style="color: #ce537a; font-weight: bold;">PV</span> <span style="color: #7590db;">ptr_array</span>, <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">elem_count</span>,
+            <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">size</span>, <span style="color: #ce537a; font-weight: bold;">PV</span> <span style="color: #7590db;">construct</span> )
+{
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">if ptr_array is 0, allocate array from heap</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">if set, programmer wrote either</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">//    </span><span style="color: #2aa1ae; background-color: #292e34;">T array[ count ];</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">or</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">//    </span><span style="color: #2aa1ae; background-color: #292e34;">new ( ptr_array ) T[ 10 ]</span>
+  <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">alloc</span> = 0; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">did we allocate here within vec_new?</span>
+  <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">array_sz</span> = elem_count * size;
+  <span style="color: #4f97d7; font-weight: bold;">if</span> ( alloc = ptr_array == 0)
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">global operator new ...</span>
+        ptr_array = PV( <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">char</span>[ array_sz ] );
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">under Exception Handling,</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">would throw exception bad_alloc</span>
+  <span style="color: #4f97d7; font-weight: bold;">if</span> ( ptr_array == 0/
+  <span style="color: #4f97d7; font-weight: bold;">return</span> 0;
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">place (array, count) into the cache</span>
+  <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">status</span> = __insert_new_array( ptr_array, elem_count );
+  <span style="color: #4f97d7; font-weight: bold;">if</span> (status == -1) {
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">under Exception Handling, would throw exception</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">would throw exception bad_alloc</span>
+    <span style="color: #4f97d7; font-weight: bold;">if</span> ( alloc )
+        <span style="color: #4f97d7; font-weight: bold;">delete</span> ptr_array;
+    <span style="color: #4f97d7; font-weight: bold;">return</span> 0;
+  }
+  <span style="color: #4f97d7; font-weight: bold;">if</span> (construct) {
+    <span style="color: #4f97d7; font-weight: bold;">register</span> <span style="color: #ce537a; font-weight: bold;">char</span>* <span style="color: #7590db;">elem</span> = (<span style="color: #ce537a; font-weight: bold;">char</span>*) ptr_array;
+    <span style="color: #4f97d7; font-weight: bold;">register</span> <span style="color: #ce537a; font-weight: bold;">char</span>* <span style="color: #7590db;">lim</span> = elem + array_sz;
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">PF is a typedef for a pointer to function</span>
+    <span style="color: #4f97d7; font-weight: bold;">register</span> <span style="color: #ce537a; font-weight: bold;">PF</span> <span style="color: #7590db;">fp</span> = PF(construct);
+    <span style="color: #4f97d7; font-weight: bold;">while</span> (elem &lt; lim) {
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">invoke constructor through fp</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">on `this' element addressed by elem</span>
+        (*fp)( (<span style="color: #ce537a; font-weight: bold;">void</span>*)elem );
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">then advance to the next element</span>
+        elem += size;
+    }
+  }
+  <span style="color: #4f97d7; font-weight: bold;">return</span> PV(ptr_array);
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orged53dd6" class="outline-4">
+<h4 id="orged53dd6">delete []</h4>
+<div class="outline-text-4" id="text-orged53dd6">
+<p>
+实施与数组上的析构函数，是根据交给 vec_delete 函数之“被删除的指针类型的 destructor”<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-c++"><span style="color: #ce537a; font-weight: bold;">Point</span>* <span style="color: #7590db;">ptr</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Point3d</span>[10];
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#35813;&#20195;&#30721;&#21482;&#20250;&#25269;&#29992; Point &#30340;&#26512;&#26500;&#20989;&#25968;&#12290;</span>
+<span style="color: #4f97d7; font-weight: bold;">delete</span> [] ptr;
+
+<span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">L6_Point3d_01</span>: <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">L6_Point_01</span>
+{
+<span style="color: #4f97d7; font-weight: bold;">public</span>:
+    <span style="color: #bc6ec5; font-weight: bold;">L6_Point3d_01</span>()
+    {
+        cout &lt;&lt; <span style="color: #2d9574;">"L6_Point3d_01()"</span> &lt;&lt; endl;
+    }
+    ~<span style="color: #bc6ec5; font-weight: bold;">L6_Point3d_01</span>()
+    {
+        cout &lt;&lt; <span style="color: #2d9574;">"~L6_Point3d_01()"</span> &lt;&lt; endl;
+    }
+};
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">l6_test01</span>()
+{
+    <span style="color: #ce537a; font-weight: bold;">L6_Point_01</span>* <span style="color: #7590db;">ptr</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">L6_Point3d_01</span>[3];
+    <span style="color: #4f97d7; font-weight: bold;">delete</span> [] ptr;
+}
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20195;&#30721;&#30340;&#36755;&#20986;&#65306;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">L6_Point_01()</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">L6_Point3d_01()</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">L6_Point_01()</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">L6_Point3d_01()</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">L6_Point_01()</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">L6_Point3d_01()</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">~L6_Point_01()</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">~L6_Point_01()</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">~L6_Point_01()</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org739186a" class="outline-4">
+<h4 id="org739186a">placement operator new 的语意</h4>
+<div class="outline-text-4" id="text-org739186a">
+<p>
+placement operator new 不支持多态。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org1320301" class="outline-3">
+<h3 id="org1320301">临时性对象</h3>
+<div class="outline-text-3" id="text-org1320301">
+<p>
+临时性对象的销毁，应该是对完整表达式求值过程中的最后一个步骤。该完整表达式造成临时对象的产生。<br />
+临时性对象的生命期规则有两个例外：<br />
+1 表达式被用来初始化一个对象时，凡含有表达式执行结果的临时性对象，应该存留到对象的初始化操作完成为止。<br />
+2 当一个临时性对象被一个引用绑定时，对象将残留，直到被初始化之 reference 的生命结束，或知道临时对象所在作用域结束。视哪一种情况先到达而定。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org27e1b8c" class="outline-2">
+<h2 id="org27e1b8c">On the Cusp of the Object Model</h2>
+<div class="outline-text-2" id="text-org27e1b8c">
+</div>
+<div id="outline-container-orga44c619" class="outline-3">
+<h3 id="orga44c619">模板</h3>
+<div class="outline-text-3" id="text-orga44c619">
+<p>
+内容比较杂乱，看原书内容吧。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org2492aae" class="outline-3">
+<h3 id="org2492aae">异常处理</h3>
+<div class="outline-text-3" id="text-org2492aae">
+<p>
+C++异常处理由三个主要的语汇组件组成：<br />
+1 一个 throw 自己。它在程序某处发出一个异常。被丢出去的异常可以是内建类型，也可以是使用者自定义类型。<br />
+2 一个或多个 catch 子句。每个 catch 子句都是一个异常处理。它用来表示，这个子句准备处理某种类型的异常，并且在封闭的大括号区域中提供实际处理<br />
+程序。<br />
+3 一个 try 区段。它包含了一系列的语句，这些语句可能会引发 catch 子句起作用。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org7f6f0e1" class="outline-3">
+<h3 id="org7f6f0e1">执行期类型识别</h3>
+<div class="outline-text-3" id="text-org7f6f0e1">
+<p>
+typeid 既可以用于多态类，也可用于内置类型和非多态类。<br />
+typeid(var)返回一个类型为 type_info 的 const 引用.<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-c++"><span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">type_info</span> {
+<span style="color: #4f97d7; font-weight: bold;">public</span>:
+   <span style="color: #4f97d7; font-weight: bold;">virtual</span> ~<span style="color: #bc6ec5; font-weight: bold;">type_info</span>();
+   <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #4f97d7; font-weight: bold;">operator</span><span style="color: #bc6ec5; font-weight: bold;">==</span>( <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">type_info</span>&amp; ) <span style="color: #4f97d7; font-weight: bold;">const</span>;
+   <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #4f97d7; font-weight: bold;">operator</span><span style="color: #bc6ec5; font-weight: bold;">!=</span>( <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">type_info</span>&amp; ) <span style="color: #4f97d7; font-weight: bold;">const</span>;
+   <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #bc6ec5; font-weight: bold;">before</span>( <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">type_info</span>&amp; ) <span style="color: #4f97d7; font-weight: bold;">const</span>;
+   <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">char</span>* <span style="color: #bc6ec5; font-weight: bold;">name</span>() <span style="color: #4f97d7; font-weight: bold;">const</span>;
+<span style="color: #4f97d7; font-weight: bold;">private</span>:
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">prevent memberwise init and copy</span>
+   <span style="color: #bc6ec5; font-weight: bold;">type_info</span>( <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">type_info</span>&amp; );
+   <span style="color: #ce537a; font-weight: bold;">type_info</span>&amp; <span style="color: #4f97d7; font-weight: bold;">operator</span><span style="color: #bc6ec5; font-weight: bold;">=</span>( <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">type_info</span>&amp; );
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">data members</span>
+};
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org7287e75" class="outline-2">
+<h2 id="org7287e75">Q&amp;A:</h2>
+<div class="outline-text-2" id="text-org7287e75">
+</div>
+<div id="outline-container-orgdf2e099" class="outline-3">
+<h3 id="orgdf2e099">c++中的类型转换有哪些？</h3>
+<div class="outline-text-3" id="text-orgdf2e099">
+</div>
+<div id="outline-container-orgb8e9197" class="outline-4">
+<h4 id="orgb8e9197">一、类型转换的意义：</h4>
+<div class="outline-text-4" id="text-orgb8e9197">
+<p>
+表达式是否合法取决于操作数的类型，而且合法的表达式其含义也由操作数类型决定。而操作数的类型又可由 C++中的类型转换而改变。因此，类型转换影响着<br />
+表达式的合法性和表达式的结果。<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org4bcddb9" class="outline-4">
+<h4 id="org4bcddb9">二、什么是类型转换：</h4>
+<div class="outline-text-4" id="text-org4bcddb9">
+<p>
+顾名思义，类型转换就是一种类型值转换为另一种类型值的处理方式。在 C++中定义了内置类型之间的类型转换（即，标准转换，另一种转换被称为类类型转换），<br />
+也允许将某种类型转换为类类型（例如，接受单个形参的构造函数可以将某种类型转换为类类型）或者将类类型转换为某种类型（例如，通过重载转换操作符可以<br />
+将类型转换为某种类型）。需要记住的是<br />
+（1）类类型转换的实现细节需要程序员们自己定义。<br />
+（2）并非所有的类型之间都可以任意转换。<br />
+例如：int a = "haha"; 编译这句代码会产生下面的错误提示信息：test.cpp invalid conversion from `const char*' to `int' 。<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org146bb01" class="outline-4">
+<h4 id="org146bb01">三、类型转换分类：</h4>
+<div class="outline-text-4" id="text-org146bb01">
+</div>
+<div id="outline-container-orgd831d4a" class="outline-5">
+<h5 id="orgd831d4a">从是否需要在类型转换的地方写代码来使用类型转换，可以将类型转换分为：隐式类型转换、显示转换。</h5>
+<div class="outline-text-5" id="text-orgd831d4a">
+<p>
+隐式类型转换——编译器自动实现的类型转换。假设表达式需要某种特定类型的数值，但其操作数却是其他不同的类型，此时如果系统定义了适当的类型转换，<br />
+编译器会自动根据转换规则将该操作数转换为需要的类型。<br />
+显示转换——显示转换也称为强制类型转换，包括以下列名字命名的强制类型转换操作符：static_cast、dynamic_cast、const_cast 和<br />
+reinterpret_cast。<br />
+</p>
+</div>
+<div id="outline-container-org04b960b" class="outline-6">
+<h6 id="org04b960b">隐式转换</h6>
+<div class="outline-text-6" id="text-org04b960b">
+<p>
+何时发生隐式类型转换？<br />
+1、在混合类型的表达式中，其操作数被转换为相同的类型。例如：<br />
+int ival；double dval；<br />
+ival &gt;= dval; //ival converted to double<br />
+2、用作条件的表达式被转换为 bool 类型<br />
+3、用一表达式初始化某个变量，或将一表达式赋值给某个变量，则该表达式被转换为该变量的类型（其实在函数调用中传递参数发生的隐式转换属于初始<br />
+化形参变量发生的类型转换）<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org4cacc22" class="outline-6">
+<h6 id="org4cacc22">显式转换</h6>
+<div class="outline-text-6" id="text-org4cacc22">
+<p>
+何时需要显式转换？<br />
+（1）需要覆盖标准转换时，应该使用强制类型转换。例如：<br />
+double dval;<br />
+int ival;<br />
+ival = ival * dval; //首先将 ival 转换 double 型，然后将乘积的结果转换为 int 型<br />
+可以将上面这句代码用下面代码替换：<br />
+ival *= static_cast&lt;int&gt;dval;<br />
+（2）可能存在多种转换时，需要选择一种特定的类型转换。<br />
+</p>
+</div>
+<ul class="org-ul">
+<li><a id="orgdb45b96"></a>static_cast<br />
+<div class="outline-text-7" id="text-orgdb45b96">
+<p>
+显式的类型转换，和（type）var 等价。<br />
+</p>
+</div>
+</li>
+<li><a id="orgc646c71"></a>dynamic_cast<br />
+<div class="outline-text-7" id="text-orgc646c71">
+<p>
+dynamic_cast 支持运行时识别指针或引用所指向的对象，将基类类型的指针或引用安全地转换为派生类型<br />
+的指针或引用。<br />
+Tips：<br />
+转换引用时若转换失败会抛出 std::bad_cast 异常<br />
+</p>
+</div>
+</li>
+<li><a id="orgd5bace2"></a>const_cast<br />
+<div class="outline-text-7" id="text-orgd5bace2">
+<p>
+const_cast ,顾名思义,将转换掉表达式的 const 性质。<br />
+const 只支持指针和引用的转换。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">test_type_cast</span>()
+{
+    <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">temp_01</span> = 10;
+    <span style="color: #2aa1ae; background-color: #292e34;">//    </span><span style="color: #2aa1ae; background-color: #292e34;">int temp_02 = const_cast&lt;int&gt;(temp_01);               //&#32534;&#35793;&#20986;&#38169;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">//    </span><span style="color: #2aa1ae; background-color: #292e34;">cout &lt;&lt; "temp_02 = " &lt;&lt; temp_02 &lt;&lt; endl;</span>
+
+    <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">temp_11</span> = 10;
+    <span style="color: #2aa1ae; background-color: #292e34;">//    </span><span style="color: #2aa1ae; background-color: #292e34;">const int temp_12 = const_cast&lt;const int&gt;(temp_11);   //&#32534;&#35793;&#20986;&#38169;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">//    </span><span style="color: #2aa1ae; background-color: #292e34;">cout &lt;&lt; "temp_12 = " &lt;&lt; temp_12 &lt;&lt; endl;</span>
+
+    <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">int</span>* <span style="color: #7590db;">temp_21</span> = &amp;temp_01;
+    <span style="color: #ce537a; font-weight: bold;">int</span>* <span style="color: #7590db;">temp_22</span> = <span style="color: #4f97d7; font-weight: bold;">const_cast</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>*&gt;(temp_21);
+    cout &lt;&lt; <span style="color: #2d9574;">"temp_22 = "</span> &lt;&lt; temp_22 &lt;&lt; endl;
+
+    <span style="color: #ce537a; font-weight: bold;">int</span>* <span style="color: #7590db;">temp_31</span> = &amp;temp_11;
+    <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">int</span>* <span style="color: #7590db;">temp_32</span> = <span style="color: #4f97d7; font-weight: bold;">const_cast</span>&lt;<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">int</span>*&gt;(temp_31);
+    cout &lt;&lt; <span style="color: #2d9574;">"temp_32 = "</span> &lt;&lt; temp_32 &lt;&lt; endl;
+}
+</pre>
+</div>
+</div>
+</li>
+<li><a id="orgae7a067"></a>reinterpret_cast<br />
+<div class="outline-text-7" id="text-orgae7a067">
+<p>
+reinterpret_cast 通常为操作数的位模式提供较低层次的重新解释。<br />
+</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org2863430" class="outline-5">
+<h5 id="org2863430">从是否需要编写代码来实现类型转换的具体实现细节，可以将类型转换分为：标准转换、类类型转换。</h5>
+<div class="outline-text-5" id="text-org2863430">
+<p>
+标准转换——内置类型之间的相互转换。<br />
+类类型转换——到类类型或从类类型的转换。接受一个形参的非显示构造函数定义了到类类型的转换。转换操作符定义了从类类型到操作符所指定类型的转换。<br />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org377d40b" class="outline-3">
+<h3 id="org377d40b">extern 和 static 的区别？</h3>
+<div class="outline-text-3" id="text-org377d40b">
+</div>
+<div id="outline-container-orgf876eaa" class="outline-4">
+<h4 id="orgf876eaa">static</h4>
+<div class="outline-text-4" id="text-orgf876eaa">
+</div>
+<div id="outline-container-orga5a12dd" class="outline-5">
+<h5 id="orga5a12dd">改变生命期</h5>
+<div class="outline-text-5" id="text-orga5a12dd">
+<p>
+static 将变量声明为 static 会改变变量在内存中的存储（变量被放置在数据段）从而改变变量的生命期（程序结束之前会释放该变量）。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org04dec12" class="outline-5">
+<h5 id="org04dec12">改变作用域/可见性</h5>
+<div class="outline-text-5" id="text-org04dec12">
+<p>
+static 将变量的可见性限定在其所在的源文件内。所以 static 全局变量只在其所在源文件内可见,不可以在其他源文件中通过 extern 声明静态全局变量来<br />
+存取 static 全局变量。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org9a3419b" class="outline-5">
+<h5 id="org9a3419b">类静态成员</h5>
+<div class="outline-text-5" id="text-org9a3419b">
+<p>
+static 成员变量属于类，可以通过类或类的对象来存取静态对象。<br />
+static 成员函数没有隐含的 this 指针参数，可以通过类或类的对象来调用静态函数。<br />
+Tips：<br />
+程序中全局静态变量的初始化顺序是不定的。在第一次调用局部静态变量所在函数时,对局部静态变量进行初始化.<br />
+未指定初值的内置类型静态变量被初始化为 0。未指定初始值的类对象在初始化时会调用默认构造函数。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">L6_Test00</span>
+{
+<span style="color: #4f97d7; font-weight: bold;">public</span>:
+    <span style="color: #bc6ec5; font-weight: bold;">L6_Test00</span>()
+    {
+        cout &lt;&lt; <span style="color: #2d9574;">"L6_Test00 -- L6_Test00()"</span> &lt;&lt; endl;
+    }
+    <span style="color: #bc6ec5; font-weight: bold;">L6_Test00</span>(<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">a</span>)
+    {
+        m_value = a;
+        cout &lt;&lt; <span style="color: #2d9574;">"L6_Test00 -- L6_Test00(int a)"</span> &lt;&lt; endl;
+    }
+    <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Print</span>()
+    {
+        cout &lt;&lt; <span style="color: #2d9574;">"L6_Test00::Print"</span> &lt;&lt; endl;
+    }
+    <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">ivalue</span>;
+    <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #7590db;">fvalue</span>;
+
+    <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">m_value</span>;
+};
+<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #a45bad;">L6_Test00</span>::<span style="color: #7590db;">ivalue</span>;
+<span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #a45bad;">L6_Test00</span>::<span style="color: #7590db;">fvalue</span> = 2.0;
+<span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">L6_Test00</span> <span style="color: #7590db;">l6_obj1</span>;
+<span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">L6_Test00</span> <span style="color: #7590db;">l6_obj2</span>(3);
+
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">TestLesson6</span>(<span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #7590db;">isRun</span>)
+{
+    <span style="color: #4f97d7; font-weight: bold;">if</span>(<span style="color: #a45bad;">!</span>isRun) <span style="color: #4f97d7; font-weight: bold;">return</span>;
+
+    cout &lt;&lt; <span style="color: #2d9574;">"L6_Test00::ivalue = "</span> &lt;&lt; <span style="color: #a45bad;">L6_Test00</span>::ivalue &lt;&lt; endl;
+    cout &lt;&lt; <span style="color: #2d9574;">"L6_Test00::fvalue = "</span> &lt;&lt; <span style="color: #a45bad;">L6_Test00</span>::fvalue &lt;&lt; endl;
+    <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">L6_Test00</span> <span style="color: #7590db;">temp</span>;
+    <span style="color: #a45bad;">L6_Test00</span>::ivalue = 10;
+    cout &lt;&lt; <span style="color: #2d9574;">"L6_Test00::ivalue = "</span> &lt;&lt; <span style="color: #a45bad;">L6_Test00</span>::ivalue &lt;&lt; endl;
+    temp.ivalue = 20;
+    cout &lt;&lt; <span style="color: #2d9574;">"L6_Test00::ivalue = "</span> &lt;&lt; <span style="color: #a45bad;">L6_Test00</span>::ivalue &lt;&lt; endl;
+
+    cout &lt;&lt; <span style="color: #2d9574;">"l6_obj1.m_value = "</span> &lt;&lt; l6_obj1.m_value &lt;&lt; endl;
+    cout &lt;&lt; <span style="color: #2d9574;">"l6_obj2.m_value = "</span> &lt;&lt; l6_obj2.m_value &lt;&lt; endl;
+    <span style="color: #a45bad;">L6_Test00</span>::Print();
+}
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#36755;&#20986;&#32467;&#26524;&#65306;</span>
+L6_Test00 -- L6_Test00()
+L6_Test00 -- L6_Test00(<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">a</span>)
+<span style="color: #a45bad;">L6_Test00</span>::ivalue = 0
+<span style="color: #a45bad;">L6_Test00</span>::fvalue = 2
+L6_Test00 -- L6_Test00()
+<span style="color: #a45bad;">L6_Test00</span>::ivalue = 10
+<span style="color: #a45bad;">L6_Test00</span>::ivalue = 20
+l6_obj1.m_value = 0
+l6_obj2.m_value = 3
+<span style="color: #a45bad;">L6_Test00</span>::Print
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgfd258c7" class="outline-4">
+<h4 id="orgfd258c7">extern</h4>
+<div class="outline-text-4" id="text-orgfd258c7">
+</div>
+<div id="outline-container-org8138efd" class="outline-5">
+<h5 id="org8138efd">声明变量</h5>
+<div class="outline-text-5" id="text-org8138efd">
+<p>
+extern 用来声明一个变量。也就是说指明该变量是在其他地方定义的。<br />
+Tips：<br />
+任何带有初始化操作的声明都是定义。<br />
+extern int iValue = 10;  // 定义了一个变量 iValue 并初始化其值为 10<br />
+在函数内部不允许声明和定义同时出现<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">test</span>()
+{
+  <span style="color: #4f97d7; font-weight: bold;">extern</span> <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">iValue1</span> = 10; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25253;&#38169;</span>
+  <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">iValue2</span> = 11;
+  <span style="color: #4f97d7; font-weight: bold;">extern</span> <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">iValue2</span>;      <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25253;&#38169;</span>
+  <span style="color: #4f97d7; font-weight: bold;">extern</span> <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">iValue3</span>;
+  <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">iValue3</span>;             <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25253;&#38169;</span>
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org99efc92" class="outline-5">
+<h5 id="org99efc92">声明 c++函数</h5>
+<div class="outline-text-5" id="text-org99efc92">
+<p>
+声明 c++函数可以省略 extern，下面的代码效果是一样的。<br />
+extern void CppFunc(int arg);<br />
+void CppFunc(int arg);<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org1f7d87a" class="outline-5">
+<h5 id="org1f7d87a">链接指示</h5>
+<div class="outline-text-5" id="text-org1f7d87a">
+</div>
+<div id="outline-container-org9eaba41" class="outline-6">
+<h6 id="org9eaba41">链接指示有两种形式</h6>
+<div class="outline-text-6" id="text-org9eaba41">
+<p>
+第一种形式由关键字 extern 后接字符串字面值，再接“普通”函数声明。字符串字面值指出编写函数所用的语言。<br />
+第二种形式是关键字 extern 后接字符串字面值，再接一对大括号，其中放置多个函数声明。<br />
+当将 #include 指示在复合链接指示的花括号中的时候,假定头文件中的所 有普通函数声明都是用链接指示的语言编写的函数。链接指示可以嵌套,<br />
+所以, 如果头文件包含了带链接指示的函数,该函数的链接不受影响。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">single-statement linkage directive</span>
+<span style="color: #4f97d7; font-weight: bold;">extern</span> <span style="color: #2d9574;">"C"</span> <span style="color: #ce537a; font-weight: bold;">size_t</span> <span style="color: #bc6ec5; font-weight: bold;">strlen</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">char</span> *); 
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">compound-statement linkage directive</span>
+<span style="color: #4f97d7; font-weight: bold;">extern</span> <span style="color: #2d9574;">"C"</span> {
+  <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #bc6ec5; font-weight: bold;">strcmp</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">char</span>*, <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">char</span>*); 
+  <span style="color: #ce537a; font-weight: bold;">char</span> *<span style="color: #bc6ec5; font-weight: bold;">strcat</span>(<span style="color: #ce537a; font-weight: bold;">char</span>*, <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">char</span>*);
+}
+<span style="color: #4f97d7; font-weight: bold;">extern</span> <span style="color: #2d9574;">"C"</span> {
+<span style="color: #bc6ec5;">  #include</span> <span style="color: #2d9574;">&lt;string.h&gt;</span>     <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">C functions that manipulate C-style strings </span>
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org1f18731" class="outline-6">
+<h6 id="org1f18731">链接指示支持的语言</h6>
+<div class="outline-text-6" id="text-org1f18731">
+<p>
+extern "C" extern "Ada" extern "FORTRAN"<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgede1950" class="outline-6">
+<h6 id="orgede1950">链接指示的运用</h6>
+<div class="outline-text-6" id="text-orgede1950">
+<p>
+在 C++中使用其他语言的函数时，需要通过 extern "xxx"来声明该语言的函数。<br />
+extern "C" {<br />
+	int strcmp(const char*, const char*);<br />
+  char <b>strcat(char</b>, const char*);<br />
+}<br />
+将 C++的函数导出给其他语言使用时，需要在定义该函数时使用 extern "xxx"。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">the calc function can be called from C programs</span>
+<span style="color: #4f97d7; font-weight: bold;">extern</span> <span style="color: #2d9574;">"C"</span> <span style="color: #ce537a; font-weight: bold;">double</span> <span style="color: #bc6ec5; font-weight: bold;">calc</span>(<span style="color: #ce537a; font-weight: bold;">double</span> <span style="color: #7590db;">dparm</span>) 
+{ 
+  <span style="color: #2aa1ae; background-color: #292e34;">/* </span><span style="color: #2aa1ae; background-color: #292e34;">... */</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20989;&#25968;&#30340;&#20855;&#20307;&#23454;&#29616;&#30465;&#30053;&#20102;</span>
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org2779a49" class="outline-3">
+<h3 id="org2779a49">字节对齐是什么？</h3>
+</div>
+<div id="outline-container-orgbfc32d7" class="outline-3">
+<h3 id="orgbfc32d7">内置类型变量在内存中如何布局？</h3>
+</div>
+<div id="outline-container-org6cf2534" class="outline-3">
+<h3 id="org6cf2534">类在内存中的布局是怎样的？</h3>
+<div class="outline-text-3" id="text-org6cf2534">
+<p>
+类包含了静态成员变量、非静态成员变量、静态成员函数、非静态成员函数、虚函数，基类的相关内容，虚基类的相关内容。<br />
+类的静态成员变量、静态成员函数、成员函数，非静态成员函数会有隐含的 this 指针参数。这些函数和 C 语言一样。<br />
+类的虚函数地址会被组织到一个虚函数表中。<br />
+类、基类、虚基类都一样。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org3d7e511" class="outline-3">
+<h3 id="org3d7e511">对象在内存中的布局是怎样的？</h3>
+<div class="outline-text-3" id="text-org3d7e511">
+<p>
+按照继承顺序布局类中的成员变量。<br />
+对于有虚函数的会在对象末尾添加_vptr__X 指针，该指针指向虚函数表。<br />
+对于有虚继承的会在对象末尾添加 bptr 指针，该指针指向虚基类对象地址表。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgc4eb689" class="outline-3">
+<h3 id="orgc4eb689">什么时候需要在成员函数中显式使用 this?</h3>
+<div class="outline-text-3" id="text-orgc4eb689">
+<p>
+一种情况就是，在类的非静态成员函数中返回类对象本身的时候，直接使用 return *this；<br />
+另外一种情况是当参数与成员变量名相同时，如 this-&gt;n = n（不能写成 n = n）。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org018fc69" class="outline-3">
+<h3 id="org018fc69">关于 inline 的问题</h3>
+<div class="outline-text-3" id="text-org018fc69">
+</div>
+<div id="outline-container-orge311984" class="outline-4">
+<h4 id="orge311984">什么时候使用 inline 什么时候不能使用 inline？</h4>
+<div class="outline-text-4" id="text-orge311984">
+<p>
+通常对于成员变量的存取操作可以指定为内置函数。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org8a83311" class="outline-4">
+<h4 id="org8a83311">虚函数是否可以指定为 inline？</h4>
+<div class="outline-text-4" id="text-org8a83311">
+<p>
+可以。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org5c3ba60" class="outline-3">
+<h3 id="org5c3ba60">memcpy 和 memset 的使用</h3>
+<div class="outline-text-3" id="text-org5c3ba60">
+<p>
+只有在类不含任何由编译器产生的内部成员时，memcpy 和 memset 才能有效运行，否则这两个函数会导致那些由编译器产生的内部成员的值被改写。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Shape</span> {
+<span style="color: #4f97d7; font-weight: bold;">public</span>:
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">oops: this will overwrite internal vptr!</span>
+   <span style="color: #bc6ec5; font-weight: bold;">Shape</span>() { memset( <span style="color: #4f97d7; font-weight: bold;">this</span>, 0, <span style="color: #4f97d7; font-weight: bold;">sizeof</span>( Shape ));
+   <span style="color: #4f97d7; font-weight: bold;">virtual</span> ~<span style="color: #7590db;">Shape</span>();
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">...</span>
+};
+
+&#19978;&#38754;&#30340;&#20195;&#30721;&#20250;&#34987;&#36716;&#25442;&#20026;&#19979;&#38754;&#30340;&#20195;&#30721;
+<span style="color: #a45bad;">Shape</span>::<span style="color: #bc6ec5; font-weight: bold;">Shape</span>()
+{
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">vptr must be set before user code executes</span>
+   __vptr__Shape = __vtbl__Shape;
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">oops: memset zeros out value of vptr</span>
+   memset( <span style="color: #4f97d7; font-weight: bold;">this</span>, 0, <span style="color: #4f97d7; font-weight: bold;">sizeof</span>( Shape ));
+};
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org180e651" class="outline-3">
+<h3 id="org180e651">virtual 机制和类对象、类指针、类引用</h3>
+<div class="outline-text-3" id="text-org180e651">
+<p>
+virtual 机制包含虚基类 和 虚函数。<br />
+通过对象调用虚函数，或者对虚基类成员进行的存取，都可以优化为直接调用和直接存取。因为每次调用和存取，对象的类型是固定不变的。<br />
+通过指针或引用调用虚函数，或者对虚基类成员进行的存取，不能为直接调用和直接存取。因为每次调用和存取，指针或引用所指的对象的类型可能不同。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org5f892bd" class="outline-3">
+<h3 id="org5f892bd">Name Mangling</h3>
+<div class="outline-text-3" id="text-org5f892bd">
+<p>
+一般而言，成员的名称前面会被加上类名称，形成独一无二的命名。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Bar</span> {<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">int</span> ival; ...}
+ival <span style="color: #ce537a; font-weight: bold;">&#21487;&#33021;&#20250;&#34987;&#36716;&#21270;&#20026;</span> <span style="color: #7590db;">ival__3Bar</span>
+</pre>
+</div>
+<p>
+对于成员函数，因为其可被重载，所以需要在 name mangling 时加上函数的参数类型。<br />
+需要注意的是 name mangling 不会考虑函数的返回值类型。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Point</span> { <span style="color: #4f97d7; font-weight: bold;">public</span>:
+   <span style="color: #ce537a; font-weight: bold;">void</span>  <span style="color: #bc6ec5; font-weight: bold;">x</span>( <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #7590db;">newX</span> );
+   <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #bc6ec5; font-weight: bold;">x</span>();
+};
+&#19978;&#38754;&#30340;&#20195;&#30721;&#20250;&#34987;&#36716;&#25442;&#20026;&#19979;&#38754;&#30340;&#20195;&#30721;
+<span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Point</span> { <span style="color: #4f97d7; font-weight: bold;">public</span>:
+   <span style="color: #ce537a; font-weight: bold;">void</span>  <span style="color: #bc6ec5; font-weight: bold;">x__5Point</span>( <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #7590db;">newX</span> );
+   <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #bc6ec5; font-weight: bold;">x__5Point</span>();
+   ...
+};
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

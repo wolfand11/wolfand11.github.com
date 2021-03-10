@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2020-12-23 周三 11:35 -->
+<!-- 2021-03-10 周三 22:47 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Computer System</title>
@@ -84,9 +84,9 @@ for the JavaScript code in this tag.
 </li>
 <li><a href="#orgd262cfd">Computer Systems: A Programmer's Perspective</a>
 <ul>
-<li><a href="#org8548622">程序结构和执行</a>
+<li><a href="#orgbfb8276">第一部分程序结构和执行</a>
 <ul>
-<li><a href="#org1086826">信息的表示和处理</a>
+<li><a href="#org2ae3337">2 信息的表示和处理</a>
 <ul>
 <li><a href="#orgb3c29fd">整数</a>
 <ul>
@@ -105,8 +105,19 @@ for the JavaScript code in this tag.
 </li>
 </ul>
 </li>
+<li><a href="#org52e7473">3 程序的机器级表示</a>
+<ul>
+<li><a href="#org1e5c12d">机器级代码</a>
+<ul>
+<li><a href="#org5b954d0">Code Example</a></li>
 </ul>
 </li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org4769fe7">第二部分在系统上运行程序</a></li>
+<li><a href="#orge21d80c">第三部分程序间的交流和通信</a></li>
 </ul>
 </li>
 </ul>
@@ -154,13 +165,13 @@ Computer System note.<br />
 <h2 id="orgd262cfd">Computer Systems: A Programmer's Perspective</h2>
 <div class="outline-text-2" id="text-orgd262cfd">
 </div>
-<div id="outline-container-org8548622" class="outline-3">
-<h3 id="org8548622">程序结构和执行</h3>
-<div class="outline-text-3" id="text-org8548622">
+<div id="outline-container-orgbfb8276" class="outline-3">
+<h3 id="orgbfb8276">第一部分程序结构和执行</h3>
+<div class="outline-text-3" id="text-orgbfb8276">
 </div>
-<div id="outline-container-org1086826" class="outline-4">
-<h4 id="org1086826">信息的表示和处理</h4>
-<div class="outline-text-4" id="text-org1086826">
+<div id="outline-container-org2ae3337" class="outline-4">
+<h4 id="org2ae3337">2 信息的表示和处理</h4>
+<div class="outline-text-4" id="text-org2ae3337">
 </div>
 <div id="outline-container-orgb3c29fd" class="outline-5">
 <h5 id="orgb3c29fd">整数</h5>
@@ -309,7 +320,14 @@ printf(<span style="color: #2d9574;">"v = %d, uv = %u\n"</span>, v, uv);
 
 <p>
 浮点数表示的连续性，可以将浮点数的表示有一种更直观的理解：<br />
-e 间隔 1 的数落在[2^e, 2^(e+1)) 范围内，并且这个范围内，任意两个相邻的浮点数的间隔为 2^(e-23)  (以 float 为例)<br />
+e 间隔 1 的数落在[2^E, 2^(E+1)) 范围内，并且这个范围内，两个相邻的浮点数的间隔为 $2^E*2^(e-23)  (以 float 为例)<br />
+<img src="./ComputerSystem/float_E_M_explain.jpg" alt="float_E_M_explain.jpg" /><br />
+</p>
+
+<p>
+浮点数精度值以指数变化，E越大精度越小，精度值(相邻浮点数之间的间隔)越大：<br />
+<img src="./ComputerSystem/float_precision_illustrate.jpg" alt="float_precision_illustrate.jpg" /><br />
+<a href="./ComputerSystem/float_precision_illustrate.ggb">./ComputerSystem/float_precision_illustrate.ggb</a><br />
 </p>
 
 <ul class="org-ul">
@@ -511,6 +529,120 @@ a&gt;=b 且 c&lt;=0 则 a*c&lt;=b*c<br />
 </div>
 </div>
 </div>
+<div id="outline-container-org52e7473" class="outline-4">
+<h4 id="org52e7473">3 程序的机器级表示</h4>
+<div class="outline-text-4" id="text-org52e7473">
+</div>
+<div id="outline-container-org1e5c12d" class="outline-5">
+<h5 id="org1e5c12d">机器级代码</h5>
+<div class="outline-text-5" id="text-org1e5c12d">
+<p>
+机器级编码使用了两种抽象：<br />
+</p>
+<ol class="org-ol">
+<li>由指令集体系结构或指令集架构（Instruction Set Architecture, ISA）来定义机器级程序的格式和行为，它定义了处理器状态、指令的格式，以及每条指令对状态的影响。大多数 ISA 将程序的行为描述成好像每条指令都是按顺序执行的，一条指令结束后，下一条再开始。处理器硬件远比描述的精细复杂，它们并发执行许多指令，但是采取措施保证整体行为与 ISA 指定的顺序执行的行为完全一致。<br /></li>
+<li>机器级程序使用的内存地址是虚拟地址，提供的内存模型看上去是一个非常大的字节数组。存储器系统的实际实现是将多个硬件存储器和操作系统软件组合起来。<br /></li>
+</ol>
+
+<p>
+x86-64 的机器代码和原始 C 代码差别非常大。一些通常对 C 语言程序员隐藏的处理其状态都是可见的：<br />
+</p>
+<ul class="org-ul">
+<li>程序计数器（通常称为“PC”，在 x86-64 中用%rip 表示） 其给出将要执行的下一条指令在内存中的地址<br /></li>
+<li>整数寄存器文件  其包含 16 个命名的位置，分布存储 64 位的值。这些寄存器可以存储地址（对应于 C 语言的指针）或整数数据。有的寄存器被用来记录某些重要的程序状态，而其他的寄存器用来保持临时数据，例如过程的参数和局部变量，以及函数的返回值。<br /></li>
+<li>条件码寄存器    其保存着最近执行的算术或逻辑指令的状态信息。他们用来实现控制或数据流中的条件变化，比如说用来实现 if 和 while 语句。<br /></li>
+<li>一组向量寄存器  其可以存放一个或多个整数或浮点数值。<br /></li>
+</ul>
+</div>
+<div id="outline-container-org5b954d0" class="outline-6">
+<h6 id="org5b954d0">Code Example</h6>
+<div class="outline-text-6" id="text-org5b954d0">
+<div class="org-src-container">
+<pre class="src src-c"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">mstore.c</span>
+<span style="color: #ce537a; font-weight: bold;">long</span> <span style="color: #bc6ec5; font-weight: bold;">mult2</span>(<span style="color: #ce537a; font-weight: bold;">long</span>, <span style="color: #ce537a; font-weight: bold;">long</span>);
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">multstore</span>(<span style="color: #ce537a; font-weight: bold;">long</span> <span style="color: #7590db;">a</span>, <span style="color: #ce537a; font-weight: bold;">long</span> <span style="color: #7590db;">b</span>, <span style="color: #ce537a; font-weight: bold;">long</span> *<span style="color: #7590db;">c</span>)
+{
+  <span style="color: #ce537a; font-weight: bold;">long</span> <span style="color: #7590db;">t</span> = mult2(a,b);
+  *c = t;
+}
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">main.c</span>
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">multstore</span>(<span style="color: #ce537a; font-weight: bold;">long</span>, <span style="color: #ce537a; font-weight: bold;">long</span>, <span style="color: #ce537a; font-weight: bold;">long</span> *);
+<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #bc6ec5; font-weight: bold;">main</span>()
+{
+  <span style="color: #ce537a; font-weight: bold;">long</span> <span style="color: #7590db;">d</span>;
+  multstore(2,3,&amp;d);
+  <span style="color: #4f97d7; font-weight: bold;">return</span> 0;
+}
+
+<span style="color: #ce537a; font-weight: bold;">long</span> <span style="color: #bc6ec5; font-weight: bold;">mult2</span>(<span style="color: #ce537a; font-weight: bold;">long</span> <span style="color: #7590db;">a</span>, <span style="color: #ce537a; font-weight: bold;">long</span> <span style="color: #7590db;">b</span>)
+{
+  <span style="color: #ce537a; font-weight: bold;">long</span> <span style="color: #7590db;">c</span> = a*b;
+  <span style="color: #4f97d7; font-weight: bold;">return</span> c;
+}
+</pre>
+</div>
+<div class="org-src-container">
+<pre class="src src-shell"><span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#25191;&#34892;&#19979;&#38754;&#21629;&#20196;&#23545;&#31243;&#24207;&#36827;&#34892;&#32534;&#35793;&#29983;&#25104; prog.exe&#31243;&#24207;</span>
+gcc -Og -o prog.exe main.c mstore.c
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#25191;&#34892;&#19979;&#38754;&#21629;&#20196;&#65292;&#23558;&#20108;&#36827;&#21046;&#26426;&#22120;&#30721;prog.exe&#36716;&#21270;&#20026;&#23383;&#31526;&#34920;&#31034;&#30340;&#26426;&#22120;&#30721;</span>
+objdump -d prog.exe &gt; asm-code.txt
+</pre>
+</div>
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">0000000000401550 &lt;main&gt;:</span>
+  <span style="color: #4f97d7; font-weight: bold;">401550</span>: 48 83 ec 38           sub    $0x38,<span style="color: #7590db;">%rsp</span>
+  <span style="color: #4f97d7; font-weight: bold;">401554</span>: e8 f7 00 00 00        callq  401650 &lt;__main&gt;
+  <span style="color: #4f97d7; font-weight: bold;">401559</span>: 4c 8d 44 24 2c        lea    0x2c(<span style="color: #7590db;">%rsp</span>),<span style="color: #7590db;">%r8</span>
+  <span style="color: #4f97d7; font-weight: bold;">40155e</span>: ba 03 00 00 00        mov    $0x3,<span style="color: #7590db;">%edx</span>
+  <span style="color: #4f97d7; font-weight: bold;">401563</span>: b9 02 00 00 00        mov    $0x2,<span style="color: #7590db;">%ecx</span>
+  <span style="color: #4f97d7; font-weight: bold;">401568</span>: e8 13 00 00 00        callq  401580 &lt;multstore&gt;
+  <span style="color: #4f97d7; font-weight: bold;">40156d</span>: b8 00 00 00 00        mov    $0x0,<span style="color: #7590db;">%eax</span>
+  <span style="color: #4f97d7; font-weight: bold;">401572</span>: 48 83 c4 38           add    $0x38,<span style="color: #7590db;">%rsp</span>
+  <span style="color: #4f97d7; font-weight: bold;">401576</span>: c3                    retq   
+
+<span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">0000000000401577 &lt;mult2&gt;:</span>
+  <span style="color: #4f97d7; font-weight: bold;">401577</span>: 89 c8                 mov    <span style="color: #7590db;">%ecx</span>,<span style="color: #7590db;">%eax</span>
+  <span style="color: #4f97d7; font-weight: bold;">401579</span>: 0f af c2              imul   <span style="color: #7590db;">%edx</span>,<span style="color: #7590db;">%eax</span>
+  <span style="color: #4f97d7; font-weight: bold;">40157c</span>: c3                    retq   
+  <span style="color: #4f97d7; font-weight: bold;">40157d</span>: 90                    nop
+  <span style="color: #4f97d7; font-weight: bold;">40157e</span>: 90                    nop
+  <span style="color: #4f97d7; font-weight: bold;">40157f</span>: 90                    nop
+
+<span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">0000000000401580 &lt;multstore&gt;:</span>
+  <span style="color: #4f97d7; font-weight: bold;">401580</span>: 53                    push   <span style="color: #7590db;">%rbx</span>
+  <span style="color: #4f97d7; font-weight: bold;">401581</span>: 48 83 ec 20           sub    $0x20,<span style="color: #7590db;">%rsp</span>
+  <span style="color: #4f97d7; font-weight: bold;">401585</span>: 4c 89 c3              mov    <span style="color: #7590db;">%r8</span>,<span style="color: #7590db;">%rbx</span>
+  <span style="color: #4f97d7; font-weight: bold;">401588</span>: e8 ea ff ff ff        callq  401577 &lt;mult2&gt;
+  <span style="color: #4f97d7; font-weight: bold;">40158d</span>: 89 03                 mov    <span style="color: #7590db;">%eax</span>,(<span style="color: #7590db;">%rbx</span>)
+  <span style="color: #4f97d7; font-weight: bold;">40158f</span>: 48 83 c4 20           add    $0x20,<span style="color: #7590db;">%rsp</span>
+  <span style="color: #4f97d7; font-weight: bold;">401593</span>: 5b                    pop    <span style="color: #7590db;">%rbx</span>
+  <span style="color: #4f97d7; font-weight: bold;">401594</span>: c3                    retq   
+  <span style="color: #4f97d7; font-weight: bold;">401595</span>: 90                    nop
+  <span style="color: #4f97d7; font-weight: bold;">401596</span>: 90                    nop
+  <span style="color: #4f97d7; font-weight: bold;">401597</span>: 90                    nop
+  <span style="color: #4f97d7; font-weight: bold;">401598</span>: 90                    nop
+  <span style="color: #4f97d7; font-weight: bold;">401599</span>: 90                    nop
+  <span style="color: #4f97d7; font-weight: bold;">40159a</span>: 90                    nop
+  <span style="color: #4f97d7; font-weight: bold;">40159b</span>: 90                    nop
+  <span style="color: #4f97d7; font-weight: bold;">40159c</span>: 90                    nop
+  <span style="color: #4f97d7; font-weight: bold;">40159d</span>: 90                    nop
+  <span style="color: #4f97d7; font-weight: bold;">40159e</span>: 90                    nop
+  <span style="color: #4f97d7; font-weight: bold;">40159f</span>: 90                    nop
+
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org4769fe7" class="outline-3">
+<h3 id="org4769fe7">第二部分在系统上运行程序</h3>
+</div>
+
+<div id="outline-container-orge21d80c" class="outline-3">
+<h3 id="orge21d80c">第三部分程序间的交流和通信</h3>
 </div>
 </div>
 </div>

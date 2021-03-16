@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-03-10 周三 22:47 -->
+<!-- 2021-03-16 周二 22:17 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Inside The C++ Object Model</title>
@@ -74,17 +74,17 @@ for the JavaScript code in this tag.
 <ul>
 <li><a href="#org7bdf93b">1 Object Lessons</a>
 <ul>
-<li><a href="#orgae788ae">C++对象模型</a>
+<li><a href="#org0892131">C++对象模型</a>
 <ul>
-<li><a href="#org7231bf0">简单对象模型</a></li>
+<li><a href="#org16cc822">简单对象模型</a></li>
 <li><a href="#orgf5322af">表格对象驱动模型</a></li>
-<li><a href="#orgf7c38f8">C++对象模型</a>
+<li><a href="#org2394b89">C++对象模型</a>
 <ul>
 <li><a href="#org7b5d02f">加入继承</a>
 <ul>
-<li><a href="#org16cc822">简单对象模型</a></li>
+<li><a href="#org00c8d04">简单对象模型</a></li>
 <li><a href="#orge0b335c">基类表模型</a></li>
-<li><a href="#org0892131">C++对象模型</a></li>
+<li><a href="#org589f21c">C++对象模型</a></li>
 </ul>
 </li>
 <li><a href="#org81c8646">对象模型如何影响程序</a></li>
@@ -159,10 +159,25 @@ for the JavaScript code in this tag.
 <li><a href="#org27fae53">加上多态以后</a>
 <ul>
 <li><a href="#orgc642521">虚表指针放在类对象前端还是末尾？</a></li>
+<li><a href="#org6cec555">如何判断当前编译器虚表指针放置位置？</a>
+<ul>
+<li><a href="#org0a0a5a0">方法 1</a></li>
+<li><a href="#org721925e">方法 2</a></li>
 </ul>
 </li>
-<li><a href="#orge19e32b">多重继承</a></li>
-<li><a href="#org8fa9458">虚拟继承</a></li>
+<li><a href="#org1d62725">多态导致的内存消耗</a></li>
+</ul>
+</li>
+<li><a href="#orge19e32b">多重继承</a>
+<ul>
+<li><a href="#org75ca464">多重继承导致的内存消耗</a></li>
+</ul>
+</li>
+<li><a href="#org8fa9458">虚拟继承</a>
+<ul>
+<li><a href="#orgb15287c">多重虚拟继承导致的内存消耗</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#org3d55efe">数据成员的效率</a></li>
@@ -190,7 +205,7 @@ for the JavaScript code in this tag.
 <li><a href="#orgc3b3303">虚拟继承下的虚函数</a></li>
 </ul>
 </li>
-<li><a href="#org51782d6">函数的效能</a></li>
+<li><a href="#org51782d6"><span class="todo TODO">TODO</span> 函数的效能</a></li>
 <li><a href="#orgca33bce">指向成员函数的指针</a>
 <ul>
 <li><a href="#orgcd4257d">支持指向虚成员函数的指针</a></li>
@@ -221,7 +236,7 @@ for the JavaScript code in this tag.
 </ul>
 </li>
 <li><a href="#orgb270e46">对象复制语义</a></li>
-<li><a href="#orgdbc6058">对象的效能</a></li>
+<li><a href="#orgdbc6058"><span class="todo TODO">TODO</span> 对象的效能</a></li>
 <li><a href="#orgfc3576b">对象解构语义</a></li>
 </ul>
 </li>
@@ -251,7 +266,7 @@ for the JavaScript code in this tag.
 </li>
 <li><a href="#org342a2c5">7 On the Cusp of the Object Model</a>
 <ul>
-<li><a href="#orga44c619">模板</a></li>
+<li><a href="#orga44c619"><span class="todo TODO">TODO</span> 模板</a></li>
 <li><a href="#org2492aae">异常处理</a></li>
 <li><a href="#org7f6f0e1">执行期类型识别</a></li>
 </ul>
@@ -319,24 +334,24 @@ for the JavaScript code in this tag.
 </div>
 </div>
 <p>
-总的来说这本书讲了编译器在你的 C++代码上又做了哪些手脚？<br />
+总的来说这本书讲了编译器在你的 C++代码上又做了哪些手脚.<br />
 </p>
 
 <div id="outline-container-org7bdf93b" class="outline-2">
 <h2 id="org7bdf93b">1 Object Lessons</h2>
 <div class="outline-text-2" id="text-org7bdf93b">
 </div>
-<div id="outline-container-orgae788ae" class="outline-3">
-<h3 id="orgae788ae">C++对象模型</h3>
-<div class="outline-text-3" id="text-orgae788ae">
+<div id="outline-container-org0892131" class="outline-3">
+<h3 id="org0892131">C++对象模型</h3>
+<div class="outline-text-3" id="text-org0892131">
 <p>
 c++有两种类数据成员：静态和非静态，以及三种类成员函数：静态，非静态以及虚函数。<br />
 如何模型出各种数据成员和函数成员呢？<br />
 </p>
 </div>
-<div id="outline-container-org7231bf0" class="outline-4">
-<h4 id="org7231bf0">简单对象模型</h4>
-<div class="outline-text-4" id="text-org7231bf0">
+<div id="outline-container-org16cc822" class="outline-4">
+<h4 id="org16cc822">简单对象模型</h4>
+<div class="outline-text-4" id="text-org16cc822">
 <p>
 <img src="./InsideCPlusPlus/lesson1_simple_object_model.png" alt="lesson1_simple_object_model.png" /><br />
 一个对象是一系列的 slots，每个 slot 指向一个成员。<br />
@@ -352,9 +367,9 @@ c++有两种类数据成员：静态和非静态，以及三种类成员函数�
 </p>
 </div>
 </div>
-<div id="outline-container-orgf7c38f8" class="outline-4">
-<h4 id="orgf7c38f8">C++对象模型</h4>
-<div class="outline-text-4" id="text-orgf7c38f8">
+<div id="outline-container-org2394b89" class="outline-4">
+<h4 id="org2394b89">C++对象模型</h4>
+<div class="outline-text-4" id="text-org2394b89">
 <p>
 <img src="./InsideCPlusPlus/lesson1_c++_object_model.png" alt="lesson1_c++_object_model.png" /><br />
 在此模型中，非静态数据成员被配置于每一个对象之内，静态数据成员则被放在所有对象之外，静态和非静态函数成员也被放在所有对象之外。虚函数通过下面<br />
@@ -379,9 +394,9 @@ C++对象模型的主要缺点是，如果应用程序代码本身没有改变�
 <h5 id="org7b5d02f">加入继承</h5>
 <div class="outline-text-5" id="text-org7b5d02f">
 </div>
-<div id="outline-container-org16cc822" class="outline-6">
-<h6 id="org16cc822">简单对象模型</h6>
-<div class="outline-text-6" id="text-org16cc822">
+<div id="outline-container-org00c8d04" class="outline-6">
+<h6 id="org00c8d04">简单对象模型</h6>
+<div class="outline-text-6" id="text-org00c8d04">
 <p>
 简单对象模型中，每一个基类子对象可以由派生类内的一个 slot 指出。<br />
 </p>
@@ -397,9 +412,9 @@ C++对象模型的主要缺点是，如果应用程序代码本身没有改变�
 </p>
 </div>
 </div>
-<div id="outline-container-org0892131" class="outline-6">
-<h6 id="org0892131">C++对象模型</h6>
-<div class="outline-text-6" id="text-org0892131">
+<div id="outline-container-org589f21c" class="outline-6">
+<h6 id="org589f21c">C++对象模型</h6>
+<div class="outline-text-6" id="text-org589f21c">
 <p>
 C++基类子对象的数据被直接放到派生类对象中。对于虚基类，则在类对象中为每个关联的虚基类对象加上一个指针。<br />
 </p>
@@ -1092,7 +1107,7 @@ C++标准没有强制指定派生类成员和基类成员的排列次序。大�
 <h5 id="orgc642521">虚表指针放在类对象前端还是末尾？</h5>
 <div class="outline-text-5" id="text-orgc642521">
 <ol class="org-ol">
-<li>虚表指针放在尾端可以保留 base class C struct 的对象布局。<br /></li>
+<li>虚表指针放在尾端可以保留 base class C struct 的对象布局。可以将 C++对象直接传递给 c 函数进行处理。<br /></li>
 </ol>
 <div class="org-src-container">
 <pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">struct</span> <span style="color: #ce537a; font-weight: bold;">no_virts</span>
@@ -1114,6 +1129,90 @@ C++标准没有强制指定派生类成员和基类成员的排列次序。大�
 <li>虚表指针放在类对象前端，对于“在多重继承之下，通过指向类成员的指针调用虚函数”，会带来一些帮助。否则，不仅“从类对象起始点开始量起”的 offset 必须在执行器备妥，甚至 class vptr 之间的 offset 也必须备妥。<br /></li>
 <li>具体内容可以参考 <a href="#org5d7b408">多重继承下，指向成员函数的指针</a><br /></li>
 </ol>
+</div>
+</div>
+<div id="outline-container-org6cec555" class="outline-5">
+<h5 id="org6cec555">如何判断当前编译器虚表指针放置位置？</h5>
+<div class="outline-text-5" id="text-org6cec555">
+</div>
+<div id="outline-container-org0a0a5a0" class="outline-6">
+<h6 id="org0a0a5a0">方法 1</h6>
+<div class="outline-text-6" id="text-org0a0a5a0">
+<p>
+debug 查看对象成员，得到对象的地址，和虚表指针成员的内容。<br />
+查看内存，跳转到对象地址所在内存，看其实内容和虚表指针成员的内容是否一致，如果一致，则说明虚表指针放在了对象前端，否则是末端。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org721925e" class="outline-6">
+<h6 id="org721925e">方法 2</h6>
+<div class="outline-text-6" id="text-org721925e">
+<p>
+打印下面类对象地址和类成员地址，比较地址，如果类对象地址比成员地址小 4，说明虚指针在对象前端，否则是末端。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">A</span>
+{
+<span style="color: #4f97d7; font-weight: bold;">public</span>:
+  <span style="color: #ce537a; font-weight: bold;">char</span> <span style="color: #7590db;">a</span>=<span style="color: #2d9574;">'a'</span>;
+  <span style="color: #4f97d7; font-weight: bold;">virtual</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">test</span>() {printf(<span style="color: #2d9574;">"a = %c\n"</span>, a);}
+};
+<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #bc6ec5; font-weight: bold;">main</span>()
+{
+  <span style="color: #ce537a; font-weight: bold;">A</span> <span style="color: #7590db;">aObj</span>;
+  printf(<span style="color: #2d9574;">"aObj.a addr = %d\n"</span>, &amp;(aObj.a));
+  printf(<span style="color: #2d9574;">"aObj   addr = %d\n"</span>, &amp;aObj);
+  <span style="color: #4f97d7; font-weight: bold;">return</span> 0;
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org1d62725" class="outline-5">
+<h5 id="org1d62725">多态导致的内存消耗</h5>
+<div class="outline-text-5" id="text-org1d62725">
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">A</span>
+{
+<span style="color: #4f97d7; font-weight: bold;">public</span>:
+  <span style="color: #ce537a; font-weight: bold;">char</span> <span style="color: #7590db;">a</span>=<span style="color: #2d9574;">'a'</span>;
+  <span style="color: #4f97d7; font-weight: bold;">virtual</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">test</span>() { printf(<span style="color: #2d9574;">"a = %c\n"</span>, a); }
+};
+
+<span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">B</span> :<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">A</span>
+{
+<span style="color: #4f97d7; font-weight: bold;">public</span>:
+  <span style="color: #ce537a; font-weight: bold;">char</span> <span style="color: #7590db;">b</span>=<span style="color: #2d9574;">'b'</span>;
+  <span style="color: #4f97d7; font-weight: bold;">virtual</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">test</span>() { printf(<span style="color: #2d9574;">"b::test = %c\n"</span>, b); }
+  <span style="color: #4f97d7; font-weight: bold;">virtual</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">test1</span>() { printf(<span style="color: #2d9574;">"b::test1 = %c\n"</span>, b); }
+};
+
+<span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">C</span> :<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">B</span>
+{
+<span style="color: #4f97d7; font-weight: bold;">public</span>:
+  <span style="color: #ce537a; font-weight: bold;">char</span> <span style="color: #7590db;">c</span>=<span style="color: #2d9574;">'c'</span>;
+  <span style="color: #4f97d7; font-weight: bold;">virtual</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">test</span>() { printf(<span style="color: #2d9574;">"c::test = %c\n"</span>, c); }
+  <span style="color: #4f97d7; font-weight: bold;">virtual</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">test1</span>() { printf(<span style="color: #2d9574;">"c::test1 = %c\n"</span>, c); }
+  <span style="color: #4f97d7; font-weight: bold;">virtual</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">test2</span>() { printf(<span style="color: #2d9574;">"c::test2 = %c\n"</span>, c); }
+};
+
+<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #bc6ec5; font-weight: bold;">main</span>()
+{
+  printf(<span style="color: #2d9574;">"sizeof(A) = %d\n"</span>, <span style="color: #4f97d7; font-weight: bold;">sizeof</span>(A));  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#31867;A&#30340;&#23545;&#35937;&#30340;&#20869;&#23384;&#22823;&#23567;&#20026;8&#23383;&#33410;   _vfptr(8)  a(8)</span>
+  printf(<span style="color: #2d9574;">"sizeof(B) = %d\n"</span>, <span style="color: #4f97d7; font-weight: bold;">sizeof</span>(B));  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#31867;B&#30340;&#23545;&#35937;&#30340;&#20869;&#23384;&#22823;&#23567;&#20026;12&#23383;&#33410;  _vfptr(8)  a(8)  b(8)</span>
+  printf(<span style="color: #2d9574;">"sizeof(C) = %d\n"</span>, <span style="color: #4f97d7; font-weight: bold;">sizeof</span>(C));  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#31867;C&#30340;&#23545;&#35937;&#30340;&#20869;&#23384;&#22823;&#23567;&#20026;16&#23383;&#33410;  _vfptr(8)  a(8)  b(8)  c(8)</span>
+}
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">sizeof(A) = 16</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">sizeof(B) = 24</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">sizeof(C) = 32</span>
+</pre>
+</div>
+
+<div class="figure">
+<p><img src="./InsideCPlusPlus/single_inherit_obj_layout.jpg" alt="single_inherit_obj_layout.jpg" /><br />
+</p>
+</div>
 </div>
 </div>
 </div>
@@ -1151,15 +1250,68 @@ pv = (<span style="color: #ce537a; font-weight: bold;">Vertex</span>*)(((<span s
 
 pv = p3d;
 <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19978;&#38754;&#30340;&#20195;&#30721;&#20250;&#34987;&#36716;&#25442;&#20026;&#19979;&#38754;&#30340;&#20195;&#30721; Pseudo C++ Code</span>
-pv = p3d
-   ? (<span style="color: #ce537a; font-weight: bold;">Vertex</span>*)((<span style="color: #ce537a; font-weight: bold;">char</span>*)p3d) + <span style="color: #4f97d7; font-weight: bold;">sizeof</span>( Point3d )
-   : 0;
+pv = p3d ? (<span style="color: #ce537a; font-weight: bold;">Vertex</span>*)((<span style="color: #ce537a; font-weight: bold;">char</span>*)p3d) + <span style="color: #4f97d7; font-weight: bold;">sizeof</span>( Point3d ) : 0;
 </pre>
 </div>
 <p>
 <img src="./InsideCPlusPlus/multi-inherit-data-layout.jpg" alt="multi-inherit-data-layout.jpg" /><br />
 2 对于第二或后继基类中的数据成员的存储是不需要付出额外成本的，因为成员的位置在编译时就固定下了，因此存取成员只是一个简单的 offset 运算。<br />
 </p>
+</div>
+<div id="outline-container-org75ca464" class="outline-5">
+<h5 id="org75ca464">多重继承导致的内存消耗</h5>
+<div class="outline-text-5" id="text-org75ca464">
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">namespace</span> <span style="color: #a45bad;">MultiInherit</span> 
+{
+  <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">L3A</span>
+  {
+  <span style="color: #4f97d7; font-weight: bold;">public</span>:
+    <span style="color: #ce537a; font-weight: bold;">char</span> <span style="color: #7590db;">l3a</span> = <span style="color: #2d9574;">'A'</span>;
+    <span style="color: #4f97d7; font-weight: bold;">virtual</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">test0</span>() { printf(<span style="color: #2d9574;">"L3A::test0 func \n"</span>); }
+  };
+  <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">L3B1</span> : <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">L3A</span>
+  {
+  <span style="color: #4f97d7; font-weight: bold;">public</span>:
+    <span style="color: #ce537a; font-weight: bold;">char</span> <span style="color: #7590db;">l3b1</span> = <span style="color: #2d9574;">'B'</span>;
+    <span style="color: #4f97d7; font-weight: bold;">virtual</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">test0</span>() { printf(<span style="color: #2d9574;">"L3B1::test0 func \n"</span>); }
+  };
+  <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">L3B2</span>
+  {
+  <span style="color: #4f97d7; font-weight: bold;">public</span>:
+    <span style="color: #ce537a; font-weight: bold;">char</span> <span style="color: #7590db;">l3b2</span> = <span style="color: #2d9574;">'b'</span>;
+    <span style="color: #4f97d7; font-weight: bold;">virtual</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">test0</span>() { printf(<span style="color: #2d9574;">"L3B2::test0 func \n"</span>); }
+  };
+  <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">L3C1</span> : <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">L3B1</span>,<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">L3B2</span>
+  {
+  <span style="color: #4f97d7; font-weight: bold;">public</span>:
+    <span style="color: #ce537a; font-weight: bold;">char</span> <span style="color: #7590db;">l3c1</span> = <span style="color: #2d9574;">'C'</span>;
+    <span style="color: #4f97d7; font-weight: bold;">virtual</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">test0</span>() { printf(<span style="color: #2d9574;">"L3C1::test0 func \n"</span>); }
+  };
+
+  <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">func3</span>()
+  {
+    <span style="color: #ce537a; font-weight: bold;">L3A</span> <span style="color: #7590db;">objA</span>;
+    <span style="color: #ce537a; font-weight: bold;">L3B1</span> <span style="color: #7590db;">objB1</span>;
+    <span style="color: #ce537a; font-weight: bold;">L3B2</span> <span style="color: #7590db;">objB2</span>;
+    <span style="color: #ce537a; font-weight: bold;">L3C1</span> <span style="color: #7590db;">objC1</span>;
+    printf(<span style="color: #2d9574;">"sizeof(mi-L3A)   = %lu\n"</span>, <span style="color: #4f97d7; font-weight: bold;">sizeof</span>(L3A));   <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">_vfptr(8)  l3a(8)</span>
+    printf(<span style="color: #2d9574;">"sizeof(mi-L3B1)  = %lu\n"</span>, <span style="color: #4f97d7; font-weight: bold;">sizeof</span>(L3B1));  <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">_vfptr(8)  l3a(8)  l3b1(8)</span>
+    printf(<span style="color: #2d9574;">"sizeof(mi-L3C1)  = %lu\n"</span>, <span style="color: #4f97d7; font-weight: bold;">sizeof</span>(L3C1));  <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">_vfptr(8)  l3a(8)  l3b1(8)  _vfptr(8)  l3b2(8)  l3c1(8)</span>
+  }
+}
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">sizeof(mi-L3A)    = 16</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">sizeof(mi-L3B1)   = 24</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">sizeof(mi-L3C1)   = 48</span>
+</pre>
+</div>
+
+<div class="figure">
+<p><img src="./InsideCPlusPlus/multi_inherit_obj_layout.jpg" alt="multi_inherit_obj_layout.jpg" /><br />
+</p>
+</div>
+</div>
 </div>
 </div>
 <div id="outline-container-org8fa9458" class="outline-4">
@@ -1210,14 +1362,69 @@ pv = p3d
 <li>由于虚拟继承串链的加长，导致间接存取层次的增加。理想的情况是，存取消耗的时间应该是固定的，不因为虚拟衍化的深度而变化。<br /></li>
 </ol>
 </div>
-</div>
-</div>
 
+<div id="outline-container-orgb15287c" class="outline-5">
+<h5 id="orgb15287c">多重虚拟继承导致的内存消耗</h5>
+<div class="outline-text-5" id="text-orgb15287c">
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">namespace</span> <span style="color: #a45bad;">MultiVirtualInherit</span> 
+{
+  <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">L3A</span>
+  {
+  <span style="color: #4f97d7; font-weight: bold;">public</span>:
+    <span style="color: #ce537a; font-weight: bold;">char</span> <span style="color: #7590db;">l3a</span> = <span style="color: #2d9574;">'A'</span>;
+    <span style="color: #4f97d7; font-weight: bold;">virtual</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">test0</span>() { printf(<span style="color: #2d9574;">"L3A::test0 func \n"</span>); }
+  };
+  <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">L3B1</span> : <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">virtual</span> <span style="color: #ce537a; font-weight: bold;">L3A</span>
+  {
+  <span style="color: #4f97d7; font-weight: bold;">public</span>:
+    <span style="color: #ce537a; font-weight: bold;">char</span> <span style="color: #7590db;">l3b1</span> = <span style="color: #2d9574;">'B'</span>;
+    <span style="color: #4f97d7; font-weight: bold;">virtual</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">test0</span>() { printf(<span style="color: #2d9574;">"L3B1::test0 func \n"</span>); }
+  };
+  <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">L3B2</span> : <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">virtual</span> <span style="color: #ce537a; font-weight: bold;">L3A</span>
+  {
+  <span style="color: #4f97d7; font-weight: bold;">public</span>:
+    <span style="color: #ce537a; font-weight: bold;">char</span> <span style="color: #7590db;">l3b2</span> = <span style="color: #2d9574;">'b'</span>;
+    <span style="color: #4f97d7; font-weight: bold;">virtual</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">test0</span>() { printf(<span style="color: #2d9574;">"L3B2::test0 func \n"</span>); }
+  };
+  <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">L3C1</span> : <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">L3B1</span>,<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">L3B2</span>
+  {
+  <span style="color: #4f97d7; font-weight: bold;">public</span>:
+    <span style="color: #ce537a; font-weight: bold;">char</span> <span style="color: #7590db;">l3c1</span> = <span style="color: #2d9574;">'C'</span>;
+    <span style="color: #4f97d7; font-weight: bold;">virtual</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">test0</span>() { printf(<span style="color: #2d9574;">"L3C1::test0 func \n"</span>); }
+  };
+
+  <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">func3</span>()
+  {
+    <span style="color: #ce537a; font-weight: bold;">L3A</span> <span style="color: #7590db;">objA</span>;
+    <span style="color: #ce537a; font-weight: bold;">L3B1</span> <span style="color: #7590db;">objB1</span>;
+    <span style="color: #ce537a; font-weight: bold;">L3B2</span> <span style="color: #7590db;">objB2</span>;
+    <span style="color: #ce537a; font-weight: bold;">L3C1</span> <span style="color: #7590db;">objC1</span>;
+    printf(<span style="color: #2d9574;">"sizeof(mvi-L3A)   = %lu\n"</span>, <span style="color: #4f97d7; font-weight: bold;">sizeof</span>(L3A));    <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">A_vfptr(8)  l3a(8)</span>
+    printf(<span style="color: #2d9574;">"sizeof(mvi-L3B1)   = %lu\n"</span>, <span style="color: #4f97d7; font-weight: bold;">sizeof</span>(L3B1));  <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">B1_vfptr(8)  l3b1(8) A_vfptr(8)   l3a(8)</span>
+    printf(<span style="color: #2d9574;">"sizeof(mvi-L3C1)   = %lu\n"</span>, <span style="color: #4f97d7; font-weight: bold;">sizeof</span>(L3C1));  <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">B1_vfptr(8)  l3b1(8) B2_vfptr(8)  l3b2(8)    l3c1(8)  A_vfptr(8) l3a(8)  </span>
+  }
+}
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">sizeof(mvi-L3A)   = 16</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">sizeof(mvi-L3B1)  = 32</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">sizeof(mvi-L3C1)  = 56</span>
+</pre>
+</div>
+<p>
+<img src="./InsideCPlusPlus/multi_virtual_inherit_obj_layout2.jpg" alt="multi_virtual_inherit_obj_layout2.jpg" /><br />
+<img src="./InsideCPlusPlus/multi_virtual_inherit_obj_layout.jpg" alt="multi_virtual_inherit_obj_layout.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
+</div>
 <div id="outline-container-org3d55efe" class="outline-3">
 <h3 id="org3d55efe">数据成员的效率</h3>
 <div class="outline-text-3" id="text-org3d55efe">
 <p>
-具体细节看原书吧<br />
+打开优化后 inline get/set 函数和 struct public 成员的存取效率相同。<br />
+虚拟继承后，对虚基类成员的存取消耗会增大。<br />
 </p>
 </div>
 </div>
@@ -1241,14 +1448,17 @@ pv = p3d
 <h4 id="orgd8c56a3">指向数据成员的指针的效率问题</h4>
 <div class="outline-text-4" id="text-orgd8c56a3">
 <p>
-以指向成员的指针来存取数据会导致效率变慢。<br />
-具体细节看原书吧。<br />
+以指向成员的指针来存取数据会导致效率变慢。开启优化后效率和通过对象直接存取相同。<br />
+虚拟继承的情况下，通过指针存取虚基类对象的成员消耗会增大。<br />
+</p>
+
+<p>
+Tips: vc++中虚基类对象和类其他成员布局在一起，对虚基类成员的存取应该和其他类型成员的存取消耗相同。<br />
 </p>
 </div>
 </div>
 </div>
 </div>
-
 <div id="outline-container-orge62b237" class="outline-2">
 <h2 id="orge62b237">4 The Semantics of Function</h2>
 <div class="outline-text-2" id="text-orge62b237">
@@ -1267,37 +1477,29 @@ C++的设计准则之一就是非静态成员函数至少和一般的非成员�
 
 <p>
 1 改写函数的签名以安插一个额外的参数到成员函数中，用以提供一个存取管道，使类对象得以调用该函数。该额外参数被称为 this 指针。<br />
-</p>
-
-<p>
 2 将“每一个对非静态数据成员的存取操作”改为“经由 this 指针来存取”<br />
 3 将成员函数重新写成一个外部函数。对函数名称进行 mangling 处理，使它在程序中成为独一无二的语汇<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-cpp">
-&#21407;&#22987;&#25104;&#21592;&#20989;&#25968;
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21407;&#22987;&#25104;&#21592;&#20989;&#25968;</span>
 <span style="color: #ce537a; font-weight: bold;">Point3d</span> <span style="color: #a45bad;">Point3d</span>::<span style="color: #bc6ec5; font-weight: bold;">magnitude</span>()
 {
-   <span style="color: #4f97d7; font-weight: bold;">return</span> sqrt(
-         _x * _x + _y * _y + _z * _z
-   );
+   <span style="color: #4f97d7; font-weight: bold;">return</span> sqrt(_x * _x + _y * _y + _z * _z);
 }
-step 1
-Point3d <span style="color: #a45bad;">Point3d</span>::magnitude( <span style="color: #ce537a; font-weight: bold;">Point3d</span> *<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #4f97d7; font-weight: bold;">this</span> )
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">step 1</span>
+<span style="color: #ce537a; font-weight: bold;">Point3d</span> <span style="color: #a45bad;">Point3d</span>::<span style="color: #bc6ec5; font-weight: bold;">magnitude</span>( <span style="color: #ce537a; font-weight: bold;">Point3d</span> *<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #4f97d7; font-weight: bold;">this</span> )
 <span style="color: #ce537a; font-weight: bold;">Point3d</span> <span style="color: #a45bad;">Point3d</span>::<span style="color: #bc6ec5; font-weight: bold;">magnitude</span>( <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">Point3d</span> *<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #4f97d7; font-weight: bold;">this</span> )
-step 2
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">step 2</span>
 {
-  <span style="color: #4f97d7; font-weight: bold;">return</span> sqrt(
-    <span style="color: #4f97d7; font-weight: bold;">this</span>-&gt;_x * <span style="color: #4f97d7; font-weight: bold;">this</span>-&gt;_x +
-    <span style="color: #4f97d7; font-weight: bold;">this</span>-&gt;_y * <span style="color: #4f97d7; font-weight: bold;">this</span>-&gt;_y +
-    <span style="color: #4f97d7; font-weight: bold;">this</span>-&gt;_z * <span style="color: #4f97d7; font-weight: bold;">this</span>-&gt;_z );
+  <span style="color: #4f97d7; font-weight: bold;">return</span> sqrt(<span style="color: #4f97d7; font-weight: bold;">this</span>-&gt;_x * <span style="color: #4f97d7; font-weight: bold;">this</span>-&gt;_x + <span style="color: #4f97d7; font-weight: bold;">this</span>-&gt;_y * <span style="color: #4f97d7; font-weight: bold;">this</span>-&gt;_y + <span style="color: #4f97d7; font-weight: bold;">this</span>-&gt;_z * <span style="color: #4f97d7; font-weight: bold;">this</span>-&gt;_z );
 }
-step 3
-<span style="color: #4f97d7; font-weight: bold;">extern</span> magnitude__7Point3dFv( <span style="color: #4f97d7; font-weight: bold;">register</span> <span style="color: #ce537a; font-weight: bold;">Point3d</span> *<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #4f97d7; font-weight: bold;">this</span> );
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">step 3</span>
+<span style="color: #4f97d7; font-weight: bold;">extern</span> <span style="color: #ce537a; font-weight: bold;">magnitude__7Point3dFv</span>( <span style="color: #4f97d7; font-weight: bold;">register</span> <span style="color: #ce537a; font-weight: bold;">Point3d</span> *<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #4f97d7; font-weight: bold;">this</span> );
 
-<span style="color: #ce537a; font-weight: bold;">&#20195;&#30721;&#20013;&#30340;&#36716;&#21270;</span>
-<span style="color: #bc6ec5; font-weight: bold;">obj</span>.magnitude(); &#21464;&#20026; <span style="color: #ce537a; font-weight: bold;">magnitude__7Point3dFv</span>( &amp;<span style="color: #7590db;">obj</span> );
-ptr-&gt;magnitude(); <span style="color: #ce537a; font-weight: bold;">&#21464;&#20026;</span> <span style="color: #bc6ec5; font-weight: bold;">magnitude__7Point3dFv</span>( ptr );
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20195;&#30721;&#20013;&#30340;&#36716;&#21270;</span>
+obj.magnitude();   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21464;&#20026; magnitude__7Point3dFv( &amp;obj );</span>
+ptr-&gt;magnitude();  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21464;&#20026; magnitude__7Point3dFv( ptr );</span>
 </pre>
 </div>
 </div>
@@ -1307,8 +1509,8 @@ ptr-&gt;magnitude(); <span style="color: #ce537a; font-weight: bold;">&#21464;&#
 <div class="outline-text-4" id="text-orgc85622a">
 <div class="org-src-container">
 <pre class="src src-cpp">ptr-&gt;normalize();
-&#19978;&#38754;&#30340;&#20195;&#30721;&#20250;&#34987;&#36716;&#25442;&#20026;&#19979;&#38754;&#30340;&#20195;&#30721;
-( * ptr-&gt;vptr[ 1 ])( ptr );
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19978;&#38754;&#30340;&#20195;&#30721;&#20250;&#34987;&#36716;&#25442;&#20026;&#19979;&#38754;&#30340;&#20195;&#30721;</span>
+(*ptr-&gt;vptr[1])( ptr );
 </pre>
 </div>
 </div>
@@ -1330,8 +1532,27 @@ ptr-&gt;magnitude(); <span style="color: #ce537a; font-weight: bold;">&#21464;&#
 <h4 id="org64606f0">无继承或单继承下的虚函数</h4>
 <div class="outline-text-4" id="text-org64606f0">
 <p>
-这一节原书讲的很精彩，看原书内容吧<br />
+当一个类包含虚函数时，该类支持多态。为了支持多态，编译器需要执行如下操作：<br />
 </p>
+<ol class="org-ol">
+<li>编译器为类构建一个虚函数表，其中包含了虚函数的地址。（一个类只会有一个虚函数表，其中含有类对象中所有激活的虚函数实体的地址）<br /></li>
+<li>每个类对象被安插一个编译器内部产生的指针，指向虚函数表格。<br /></li>
+<li>每个虚函数被指派一个表格索引值。<br /></li>
+</ol>
+
+
+<div class="figure">
+<p><img src="./InsideCPlusPlus/single_inherit_virtual_tbl.jpg" alt="single_inherit_virtual_tbl.jpg" /><br />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-cpp">ptr-&gt;z();  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25105;&#20204;&#19981;&#30693;&#36947;ptr&#25152;&#25351;&#30340;&#23545;&#35937;&#30340;&#30495;&#27491;&#31867;&#22411;&#65292;&#20294;&#26159;&#65292;&#25105;&#20204;&#30693;&#36947;&#65292;&#32463;&#30001;ptr&#21487;&#20197;&#35775;&#38382;&#21040;&#35813;&#23545;&#35937;&#30340;virtual table</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#34429;&#28982;&#65292;&#19981;&#30693;&#36947;&#21738;&#20010;z()&#20989;&#25968;&#30340;&#23454;&#20307;&#20250;&#34987;&#35843;&#29992;&#65292;&#20294;&#26159;&#25105;&#20204;&#30693;&#36947;&#27599;&#20010;z()&#20989;&#25968;&#22320;&#22336;&#37117;&#34987;&#25918;&#22312;slot4&#65292;&#22240;&#27492;&#65292;&#19978;&#38754;&#30340;&#20195;&#30721;&#34987;&#32534;&#35793;&#22120;&#36716;&#21270;&#20026;&#65306;</span>
+(ptr-&gt;vptr[4])(ptr);
+</pre>
+</div>
 </div>
 </div>
 <div id="outline-container-org7b5b87c" class="outline-4">
@@ -1370,28 +1591,20 @@ pder-&gt;mumble();
 <span style="color: #ce537a; font-weight: bold;">Base2</span> *<span style="color: #7590db;">pb2</span> = pb1-&gt;clone();
 </pre>
 </div>
-<p>
-这一节原书讲的很精彩，看原书内容吧<br />
-</p>
 </div>
 </div>
 <div id="outline-container-orgc3b3303" class="outline-4">
 <h4 id="orgc3b3303">虚拟继承下的虚函数</h4>
 <div class="outline-text-4" id="text-orgc3b3303">
 <p>
-这种情况很复杂，没有谈。<br />
+这种情况很复杂。<br />
 </p>
 </div>
 </div>
 </div>
 
 <div id="outline-container-org51782d6" class="outline-3">
-<h3 id="org51782d6">函数的效能</h3>
-<div class="outline-text-3" id="text-org51782d6">
-<p>
-具体细节看原书吧。<br />
-</p>
-</div>
+<h3 id="org51782d6"><span class="todo TODO">TODO</span> 函数的效能</h3>
 </div>
 <div id="outline-container-orgca33bce" class="outline-3">
 <h3 id="orgca33bce">指向成员函数的指针</h3>
@@ -1635,12 +1848,7 @@ vptr 初始化操作在基类构造函数调用完后，但是在程序员提供
 </div>
 </div>
 <div id="outline-container-orgdbc6058" class="outline-3">
-<h3 id="orgdbc6058">对象的效能</h3>
-<div class="outline-text-3" id="text-orgdbc6058">
-<p>
-具体细节看原书吧<br />
-</p>
-</div>
+<h3 id="orgdbc6058"><span class="todo TODO">TODO</span> 对象的效能</h3>
 </div>
 <div id="outline-container-orgfc3576b" class="outline-3">
 <h3 id="orgfc3576b">对象解构语义</h3>
@@ -1723,24 +1931,25 @@ C++程序中所有全局对象都被放置在程序的数据段中。如果明�
 如果类对象有默认构造函数，则需要在每个创建的类上执行该默认构造函数。<br />
 如果类对象有析构函数，则数组生命期结束时，会执行每个元素的析构函数。<br />
 </p>
-<pre class="example">
-void*
-vec_new(
-   void *array,      // address of start of array
-   size_t elem_size, // size of each class object
-   int elem_count,   // number of elements in array
-   void (*constructor)( void* ),
-   void (*destructor)( void*, char )
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #ce537a; font-weight: bold;">void</span>*
+<span style="color: #bc6ec5; font-weight: bold;">vec_new</span>(
+   <span style="color: #ce537a; font-weight: bold;">void</span> *<span style="color: #7590db;">array</span>,      <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">address of start of array</span>
+   <span style="color: #ce537a; font-weight: bold;">size_t</span> <span style="color: #7590db;">elem_size</span>, <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">size of each class object</span>
+   <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">elem_count</span>,   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">number of elements in array</span>
+   <span style="color: #ce537a; font-weight: bold;">void</span> (*<span style="color: #bc6ec5; font-weight: bold;">constructor</span>)( <span style="color: #ce537a; font-weight: bold;">void</span>* ),
+   <span style="color: #ce537a; font-weight: bold;">void</span> (*<span style="color: #bc6ec5; font-weight: bold;">destructor</span>)( <span style="color: #ce537a; font-weight: bold;">void</span>*, <span style="color: #ce537a; font-weight: bold;">char</span> )
 }
 
-void*
-vec_delete(
-   void *array,      // address of start of array
-   size_t elem_size, // size of each class object
-   int elem_count,   // number of elements in array
-   void (*destructor)( void*, char )
+<span style="color: #ce537a; font-weight: bold;">void</span>*
+<span style="color: #bc6ec5; font-weight: bold;">vec_delete</span>(
+   <span style="color: #ce537a; font-weight: bold;">void</span> *<span style="color: #7590db;">array</span>,      <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">address of start of array</span>
+   <span style="color: #ce537a; font-weight: bold;">size_t</span> <span style="color: #7590db;">elem_size</span>, <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">size of each class object</span>
+   <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">elem_count</span>,   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">number of elements in array</span>
+   <span style="color: #ce537a; font-weight: bold;">void</span> (*<span style="color: #bc6ec5; font-weight: bold;">destructor</span>)( <span style="color: #ce537a; font-weight: bold;">void</span>*, <span style="color: #ce537a; font-weight: bold;">char</span> )
 }
 </pre>
+</div>
 </div>
 </div>
 <div id="outline-container-org186ca06" class="outline-4">
@@ -1750,18 +1959,19 @@ vec_delete(
 为了支持数组对象初始化时，可调用类的含有默认参数的构造函数。编译器生成了一个不带任何参数的默认构造函数，然后在该函数内指定默认参数调用用户的<br />
 构造函数。<br />
 </p>
-<pre class="example">
-class complex {
-   complex(double=0.0, double=0.0);
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">complex</span> {
+   <span style="color: #bc6ec5; font-weight: bold;">complex</span>(<span style="color: #ce537a; font-weight: bold;">double</span>=0.0, <span style="color: #ce537a; font-weight: bold;">double</span>=0.0);
    ... 
 };
 
-// 编译器会合成下面的构造函数
-complex::complex()
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#32534;&#35793;&#22120;&#20250;&#21512;&#25104;&#19979;&#38754;&#30340;&#26500;&#36896;&#20989;&#25968;</span>
+<span style="color: #a45bad;">complex</span>::<span style="color: #bc6ec5; font-weight: bold;">complex</span>()
 {
    complex( 0.0, 0.0 );
 }
 </pre>
+</div>
 </div>
 </div>
 </div>
@@ -2004,12 +2214,7 @@ placement operator new 不支持多态。<br />
 <div class="outline-text-2" id="text-org342a2c5">
 </div>
 <div id="outline-container-orga44c619" class="outline-3">
-<h3 id="orga44c619">模板</h3>
-<div class="outline-text-3" id="text-orga44c619">
-<p>
-内容比较杂乱，看原书内容吧。<br />
-</p>
-</div>
+<h3 id="orga44c619"><span class="todo TODO">TODO</span> 模板</h3>
 </div>
 <div id="outline-container-org2492aae" class="outline-3">
 <h3 id="org2492aae">异常处理</h3>

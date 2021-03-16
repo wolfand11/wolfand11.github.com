@@ -1,0 +1,2166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2021-03-16 周二 14:37 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ASM</title>
+<meta name="generator" content="Org mode" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+           <meta name="viewport" content="width=device-width, initial-scale=1" />
+           <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/css/worg.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/css/worg-zenburn.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
+           <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2020 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href=""> UP </a>
+ |
+ <a accesskey="H" href="https://wolfand11.gitee.io"> HOME </a>
+</div><div id="content">
+<h1 class="title">ASM</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org96d0603">汇编语言</a>
+<ul>
+<li><a href="#orgc2adc9e">0 符号约定</a></li>
+<li><a href="#orgd85ad92">1 基础知识</a>
+<ul>
+<li><a href="#orgb0efacf">CPU读写操作</a></li>
+<li><a href="#org259726b">主板</a></li>
+<li><a href="#org6d84ecc">接口卡</a></li>
+<li><a href="#org133d682">各类存储芯片</a></li>
+<li><a href="#orgf87cd1f">内存地址空间</a></li>
+</ul>
+</li>
+<li><a href="#orgb29a24e">2 寄存器</a>
+<ul>
+<li><a href="#org0c93b10">通用寄存器</a></li>
+<li><a href="#org2f3825e">物理地址</a></li>
+<li><a href="#org7f73385">16位结构CPU</a></li>
+<li><a href="#org7e1d88f">物理地址合成</a></li>
+<li><a href="#orgdd3c66e">段寄存器</a>
+<ul>
+<li><a href="#org985fbd8">CS IP 寄存器</a></li>
+<li><a href="#org6e659f8">修改 CS, IP的指令</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org89652be">3 寄存器(内存访问)</a>
+<ul>
+<li><a href="#org86361e3">DS和[address]</a></li>
+<li><a href="#org8d5c171">字的传送</a></li>
+<li><a href="#orgd0ada62">mov add sub 指令</a></li>
+<li><a href="#org79c6776">CPU提供的栈机制</a></li>
+</ul>
+</li>
+<li><a href="#org3ba6d06">4 第一个程序</a></li>
+<li><a href="#org1a0e9a5">5 [BX]和loop指令</a>
+<ul>
+<li><a href="#org13ef466">[bx]</a></li>
+<li><a href="#org6e84871">loop</a></li>
+<li><a href="#org5234889">如何将ffff:0-ffff:b中的8位数据，累加到16位寄存器dx中？</a></li>
+<li><a href="#orga4f92d6">段前缀</a></li>
+</ul>
+</li>
+<li><a href="#org06c539a">6 包含多个段的程序</a></li>
+<li><a href="#org858df7d">7 更灵活的定位内存的方法</a>
+<ul>
+<li><a href="#orgd4ad176">and or</a></li>
+<li><a href="#orgf21d0d8">字符形式数据</a></li>
+<li><a href="#org1833207">[bx+idata]</a></li>
+<li><a href="#org1a075d5">si和di</a></li>
+<li><a href="#org670ad6c">[bx+si] [bx+di] [bx+idata+si] [bx+idata+di]</a></li>
+</ul>
+</li>
+<li><a href="#orgc27b769">8 数据处理的两个基本问题</a>
+<ul>
+<li><a href="#orgc2a0cbd">bx si di bp</a></li>
+<li><a href="#org00a7827">机器指令处理的数据在什么地方？</a></li>
+<li><a href="#org3fa83e9">寻址方式总结</a></li>
+<li><a href="#org8469c66">指令要处理的数据有多长？</a></li>
+<li><a href="#orgafa1c26">div 指令</a></li>
+</ul>
+</li>
+<li><a href="#org2091962">9 转移指令的原理</a>
+<ul>
+<li><a href="#org57c46a0">jmp</a>
+<ul>
+<li><a href="#orgde2d546">依据位移进行转移</a></li>
+<li><a href="#org25b865d">转移的目的地址在指令中</a></li>
+<li><a href="#org1d3e9dd">转移地址在寄存器中的jmp指令</a></li>
+<li><a href="#org707916c">转移地址在内存中的jmp指令</a></li>
+</ul>
+</li>
+<li><a href="#org77baa82">jcxz</a></li>
+<li><a href="#org4b42a86">loop</a></li>
+<li><a href="#org79d08ca">根据位移进行转移的意义</a></li>
+</ul>
+</li>
+<li><a href="#orgd49d5bc">10 Call和Ret指令</a>
+<ul>
+<li><a href="#org0ed85bd">ret 和 retf</a></li>
+<li><a href="#orgc24fdd2">call</a>
+<ul>
+<li><a href="#org7eb6e86">根据位移进行转移的call指令</a></li>
+<li><a href="#org4c968ef">转移的目的地址在指令中的call指令</a></li>
+<li><a href="#org3426b0b">转移地址在寄存器中的call指令</a></li>
+<li><a href="#org5d4ddc6">转移地址在内存中的 call指令</a></li>
+</ul>
+</li>
+<li><a href="#org90ac1d7">call 和 ret配合使用</a></li>
+<li><a href="#org7b8fcf7">mul</a></li>
+<li><a href="#org32d8ec3">参数和结果传递</a></li>
+</ul>
+</li>
+<li><a href="#org4366242">11 标志寄存器</a>
+<ul>
+<li><a href="#org3fb14a5">ZF 标志 Zero Flag</a></li>
+<li><a href="#org247a7b0">PF标志 Parity Flag</a></li>
+<li><a href="#org640b43c">SF标志 Sign Flag</a></li>
+<li><a href="#orgb012027">CF标志 Carry Flag</a></li>
+<li><a href="#org4a6a7ca">OF 标志 Overflow Flag</a></li>
+<li><a href="#orgea075fb">adc</a></li>
+<li><a href="#org067b45a">sbb</a></li>
+<li><a href="#orgbd8fc14">cmp</a></li>
+<li><a href="#org4618d5d">检测比较结果的条件转移指令</a></li>
+<li><a href="#orgb810a75">DF标志 Direction Flag</a></li>
+<li><a href="#orgfe0ccd7">pushf popf</a></li>
+</ul>
+</li>
+<li><a href="#orgdb548de">12 内中断</a>
+<ul>
+<li><a href="#org50b822d">中断类型码</a></li>
+<li><a href="#org0fc1793">中断向量表</a></li>
+<li><a href="#orgb3103f6">中断过程</a></li>
+<li><a href="#org9d73ddd">中断处理程序</a></li>
+<li><a href="#org980d971">除法错误中断的处理</a></li>
+<li><a href="#org8d995e6">单步中断</a></li>
+</ul>
+</li>
+<li><a href="#orgf666f2d">13 int指令</a>
+<ul>
+<li><a href="#orgb205490">BIOS和DOS中断例程的安装过程</a></li>
+<li><a href="#orgab3a968">BIOS中断例程应用</a></li>
+<li><a href="#org07ade29">DOS中断例程应用</a></li>
+</ul>
+</li>
+<li><a href="#org83815ac">14 端口</a>
+<ul>
+<li><a href="#orge92e20b">端口的读写</a></li>
+<li><a href="#org0751e3c">CMOS RAM芯片</a></li>
+<li><a href="#org913fbc2">shl shr指令</a></li>
+<li><a href="#org4c55be4">读取 CMOS RAM中时间信息</a></li>
+</ul>
+</li>
+<li><a href="#org54dd2c5">15 外中断</a></li>
+<li><a href="#orga5ac4d7">16 直接定址表</a>
+<ul>
+<li><a href="#org962cc79">描述单元长度的标号</a></li>
+<li><a href="#orgc3df6fd">在其他段中使用数据标号</a></li>
+<li><a href="#org256efc0">直接定址表</a></li>
+</ul>
+</li>
+<li><a href="#orgc2a3e73">17 使用BIOS进行键盘输入和磁盘读写</a></li>
+</ul>
+</li>
+<li><a href="#orgb1a918a">Misc</a>
+<ul>
+<li><a href="#orgd6d2696">VS 汇编语言开发环境搭建</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<p>
+ASM note.<br />
+</p>
+<div class="HTML">
+<p>
+&lt;!&#x2013; more &#x2013;&gt;<br />
+</p>
+
+</div>
+
+<div id="outline-container-org96d0603" class="outline-2">
+<h2 id="org96d0603">汇编语言</h2>
+<div class="outline-text-2" id="text-org96d0603">
+</div>
+<div id="outline-container-orgc2adc9e" class="outline-3">
+<h3 id="orgc2adc9e">0 符号约定</h3>
+<div class="outline-text-3" id="text-orgc2adc9e">
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">xxxx:yyyy &#34920;&#31034;&#20869;&#23384;&#22320;&#22336;</span>
+<span style="color: #bc6ec5; font-weight: bold;">2000</span>:<span style="color: #4f97d7; font-weight: bold;">1000</span>          <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#34920;&#31034;&#27573;&#22320;&#22336;&#20026;2000 &#20559;&#31227;&#22320;&#22336;&#20026;1000&#25152;&#25351;&#30340;&#20869;&#23384;&#22320;&#22336;</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">() &#34920;&#31034;&#23492;&#23384;&#22120;&#25110;&#20869;&#23384;&#20013;&#30340;&#20869;&#23481;</span>
+(ax)               <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#34920;&#31034;&#23492;&#23384;&#22120;ax&#20013;&#30340;&#20869;&#23481;</span>
+(2000:1000)        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#34920;&#31034;&#20869;&#23384;(2000:1000)&#22788;&#30340;&#20869;&#23481;</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">[...] &#34920;&#31034;&#20869;&#23384;&#21333;&#20803;</span>
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">bx</span>,1000H
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ds</span>,bx
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">al</span>,[0]  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#34920;&#31034;&#23558;1000:0&#20869;&#23384;&#21333;&#20803;&#20869;&#23481;&#36865;&#20837;al&#23492;&#23384;&#22120;</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">idata &#34920;&#31034;&#24120;&#37327;</span>
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,[idata]  <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">&#34920;&#31034;&#25226;&#24120;&#37327;idata&#25918;&#20837;ax&#23492;&#23384;&#22120;</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">reg &#34920;&#31034;&#19968;&#20010;&#23492;&#23384;&#22120; ax bx cx dx sp bp si di</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">sreg &#34920;&#31034;&#19968;&#20010;&#27573;&#23492;&#23384;&#22120; ds ss cs es</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">SA &#34920;&#31034;&#27573;&#22320;&#22336;segment address</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">EA &#34920;&#31034;&#20559;&#31227;&#22320;&#22336;excursion address</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;">/////////////////////////////////////////////////////</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#32534;&#35793;&#22120;&#35782;&#21035;&#22788;&#29702;&#30340;&#31526;&#21495;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">db &#34920;&#31034;define byte</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">dw &#34920;&#31034; define word</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">dd &#34920;&#31034; define double word</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">dup &#34920;&#31034; duplicate &#22797;&#21046;&#65292;&#20351;&#21152;&#20493;</span>
+<span style="color: #bc6ec5; font-weight: bold;">db</span> <span style="color: #4f97d7; font-weight: bold;">3</span> dup (0,1,2)  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">db 0,1,2, 0,1,2, 0,1,2</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">offset &#21462;&#24471;&#26631;&#21495;&#30340;&#20559;&#31227;&#22320;&#22336;</span>
+<span style="color: #bc6ec5; font-weight: bold;">assume</span> <span style="color: #4f97d7; font-weight: bold;">cs</span>:codesg
+<span style="color: #bc6ec5; font-weight: bold;">codesg</span> <span style="color: #4f97d7; font-weight: bold;">segment</span>
+    <span style="color: #4f97d7; font-weight: bold;">start</span>:
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,offset start    <span style="color: #2aa1ae; background-color: #292e34;">;</span><span style="color: #2aa1ae; background-color: #292e34;">// start&#26159;&#20195;&#30721;&#27573;&#20013;&#30340;&#26631;&#21495;&#65292;&#20854;&#26631;&#35760;&#30340;&#25351;&#20196;&#26159;&#20195;&#30721;&#27573;&#20013;&#30340;&#31532;&#19968;&#26465;&#25351;&#20196;&#65292;&#22240;&#27492;&#20559;&#31227;&#22320;&#22336;&#20026;0</span>
+    <span style="color: #4f97d7; font-weight: bold;">s</span>:
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,offset s        <span style="color: #2aa1ae; background-color: #292e34;">;</span><span style="color: #2aa1ae; background-color: #292e34;">// s&#26159;&#20195;&#30721;&#27573;&#20013;&#30340;&#26631;&#21495;&#65292;&#20854;&#26631;&#35760;&#30340;&#25351;&#20196;&#26159;&#20195;&#30721;&#27573;&#20013;&#30340;&#31532;&#20108;&#22825;&#25351;&#20196;&#65292;&#31532;&#19968;&#26465;&#25351;&#20196;&#38271;&#24230;&#20026;3&#23383;&#33410;&#65292;&#22240;&#27492;s&#30340;&#20559;&#31227;&#22320;&#22336;&#20026;3</span>
+<span style="color: #bc6ec5; font-weight: bold;">codesg</span> <span style="color: #4f97d7; font-weight: bold;">ends</span>
+<span style="color: #bc6ec5; font-weight: bold;">end</span> <span style="color: #4f97d7; font-weight: bold;">start</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgd85ad92" class="outline-3">
+<h3 id="orgd85ad92">1 基础知识</h3>
+<div class="outline-text-3" id="text-orgd85ad92">
+<p>
+CPU是计算机的核心部件，它控制整个计算机的运作并进行运算。要想让CPU工作，就必须向它提供指令和数据。指令和数据在存储器中存放，也就是我们平常所说的内存。磁盘不同于内存，磁盘上的数据或程序如果不读到内存中，就无法被CPU使用。<br />
+指令和数据是应用上的概念。在内存或磁盘上，指令和数据没有任何区别，都是二进制信息。<br />
+存储器被划分为若干个存储单元，每个存储单元存储8位（1字节）数据。<br />
+</p>
+</div>
+<div id="outline-container-orgb0efacf" class="outline-4">
+<h4 id="orgb0efacf">CPU读写操作</h4>
+<div class="outline-text-4" id="text-orgb0efacf">
+<p>
+CPU要想进行数据读写，必须和外部器件进行下面3类信息的交互：<br />
+</p>
+<ol class="org-ol">
+<li>存储单元的地址          (地址信息)<br /></li>
+<li>器件的选择，读或写的命令 (控制信息)<br /></li>
+<li>读或写的数据            (数据信息)<br /></li>
+</ol>
+
+<p>
+CPU通过总线和其他芯片进行数据传输。总线从逻辑上分为3类：<br />
+</p>
+<ol class="org-ol">
+<li>地址总线  CPU通过地址总线将地址信息发出<br /></li>
+<li>控制总线  CPU通过控制总线选中芯片，并通知其，要对其进行读或写操作<br /></li>
+<li>数据总线  CPU和其他芯片通过数据总线互发数据<br /></li>
+</ol>
+
+<p>
+地址总线的宽度决定了CPU最多可寻址的范围。例如：地址总线有10根导线，则CPU可寻址 \(2^10=1024\) 个内存单元，内存的最大大小就为 1024字节，这就构成了该CPU的内存地址空间。<br />
+数据总线的宽度决定了CPU和外界的数据传输速度。例如：数据总线有8根导线，则数据总线一次可传输8位（1字节）信息。<br />
+控制总线的宽度决定了 CPU对外部器件的控制能力。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org259726b" class="outline-4">
+<h4 id="org259726b">主板</h4>
+<div class="outline-text-4" id="text-org259726b">
+<p>
+每台计算机中，都有一个主板，主板上有核心器件和一些主要器件，这些器件通过总线相连。这些器件有CPU、存储器、外围芯片组、扩展插槽等。扩展插槽上一般插有RAM内存条和各类接口卡。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org6d84ecc" class="outline-4">
+<h4 id="org6d84ecc">接口卡</h4>
+<div class="outline-text-4" id="text-org6d84ecc">
+<p>
+计算机系统中，所有可以用程序控制其工作的设备，必须受到CPU的控制。CPU对外部设备都不能直接控制，如显示器、音响、打印机等。直接控制这些设备进行工作的是插在扩展插槽上的接口卡。扩展插槽通过总线和CPU相连，所以接口卡也通过总线同CPU相连。CPU可以直接控制这些接口卡，从而实现对外设的间接控制。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org133d682" class="outline-4">
+<h4 id="org133d682">各类存储芯片</h4>
+<div class="outline-text-4" id="text-org133d682">
+<p>
+计算机上有多个存储器芯片，这些存储器芯片从物理连接上看是独立的，不同器件。从读写属性上看分为两类：<br />
+</p>
+<ol class="org-ol">
+<li>随机存储器(RAM)： 可读可写，但必须带点存储，关机后内容丢失<br /></li>
+<li>制度存储器(ROM)： 只能读不可写，关机后内容不丢失。<br /></li>
+</ol>
+<p>
+从功能和连接上又可分为：<br />
+</p>
+<ol class="org-ol">
+<li>随机存储器： 用于存放CPU使用的绝大部分程序和数据<br /></li>
+<li>装有BIOS（Basic Input/Output System）的ROM：BIOS是主板和各类接口卡厂商提供的软件系统，可通过它利用该硬件设备进行最基本的输入输出。<br /></li>
+<li>接口卡上的RAM：例如GPU的显存<br /></li>
+</ol>
+
+
+<div class="figure">
+<p><img src="./ASM/memory-chip.jpg" alt="memory-chip.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf87cd1f" class="outline-4">
+<h4 id="orgf87cd1f">内存地址空间</h4>
+<div class="outline-text-4" id="text-orgf87cd1f">
+<p>
+上面描述的存储器，在物理上是独立的器件，但是在下面两点上是相同的：<br />
+</p>
+<ol class="org-ol">
+<li>都和CPU的总线相连<br /></li>
+<li>CPU对它们进行读或写的时候都通过总线发出内存读写命令<br /></li>
+</ol>
+<p>
+CPU对他们进行操控时，把他们都当作内存来对待，把他们总的看作一个由若干存储单元组成的逻辑存储器。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgb29a24e" class="outline-3">
+<h3 id="orgb29a24e">2 寄存器</h3>
+<div class="outline-text-3" id="text-orgb29a24e">
+</div>
+<div id="outline-container-org0c93b10" class="outline-4">
+<h4 id="org0c93b10">通用寄存器</h4>
+<div class="outline-text-4" id="text-org0c93b10">
+<p>
+8086CPU的所有寄存器都是16位(2个字节)的。AX BX CX DX这四个寄存器通常用来存放一般性的数据，被称为通用寄存器。8086CPU上一代CPU中的寄存器都是8位，为了保证兼容，AX BX CX DX这四个寄存器每个都可分为两个可独立使用的8位寄存器来用：<br />
+AX可分为AH和AL;<br />
+BX可分为BH和BL;<br />
+CX可分为CH和CL;<br />
+DX可分为DH和DL;<br />
+</p>
+
+<p>
+下图展示了几个简单的汇编指令：<br />
+<img src="./ASM/mov-add.jpg" alt="mov-add.jpg" /><br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org2f3825e" class="outline-4">
+<h4 id="org2f3825e">物理地址</h4>
+<div class="outline-text-4" id="text-org2f3825e">
+<p>
+所有内存单元构成的存储空间使一个一维线性空间，每个内存单元在空间中都有唯一的地址，该地址被称为物理地址。<br />
+CPU通过地址总线送入存储器的必须是一个内存单元的物理地址。<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org7f73385" class="outline-4">
+<h4 id="org7f73385">16位结构CPU</h4>
+<div class="outline-text-4" id="text-org7f73385">
+<ul class="org-ul">
+<li>运算器一次最多可以处理16位数据<br /></li>
+<li>寄存器的最大宽度为16位<br /></li>
+<li>寄存器和运算器之间的通路为16位<br /></li>
+</ul>
+<p>
+8086CPU就是16位机，8080、8085是8位机<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org7e1d88f" class="outline-4">
+<h4 id="org7e1d88f">物理地址合成</h4>
+<div class="outline-text-4" id="text-org7e1d88f">
+<p>
+8086CPU有20位地址总线，其在内部用两个16位地址合成的方法来形成一个20位的物理地址。<br />
+</p>
+<ol class="org-ol">
+<li>CPU中相关部件提供两个16位地址，一个称为段地址，另一个称为偏移地址<br /></li>
+<li>段地址和偏移地址通过内部总线送入一个称为地址加法器的部件<br /></li>
+<li>地址加法器将两个16位地址合成为一个20位地址<br /></li>
+<li>地址加法器通过内部总线将20位物理地址送入输入输出控制电路<br /></li>
+<li>输入输出控制电路将20位物理地址送上地址总线<br /></li>
+<li>20位物理地址被地址总线传送到存储器<br /></li>
+</ol>
+
+
+<div class="figure">
+<p><img src="./ASM/gen-memory-addr.jpg" alt="gen-memory-addr.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgdd3c66e" class="outline-4">
+<h4 id="orgdd3c66e">段寄存器</h4>
+<div class="outline-text-4" id="text-orgdd3c66e">
+<p>
+段是CPU中合成物理地址用到的概念。在编程时可以根据需要，将若干地址连续的内存单元看作一个段，用段地址*16定位段的起始地址，用偏移地址定位段中的内存单元。<br />
+</p>
+<ul class="org-ul">
+<li>段地址*16必然是16的倍数<br /></li>
+<li>偏移地址为16位，16位地址的寻址能力为64KB，所以一个段的长度最大为64K<br /></li>
+</ul>
+
+<p>
+8086CPU有4个段寄存器：CS DS SS ES，合成物理地址时，由他们提供段地址。<br />
+</p>
+
+<p>
+代码段、数据段、栈段 都是我们在编程时，设计的逻辑概念。<br />
+</p>
+</div>
+<div id="outline-container-org985fbd8" class="outline-5">
+<h5 id="org985fbd8">CS IP 寄存器</h5>
+<div class="outline-text-5" id="text-org985fbd8">
+<p>
+任意时刻，CS中的内容为M，IP(指令指针寄存器)中的内容为N，CPU将从内存 M*16+N单元开始，读取一条指令并执行。<br />
+8086CPU的工作过程如下：<br />
+</p>
+<ol class="org-ol">
+<li>从CS:IP指向的内存单元读取指令，读取的指令进入指令缓冲器<br /></li>
+<li>IP = IP + 所读指令的长度，此时CS*16+IP就指向下一条指令了<br /></li>
+<li>执行指令。转到步骤1，重复此过程<br /></li>
+</ol>
+</div>
+</div>
+
+<div id="outline-container-org6e659f8" class="outline-5">
+<h5 id="org6e659f8">修改 CS, IP的指令</h5>
+<div class="outline-text-5" id="text-org6e659f8">
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21516;&#26102;&#20462;&#25913;cs ip&#23492;&#23384;&#22120;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">jmp &#27573;&#22320;&#22336;:&#20559;&#31227;&#22320;&#22336;</span>
+<span style="color: #bc6ec5; font-weight: bold;">jmp</span> <span style="color: #4f97d7; font-weight: bold;">2AE3</span>:3 <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25191;&#34892;&#21518;cs=2AE3 ip=0003</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21482;&#20462;&#25913;ip&#23492;&#23384;&#22120;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">jmp &#26576;&#23492;&#23384;&#22120;,</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25191;&#34892;&#21069; cs=2000 ip=0003 ax=1000</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25191;&#34892;&#21518; cs=2000 ip=1000 ax=1000</span>
+<span style="color: #bc6ec5; font-weight: bold;">jmp</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org89652be" class="outline-3">
+<h3 id="org89652be">3 寄存器(内存访问)</h3>
+<div class="outline-text-3" id="text-org89652be">
+</div>
+<div id="outline-container-org86361e3" class="outline-4">
+<h4 id="org86361e3">DS和[address]</h4>
+<div class="outline-text-4" id="text-org86361e3">
+<p>
+DS寄存器通常用来存放要访问数据的段地址。<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19979;&#38754;&#30340;mov &#25351;&#20196;&#21487;&#20197;&#23558;&#20869;&#23384;&#21333;&#20803;&#20013;&#30340;&#20869;&#23481;&#36865;&#20837;&#19968;&#20010;&#23492;&#23384;&#22120;&#20013;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">mov &#23492;&#23384;&#22120;,[offset]  // ds&#23492;&#23384;&#22120;&#20869;&#23481;&#20026;&#27573;&#22320;&#22336;&#65292;offset&#20026;&#20559;&#31227;&#22320;&#22336;&#65292;&#20004;&#32773;&#21512;&#36215;&#26469;&#26631;&#35782;&#20986;&#20869;&#23384;&#21333;&#20803;&#22320;&#22336;</span>
+
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">bx</span>,1000H   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;1000&#25918;&#20837;bx&#23492;&#23384;&#22120;</span>
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ds</span>,bx      <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;bx&#23492;&#23384;&#22120;&#20869;&#23481;&#25918;&#20837;ds&#23492;&#23384;&#22120;</span>
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">al</span>,[0]     <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;&#20869;&#23384;&#21333;&#20803;&#25968;&#25454;&#36865;&#20837;&#23492;&#23384;&#22120;al</span>
+</pre>
+</div>
+
+<p>
+Tips: 8086CPU不支持将数据直接送入段寄存器<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org8d5c171" class="outline-4">
+<h4 id="org8d5c171">字的传送</h4>
+<div class="outline-text-4" id="text-org8d5c171">
+<p>
+只要在mov指令中给出16位的寄存器就可以进行16位数据的传送了<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">bx</span>,1000H
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ds</span>,bx
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,[0]  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;1000:0&#22788;&#30340;&#23383;&#36865;&#20837;ax</span>
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> [0],cx  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;cx&#20013;16&#20301;&#25968;&#25454;&#36865;&#21040;1000:0</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgd0ada62" class="outline-4">
+<h4 id="orgd0ada62">mov add sub 指令</h4>
+<div class="outline-text-4" id="text-orgd0ada62">
+<p>
+mov 寄存器,数据<br />
+mov 寄存器,寄存器<br />
+mov 寄存器,段寄存器<br />
+mov 寄存器,内存单元<br />
+mov 内存单元,寄存器<br />
+mov 内存单元,段寄存器<br />
+mov 段寄存器,寄存器<br />
+mov 段寄存器,内存单元<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org79c6776" class="outline-4">
+<h4 id="org79c6776">CPU提供的栈机制</h4>
+<div class="outline-text-4" id="text-org79c6776">
+<p>
+8086CPU提供相关指令来以栈的方式访问内存空间，编程时，可以将一段内存当作栈来使用，入栈和出栈操作都是以字为单位进行的。<br />
+段寄存器SS存放栈顶段地址，寄存器SP存放偏移地址。任意时刻SS:SP指向栈顶元素。<br />
+当栈空时，继续出栈会导致越界，当栈满时，继续入栈也会导致越界，8086CPU对越界没有保护，因此，需要我们自己避免越界。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">push</span> <span style="color: #4f97d7; font-weight: bold;">ax</span> <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#34920;&#31034;&#23558;&#23492;&#23384;&#22120;ax&#20013;&#30340;&#25968;&#25454;&#36865;&#20837;&#26632;&#20013;</span>
+<span style="color: #bc6ec5; font-weight: bold;">pop</span>  <span style="color: #4f97d7; font-weight: bold;">ax</span> <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#34920;&#31034;&#20174;&#26632;&#39030;&#21462;&#20986;&#25968;&#25454;&#36865;&#20837;ax</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21033;&#29992;push pop &#21487;&#20197;&#22312;&#20869;&#23384;&#21333;&#20803;&#20043;&#38388;&#20256;&#36865;&#25968;&#25454;</span>
+<span style="color: #bc6ec5; font-weight: bold;">push</span> <span style="color: #4f97d7; font-weight: bold;">&#20869;&#23384;&#21333;&#20803;</span>   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;&#19968;&#20010;&#20869;&#23384;&#23383;&#21333;&#20803;&#22788;&#30340;&#23383;&#20837;&#26632;</span>
+<span style="color: #bc6ec5; font-weight: bold;">pop</span>  <span style="color: #4f97d7; font-weight: bold;">&#20869;&#23384;&#21333;&#20803;</span>   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#29992;&#19968;&#20010;&#20869;&#23384;&#23383;&#21333;&#20803;&#25509;&#25910;&#20986;&#26632;&#25968;&#25454;</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org3ba6d06" class="outline-3">
+<h3 id="org3ba6d06">4 第一个程序</h3>
+<div class="outline-text-3" id="text-org3ba6d06">
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #4f97d7; font-weight: bold;">.386</span>
+<span style="color: #4f97d7; font-weight: bold;">.model</span>  flat,c
+<span style="color: #4f97d7; font-weight: bold;">.code</span> 
+<span style="color: #bc6ec5; font-weight: bold;">start</span>:            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#30456;&#24403;&#20110;c&#35821;&#35328;&#30340;main&#20989;&#25968;&#65292;&#27719;&#32534;&#31243;&#24207;&#30340;&#20837;&#21475;&#28857;</span>
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> eax,1h
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ebx,2h
+    <span style="color: #4f97d7; font-weight: bold;">add</span> eax,ebx
+<span style="color: #bc6ec5; font-weight: bold;">end</span> <span style="color: #4f97d7; font-weight: bold;">start</span>
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">assume</span> <span style="color: #4f97d7; font-weight: bold;">cs</span>:my_code_sg  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;my_code_sg&#27573;&#21644;cs&#23492;&#23384;&#22120;&#30456;&#20851;&#32852;&#65292;&#20063;&#23601;&#26159;&#35828; my_code_sg&#20026;&#20195;&#30721;&#27573;</span>
+
+<span style="color: #bc6ec5; font-weight: bold;">my_code_sg</span> <span style="color: #4f97d7; font-weight: bold;">segment</span>    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23450;&#20041;&#27573;</span>
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,2000H
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ss,ax
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> sp,0
+    <span style="color: #4f97d7; font-weight: bold;">add</span> sp,10
+    <span style="color: #4f97d7; font-weight: bold;">pop</span> ax
+    <span style="color: #4f97d7; font-weight: bold;">pop</span> bx
+    <span style="color: #4f97d7; font-weight: bold;">push</span> ax
+    <span style="color: #4f97d7; font-weight: bold;">push</span> bx
+    <span style="color: #4f97d7; font-weight: bold;">pop</span> ax
+    <span style="color: #4f97d7; font-weight: bold;">pop</span> bx
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,4c00H
+    <span style="color: #4f97d7; font-weight: bold;">int</span> 21H
+<span style="color: #bc6ec5; font-weight: bold;">my_code_sg</span> <span style="color: #4f97d7; font-weight: bold;">ends</span>       <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#27573;&#32467;&#26463;</span>
+
+<span style="color: #bc6ec5; font-weight: bold;">end</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org1a0e9a5" class="outline-3">
+<h3 id="org1a0e9a5">5 [BX]和loop指令</h3>
+<div class="outline-text-3" id="text-org1a0e9a5">
+</div>
+<div id="outline-container-org13ef466" class="outline-4">
+<h4 id="org13ef466">[bx]</h4>
+<div class="outline-text-4" id="text-org13ef466">
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,[bx]  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;&#20869;&#23384;&#21333;&#20803;&#30340;&#20869;&#23481;&#36865;&#20837;ax&#65292;&#20869;&#23384;&#21333;&#20803;&#30340;&#38271;&#24230;&#20026;2&#65292;&#20869;&#23384;&#21333;&#20803;&#30340;&#27573;&#22320;&#22336;&#22312;ds&#20013;&#65292;&#20559;&#31227;&#22320;&#22336;&#22312;bx&#20013;</span>
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> [bx],ax  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;&#23492;&#23384;&#22120;ax&#20869;&#23481;&#36865;&#20837;&#20869;&#23384;&#21333;&#20803;&#65292;&#20869;&#23384;&#21333;&#20803;&#30340;&#27573;&#22320;&#22336;&#22312;ds&#20013;&#65292;&#20559;&#31227;&#22320;&#22336;&#22312;bx&#20013;</span>
+<span style="color: #bc6ec5; font-weight: bold;">inc</span> <span style="color: #4f97d7; font-weight: bold;">bx</span>       <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;bx&#20013;&#20869;&#23481;&#21152;1</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org6e84871" class="outline-4">
+<h4 id="org6e84871">loop</h4>
+<div class="outline-text-4" id="text-org6e84871">
+<p>
+loop 标号<br />
+CPU执行loop指令时，首先会执行(cx)=(cx)-1，然后判断cx中的值，不为0则转至标号处执行程序，为0则继续向下执行。<br />
+</p>
+
+<p>
+Tips: (cx)表示cx寄存器中的内容<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">assume</span> <span style="color: #4f97d7; font-weight: bold;">cs</span>:code
+<span style="color: #bc6ec5; font-weight: bold;">code</span> <span style="color: #4f97d7; font-weight: bold;">segment</span>
+  <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,2
+  <span style="color: #4f97d7; font-weight: bold;">mov</span> cx,11
+  <span style="color: #4f97d7; font-weight: bold;">s</span>: add ax,ax
+  <span style="color: #4f97d7; font-weight: bold;">loop</span> s
+  <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,4c00h
+  <span style="color: #4f97d7; font-weight: bold;">int</span> 21h
+<span style="color: #bc6ec5; font-weight: bold;">code</span> <span style="color: #4f97d7; font-weight: bold;">ends</span>
+<span style="color: #bc6ec5; font-weight: bold;">end</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org5234889" class="outline-4">
+<h4 id="org5234889">如何将ffff:0-ffff:b中的8位数据，累加到16位寄存器dx中？</h4>
+<div class="outline-text-4" id="text-org5234889">
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#26041;&#27861;1: </span>
+(dx) <span style="color: #4f97d7; font-weight: bold;">=</span> (dx)+&#20869;&#23384;&#20013;8&#20301;&#25968;&#25454;  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20004;&#20010;&#36816;&#31639;&#23545;&#35937;&#30340;&#31867;&#22411;&#19981;&#21305;&#37197;</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#26041;&#27861;2: </span>
+(dl) <span style="color: #4f97d7; font-weight: bold;">=</span> (dl)+&#20869;&#23384;&#20013;8&#20301;&#25968;&#25454;  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#32467;&#26524;&#21487;&#33021;&#36234;&#30028;</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#27491;&#30830;&#30340;&#26041;&#27861;&#65306;</span>
+(ax) <span style="color: #4f97d7; font-weight: bold;">=</span> &#20869;&#23384;&#20013;8&#20301;&#25968;&#25454; 
+(dx)=(dx)+(ax)
+</pre>
+</div>
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">assume</span> <span style="color: #4f97d7; font-weight: bold;">cs</span>:code
+<span style="color: #bc6ec5; font-weight: bold;">code</span> <span style="color: #4f97d7; font-weight: bold;">segment</span>
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,0ffffH
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ds,ax
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> bx,0                  <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#21021;&#22987;&#21270;ds:bx&#25351;&#21521;ffff:0</span>
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> dx,0                  <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#21021;&#22987;&#21270;&#32047;&#21152;&#23492;&#23384;&#22120;dx (dx)=0</span>
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> cx,12                 <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#21021;&#22987;&#21270;&#24490;&#29615;&#35745;&#25968;&#23492;&#23384;&#22120; cx (cx)=12</span>
+<span style="color: #bc6ec5; font-weight: bold;">s</span>:  <span style="color: #4f97d7; font-weight: bold;">mov</span> al,[bx]               <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;ds:bx&#20869;&#23384;&#20013;&#25968;&#25454;&#36865;&#20837;al</span>
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ah,0                  <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;ax&#39640;&#20301;&#32622;0</span>
+    <span style="color: #4f97d7; font-weight: bold;">add</span> dx,ax                 <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">(dx)=(dx)+(ax)</span>
+    <span style="color: #4f97d7; font-weight: bold;">inc</span> bx                    <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;&#20869;&#23384;&#20559;&#31227;&#22320;&#22336;&#21152;1</span>
+    <span style="color: #4f97d7; font-weight: bold;">loop</span> s                    <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#24490;&#29615;s</span>
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,4c00h
+    <span style="color: #4f97d7; font-weight: bold;">int</span> 21h
+<span style="color: #bc6ec5; font-weight: bold;">code</span> <span style="color: #4f97d7; font-weight: bold;">ends</span>
+<span style="color: #bc6ec5; font-weight: bold;">end</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orga4f92d6" class="outline-4">
+<h4 id="orga4f92d6">段前缀</h4>
+<div class="outline-text-4" id="text-orga4f92d6">
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;&#20869;&#23384;&#21333;&#20803;&#36865;&#20837;ax&#23492;&#23384;&#22120;</span>
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,ds:[bx]
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,cs:[bx]
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,ss:[bx]
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,es:[bx]
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,ss:[0]
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,cs:[0]
+</pre>
+</div>
+
+<p>
+在实模式DOS下，可以直接利用汇编语言去操作真实的硬件。Dos方式下，一般情况，0:200~0:2ff空间(256字节大小)中没有系统或其他程序的数据。<br />
+Windows 2000，Unix是运行于CPU保护模式下的操作系统，不理会操作系统，用汇编语言去操作真实的硬件是根本不可能的。硬件已被这些操作系统利用CPU保护模式所提供的功能全面而严格地管理了。<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;&#20869;&#23384;ffff:0~ffff:b&#21333;&#20803;&#20013;&#30340;&#25968;&#25454;&#22797;&#21046;&#21040;0:200~0:20b&#21333;&#20803;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Tips: 0:200~0:20b &#21333;&#20803;&#31561;&#21516;&#20110; 0020:0~0020:b&#21333;&#20803;&#65288;&#21069;&#38754;&#34920;&#31034;&#22320;&#22336;&#30340;&#25968;&#37117;&#26159;16&#36827;&#21046;&#25968;&#65289;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">0:200  --&gt; (0*16 + 2*16*16 + 0 + 0) = 512</span>
+<span style="color: #2aa1ae; background-color: #292e34;">//   </span><span style="color: #2aa1ae; background-color: #292e34;">20b  --&gt; (0*16 + 2*16*16 + 0 + b) = 512+11 = 523</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">0020:0 --&gt; (2*16*16 + 0) = 512</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">0020:b --&gt; (2*16*16 + b) = 512+11 = 523</span>
+
+<span style="color: #bc6ec5; font-weight: bold;">assume</span> <span style="color: #4f97d7; font-weight: bold;">cs</span>:code
+<span style="color: #bc6ec5; font-weight: bold;">code</span> <span style="color: #4f97d7; font-weight: bold;">segment</span>
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,0ffffH
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ds,ax
+
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,0020H
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> es,ax
+
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> bx,0
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> cx,12            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#24490;&#29615;12&#27425;</span>
+<span style="color: #bc6ec5; font-weight: bold;">s</span>:  <span style="color: #4f97d7; font-weight: bold;">mov</span> dl,[bx]          <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;ffff:bx&#20013;&#25968;&#25454;&#36865;&#20837;dl</span>
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> es:[bx],dl       <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;dl&#20013;&#30340;&#25968;&#25454;&#36865;&#20837; 0020:bx</span>
+    <span style="color: #4f97d7; font-weight: bold;">inc</span> bx
+    <span style="color: #4f97d7; font-weight: bold;">loop</span> s
+
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,4c00h
+    <span style="color: #4f97d7; font-weight: bold;">int</span> 21h
+<span style="color: #bc6ec5; font-weight: bold;">code</span> <span style="color: #4f97d7; font-weight: bold;">ends</span>
+<span style="color: #bc6ec5; font-weight: bold;">end</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org06c539a" class="outline-3">
+<h3 id="org06c539a">6 包含多个段的程序</h3>
+<div class="outline-text-3" id="text-org06c539a">
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21033;&#29992;&#26632;&#23545;&#23450;&#20041;&#30340;&#25968;&#25454;&#65292;&#36870;&#24207;&#23384;&#25918;</span>
+<span style="color: #bc6ec5; font-weight: bold;">assume</span> <span style="color: #4f97d7; font-weight: bold;">cs</span>:codesg
+<span style="color: #bc6ec5; font-weight: bold;">codesg</span> <span style="color: #4f97d7; font-weight: bold;">segement</span>
+    <span style="color: #4f97d7; font-weight: bold;">dw</span> 0123H,0456H,0789H,0abcH,0defH,0fedH,0cbaH,0987H  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#29992;dw&#23450;&#20041;8&#20010;&#23383;&#22411;&#25968;&#25454;</span>
+    <span style="color: #4f97d7; font-weight: bold;">dw</span> 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0               <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#29992; dw&#23450;&#20041;16&#20010;&#23383;&#22411;&#25968;&#25454;</span>
+
+<span style="color: #bc6ec5; font-weight: bold;">start</span>:
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,cs
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ss,ax
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> sp,30H        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;&#26632;&#39030;ss:sp&#25351;&#21521;cs:30H 30H=3*16+0</span>
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> bx,0
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> cx,8
+<span style="color: #bc6ec5; font-weight: bold;">s</span>:  
+    <span style="color: #4f97d7; font-weight: bold;">push</span> cs:[bx]
+    <span style="color: #4f97d7; font-weight: bold;">add</span> bx,2
+    <span style="color: #4f97d7; font-weight: bold;">loop</span> s
+
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> bx,0
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> cx,8
+<span style="color: #bc6ec5; font-weight: bold;">s0</span>: 
+    <span style="color: #4f97d7; font-weight: bold;">pop</span> cs:[bx]
+    <span style="color: #4f97d7; font-weight: bold;">add</span> bx,2
+    <span style="color: #4f97d7; font-weight: bold;">loop</span> s0
+
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,4c00H
+    <span style="color: #4f97d7; font-weight: bold;">int</span> 21H
+<span style="color: #bc6ec5; font-weight: bold;">codesg</span> <span style="color: #4f97d7; font-weight: bold;">ends</span>
+<span style="color: #bc6ec5; font-weight: bold;">end</span> <span style="color: #4f97d7; font-weight: bold;">start</span>
+</pre>
+</div>
+<p>
+将数据 代码 栈放在不同的段<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">assume</span> <span style="color: #4f97d7; font-weight: bold;">cs</span>:code, ds:data, ss:stack
+<span style="color: #bc6ec5; font-weight: bold;">data</span> <span style="color: #4f97d7; font-weight: bold;">segment</span>
+    <span style="color: #4f97d7; font-weight: bold;">dw</span> 0123H,0456H,0789H,0abcH,0defH,0fedH,0cbaH,0987H  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#29992;dw&#23450;&#20041;8&#20010;&#23383;&#22411;&#25968;&#25454;</span>
+<span style="color: #bc6ec5; font-weight: bold;">data</span> <span style="color: #4f97d7; font-weight: bold;">ends</span>
+<span style="color: #bc6ec5; font-weight: bold;">stack</span> <span style="color: #4f97d7; font-weight: bold;">segment</span>
+    <span style="color: #4f97d7; font-weight: bold;">dw</span> 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0               <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#29992; dw&#23450;&#20041;16&#20010;&#23383;&#22411;&#25968;&#25454;</span>
+<span style="color: #bc6ec5; font-weight: bold;">stack</span> <span style="color: #4f97d7; font-weight: bold;">ends</span>
+<span style="color: #bc6ec5; font-weight: bold;">code</span> <span style="color: #4f97d7; font-weight: bold;">segment</span>
+<span style="color: #bc6ec5; font-weight: bold;">start</span>:
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,stack
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ss,ax
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> sp,20H
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,data
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ds,ax
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> bx,0
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> cx,8
+<span style="color: #bc6ec5; font-weight: bold;">s</span>:  
+    <span style="color: #4f97d7; font-weight: bold;">push</span> [bx]
+    <span style="color: #4f97d7; font-weight: bold;">add</span> bx,2
+    <span style="color: #4f97d7; font-weight: bold;">loop</span> s
+
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> bx,0
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> cx,8
+<span style="color: #bc6ec5; font-weight: bold;">s0</span>: 
+    <span style="color: #4f97d7; font-weight: bold;">pop</span> [bx]
+    <span style="color: #4f97d7; font-weight: bold;">add</span> bx,2
+    <span style="color: #4f97d7; font-weight: bold;">loop</span> s0
+
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,4c00H
+    <span style="color: #4f97d7; font-weight: bold;">int</span> 21H
+<span style="color: #bc6ec5; font-weight: bold;">code</span> <span style="color: #4f97d7; font-weight: bold;">ends</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org858df7d" class="outline-3">
+<h3 id="org858df7d">7 更灵活的定位内存的方法</h3>
+<div class="outline-text-3" id="text-org858df7d">
+</div>
+<div id="outline-container-orgd4ad176" class="outline-4">
+<h4 id="orgd4ad176">and or</h4>
+<div class="outline-text-4" id="text-orgd4ad176">
+<p>
+逻辑与，逻辑或指令<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgf21d0d8" class="outline-4">
+<h4 id="orgf21d0d8">字符形式数据</h4>
+<div class="outline-text-4" id="text-orgf21d0d8">
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">assume</span> <span style="color: #4f97d7; font-weight: bold;">cs</span>:code, ds:data
+<span style="color: #bc6ec5; font-weight: bold;">data</span> <span style="color: #4f97d7; font-weight: bold;">segment</span>
+    <span style="color: #4f97d7; font-weight: bold;">db</span> 'unIX'
+    <span style="color: #4f97d7; font-weight: bold;">db</span> 'foRK'
+<span style="color: #bc6ec5; font-weight: bold;">data</span> <span style="color: #4f97d7; font-weight: bold;">ends</span>
+<span style="color: #bc6ec5; font-weight: bold;">code</span> <span style="color: #4f97d7; font-weight: bold;">segment</span>
+<span style="color: #bc6ec5; font-weight: bold;">start</span>:
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> al,'a'
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> bl,'b'
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,4c00H
+    <span style="color: #4f97d7; font-weight: bold;">int</span> 21H
+<span style="color: #bc6ec5; font-weight: bold;">code</span> <span style="color: #4f97d7; font-weight: bold;">ends</span>
+<span style="color: #bc6ec5; font-weight: bold;">end</span> <span style="color: #4f97d7; font-weight: bold;">start</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org1833207" class="outline-4">
+<h4 id="org1833207">[bx+idata]</h4>
+<div class="outline-text-4" id="text-org1833207">
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19979;&#38754;&#25351;&#20196;&#31561;&#20215;&#65292;&#37117;&#26159;&#23558;ds:bx+200 &#30340;&#20869;&#23481;&#36865;&#20837; ax&#23492;&#23384;&#22120;</span>
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,[200+bx]   
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,200[bx]
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,[bx].200  
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">assume</span> <span style="color: #4f97d7; font-weight: bold;">cs</span>:codesg,ds:datasg
+<span style="color: #bc6ec5; font-weight: bold;">datasg</span> <span style="color: #4f97d7; font-weight: bold;">segment</span>
+    <span style="color: #4f97d7; font-weight: bold;">db</span> 'BaSiC'
+    <span style="color: #4f97d7; font-weight: bold;">db</span> 'MinIX'
+<span style="color: #bc6ec5; font-weight: bold;">datasg</span> <span style="color: #4f97d7; font-weight: bold;">ends</span>
+<span style="color: #bc6ec5; font-weight: bold;">codesg</span> <span style="color: #4f97d7; font-weight: bold;">segment</span>
+<span style="color: #bc6ec5; font-weight: bold;">start</span>:
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,datasg
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ds,ax
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> bx,0
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> cx,5
+<span style="color: #bc6ec5; font-weight: bold;">s</span>:
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> al,[bx]        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23450;&#20301;&#31532;&#19968;&#20010;&#23383;&#31526;&#20018;&#20013;&#30340;&#23383;&#31526;</span>
+    <span style="color: #4f97d7; font-weight: bold;">and</span> al,11011111b   <span style="color: #2aa1ae; background-color: #292e34;">// </span>
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> [bx],al
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> al,[5+bx]      <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23450;&#20301;&#31532;&#20108;&#20010;&#23383;&#31526;&#20018;&#20013;&#30340;&#23383;&#31526;</span>
+    <span style="color: #4f97d7; font-weight: bold;">or</span>  al,00100000b   <span style="color: #2aa1ae; background-color: #292e34;">//</span>
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> [5+bx],al
+    <span style="color: #4f97d7; font-weight: bold;">inc</span> bx
+    <span style="color: #4f97d7; font-weight: bold;">loop</span> s
+<span style="color: #bc6ec5; font-weight: bold;">codesg</span> <span style="color: #4f97d7; font-weight: bold;">ends</span>
+<span style="color: #bc6ec5; font-weight: bold;">end</span> <span style="color: #4f97d7; font-weight: bold;">start</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org1a075d5" class="outline-4">
+<h4 id="org1a075d5">si和di</h4>
+<div class="outline-text-4" id="text-org1a075d5">
+<p>
+si和di与bx的功能相近，但是si和di不能被分成两个8位寄存器使用。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;'welcom to masm!'&#22797;&#21046;&#21040;&#20854;&#21518;&#30340;&#25968;&#25454;&#21306;&#20013;</span>
+
+<span style="color: #bc6ec5; font-weight: bold;">assume</span> <span style="color: #4f97d7; font-weight: bold;">cs</span>:codesg, ds:datasg
+<span style="color: #bc6ec5; font-weight: bold;">datasg</span> <span style="color: #4f97d7; font-weight: bold;">segment</span>
+    <span style="color: #4f97d7; font-weight: bold;">db</span> 'welcome to masm!'
+    <span style="color: #4f97d7; font-weight: bold;">db</span> '................'
+<span style="color: #bc6ec5; font-weight: bold;">datasg</span> <span style="color: #4f97d7; font-weight: bold;">ends</span>
+<span style="color: #bc6ec5; font-weight: bold;">codesg</span> <span style="color: #4f97d7; font-weight: bold;">segment</span>
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,datasg
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ds,ax
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> si,0
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> cx,8
+<span style="color: #bc6ec5; font-weight: bold;">s</span>:
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,0[si]    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;&#31532;&#19968;&#34892;&#23383;&#31526;&#20018;&#20013;&#20004;&#20010;&#23383;&#31526;&#25918;&#20837;ax</span>
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> 16[si],ax   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;ax&#20869;&#23481;&#25918;&#20837;&#31532;&#20108;&#34892;&#23383;&#31526;&#20018;&#20013;</span>
+    <span style="color: #4f97d7; font-weight: bold;">add</span> si,2
+    <span style="color: #4f97d7; font-weight: bold;">loop</span> s
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,4c00H
+    <span style="color: #4f97d7; font-weight: bold;">int</span> 21H
+<span style="color: #bc6ec5; font-weight: bold;">codesg</span> <span style="color: #4f97d7; font-weight: bold;">ends</span>
+<span style="color: #bc6ec5; font-weight: bold;">end</span> <span style="color: #4f97d7; font-weight: bold;">start</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org670ad6c" class="outline-4">
+<h4 id="org670ad6c">[bx+si] [bx+di] [bx+idata+si] [bx+idata+di]</h4>
+<div class="outline-text-4" id="text-org670ad6c">
+<ul class="org-ul">
+<li>[idata]        用常量来表示地址<br /></li>
+<li>[bx]           用变量来表示内存地址<br /></li>
+<li>[bx+idata]     用一个变量和常量表示地址<br /></li>
+<li>[bx+si]        用两个变量表示地址<br /></li>
+<li>[bx+si+idata]  用两个变量和一个常量表示地址<br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc27b769" class="outline-3">
+<h3 id="orgc27b769">8 数据处理的两个基本问题</h3>
+<div class="outline-text-3" id="text-orgc27b769">
+<ol class="org-ol">
+<li>处理的数据在什么地方？<br /></li>
+<li>要处理的数据有多长？<br /></li>
+</ol>
+</div>
+<div id="outline-container-orgc2a0cbd" class="outline-4">
+<h4 id="orgc2a0cbd">bx si di bp</h4>
+<div class="outline-text-4" id="text-orgc2a0cbd">
+<p>
+8086CPU只有bx si di bp四个寄存器可以在[&#x2026;]中来进行内存单元的寻址<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,[bx]
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,[bx+si]
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,[bp]
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,[bp+si]
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19979;&#38754;&#30340;&#25351;&#20196;&#26159;&#38169;&#35823;&#30340;</span>
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,[cx]
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,[ax]
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,[dx]
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,[ds]
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19979;&#38754;&#30340;&#25351;&#20196;&#20063;&#26159;&#38169;&#35823;&#30340;</span>
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,[bx+bp]
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,[si+di]
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org00a7827" class="outline-4">
+<h4 id="org00a7827">机器指令处理的数据在什么地方？</h4>
+<div class="outline-text-4" id="text-org00a7827">
+
+<div class="figure">
+<p><img src="./ASM/data-pos.jpg" alt="data-pos.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org3fa83e9" class="outline-4">
+<h4 id="org3fa83e9">寻址方式总结</h4>
+<div class="outline-text-4" id="text-org3fa83e9">
+
+<div class="figure">
+<p><img src="./ASM/addressing.jpg" alt="addressing.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org8469c66" class="outline-4">
+<h4 id="org8469c66">指令要处理的数据有多长？</h4>
+<div class="outline-text-4" id="text-org8469c66">
+<p>
+8086CPU的指令可以处理两种尺寸的数据，byte和word。汇编语言通过一下方法指明指令处理的数据长度：<br />
+</p>
+<ol class="org-ol">
+<li><p>
+通过寄存器名指明要处理的数据尺寸<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,1  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22788;&#29702;&#30340;&#25968;&#25454;&#20026;word</span>
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">al</span>,1  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22788;&#29702;&#30340;&#25968;&#25454;&#20026; byte</span>
+</pre>
+</div></li>
+<li><p>
+用操作符X ptr指明内存单元的长度。X在汇编指令中可以为word或byte<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22788;&#29702;&#30340;&#25968;&#25454;&#20026;word</span>
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">word</span> ptr ds:[0], 1  
+<span style="color: #bc6ec5; font-weight: bold;">inc</span> <span style="color: #4f97d7; font-weight: bold;">word</span> ptr [bx]
+<span style="color: #bc6ec5; font-weight: bold;">inc</span> <span style="color: #4f97d7; font-weight: bold;">word</span> ptr ds:[0]
+<span style="color: #bc6ec5; font-weight: bold;">add</span> <span style="color: #4f97d7; font-weight: bold;">word</span> ptr [bx]:2
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22788;&#29702;&#30340;&#25968;&#25454;&#20026; byte</span>
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">byte</span> ptr ds:[0], 1
+<span style="color: #bc6ec5; font-weight: bold;">inc</span> <span style="color: #4f97d7; font-weight: bold;">byte</span> ptr [bx]
+<span style="color: #bc6ec5; font-weight: bold;">inc</span> <span style="color: #4f97d7; font-weight: bold;">byte</span> ptr ds:[0]
+<span style="color: #bc6ec5; font-weight: bold;">add</span> <span style="color: #4f97d7; font-weight: bold;">byte</span> ptr [bx]:2
+</pre>
+</div></li>
+<li>有些指令默认了访问的是字还是字节单元<br />
+push 命令只进行字操作<br /></li>
+</ol>
+</div>
+</div>
+<div id="outline-container-orgafa1c26" class="outline-4">
+<h4 id="orgafa1c26">div 指令</h4>
+<div class="outline-text-4" id="text-orgafa1c26">
+<p>
+div 为除法指令<br />
+除数：有8位和16位两种，放置在一个reg或内存单元中<br />
+被除数：默认放置ax 或 （dx和ax)中。如果除数为8位，则被除数则为16位，默认放在ax中；如果除数为16位，则被除数则为32位，在DX和AX中存放，DX存放高16位，AX存放低16位。<br />
+结果：如果除数为8位，则AL存储除法操作的商，AH存储除法操作的余数；如果除数位16位，则AX存储商，DX存储余数。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">div</span> <span style="color: #4f97d7; font-weight: bold;">reg</span>
+<span style="color: #bc6ec5; font-weight: bold;">div</span> <span style="color: #4f97d7; font-weight: bold;">&#20869;&#23384;&#21333;&#20803;</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">(al)=(ax)/((ds)*16+0)&#30340;&#21830;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">(ah)=(ax)/((ds)*16+0)&#30340;&#20313;&#25968;</span>
+<span style="color: #bc6ec5; font-weight: bold;">div</span> <span style="color: #4f97d7; font-weight: bold;">byte</span> ptr ds:[0]
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">(ax)=[(dx)*10000H+(ax)]/((es)*16+0)&#30340;&#21830;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">(dx)=[(dx)*10000H+(ax)]/((es)*16+0)&#30340;&#20313;&#25968;</span>
+<span style="color: #bc6ec5; font-weight: bold;">div</span> <span style="color: #4f97d7; font-weight: bold;">word</span> ptr es:[0]
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#35745;&#31639;100001/100   </span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">100001&#22823;&#20110;65535=2^16 - 1 &#22240;&#27492;&#65292;&#38656;&#35201;&#36827;&#34892;16&#20301;&#38500;&#27861;</span>
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">dx</span>,1
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,86A1H       <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">(dx)*10000H+(ax) = 100001</span>
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">bx</span>,100
+<span style="color: #bc6ec5; font-weight: bold;">div</span> <span style="color: #4f97d7; font-weight: bold;">bx</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org2091962" class="outline-3">
+<h3 id="org2091962">9 转移指令的原理</h3>
+<div class="outline-text-3" id="text-org2091962">
+<p>
+可以修改IP或同时修改CS和IP的指令统称为转移指令。<br />
+8086CPU的转移行为有以下几类：<br />
+</p>
+<ol class="org-ol">
+<li>只修改IP，称为段内转移。            例如：jmp ax<br /></li>
+<li>同时修改CS和IP时，称为段间转移。 例如：jmp 1000:0<br /></li>
+</ol>
+<p>
+依据转移指令对IP的修改范围不同，段内转移又分为：<br />
+</p>
+<ul class="org-ul">
+<li>短转移：对IP修改范围为-128~127<br /></li>
+<li>近转移：对IP修改范围为-32768~32767<br /></li>
+</ul>
+
+<p>
+8086CPU的转移指令分为以下几类：<br />
+</p>
+<ol class="org-ol">
+<li>无条件转移指令<br /></li>
+<li>条件转移指令<br /></li>
+<li>循环指令<br /></li>
+<li>过程<br /></li>
+<li>中断<br /></li>
+</ol>
+</div>
+<div id="outline-container-org57c46a0" class="outline-4">
+<h4 id="org57c46a0">jmp</h4>
+<div class="outline-text-4" id="text-org57c46a0">
+</div>
+<div id="outline-container-orgde2d546" class="outline-5">
+<h5 id="orgde2d546">依据位移进行转移</h5>
+<div class="outline-text-5" id="text-orgde2d546">
+<p>
+jmp short 标号 <i>/ 段内短转移,对ip的修改范围都为：-128~127<br />
+jmp short 标号 /</i> 指令对应的机器码中，并不包含转移的目的地址，而包含的是转移的位移。<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">assume</span> <span style="color: #4f97d7; font-weight: bold;">cs</span>:codesg
+<span style="color: #bc6ec5; font-weight: bold;">codesg</span> <span style="color: #4f97d7; font-weight: bold;">segment</span>
+<span style="color: #bc6ec5; font-weight: bold;">start</span>:
+<span style="color: #bc6ec5; font-weight: bold;">s</span>:  <span style="color: #4f97d7; font-weight: bold;">inc</span> ax
+    <span style="color: #4f97d7; font-weight: bold;">jmp</span> s0
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> bx,3   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#35813;&#34892;&#25351;&#20196;&#34987;&#36339;&#36807;</span>
+<span style="color: #bc6ec5; font-weight: bold;">s0</span>: <span style="color: #4f97d7; font-weight: bold;">inc</span> bx
+    <span style="color: #4f97d7; font-weight: bold;">jmp</span> s
+<span style="color: #bc6ec5; font-weight: bold;">codesg</span> <span style="color: #4f97d7; font-weight: bold;">ends</span>
+<span style="color: #bc6ec5; font-weight: bold;">end</span> <span style="color: #4f97d7; font-weight: bold;">start</span>
+</pre>
+</div>
+
+<div class="figure">
+<p><img src="./ASM/jmp-with-offset.jpg" alt="jmp-with-offset.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org25b865d" class="outline-5">
+<h5 id="org25b865d">转移的目的地址在指令中</h5>
+<div class="outline-text-5" id="text-org25b865d">
+<p>
+jmp far ptr 标号 // 段间转移，又称为远转移 (cs)=标号所在段的段地址 (ip)=标号所在段中的偏移地址<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">assume</span> <span style="color: #4f97d7; font-weight: bold;">cs</span>:codesg
+<span style="color: #bc6ec5; font-weight: bold;">codesg</span> <span style="color: #4f97d7; font-weight: bold;">segment</span>
+<span style="color: #bc6ec5; font-weight: bold;">start</span>:
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,0
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> bx,0
+    <span style="color: #4f97d7; font-weight: bold;">jmp</span> far ptr s   <span style="color: #2aa1ae; background-color: #292e34;">;</span><span style="color: #2aa1ae; background-color: #292e34;">// far ptr &#25351;&#26126;&#20102;&#29992;&#26631;&#21495;&#30340;&#27573;&#22320;&#22336;&#21644;&#20559;&#31227;&#22320;&#22336;&#20462;&#25913;CS&#21644;IP</span>
+    <span style="color: #4f97d7; font-weight: bold;">db</span> 256 dup (0)
+<span style="color: #bc6ec5; font-weight: bold;">s</span>:  
+    <span style="color: #4f97d7; font-weight: bold;">add</span> ax,1
+    <span style="color: #4f97d7; font-weight: bold;">inc</span> ax
+<span style="color: #bc6ec5; font-weight: bold;">codesg</span> <span style="color: #4f97d7; font-weight: bold;">ends</span>
+<span style="color: #bc6ec5; font-weight: bold;">end</span> <span style="color: #4f97d7; font-weight: bold;">start</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org1d3e9dd" class="outline-5">
+<h5 id="org1d3e9dd">转移地址在寄存器中的jmp指令</h5>
+<div class="outline-text-5" id="text-org1d3e9dd">
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">jmp</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>  <span style="color: #2aa1ae; background-color: #292e34;">;</span><span style="color: #2aa1ae; background-color: #292e34;">// &#27573;&#20869;&#36716;&#31227;</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org707916c" class="outline-5">
+<h5 id="org707916c">转移地址在内存中的jmp指令</h5>
+<div class="outline-text-5" id="text-org707916c">
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">;</span><span style="color: #2aa1ae; background-color: #292e34;">// jmp word ptr &#20869;&#23384;&#21333;&#20803;&#22320;&#22336;   // &#27573;&#20869;&#36716;&#31227;</span>
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,0123H
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ds</span>:[0],ax
+<span style="color: #bc6ec5; font-weight: bold;">jmp</span> <span style="color: #4f97d7; font-weight: bold;">word</span> ptr ds:[0]            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25191;&#34892;&#21518; (ip)=0123H</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;">;</span><span style="color: #2aa1ae; background-color: #292e34;">// jmp dword ptr &#20869;&#23384;&#21333;&#20803;&#22320;&#22336;  // &#27573;&#38388;&#36716;&#31227;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">(cs)=(&#20869;&#23384;&#21333;&#20803;&#22320;&#22336;+2) (ip)=(&#20869;&#23384;&#21333;&#20803;&#22320;&#22336;)</span>
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,0123H
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ds</span>:[0],ax
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">word</span> ptr ds:[2],0
+<span style="color: #bc6ec5; font-weight: bold;">jmp</span> <span style="color: #4f97d7; font-weight: bold;">dword</span> ptr ds:[0]           <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25191;&#34892;&#21518; (cs)=0 (ip)=0123H</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org77baa82" class="outline-4">
+<h4 id="org77baa82">jcxz</h4>
+<div class="outline-text-4" id="text-org77baa82">
+<p>
+jcxz 标号  // 如果(cx)=0, 转移到标号处执行；否则继续执行<br />
+所有条件转移指令都为短转移，对ip的修改范围都为：-128~127。<br />
+Tips:<br />
+jcxz 表示 jump when CX is zero<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org4b42a86" class="outline-4">
+<h4 id="org4b42a86">loop</h4>
+<div class="outline-text-4" id="text-org4b42a86">
+<p>
+loop 标号  // 如果(cx)!=0, 转移到标号处执行<br />
+所有循环指令都为短转移，对ip的修改范围都为：-128~127。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org79d08ca" class="outline-4">
+<h4 id="org79d08ca">根据位移进行转移的意义</h4>
+<div class="outline-text-4" id="text-org79d08ca">
+<p>
+根据位移进行转移，这种设计，方便了程序段在内存中的浮动装配。即，程序装在内存中的不同位置都可正确执行。<br />
+</p>
+
+<p>
+根据位移进行转移的指令，转移范围受到限制，如果源程序中出现范围越界的问题，在编译的时候，编译器将报错。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgd49d5bc" class="outline-3">
+<h3 id="orgd49d5bc">10 Call和Ret指令</h3>
+<div class="outline-text-3" id="text-orgd49d5bc">
+<p>
+call和ret指令都是转移指令，他们都修改IP或同时修改IP和CS。可以用他们来实现子程序设计。<br />
+</p>
+</div>
+<div id="outline-container-org0ed85bd" class="outline-4">
+<h4 id="org0ed85bd">ret 和 retf</h4>
+<div class="outline-text-4" id="text-org0ed85bd">
+<p>
+ret利用栈中数据修改ip         //相当于 pop ip<br />
+retf 利用栈中数据修改ip 和cs  <i>/相当于 pop ip<br />
+                              /</i>       pop cs<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgc24fdd2" class="outline-4">
+<h4 id="orgc24fdd2">call</h4>
+<div class="outline-text-4" id="text-orgc24fdd2">
+<p>
+call指令不能实现短转移，除此之外，call指令实现转移的方法和jmp指令的原理相同<br />
+</p>
+</div>
+<div id="outline-container-org7eb6e86" class="outline-5">
+<h5 id="org7eb6e86">根据位移进行转移的call指令</h5>
+<div class="outline-text-5" id="text-org7eb6e86">
+<p>
+call 标号          // 将当前的IP压栈后，转到标号处执行指令<br />
+</p>
+
+<p>
+16位位移的范围为-32768~32767，用补码表示<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">call &#26631;&#21495; &#30456;&#24403;&#20110;&#19979;&#38754;&#25351;&#20196;</span>
+<span style="color: #bc6ec5; font-weight: bold;">push</span> <span style="color: #4f97d7; font-weight: bold;">ip</span>
+<span style="color: #bc6ec5; font-weight: bold;">jmp</span> <span style="color: #4f97d7; font-weight: bold;">near</span> ptr &#26631;&#21495;
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org4c968ef" class="outline-5">
+<h5 id="org4c968ef">转移的目的地址在指令中的call指令</h5>
+<div class="outline-text-5" id="text-org4c968ef">
+<p>
+call far ptr 标号  // 段间转移<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">call far ptr &#26631;&#21495;  // &#30456;&#24403;&#20110;&#19979;&#38754;&#25351;&#20196;</span>
+<span style="color: #bc6ec5; font-weight: bold;">push</span> <span style="color: #4f97d7; font-weight: bold;">cs</span>
+<span style="color: #bc6ec5; font-weight: bold;">push</span> <span style="color: #4f97d7; font-weight: bold;">ip</span>
+<span style="color: #bc6ec5; font-weight: bold;">jmp</span> <span style="color: #4f97d7; font-weight: bold;">far</span> ptr &#26631;&#21495;
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org3426b0b" class="outline-5">
+<h5 id="org3426b0b">转移地址在寄存器中的call指令</h5>
+<div class="outline-text-5" id="text-org3426b0b">
+<p>
+call 16位reg<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">push</span> <span style="color: #4f97d7; font-weight: bold;">ip</span>
+<span style="color: #bc6ec5; font-weight: bold;">jmp</span> <span style="color: #4f97d7; font-weight: bold;">reg</span>  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">16&#20301;&#23492;&#23384;&#22120;</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org5d4ddc6" class="outline-5">
+<h5 id="org5d4ddc6">转移地址在内存中的 call指令</h5>
+<div class="outline-text-5" id="text-org5d4ddc6">
+<p>
+call word ptr 内存单元地址<br />
+call dword ptr 内存单元地址<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">call word ptr &#20869;&#23384;&#21333;&#20803;&#22320;&#22336;  // &#30456;&#24403;&#20110;&#19979;&#38754;&#25351;&#20196;</span>
+<span style="color: #bc6ec5; font-weight: bold;">push</span> <span style="color: #4f97d7; font-weight: bold;">ip</span>
+<span style="color: #bc6ec5; font-weight: bold;">jmp</span> <span style="color: #4f97d7; font-weight: bold;">word</span> ptr &#20869;&#23384;&#21333;&#20803;&#22320;&#22336; 
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">call dword ptr &#20869;&#23384;&#21333;&#20803;&#22320;&#22336; // &#30456;&#24403;&#20110;&#19979;&#38754;&#25351;&#20196;</span>
+<span style="color: #bc6ec5; font-weight: bold;">push</span> <span style="color: #4f97d7; font-weight: bold;">cs</span>
+<span style="color: #bc6ec5; font-weight: bold;">push</span> <span style="color: #4f97d7; font-weight: bold;">ip</span>
+<span style="color: #bc6ec5; font-weight: bold;">jmp</span> <span style="color: #4f97d7; font-weight: bold;">dword</span> ptr &#20869;&#23384;&#21333;&#20803;&#22320;&#22336;
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org90ac1d7" class="outline-4">
+<h4 id="org90ac1d7">call 和 ret配合使用</h4>
+<div class="outline-text-4" id="text-org90ac1d7">
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">assume</span> <span style="color: #4f97d7; font-weight: bold;">cs</span>:code
+
+<span style="color: #bc6ec5; font-weight: bold;">stack</span> <span style="color: #4f97d7; font-weight: bold;">segment</span>
+    <span style="color: #4f97d7; font-weight: bold;">db</span> 8 dup (0)
+    <span style="color: #4f97d7; font-weight: bold;">db</span> 8 dup (0)
+<span style="color: #bc6ec5; font-weight: bold;">stack</span> <span style="color: #4f97d7; font-weight: bold;">ends</span>
+
+<span style="color: #bc6ec5; font-weight: bold;">code</span> <span style="color: #4f97d7; font-weight: bold;">segment</span>
+<span style="color: #bc6ec5; font-weight: bold;">start</span>:
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,stack
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ss,ax
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> sp,16
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,1000
+    <span style="color: #4f97d7; font-weight: bold;">call</span> s
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,4c00h
+    <span style="color: #4f97d7; font-weight: bold;">int</span> 21H
+<span style="color: #bc6ec5; font-weight: bold;">s</span>:
+    <span style="color: #4f97d7; font-weight: bold;">add</span> ax,ax
+    <span style="color: #4f97d7; font-weight: bold;">ret</span>
+<span style="color: #bc6ec5; font-weight: bold;">code</span> <span style="color: #4f97d7; font-weight: bold;">ends</span>
+<span style="color: #bc6ec5; font-weight: bold;">end</span> <span style="color: #4f97d7; font-weight: bold;">start</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org7b8fcf7" class="outline-4">
+<h4 id="org7b8fcf7">mul</h4>
+<div class="outline-text-4" id="text-org7b8fcf7">
+<p>
+关于mul 乘法指令需要注意如下两点：<br />
+</p>
+<ol class="org-ol">
+<li>两个相乘的数：要么都是8位，要么都是16位。如果是8位，一个默认放在AL中，另一个放在8位reg或内存字节单元中；如果是16位，一个默认在AX中，另一个在16位reg或内存字单元中。<br /></li>
+<li>结果：如果是8位乘法，结果默认放在AX中；如果是16位乘法，结果高位默认在DX中存放，低位在AX中存放。<br /></li>
+</ol>
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#35745;&#31639;100*10000  10000&#22823;&#20110;255&#65292;&#25152;&#20197;&#24517;&#39035;&#20570;16&#20301;&#20056;&#27861;</span>
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,100
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">bx</span>,10000
+<span style="color: #bc6ec5; font-weight: bold;">mul</span> <span style="color: #4f97d7; font-weight: bold;">bx</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org32d8ec3" class="outline-4">
+<h4 id="org32d8ec3">参数和结果传递</h4>
+<div class="outline-text-4" id="text-org32d8ec3">
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">assume</span> <span style="color: #4f97d7; font-weight: bold;">cs</span>:code
+<span style="color: #bc6ec5; font-weight: bold;">data</span> <span style="color: #4f97d7; font-weight: bold;">segment</span>
+    <span style="color: #4f97d7; font-weight: bold;">dw</span> 1,2,3,4,5,6,7,8
+    <span style="color: #4f97d7; font-weight: bold;">dd</span> 0,0,0,0,0,0,0,0
+<span style="color: #bc6ec5; font-weight: bold;">data</span> <span style="color: #4f97d7; font-weight: bold;">ends</span>
+<span style="color: #bc6ec5; font-weight: bold;">code</span> <span style="color: #4f97d7; font-weight: bold;">segment</span>
+<span style="color: #bc6ec5; font-weight: bold;">start</span>:
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,data
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ds,ax
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> si,0       <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">ds:si&#25351;&#21521;&#31532;&#19968;&#32452;word&#21333;&#20803;</span>
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> di,16      <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">ds:di &#25351;&#21521;&#31532;&#20108;&#32452; dword&#21333;&#20803;</span>
+
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> cx,8
+<span style="color: #bc6ec5; font-weight: bold;">s</span>:
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> bx,[si]    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">cube &#23376;&#31243;&#24207;&#21482;&#26377;&#19968;&#20010;&#21442;&#25968;&#65292;&#23558;&#20854;&#23384;&#22312;bx&#20013;</span>
+    <span style="color: #4f97d7; font-weight: bold;">call</span> cube
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> [di],ax    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">cube &#23376;&#31243;&#24207;&#21482;&#26377;&#19968;&#20010;&#36820;&#22238;&#20540;&#65292;&#20302;&#20301;&#23384;&#20648;&#22312;ax&#20013;</span>
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> [di].2,dx  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#39640;&#20301;&#23384;&#20648;&#22312;dx &#20013;&#65292;</span>
+    <span style="color: #4f97d7; font-weight: bold;">add</span> si,2
+    <span style="color: #4f97d7; font-weight: bold;">add</span> di,4
+    <span style="color: #4f97d7; font-weight: bold;">loop</span> s
+
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,4c00H
+    <span style="color: #4f97d7; font-weight: bold;">int</span> 21H
+
+<span style="color: #bc6ec5; font-weight: bold;">cube</span>:
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,bx
+    <span style="color: #4f97d7; font-weight: bold;">mul</span> bx
+    <span style="color: #4f97d7; font-weight: bold;">mul</span> bx
+    <span style="color: #4f97d7; font-weight: bold;">ret</span>
+<span style="color: #bc6ec5; font-weight: bold;">code</span> <span style="color: #4f97d7; font-weight: bold;">ends</span>
+<span style="color: #bc6ec5; font-weight: bold;">end</span> <span style="color: #4f97d7; font-weight: bold;">start</span>
+</pre>
+</div>
+<p>
+下面展示批量数据的传递：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;&#19968;&#20010;&#20840;&#26159;&#23383;&#27597;&#30340;&#23383;&#31526;&#20018;&#36716;&#21270;&#20026;&#22823;&#20889;</span>
+<span style="color: #bc6ec5; font-weight: bold;">assume</span> <span style="color: #4f97d7; font-weight: bold;">cs</span>:code
+<span style="color: #bc6ec5; font-weight: bold;">data</span> <span style="color: #4f97d7; font-weight: bold;">segment</span>
+    <span style="color: #4f97d7; font-weight: bold;">db</span> 'conversation'
+<span style="color: #bc6ec5; font-weight: bold;">data</span> <span style="color: #4f97d7; font-weight: bold;">ends</span>
+<span style="color: #bc6ec5; font-weight: bold;">code</span> <span style="color: #4f97d7; font-weight: bold;">segment</span>
+<span style="color: #bc6ec5; font-weight: bold;">start</span>:
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,data
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ds,ax    
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> si,0     <span style="color: #2aa1ae; background-color: #292e34;">;</span><span style="color: #2aa1ae; background-color: #292e34;">// ds:si&#25351;&#21521;&#23383;&#31526;&#20018;&#65288;&#25209;&#37327;&#25968;&#25454;&#65289;&#25152;&#22312;&#31354;&#38388;&#30340;&#39318;&#22320;&#22336;</span>
+
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> cx,12    <span style="color: #2aa1ae; background-color: #292e34;">;</span><span style="color: #2aa1ae; background-color: #292e34;">// cx&#23384;&#25918;&#23383;&#31526;&#20018;&#38271;&#24230;</span>
+    <span style="color: #4f97d7; font-weight: bold;">call</span> capital
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,4c00H
+    <span style="color: #4f97d7; font-weight: bold;">int</span> 21H
+<span style="color: #bc6ec5; font-weight: bold;">capital</span>:
+    <span style="color: #4f97d7; font-weight: bold;">add</span> byte ptr [si],11011111B
+    <span style="color: #4f97d7; font-weight: bold;">inc</span> si
+    <span style="color: #4f97d7; font-weight: bold;">loop</span> capital
+    <span style="color: #4f97d7; font-weight: bold;">ret</span>
+<span style="color: #bc6ec5; font-weight: bold;">code</span> <span style="color: #4f97d7; font-weight: bold;">ends</span>
+<span style="color: #bc6ec5; font-weight: bold;">end</span> <span style="color: #4f97d7; font-weight: bold;">start</span>
+</pre>
+</div>
+<p>
+除了使用寄存器传递参数外，还可以使用栈来传递参数。<br />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org4366242" class="outline-3">
+<h3 id="org4366242">11 标志寄存器</h3>
+<div class="outline-text-3" id="text-org4366242">
+<p>
+标志寄存器（flag 寄存器）具有以下三种作用：<br />
+</p>
+<ol class="org-ol">
+<li>存储相关指令的某些执行结果<br /></li>
+<li>为CPU执行相关指令提供行为依据<br /></li>
+<li>控制CPU的相关工作方式<br /></li>
+</ol>
+
+<p>
+flag寄存器是按位作用的，其每一个位都有专门的含义<br />
+<img src="./ASM/flag-register-bit-usage.jpg" alt="flag-register-bit-usage.jpg" /><br />
+</p>
+</div>
+
+<div id="outline-container-org3fb14a5" class="outline-4">
+<h4 id="org3fb14a5">ZF 标志 Zero Flag</h4>
+<div class="outline-text-4" id="text-org3fb14a5">
+<p>
+零标志位。其记录相关指令执行完后，结果是否为0。如果为0，ZF=1；否则，ZF=0<br />
+8086CPU中，运算指令（进行逻辑或算术运算 如 add sub mul div inc or and等）会影响ZF，传送指令（如 mov push pop等）不影响ZF。<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org247a7b0" class="outline-4">
+<h4 id="org247a7b0">PF标志 Parity Flag</h4>
+<div class="outline-text-4" id="text-org247a7b0">
+<p>
+奇偶标志位。其记录相关指令执行完后，其结果的所有bit中1的个数是否为偶数。如果1的个数为偶数，PF=1；否则，PF=0<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org640b43c" class="outline-4">
+<h4 id="org640b43c">SF标志 Sign Flag</h4>
+<div class="outline-text-4" id="text-org640b43c">
+<p>
+符号标志位。其记录相关指令执行完后，其结果是否位负。如果结果为负，SF=1；否则，SF=0<br />
+SF标志，就是CPU对有符号数运算结果的一种记录。当我们将数据当作有符号数来运算的时候，可以通过它来得知结果的正负。如果我们将数据当作无符号数来运算，SF的值则没有意义，虽然相关指令影响了它的值。<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgb012027" class="outline-4">
+<h4 id="orgb012027">CF标志 Carry Flag</h4>
+<div class="outline-text-4" id="text-orgb012027">
+<p>
+进位标志位。一般情况下，在进行无符号数运算的时候，其记录了运算结果的最好有效位向更高位的进位值，或从更高位的借位值。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">al</span>,98H
+<span style="color: #bc6ec5; font-weight: bold;">add</span> <span style="color: #4f97d7; font-weight: bold;">al</span>,al    <span style="color: #2aa1ae; background-color: #292e34;">;</span><span style="color: #2aa1ae; background-color: #292e34;">// &#25191;&#34892;&#21518;(al)=30H, CF=1 CF&#35760;&#24405;&#20102;&#20174;&#26368;&#39640;&#26377;&#25928;&#20301;&#21521;&#26356;&#39640;&#20301;&#30340;&#36827;&#20301;&#20540;</span>
+<span style="color: #bc6ec5; font-weight: bold;">add</span> <span style="color: #4f97d7; font-weight: bold;">al</span>,al    <span style="color: #2aa1ae; background-color: #292e34;">;</span><span style="color: #2aa1ae; background-color: #292e34;">// &#25191;&#34892;&#21518;(al)=60H, CF=0 CF&#35760;&#24405;&#20102;&#20174;&#26368;&#39640;&#26377;&#25928;&#20301;&#21521;&#26356;&#39640;&#20301;&#30340;&#36827;&#20301;&#20540;</span>
+
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">al</span>,97H
+<span style="color: #bc6ec5; font-weight: bold;">sub</span> <span style="color: #4f97d7; font-weight: bold;">al</span>,98H   <span style="color: #2aa1ae; background-color: #292e34;">;</span><span style="color: #2aa1ae; background-color: #292e34;">// &#25191;&#34892;&#21518;(al)=ffH, CF=1 CF&#35760;&#24405;&#20102;&#21521;&#26356;&#39640;&#20301;&#30340;&#20511;&#20301;&#20540;</span>
+<span style="color: #bc6ec5; font-weight: bold;">sub</span> <span style="color: #4f97d7; font-weight: bold;">al</span>,al    <span style="color: #2aa1ae; background-color: #292e34;">;</span><span style="color: #2aa1ae; background-color: #292e34;">// &#25191;&#34892;&#21518;(al)=0, CF=0 CF&#35760;&#24405;&#20102;&#21521;&#26356;&#39640;&#20301;&#30340;&#20511;&#20301;&#20540;</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org4a6a7ca" class="outline-4">
+<h4 id="org4a6a7ca">OF 标志 Overflow Flag</h4>
+<div class="outline-text-4" id="text-org4a6a7ca">
+<p>
+溢出标志位。一般情况下，OF记录了有符号运算的结果是否发生了溢出。如果发生溢出，OF=1；否则，OF=0<br />
+</p>
+
+<p>
+Tips:<br />
+CF 是对应无符号数运算的  OF是对应有符号数运算的<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgea075fb" class="outline-4">
+<h4 id="orgea075fb">adc</h4>
+<div class="outline-text-4" id="text-orgea075fb">
+<p>
+带进位加法指令，它利用了CF位上记录的进位值<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#35745;&#31639; 1ef000H + 201000H&#65292;&#32467;&#26524;&#25918;&#22312;ax&#65288;&#23384;&#25918;&#39640;16&#20301;&#65289;&#21644;bx&#65288;&#23384;&#25918;&#20302;16&#20301;&#65289;</span>
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>, 001eH
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">bx</span>, f000H
+<span style="color: #bc6ec5; font-weight: bold;">add</span> <span style="color: #4f97d7; font-weight: bold;">bx</span>, 1000H
+<span style="color: #bc6ec5; font-weight: bold;">adc</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>, 0020H
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#35745;&#31639; 1ef0001000H + 2010001ef0H&#65292;&#32467;&#26524;&#25918;&#22312;ax&#65288;&#26368;&#39640;16&#20301;&#65289;&#65292;bx&#65288;&#27425;&#39640;16&#20301;&#65289;&#65292;cx(&#20302;16&#20301;)</span>
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,001eH
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">bx</span>,f000H
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">cx</span>,1000H
+<span style="color: #bc6ec5; font-weight: bold;">add</span> <span style="color: #4f97d7; font-weight: bold;">cx</span>,1ef0H
+<span style="color: #bc6ec5; font-weight: bold;">adc</span> <span style="color: #4f97d7; font-weight: bold;">bx</span>,1000H
+<span style="color: #bc6ec5; font-weight: bold;">adc</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,0020H
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org067b45a" class="outline-4">
+<h4 id="org067b45a">sbb</h4>
+<div class="outline-text-4" id="text-org067b45a">
+<p>
+带借位减法指令，它利用了CF位上记录的借位值。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#35745;&#31639;003e1000H - 00202000H&#65292;&#32467;&#26524;&#25918;&#22312;ax&#65292;bx&#20013;</span>
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">bx</span>,1000H
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,003eH
+<span style="color: #bc6ec5; font-weight: bold;">sub</span> <span style="color: #4f97d7; font-weight: bold;">bx</span>,2000H
+<span style="color: #bc6ec5; font-weight: bold;">sbb</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,0020H
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgbd8fc14" class="outline-4">
+<h4 id="orgbd8fc14">cmp</h4>
+<div class="outline-text-4" id="text-orgbd8fc14">
+<p>
+比较指令，cmp的功能相当于减法指令，只是不保存结果。cmp指令执行后，将对标志寄存器产生影响。<br />
+cmp 和add，sub指令一样，也包含两种含义：进行无符号运算和进行有符号运算。<br />
+对于无符号的情况：<br />
+cmp ax,bx<br />
+</p>
+<ol class="org-ol">
+<li>zf=1, 说明(ax)==(bx)<br /></li>
+<li>zf=0, 说明(ax)!=(bx)<br /></li>
+<li>cf=1, 说明(ax) &lt;(bx)<br /></li>
+<li>cf=0, 说明(ax)&gt;=(bx)<br /></li>
+<li>cf=0并且zf=0, 说明(ax)&gt; (bx)<br /></li>
+<li>cf=1 或 zf=1,   说明(ax)&lt;=(bx)<br /></li>
+</ol>
+
+<p>
+对于有符号的情况：<br />
+cmp ah,bh<br />
+</p>
+<ol class="org-ol">
+<li>zf=1, 说明(ah)==(bh)<br /></li>
+<li>zf=0, 说明(ah)!=(bh)<br /></li>
+<li>of=0 sf=1<br />
+of=0没有溢出，逻辑上真正结果的正负 = 实际结果的正负<br />
+sf=1实际结果为负<br /></li>
+<li>of=1 sf=1, 说明(ah)&gt;(bh)<br />
+of=1 有溢出，逻辑上真正结果的正负 != 实际结果的正负<br />
+sf=1 实际结果为负<br />
+因为溢出导致实际结果为负，所以逻辑上真正的结果必然为正<br /></li>
+<li>of=1 sf=0, 说明(ah)&lt;(bh)<br />
+of=1 有溢出，逻辑上真正结果的正负 != 实际结果的正负<br />
+sf=0 实际结果为正<br />
+因为溢出导致实际结果为正，所以逻辑上真正的结果必然为负<br /></li>
+<li>of=0 sf=0, 说明(ah)&gt;=(bh)<br />
+of=0没有溢出，逻辑上真正结果的正负 = 实际结果的正负<br />
+sf=0实际结果为正<br /></li>
+</ol>
+</div>
+</div>
+
+<div id="outline-container-org4618d5d" class="outline-4">
+<h4 id="org4618d5d">检测比较结果的条件转移指令</h4>
+<div class="outline-text-4" id="text-org4618d5d">
+
+<div class="figure">
+<p><img src="./ASM/condition-jmp.jpg" alt="condition-jmp.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgb810a75" class="outline-4">
+<h4 id="orgb810a75">DF标志 Direction Flag</h4>
+<div class="outline-text-4" id="text-orgb810a75">
+<p>
+方向标志位。在串处理指令中，控制每次操作后si、di的增减。<br />
+df=0 每次操作后si、di递增<br />
+df=1每次操作后si、di递减<br />
+</p>
+
+<p>
+movsb 将ds:si指向的内存字节单元送入es:di中，然后根据标志寄存器df位的值，将si和di递增1或递减1<br />
+</p>
+<ol class="org-ol">
+<li>((es)*16+(di)) = ((ds)*16+(si))<br /></li>
+<li>如果df=0则：(si)=(si)+1 (di)=(di)+1<br />
+如果 df=1则：(si)=(si)-1 (di)=(di)-1<br /></li>
+</ol>
+
+<p>
+movsw 将ds:si指向的内存字单元送入es:di中，然后根据标志寄存器df位的值，将si和di递增2或递减2<br />
+</p>
+
+<p>
+rep的作用是根据cx的值，重复执行后面的串传送指令<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">rep movsb &#30456;&#24403;&#20110;&#22914;&#19979;&#20195;&#30721;</span>
+<span style="color: #bc6ec5; font-weight: bold;">s</span>:
+    <span style="color: #4f97d7; font-weight: bold;">movsb</span>
+    <span style="color: #4f97d7; font-weight: bold;">loop</span> s
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgfe0ccd7" class="outline-4">
+<h4 id="orgfe0ccd7">pushf popf</h4>
+<div class="outline-text-4" id="text-orgfe0ccd7">
+<p>
+pushf 将标志寄存器的值压栈<br />
+popf  从栈中弹出数据送入标志寄存器<br />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgdb548de" class="outline-3">
+<h3 id="orgdb548de">12 内中断</h3>
+<div class="outline-text-3" id="text-orgdb548de">
+<p>
+中断信息是对几个具有先后顺序的硬件操作所产生的事件的统一描述。中断的意思是指，CPU不再接着向下执行，而是转去处理这个特殊信息。中断信息可以来自CPU内部也可以来自CPU外部。<br />
+</p>
+
+<p>
+8086CPU在下面四种情况下，会产生相应中断信息：<br />
+</p>
+<ol class="org-ol">
+<li>除法错误<br /></li>
+<li>当步执行<br /></li>
+<li>执行into指令<br /></li>
+<li>执行int 指令<br /></li>
+</ol>
+</div>
+
+<div id="outline-container-org50b822d" class="outline-4">
+<h4 id="org50b822d">中断类型码</h4>
+<div class="outline-text-4" id="text-org50b822d">
+<p>
+8086CPU的中断类型码如下<br />
+</p>
+<ol class="org-ol">
+<li>除法错误：0<br /></li>
+<li>单步执行：1<br /></li>
+<li>执行into指令：4<br /></li>
+<li>执行int指令，该指令的格式位int n，指令中的n为字节型立即数，是提供给CPU的中断类型码。<br /></li>
+</ol>
+</div>
+</div>
+
+<div id="outline-container-org0fc1793" class="outline-4">
+<h4 id="org0fc1793">中断向量表</h4>
+<div class="outline-text-4" id="text-org0fc1793">
+<p>
+CPU用8位中断类型码通过中断向量表找到相应的中断处理程序的入口地址。中断向量表就是中断处理程序入口地址的列表。<br />
+中断向量表存放在内存中，对于8086CPU机，中断向量表指定存放在内存地址0处（从内存0000:0000 到 0000:03ff的1024个单元中）。一个表项占两个字节，高地址存放段地址，低地址存放偏移地址。<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgb3103f6" class="outline-4">
+<h4 id="orgb3103f6">中断过程</h4>
+<div class="outline-text-4" id="text-orgb3103f6">
+<p>
+用中断类型找到中断向量，并用它设置CS和IP，这个工作是由CPU的硬件自动完成的，该过程被称为中断过程。其具体执行步骤如下：<br />
+</p>
+<ol class="org-ol">
+<li>从中断信息中取得中断类型码<br /></li>
+<li>pushf<br /></li>
+<li>TF=0 IF=0  // TF-&gt;Trace Flag IF-&gt;Interrupt Flag<br /></li>
+<li>push cs<br /></li>
+<li>push ip<br /></li>
+<li>(ip)=(n*4) (cs)=(n*4+2)<br /></li>
+</ol>
+<p>
+在最后一步完成后，CPU开始执行由程序员便携的中断处理程序。<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org9d73ddd" class="outline-4">
+<h4 id="org9d73ddd">中断处理程序</h4>
+<div class="outline-text-4" id="text-org9d73ddd">
+<p>
+中断处理程序的编写和子程序相似，下面为常规步骤<br />
+</p>
+<ol class="org-ol">
+<li>保存用到的寄存器<br /></li>
+<li>处理中断<br /></li>
+<li>恢复用到的寄存器<br /></li>
+<li>用iret指令返回<br /></li>
+</ol>
+
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">iret&#30456;&#24403;&#20110;&#19979;&#38754;&#20195;&#30721;</span>
+<span style="color: #bc6ec5; font-weight: bold;">pop</span> <span style="color: #4f97d7; font-weight: bold;">ip</span>
+<span style="color: #bc6ec5; font-weight: bold;">pop</span> <span style="color: #4f97d7; font-weight: bold;">cs</span>
+<span style="color: #bc6ec5; font-weight: bold;">pop</span> <span style="color: #4f97d7; font-weight: bold;">f</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org980d971" class="outline-4">
+<h4 id="org980d971">除法错误中断的处理</h4>
+<div class="outline-text-4" id="text-org980d971">
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,1000H
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">bh</span>,1
+<span style="color: #bc6ec5; font-weight: bold;">div</span> <span style="color: #4f97d7; font-weight: bold;">bh</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19978;&#38754;&#20195;&#30721;&#25191;&#34892;&#21518;&#65292;CPU&#20250;&#25191;&#34892;0&#21495;&#20013;&#26029;&#22788;&#29702;&#31243;&#24207;&#65292;&#40664;&#35748;&#30340;0&#21495;&#20013;&#26029;&#22788;&#29702;&#31243;&#24207;&#20250;&#26174;&#31034;&#25552;&#31034;&#20449;&#24687; "Divide overflow"&#65292;&#28982;&#21518;&#36820;&#22238;&#21040;&#25805;&#20316;&#31995;&#32479;</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19979;&#38754;&#23454;&#29616;&#25105;&#20204;&#33258;&#23450;&#20041;&#30340;0&#21495;&#20013;&#26029;&#22788;&#29702;&#31243;&#24207;&#65292;&#20869;&#23384;0000:0000~0000:03FF&#22823;&#23567;&#20026;1KB&#30340;&#31354;&#38388;&#29992;&#20110;&#31995;&#32479;&#23384;&#25918;&#20013;&#26029;&#22788;&#29702;&#31243;&#24207;&#20837;&#21475;&#22320;&#22336;&#30340;&#20013;&#26029;&#21521;&#37327;&#34920;&#12290;8086&#25903;&#25345;256&#20010;&#20013;&#26029;&#65292;&#20294;&#26159;&#65292;&#38656;&#35201;&#22788;&#29702;&#30340;&#20013;&#26029;&#36828;&#27809;&#26377;&#36798;&#21040;256&#20010;&#12290;&#25152;&#20197;&#20013;&#26029;&#21521;&#37327;&#34920;&#20013;&#65292;&#26377;&#35768;&#22810;&#21333;&#20803;&#24335;&#31354;&#30340;&#12290;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19968;&#33324;&#24773;&#20917;&#19979;&#65292;0000:0200~0000:02FF&#30340;256&#23383;&#33410;&#30340;&#31354;&#38388;&#23545;&#20110;&#30340;&#20013;&#26029;&#21521;&#37327;&#34920;&#39033;&#37117;&#26159;&#31354;&#30340;&#65292;&#25105;&#20204;&#23558;&#25105;&#20204;&#30340;0&#21495;&#20013;&#26029;&#31243;&#24207;&#25918;&#22312;&#27492;&#22788;</span>
+<span style="color: #bc6ec5; font-weight: bold;">assume</span> <span style="color: #4f97d7; font-weight: bold;">cs</span>:code
+<span style="color: #bc6ec5; font-weight: bold;">code</span> <span style="color: #4f97d7; font-weight: bold;">segment</span>
+<span style="color: #bc6ec5; font-weight: bold;">start</span>:
+    <span style="color: #2aa1ae; background-color: #292e34;">; </span><span style="color: #2aa1ae; background-color: #292e34;">do0&#23433;&#35013;&#31243;&#24207;&#65292;&#23558;do0&#30340;&#20195;&#30721;&#36865;&#20837;0:200&#22788;</span>
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,cs
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ds,ax
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> si,offset do0   <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#35774;&#32622;ds:si&#25351;&#21521;&#28304;&#22320;&#22336;</span>
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,0
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> es,ax
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> di,200h                           <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#35774;&#32622; es:di&#25351;&#21521;&#30446;&#30340;&#22320;&#22336;</span>
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> cx,offset do0end-offset do0       <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#35774;&#32622;cx&#20026;&#20256;&#36755;&#38271;&#24230;</span>
+    <span style="color: #4f97d7; font-weight: bold;">cld</span>                                   <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#35774;&#32622;&#20256;&#36755;&#26041;&#21521;&#20026;&#27491;</span>
+    <span style="color: #4f97d7; font-weight: bold;">rep</span> movsb
+
+    <span style="color: #2aa1ae; background-color: #292e34;">; </span><span style="color: #2aa1ae; background-color: #292e34;">&#35774;&#32622;&#20013;&#26029;&#21521;&#37327;&#34920;</span>
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,0
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> es,ax
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> word ptr es:[0*4],200H
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> word ptr es:[0*4+2],0
+
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,4c00h
+    <span style="color: #4f97d7; font-weight: bold;">int</span> 21h
+<span style="color: #bc6ec5; font-weight: bold;">do0</span>:
+    <span style="color: #4f97d7; font-weight: bold;">jmp</span> short do0start
+    <span style="color: #4f97d7; font-weight: bold;">db</span> <span style="color: #2d9574;">"overflow!"</span>
+<span style="color: #bc6ec5; font-weight: bold;">do0start</span>:
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,cs
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ds,ax
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> si,202H                        <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#35774;&#32622; ds:si &#25351;&#21521;&#23383;&#31526;&#20018; 0:200&#22788;&#30340;&#25351;&#20196;&#20026;jmp short do0start (&#36825;&#26465;&#25351;&#20196;&#38271;&#24230;&#20026;2&#23383;&#33410;)&#65292;&#22240;&#27492;&#8220;overflow!&#8221;&#30340;&#20559;&#31227;&#22320;&#22336;&#20026;202H</span>
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,0b800H                      
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> es,ax
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> di,12*160+36*2                 <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#35774;&#32622;es:di&#25351;&#21521;&#26174;&#23384;&#31354;&#38388;&#30340;&#20013;&#38388;&#20301;&#32622;</span>
+
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> cx,9                           <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#35774;&#32622; cx &#20026;&#23383;&#31526;&#20018;&#38271;&#24230;</span>
+<span style="color: #bc6ec5; font-weight: bold;">s</span>:  <span style="color: #4f97d7; font-weight: bold;">mov</span> al,[si]
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> es:[di],al
+    <span style="color: #4f97d7; font-weight: bold;">inc</span> si
+    <span style="color: #4f97d7; font-weight: bold;">add</span> di,2
+    <span style="color: #4f97d7; font-weight: bold;">loop</span> s
+
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,4c00h
+    <span style="color: #4f97d7; font-weight: bold;">int</span> 21h
+<span style="color: #bc6ec5; font-weight: bold;">do0end</span>: <span style="color: #4f97d7; font-weight: bold;">nop</span>
+
+<span style="color: #bc6ec5; font-weight: bold;">code</span> <span style="color: #4f97d7; font-weight: bold;">ends</span>
+<span style="color: #bc6ec5; font-weight: bold;">end</span> <span style="color: #4f97d7; font-weight: bold;">start</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org8d995e6" class="outline-4">
+<h4 id="org8d995e6">单步中断</h4>
+<div class="outline-text-4" id="text-org8d995e6">
+<p>
+单步中断的中断类型码为1。通过该中断，就可以实现单步跟踪程序的执行过程。<br />
+</p>
+
+<p>
+一般情况下，CPU在执行完当前指令后，如果检测到中断信息，就响应中断，引发中断过程。可以，在有些情况下，CPU在执行完当前指令后，即使发生中断，也不会响应。<br />
+例如：在执行完向ss寄存器传送数据的指令后，即便发生中断，CPU也不会响应。因为，ss:sp联合指向栈顶，而对他们的设置应该连续完成。如果在执行完设置ss的指令后，CPU响应中断，引发中断过程，要在栈中压入标志寄存器、CS和IP的值。而ss改变，sp并未改变，此时ss:sp指向的不是正确的栈顶，将引起错误。<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#27491;&#30830;&#35774;&#32622;&#26632;&#39030;&#30340;&#26041;&#27861;</span>
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,1000h
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ss</span>,ax
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">sp</span>,0
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#38169;&#35823;&#30340;&#26041;&#27861;</span>
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,1000h
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ss</span>,ax
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,0   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#27492;&#22788;&#21487;&#33021;&#21709;&#24212;&#20013;&#26029;</span>
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">sp</span>,0
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf666f2d" class="outline-3">
+<h3 id="orgf666f2d">13 int指令</h3>
+<div class="outline-text-3" id="text-orgf666f2d">
+<p>
+int 为interrupt的缩写<br />
+</p>
+
+<p>
+int n  // n为中断类型码，int的功能是引发中断类型码为n的中断过程<br />
+</p>
+</div>
+<div id="outline-container-orgb205490" class="outline-4">
+<h4 id="orgb205490">BIOS和DOS中断例程的安装过程</h4>
+<div class="outline-text-4" id="text-orgb205490">
+<ol class="org-ol">
+<li>开机后，CPU一加电，初始化 (cs)=0ffffH, (ip)=0, 自动从 ffff:0单元开始执行程序。ffff:0处有一条跳转指令，CPU执行该指令后，转去执行BIOS中的硬件系统检测和初始化程序。<br /></li>
+<li>初始化程序将建立BIOS所支持的中断向量，即将BIOS提供的中断例程的入口地址登记在中断向量表中。注意：对于BIOS所提供的中断例程，只需将入口地址登记在中断向量表中即可，因为他们是固化到ROM中的程序，一直在内存中存在。<br /></li>
+<li>硬件系统检测和初始化完成后，调用int 19H进行操作系统的引导。从此将计算机交给操作系统控制。<br /></li>
+<li>DOS启动后，除完成其他工作外，还将它所提供的中断例程装入内存，并建立相应的中断向量。<br /></li>
+</ol>
+</div>
+</div>
+<div id="outline-container-orgab3a968" class="outline-4">
+<h4 id="orgab3a968">BIOS中断例程应用</h4>
+<div class="outline-text-4" id="text-orgab3a968">
+<p>
+int 10H中断例程是BIOS提供的中断例程，其中包含多个和屏幕输出相关的子程序<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#35843;&#29992;10H&#21495;&#20013;&#26029;&#20363;&#31243;&#30340;2&#21495;&#23376;&#31243;&#24207;&#65292;&#20854;&#21151;&#33021;&#20026;&#35774;&#32622;&#20809;&#26631;&#25152;&#22312;&#30340;&#34892;&#21495;&#12289;&#21015;&#21495;&#12289;&#39029;&#21495;</span>
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ah</span>,2             <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#23376;&#31243;&#24207;&#21495;</span>
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">bh</span>,0             <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#35774;&#32622;&#39029;&#21495;</span>
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">dh</span>,5             <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#35774;&#32622;&#34892;&#21495;</span>
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">dl</span>,12            <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#35774;&#32622;&#21015;&#22909;</span>
+<span style="color: #bc6ec5; font-weight: bold;">int</span> <span style="color: #4f97d7; font-weight: bold;">10H</span>              <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#35843;&#29992;</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org07ade29" class="outline-4">
+<h4 id="org07ade29">DOS中断例程应用</h4>
+<div class="outline-text-4" id="text-org07ade29">
+<p>
+int 21H中断例程是DOS提供的中断例程，包含了DOS提供给程序员在编程时调用的子程序<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ah</span>,4cH    <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#31243;&#24207;&#36820;&#22238;</span>
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">al</span>,0      <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#36820;&#22238;&#20540;</span>
+<span style="color: #bc6ec5; font-weight: bold;">int</span> <span style="color: #4f97d7; font-weight: bold;">21H</span>       <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#35843;&#29992;</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org83815ac" class="outline-3">
+<h3 id="org83815ac">14 端口</h3>
+<div class="outline-text-3" id="text-org83815ac">
+<p>
+CPU可以直接读写以下3个地方的数据：<br />
+</p>
+<ol class="org-ol">
+<li>CPU内部寄存器<br /></li>
+<li>内存单元<br /></li>
+<li>端口<br /></li>
+</ol>
+</div>
+<div id="outline-container-orge92e20b" class="outline-4">
+<h4 id="orge92e20b">端口的读写</h4>
+<div class="outline-text-4" id="text-orge92e20b">
+<p>
+CPU通过in out命令来对端口进行读写。在in和out指令中，只能使用ax或al来存放端口中读入的数据或要发送到端口中的数据，访问8位端口时用al，访问16位端口时用ax。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">in</span> <span style="color: #4f97d7; font-weight: bold;">al</span>, 60H             <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#20174;60H&#21495;&#31471;&#21475;&#35835;&#20837;&#19968;&#20010;&#23383;&#33410;</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">1. CPU &#36890;&#36807;&#22320;&#22336;&#32447;&#23558;60H&#21457;&#20986;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">2. CPU&#36890;&#36807;&#25511;&#21046;&#32447;&#21457;&#20986;&#31471;&#21475;&#35835;&#21629;&#20196;&#65292;&#36873;&#20013;&#31471;&#21475;&#25152;&#22312;&#30340;&#33455;&#29255;&#65292;&#24182;&#36890;&#30693;&#23427;&#65292;&#23558;&#35201;&#20174;&#20013;&#35835;&#21462;&#25968;&#25454;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">3. &#31471;&#21475;&#25152;&#22312;&#33455;&#29255;&#23558;60H&#31471;&#21475;&#20013;&#30340;&#25968;&#25454;&#36890;&#36807;&#25968;&#25454;&#32447;&#36865;&#20837;CPU</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org0751e3c" class="outline-4">
+<h4 id="org0751e3c">CMOS RAM芯片</h4>
+<div class="outline-text-4" id="text-org0751e3c">
+<ol class="org-ol">
+<li>CMOS RAM芯片包含一个实时钟和一个有128存储单元的RAM存储器。<br /></li>
+<li>该芯片靠电池供电，PC关机后其内部实时钟依然可正常工作，RAM中信息不丢失。<br /></li>
+<li>128个字节的RAM中，0~0dH单元来保存时间信息，其余大部分用于保存系统配置信息，供系统启动时BIOS程序读取<br /></li>
+<li>该芯片内部有两个端口，端口地址为70H和71H。CPU通过这两个端口来读写CMOS RAM。70为地址端口，存放要访问CMOS RAM单元的地址；71H为数据端口，存放选定的CMOS RAM单元中读取的数据，或要写入到其中的数据。<br /></li>
+</ol>
+</div>
+</div>
+<div id="outline-container-org913fbc2" class="outline-4">
+<h4 id="org913fbc2">shl shr指令</h4>
+<div class="outline-text-4" id="text-org913fbc2">
+<p>
+逻辑移位指令。<br />
+shl 逻辑左移指令，其执行流程如下：<br />
+</p>
+<ol class="org-ol">
+<li>将寄存器或内存单元中的数据向左移位<br /></li>
+<li>将最后移出的一位写入CF中<br /></li>
+<li>最低位用0补充<br /></li>
+</ol>
+
+<p>
+移动多位时，必须将移动位数放入cl中<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">al</span>,01001000B
+<span style="color: #bc6ec5; font-weight: bold;">shl</span> <span style="color: #4f97d7; font-weight: bold;">al</span>,1                 <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#31227;&#20301;&#21518;(al)=10010000B  CF=0</span>
+
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">al</span>,01001000B
+<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">cl</span>,3
+<span style="color: #bc6ec5; font-weight: bold;">shl</span> <span style="color: #4f97d7; font-weight: bold;">al</span>,cl                <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#31227;&#20301;&#21518;(al)=01000000B  CF=0</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org4c55be4" class="outline-4">
+<h4 id="org4c55be4">读取 CMOS RAM中时间信息</h4>
+<div class="outline-text-4" id="text-org4c55be4">
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#22312;&#23631;&#24149;&#20013;&#38388;&#26174;&#31034;&#24403;&#21069;&#30340;&#26376;&#20221;</span>
+<span style="color: #bc6ec5; font-weight: bold;">assume</span> <span style="color: #4f97d7; font-weight: bold;">cs</span>:code
+<span style="color: #bc6ec5; font-weight: bold;">code</span> <span style="color: #4f97d7; font-weight: bold;">segment</span>
+<span style="color: #bc6ec5; font-weight: bold;">start</span>: 
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> al,8      <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">CMOS RAM &#31532;8&#21495;&#20869;&#23384;&#21333;&#20803;&#23384;&#20648;&#24403;&#21069;&#26376;&#20221;</span>
+    <span style="color: #4f97d7; font-weight: bold;">out</span> 70H,al    <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;&#35201;&#35835;&#21462;&#30340;CMOS RAM&#20869;&#23384;&#21333;&#20803;&#36865;&#20837;70H&#31471;&#21475;</span>
+    <span style="color: #4f97d7; font-weight: bold;">in</span> al,71H     <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#20174;71H&#31471;&#21475;&#65292;&#21462;&#24471;&#35201;&#35835;&#21462;&#30340;&#25968;&#25454;</span>
+
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ah,al               <span style="color: #2aa1ae; background-color: #292e34;">;;</span>
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> cl,4
+    <span style="color: #4f97d7; font-weight: bold;">shr</span> ah,cl               <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">ah&#20013;&#20026;&#26376;&#20221;&#30340;&#21313;&#20301;&#25968;&#30721;&#20540;</span>
+    <span style="color: #4f97d7; font-weight: bold;">and</span> al,00001111B        <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">al&#20013;&#20301;&#26376;&#20221;&#30340;&#20010;&#20301;&#25968;&#30721;&#20540;</span>
+
+    <span style="color: #4f97d7; font-weight: bold;">add</span> ah,30H              <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#20108;&#36827;&#21046;&#20540;+30H=ASCII&#30721;</span>
+    <span style="color: #4f97d7; font-weight: bold;">add</span> al,30H
+
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> bx,0b800H
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> es,bx
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> byte ptr es:[160*12+40*2],ah          <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#26174;&#31034;&#26376;&#20221;&#30340;&#21313;&#20301;&#25968;&#30721;</span>
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> byte ptr es:[160*12+40*2+2],al        <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#26174;&#31034;&#26376;&#20221;&#30340;&#20010;&#20301;&#25968;&#30721;</span>
+
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,4c00H
+    <span style="color: #4f97d7; font-weight: bold;">int</span> 21H
+<span style="color: #bc6ec5; font-weight: bold;">code</span> <span style="color: #4f97d7; font-weight: bold;">ends</span>
+<span style="color: #bc6ec5; font-weight: bold;">start</span> <span style="color: #4f97d7; font-weight: bold;">end</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org54dd2c5" class="outline-3">
+<h3 id="org54dd2c5">15 外中断</h3>
+<div class="outline-text-3" id="text-org54dd2c5">
+<p>
+PC系统中，外中断源一共有两类：<br />
+</p>
+<ol class="org-ol">
+<li>可屏蔽中断<br />
+可屏蔽中断是CPU可以不响应的外中断。当CPU检测到可屏蔽中断时，会判断当前IF位的值，如果IF=1，则CPU在执行完当前指令后响应可屏蔽中断，引发中断过程；如果IF=0，则不响应可屏蔽中断。<br />
+IF置0后，在进入中断处理程序后，可以禁止其他的可屏蔽中断。<br />
+sti命令设置IF=1<br />
+cli命令设置IF=0<br /></li>
+
+<li>不可屏蔽中断<br />
+不可屏蔽中断是CPU必须响应的外中断。当CPU检测到不可屏蔽中断时，则在执行完当前指令后，立即响应，引发中断过程。<br /></li>
+</ol>
+</div>
+</div>
+<div id="outline-container-orga5ac4d7" class="outline-3">
+<h3 id="orga5ac4d7">16 直接定址表</h3>
+<div class="outline-text-3" id="text-orga5ac4d7">
+</div>
+<div id="outline-container-org962cc79" class="outline-4">
+<h4 id="org962cc79">描述单元长度的标号</h4>
+<div class="outline-text-4" id="text-org962cc79">
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#25226;a&#20013;&#25968;&#25454;&#32047;&#21152;&#21040;b&#20013;</span>
+<span style="color: #bc6ec5; font-weight: bold;">assume</span> <span style="color: #4f97d7; font-weight: bold;">cs</span>:code
+<span style="color: #bc6ec5; font-weight: bold;">code</span> <span style="color: #4f97d7; font-weight: bold;">segment</span>
+    <span style="color: #4f97d7; font-weight: bold;">a</span>: db 1,2,3,4,5,6,7,8
+    <span style="color: #4f97d7; font-weight: bold;">b</span>: dw 0
+
+<span style="color: #bc6ec5; font-weight: bold;">start</span>:
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> si, offset a
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> bx, offset b
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> cx, 8            <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#24490;&#29615;&#27425;&#25968;</span>
+<span style="color: #bc6ec5; font-weight: bold;">s</span>:
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> al,cs:[si]
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ah,0
+    <span style="color: #4f97d7; font-weight: bold;">add</span> cs:[si],ax
+    <span style="color: #4f97d7; font-weight: bold;">inc</span> si
+    <span style="color: #4f97d7; font-weight: bold;">loop</span> s
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,4c00H
+    <span style="color: #4f97d7; font-weight: bold;">int</span> 21H
+<span style="color: #bc6ec5; font-weight: bold;">code</span> <span style="color: #4f97d7; font-weight: bold;">ends</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#25226;&#20882;&#21495;&#21435;&#25481;&#21518;&#65292;&#26631;&#21495;a&#21644;b&#19981;&#20294;&#34920;&#31034;&#20869;&#23384;&#21333;&#20803;&#22320;&#22336;&#65292;&#36824;&#34920;&#31034;&#20102;&#20869;&#23384;&#21333;&#20803;&#30340;&#38271;&#24230;</span>
+<span style="color: #bc6ec5; font-weight: bold;">assume</span> <span style="color: #4f97d7; font-weight: bold;">cs</span>:code
+<span style="color: #bc6ec5; font-weight: bold;">code</span> <span style="color: #4f97d7; font-weight: bold;">segment</span>
+    <span style="color: #4f97d7; font-weight: bold;">a</span> db 1,2,3,4,5,6,7,8
+    <span style="color: #4f97d7; font-weight: bold;">b</span> dw 0
+<span style="color: #bc6ec5; font-weight: bold;">start</span>:
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> si,0
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> cx,8
+<span style="color: #bc6ec5; font-weight: bold;">s</span>:
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> al,a[si]        <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#30456;&#24403;&#20110; mov al,cs:[si]</span>
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ah,0
+    <span style="color: #4f97d7; font-weight: bold;">add</span> b,ax            <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#30456;&#24403;&#20110; add add cs:[si],ax</span>
+    <span style="color: #4f97d7; font-weight: bold;">inc</span> si
+    <span style="color: #4f97d7; font-weight: bold;">loop</span> s
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,4c00H
+    <span style="color: #4f97d7; font-weight: bold;">int</span> 21H
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc3df6fd" class="outline-4">
+<h4 id="orgc3df6fd">在其他段中使用数据标号</h4>
+<div class="outline-text-4" id="text-orgc3df6fd">
+<p>
+一般来说，我们不再代码段中定义数据，而是将数据定义到其他段中。在其他段中，我们也可以使用数据标号来描述存储数据的单元的地址和长度。标号后面加:的地址标号，只能在代码段中使用，不能在其他段中使用。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">assume</span> <span style="color: #4f97d7; font-weight: bold;">cs</span>:code, ds:data   <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#22312;&#20195;&#30721;&#27573;&#20013;&#30452;&#25509;&#29992;&#25968;&#25454;&#26631;&#21495;&#35775;&#38382;&#25968;&#25454;&#65292;&#38656;&#35201;&#20351;&#29992;&#20266;&#25351;&#20196;assume&#23558;&#26631;&#21495;&#25152;&#22312;&#30340;&#27573;&#21644;&#23492;&#23384;&#22120;&#32852;&#31995;&#36215;&#26469;</span>
+<span style="color: #bc6ec5; font-weight: bold;">data</span> <span style="color: #4f97d7; font-weight: bold;">segment</span>
+    <span style="color: #4f97d7; font-weight: bold;">a</span> db 1,2,3,4,5,6,7,8
+    <span style="color: #4f97d7; font-weight: bold;">b</span> dw 0
+<span style="color: #bc6ec5; font-weight: bold;">data</span> <span style="color: #4f97d7; font-weight: bold;">ends</span>
+<span style="color: #bc6ec5; font-weight: bold;">code</span> <span style="color: #4f97d7; font-weight: bold;">segment</span>
+<span style="color: #bc6ec5; font-weight: bold;">start</span>:
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,data         <span style="color: #2aa1ae; background-color: #292e34;">;;</span>
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ds,ax           <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">ds&#20013;&#23384;&#25918;data&#27573;&#30340;&#27573;&#22320;&#22336;</span>
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> si,0
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> cx,8
+<span style="color: #bc6ec5; font-weight: bold;">s</span>:
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> al,a[si]        <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#32534;&#35793;&#22120;&#20250;&#23558;&#20854;&#32763;&#35793;&#20026; mov al,[si+0]</span>
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ah,0
+    <span style="color: #4f97d7; font-weight: bold;">add</span> b,ax            <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#32534;&#35793;&#22120;&#20250;&#23558;&#20854;&#32763;&#35793;&#20026; add add [8],ax</span>
+    <span style="color: #4f97d7; font-weight: bold;">inc</span> si
+    <span style="color: #4f97d7; font-weight: bold;">loop</span> s
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,4c00H
+    <span style="color: #4f97d7; font-weight: bold;">int</span> 21H
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org256efc0" class="outline-4">
+<h4 id="org256efc0">直接定址表</h4>
+<div class="outline-text-4" id="text-org256efc0">
+<p>
+其实就是查表法。其将运算结果放在表中，将输入转化为表的索引，从而直接获得输入对应的输出。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#20197;16&#36827;&#21046;&#22312;&#23631;&#24149;&#20013;&#38388;&#26174;&#31034;&#20108;&#36827;&#21046;&#25968;&#25454;</span>
+<span style="color: #bc6ec5; font-weight: bold;">showbyte</span>:
+    <span style="color: #4f97d7; font-weight: bold;">jmp</span> short show
+    <span style="color: #4f97d7; font-weight: bold;">table</span> db '0123456789ABCDEF'
+
+<span style="color: #bc6ec5; font-weight: bold;">show</span>:
+    <span style="color: #4f97d7; font-weight: bold;">push</span> bx
+    <span style="color: #4f97d7; font-weight: bold;">push</span> es
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ah,al
+    <span style="color: #4f97d7; font-weight: bold;">shr</span> ah,1
+    <span style="color: #4f97d7; font-weight: bold;">shr</span> ah,1
+    <span style="color: #4f97d7; font-weight: bold;">shr</span> ah,1
+    <span style="color: #4f97d7; font-weight: bold;">shr</span> ah,1
+    <span style="color: #4f97d7; font-weight: bold;">and</span> al,00001111B
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> bl,ah
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> bh,0
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> ah,table[bx]                      <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#29992;&#39640;4&#20301;&#30340;&#20540;&#20316;&#20026;&#30456;&#23545;&#20110;table&#30340;&#20559;&#31227;&#65292;&#21462;&#24471;&#23545;&#24212;&#30340;&#23383;&#31526;</span>
+
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> bx,0b800H
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> es,bx
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> es:[160*12+40*2],ah
+
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> bl,al
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> bh,0
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> al,table[bx]                      <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#29992;&#20302;4&#20301;&#30340;&#20540;&#20316;&#20026;&#30456;&#23545;&#20110;table&#30340;&#20559;&#31227;&#65292;&#21462;&#24471;&#23545;&#24212;&#30340;&#23383;&#31526;</span>
+    <span style="color: #4f97d7; font-weight: bold;">mov</span> es:[160*12+40*2+2],al
+
+    <span style="color: #4f97d7; font-weight: bold;">pop</span> es
+    <span style="color: #4f97d7; font-weight: bold;">pop</span> bx
+
+    <span style="color: #4f97d7; font-weight: bold;">ret</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc2a3e73" class="outline-3">
+<h3 id="orgc2a3e73">17 使用BIOS进行键盘输入和磁盘读写</h3>
+<div class="outline-text-3" id="text-orgc2a3e73">
+<div class="org-src-container">
+<pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ah</span>,0
+<span style="color: #bc6ec5; font-weight: bold;">int</span> <span style="color: #4f97d7; font-weight: bold;">16H</span>       <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#25191;&#34892;&#21518;ah&#20013;&#23384;&#25918;&#38190;&#30424;&#25195;&#25551;&#30721;, al&#20013;&#23384;&#25918;ASCII&#30721;</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgb1a918a" class="outline-2">
+<h2 id="orgb1a918a">Misc</h2>
+<div class="outline-text-2" id="text-orgb1a918a">
+</div>
+<div id="outline-container-orgd6d2696" class="outline-3">
+<h3 id="orgd6d2696">VS 汇编语言开发环境搭建</h3>
+<div class="outline-text-3" id="text-orgd6d2696">
+<ol class="org-ol">
+<li>Visual Studio中搜索安装AsmDude插件。<br /></li>
+<li>新建Visual C++空项目<br /></li>
+<li>右键点击工程文件，选择生成依赖项/生成自定义<br /></li>
+<li>勾选 masm<br /></li>
+<li>项目 - 属性 - 链接器 - 系统 - 子系统 下拉框中选择控制台<br /></li>
+<li><a href="https://blog.csdn.net/qq_28249373/article/details/83475107">https://blog.csdn.net/qq_28249373/article/details/83475107</a><br /></li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

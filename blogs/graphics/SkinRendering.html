@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-03-09 周二 13:48 -->
+<!-- 2021-03-25 周四 19:38 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Skin Rendering</title>
@@ -121,6 +121,7 @@ for the JavaScript code in this tag.
 <li><a href="#org8554912">计算 SeamMaskTexture</a></li>
 <li><a href="#orga9f170f">对 StretchTexture 和 IrradianceTexture 进行模糊</a>
 <ul>
+<li><a href="#orgd57b160">2D Blur to 1D Blur</a></li>
 <li><a href="#orgb98cf9d">高斯模糊近似 R(d)函数</a></li>
 <li><a href="#org22ecd55">代码实现</a></li>
 </ul>
@@ -130,7 +131,7 @@ for the JavaScript code in this tag.
 </li>
 </ul>
 </li>
-<li><a href="#org09346ae">参考资料</a>
+<li><a href="#org6991111">参考资料</a>
 <ul>
 <li><a href="#orga284d87">高斯卷积核求解</a></li>
 </ul>
@@ -166,14 +167,14 @@ for the JavaScript code in this tag.
 </li>
 <li><a href="#org178c317">ScreenSpace Perceptual Rendering of Human Skin</a>
 <ul>
-<li><a href="#org56e365d">实现细节</a>
+<li><a href="#org0446fe7">实现细节</a>
 <ul>
 <li><a href="#orgecc29e1">Blur Kernel width</a></li>
 <li><a href="#org6079ebb">渲染流程和贴图空间 SSS 的对比</a></li>
 <li><a href="#org58c26c2">缺陷</a></li>
 </ul>
 </li>
-<li><a href="#org137404c">参考链接</a></li>
+<li><a href="#org885ca00">参考链接</a></li>
 </ul>
 </li>
 <li><a href="#orgd419503">Real-Time Realistic Skin Translucency</a>
@@ -183,10 +184,15 @@ for the JavaScript code in this tag.
 <li><a href="#orgba3e028">算法基于下面 4 点观察</a></li>
 <li><a href="#org332965e">基于上面 4 点观察，算法做出如下 3 点假设</a></li>
 <li><a href="#org5fa8448">公式推导</a></li>
-<li><a href="#org838486d">实现细节</a></li>
+<li><a href="#org9611e0b">实现细节</a></li>
 </ul>
 </li>
-<li><a href="#orgd2594bc">参考链接</a></li>
+<li><a href="#orgb1b14a8">参考链接</a></li>
+</ul>
+</li>
+<li><a href="#orgad7fd32"><span class="todo TODO">TODO</span> Separable-SSS</a>
+<ul>
+<li><a href="#orga80e33c">参考链接</a></li>
 </ul>
 </li>
 <li><a href="#orge77cd14">Misc</a>
@@ -195,7 +201,7 @@ for the JavaScript code in this tag.
 <li><a href="#orge46b232">NoLWrap</a></li>
 </ul>
 </li>
-<li><a href="#org99432ee">参考资料</a></li>
+<li><a href="#org24cda90">参考资料</a></li>
 </ul>
 </div>
 </div>
@@ -385,6 +391,16 @@ uv.v 为 roughness<br />
 在贴图空间，对 IrradianceTexture 进行高斯模糊来模拟散射。一共使用 6 个高斯函数，RGB 通道使用不同的权重。6个高斯函数近似 multi-dipole profiles<br />
 </p>
 </div>
+<div id="outline-container-orgd57b160" class="outline-6">
+<h6 id="orgd57b160">2D Blur to 1D Blur</h6>
+<div class="outline-text-6" id="text-orgd57b160">
+
+<div class="figure">
+<p><img src="./SkinRendering/2d_gaussian_blur_to_1d_gaussian_blur.jpg" alt="2d_gaussian_blur_to_1d_gaussian_blur.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
 <div id="outline-container-orgb98cf9d" class="outline-6">
 <h6 id="orgb98cf9d">高斯模糊近似 R(d)函数</h6>
 <div class="outline-text-6" id="text-orgb98cf9d">
@@ -449,9 +465,9 @@ R(d)<sub>r</sub> = 0.078*G(sqrt(7.41), d) + 0.358*G(sqrt(1.99), d) + 0.113*G(sqr
 </div>
 </div>
 </div>
-<div id="outline-container-org09346ae" class="outline-3">
-<h3 id="org09346ae">参考资料</h3>
-<div class="outline-text-3" id="text-org09346ae">
+<div id="outline-container-org6991111" class="outline-3">
+<h3 id="org6991111">参考资料</h3>
+<div class="outline-text-3" id="text-org6991111">
 <ul class="org-ul">
 <li>Advanced Techniques for Realistic Real-Time Skin Rendering <a href="https://developer.nvidia.com/gpugems/GPUGems3/gpugems3_ch14.html">https://developer.nvidia.com/gpugems/GPUGems3/gpugems3_ch14.html</a><br /></li>
 <li>角色渲染技术——皮肤 <a href="https://zhuanlan.zhihu.com/p/27014447">https://zhuanlan.zhihu.com/p/27014447</a><br /></li>
@@ -698,9 +714,9 @@ SSS_Lut2 *= SSS_Lut2;
 <h2 id="org178c317">ScreenSpace Perceptual Rendering of Human Skin</h2>
 <div class="outline-text-2" id="text-org178c317">
 </div>
-<div id="outline-container-org56e365d" class="outline-3">
-<h3 id="org56e365d">实现细节</h3>
-<div class="outline-text-3" id="text-org56e365d">
+<div id="outline-container-org0446fe7" class="outline-3">
+<h3 id="org0446fe7">实现细节</h3>
+<div class="outline-text-3" id="text-org0446fe7">
 </div>
 <div id="outline-container-orgecc29e1" class="outline-4">
 <h4 id="orgecc29e1">Blur Kernel width</h4>
@@ -816,11 +832,13 @@ Blur Kernel width 需要考虑下面两个情况<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org137404c" class="outline-3">
-<h3 id="org137404c">参考链接</h3>
-<div class="outline-text-3" id="text-org137404c">
+<div id="outline-container-org885ca00" class="outline-3">
+<h3 id="org885ca00">参考链接</h3>
+<div class="outline-text-3" id="text-org885ca00">
 <ul class="org-ul">
 <li>2009 <a href="http://www.iryoku.com/sssss/">http://www.iryoku.com/sssss/</a><br /></li>
+<li>2010 <a href="http://iryoku.com/translucency/">http://iryoku.com/translucency/</a><br /></li>
+<li>2015 <a href="https://github.com/iryoku/separable-sss">https://github.com/iryoku/separable-sss</a><br /></li>
 </ul>
 </div>
 </div>
@@ -835,7 +853,7 @@ Blur Kernel width 需要考虑下面两个情况<br />
 <ol class="org-ol">
 <li>对于很多物体，我们可以对当前点的法线取反来近似背面点的法线。当正面和背面平行时，该近似是准确的。<br /></li>
 <li>从背面照亮物体，我们从正面看时，观察者无法获得背面辐射照度的准确信息。<br /></li>
-<li>材质的自由程很小或者几何体适度的厚时（例如：皮肤），透射式非常低频的现象。这是因为光经过物体内部时被散射，将光的大多数高频信息给隐藏了。<br /></li>
+<li>材质的自由程很小或者几何体适度的厚时（例如：皮肤），透射是非常低频的现象。这是因为光经过物体内部时被散射，将光的大多数高频信息给消去了。<br /></li>
 <li>对于人类皮肤，在表面上 albedo 不会有非常明显的变化，其维持在相似的皮肤色调上。<br /></li>
 </ol>
 </div>
@@ -861,9 +879,9 @@ Blur Kernel width 需要考虑下面两个情况<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org838486d" class="outline-4">
-<h4 id="org838486d">实现细节</h4>
-<div class="outline-text-4" id="text-org838486d">
+<div id="outline-container-org9611e0b" class="outline-4">
+<h4 id="org9611e0b">实现细节</h4>
+<div class="outline-text-4" id="text-org9611e0b">
 <p>
 尽管使用取反的 Normal 来计算透射率避免了双重贡献（相对于两次都使用不取反 Normal 进行计算）。但是，使用取反 Normal 导致反射照亮区域和只受透射照亮的区域之间的过度不平滑。在过度区域，N.L 和 -N.L 都为 0。为了避免突然的照明变化，我们通过下面方式扩大透射照亮的区域：<br />
 <img src="./SkinRendering/008_enlarge_translucent_range.jpg" alt="008_enlarge_translucent_range.jpg" /><br />
@@ -888,11 +906,28 @@ M += transmittance + reflectance;
 </div>
 </div>
 </div>
-<div id="outline-container-orgd2594bc" class="outline-3">
-<h3 id="orgd2594bc">参考链接</h3>
-<div class="outline-text-3" id="text-orgd2594bc">
+<div id="outline-container-orgb1b14a8" class="outline-3">
+<h3 id="orgb1b14a8">参考链接</h3>
+<div class="outline-text-3" id="text-orgb1b14a8">
 <ul class="org-ul">
+<li>2009 <a href="http://www.iryoku.com/sssss/">http://www.iryoku.com/sssss/</a><br /></li>
 <li>2010 <a href="http://iryoku.com/translucency/">http://iryoku.com/translucency/</a><br /></li>
+<li>2015 <a href="https://github.com/iryoku/separable-sss">https://github.com/iryoku/separable-sss</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgad7fd32" class="outline-2">
+<h2 id="orgad7fd32"><span class="todo TODO">TODO</span> Separable-SSS</h2>
+<div class="outline-text-2" id="text-orgad7fd32">
+</div>
+<div id="outline-container-orga80e33c" class="outline-3">
+<h3 id="orga80e33c">参考链接</h3>
+<div class="outline-text-3" id="text-orga80e33c">
+<ul class="org-ul">
+<li>2009 <a href="http://www.iryoku.com/sssss/">http://www.iryoku.com/sssss/</a><br /></li>
+<li>2010 <a href="http://iryoku.com/translucency/">http://iryoku.com/translucency/</a><br /></li>
+<li>2015 <a href="https://github.com/iryoku/separable-sss">https://github.com/iryoku/separable-sss</a><br /></li>
 </ul>
 </div>
 </div>
@@ -928,9 +963,9 @@ M += transmittance + reflectance;
 </div>
 </div>
 
-<div id="outline-container-org99432ee" class="outline-2">
-<h2 id="org99432ee">参考资料</h2>
-<div class="outline-text-2" id="text-org99432ee">
+<div id="outline-container-org24cda90" class="outline-2">
+<h2 id="org24cda90">参考资料</h2>
+<div class="outline-text-2" id="text-org24cda90">
 <ul class="org-ul">
 <li>《GPU Gems 3》：真实感皮肤渲染技术总结 <a href="https://zhuanlan.zhihu.com/p/42433792">https://zhuanlan.zhihu.com/p/42433792</a><br /></li>
 <li>低成本皮肤渲染 Pre-integrated Skin <a href="https://zhuanlan.zhihu.com/p/35628106">https://zhuanlan.zhihu.com/p/35628106</a><br /></li>

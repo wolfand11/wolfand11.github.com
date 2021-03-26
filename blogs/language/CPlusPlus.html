@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2020-10-19 周一 17:08 -->
+<!-- 2021-03-25 周四 19:38 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>CPlusPlus</title>
@@ -72,7 +72,50 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orgc606b78">CPlusPlus Language</a></li>
+<li><a href="#orgc606b78">CPlusPlus Language</a>
+<ul>
+<li><a href="#orgf8b2b44">C++基础</a></li>
+<li><a href="#org2c516fb">C++标准库</a>
+<ul>
+<li><a href="#orgbf6592f">12 动态内存</a>
+<ul>
+<li><a href="#org18c03df">动态内存与智能指针</a>
+<ul>
+<li><a href="#org41116f8">shared_ptr</a></li>
+<li><a href="#org2cfa609">智能指针和异常</a></li>
+<li><a href="#org5e931ee">unique_ptr</a></li>
+<li><a href="#orgefb059f">weak_ptr</a></li>
+</ul>
+</li>
+<li><a href="#org84a77a8">动态数组</a>
+<ul>
+<li><a href="#org52608f2">new 与数组</a></li>
+<li><a href="#org284489b">allocator 类</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org419e8c6">类设计者的工具</a></li>
+<li><a href="#org2427236">高级主题</a>
+<ul>
+<li><a href="#org4483830">19 特殊工具与技术</a>
+<ul>
+<li><a href="#orgdb1c592">重载 new 和 delete</a>
+<ul>
+<li><a href="#orgb55eddd">delete[] 如何知道需要调用多少次析构函数的？</a></li>
+<li><a href="#org40a507d">delete[] 如何知道需要释放多少内存空间的？</a></li>
+<li><a href="#orgce9ecc4">free 函数如何知道需要释放多少内存空间的？</a></li>
+</ul>
+</li>
+<li><a href="#orgce4cc0e">placement new</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a href="#org3e44f85">Misc</a>
 <ul>
 <li><a href="#orgd3966ea">Qt 第三方库</a>
@@ -98,7 +141,392 @@ CPlusPlus note.<br />
 
 <div id="outline-container-orgc606b78" class="outline-2">
 <h2 id="orgc606b78">CPlusPlus Language</h2>
+<div class="outline-text-2" id="text-orgc606b78">
 </div>
+<div id="outline-container-orgf8b2b44" class="outline-3">
+<h3 id="orgf8b2b44">C++基础</h3>
+</div>
+<div id="outline-container-org2c516fb" class="outline-3">
+<h3 id="org2c516fb">C++标准库</h3>
+<div class="outline-text-3" id="text-org2c516fb">
+</div>
+<div id="outline-container-orgbf6592f" class="outline-4">
+<h4 id="orgbf6592f">12 动态内存</h4>
+<div class="outline-text-4" id="text-orgbf6592f">
+</div>
+<div id="outline-container-org18c03df" class="outline-5">
+<h5 id="org18c03df">动态内存与智能指针</h5>
+<div class="outline-text-5" id="text-org18c03df">
+</div>
+<div id="outline-container-org41116f8" class="outline-6">
+<h6 id="org41116f8">shared_ptr</h6>
+<div class="outline-text-6" id="text-org41116f8">
+<p>
+通过引用计数实现指针。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-c++"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#31354;&#26234;&#33021;&#25351;&#38024;&#65292;&#21487;&#20197;&#25351;&#21521;string&#31867;&#22411;&#30340;&#23545;&#35937;</span>
+<span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;<span style="color: #ce537a; font-weight: bold;">string</span>&gt; <span style="color: #7590db;">p1</span>;
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">q&#20026;shared_ptr&#65292;q&#30340;&#24341;&#29992;&#35745;&#31639;&#22120;&#20250;&#22686;&#21152;</span>
+<span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;T&gt; <span style="color: #bc6ec5; font-weight: bold;">p</span>(q);
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">q&#20026;&#20869;&#32622;&#25351;&#38024;&#65292;q&#24517;&#39035;&#25351;&#21521;new&#20998;&#37197;&#30340;&#20869;&#23384;&#65292;&#19988;&#33021;&#22815;&#36716;&#25442;&#20026;T*&#31867;&#22411;</span>
+<span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;T&gt; <span style="color: #bc6ec5; font-weight: bold;">p</span>(q);
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">u&#20026;unique_ptr&#65292;p&#20174;u&#25509;&#31649;&#20102;&#23545;&#35937;&#30340;&#25152;&#26377;&#26435;&#65307;&#23558;u&#32622;&#31354;</span>
+<span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;T&gt; <span style="color: #bc6ec5; font-weight: bold;">p</span>(u);
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">p&#25509;&#31649;&#20102;&#20869;&#32622;&#25351;&#38024;q&#25152;&#25351;&#21521;&#30340;&#23545;&#35937;&#30340;&#25152;&#26377;&#26435;&#12290;q&#24517;&#39035;&#33021;&#36716;&#25442;&#20026;T*&#31867;&#22411;&#12290;p&#23558;&#20351;&#29992;&#21487;&#35843;&#29992;&#23545;&#35937;d&#26469;&#20195;&#26367;delete</span>
+<span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;T&gt; <span style="color: #bc6ec5; font-weight: bold;">p</span>(q, d);
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">p&#26159;shared_ptr p2&#30340;copy,&#21807;&#19968;&#30340;&#21306;&#21035;&#26159;p&#23558;&#29992;&#21487;&#35843;&#29992;&#23545;&#35937;d&#26469;&#20195;&#26367;delete</span>
+<span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;T&gt; <span style="color: #bc6ec5; font-weight: bold;">p</span>(p2,d);
+
+<span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt; <span style="color: #7590db;">p3</span> = make_shared&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt;(42);
+<span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;<span style="color: #ce537a; font-weight: bold;">string</span>&gt; <span style="color: #7590db;">p4</span> = make_shared&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt;(10, <span style="color: #2d9574;">'9'</span>);
+<span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt; <span style="color: #7590db;">p5</span> = make_shared&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt;();
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">p &#21644; q&#37117;&#20026;shared_ptr&#12290;&#19979;&#38754;&#36171;&#20540;&#25805;&#20316;&#65292;&#39318;&#20808;&#20250;&#36882;&#20943;p&#30340;&#24341;&#29992;&#35745;&#25968;&#65292;&#22914;&#26524;&#35745;&#25968;&#26410;0&#21017;&#37322;&#25918;p&#25152;&#31649;&#29702;&#30340;&#20869;&#23384;&#65292;&#28982;&#21518;&#65292;&#36882;&#22686;q&#30340;&#24341;&#29992;&#35745;&#25968;&#65292;&#26368;&#21518;&#65292;p&#25351;&#21521;q&#25152;&#25351;&#23545;&#35937;&#12290;</span>
+p = q;
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#33509;p.use_count()&#20026;1&#65292;&#21017;&#36820;&#22238;true&#65307;&#21542;&#21017;&#36820;&#22238;false</span>
+p.unique();
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#36820;&#22238;&#20849;&#20139;&#23545;&#35937;&#30340;&#26234;&#33021;&#25351;&#38024;&#30340;&#25968;&#37327;</span>
+p.use_count();
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22914;&#26524;p&#26159;&#21807;&#19968;&#25351;&#21521;&#20854;&#23545;&#35937;&#30340;shared_ptr, reset&#20250;&#37322;&#25918;&#35813;&#23545;&#35937;&#65292;&#24182;&#23558;p&#32622;&#31354;&#65307;&#21542;&#21017;&#65292;p&#24341;&#29992;&#35745;&#25968;&#20943;1&#65292;&#24182;&#23558;p&#32622;&#31354;</span>
+p.reset();
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22914;&#26524;p&#26159;&#21807;&#19968;&#25351;&#21521;&#20854;&#23545;&#35937;&#30340;shared_ptr, reset&#20250;&#37322;&#25918;&#35813;&#23545;&#35937;&#65292;&#24182;&#20196;p&#25351;&#21521;&#20869;&#32622;&#25351;&#38024;q&#65292;&#21021;&#22987;&#21270;&#24341;&#29992;&#35745;&#25968;&#20026;1&#65307;&#21542;&#21017;&#65292;p&#21407;&#22987;&#30340;&#24341;&#29992;&#35745;&#25968;&#20943;1&#65292;&#24182;&#20196;p&#25351;&#21521;&#20869;&#32622;&#25351;&#38024;q&#65292;&#21021;&#22987;&#21270;&#29616;&#22312;&#30340;&#24341;&#29992;&#35745;&#25968;&#20026;1</span>
+p.reset(q);
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org2cfa609" class="outline-6">
+<h6 id="org2cfa609">智能指针和异常</h6>
+<div class="outline-text-6" id="text-org2cfa609">
+<p>
+智能指针通过析构函数来管理动态分配的内存，因此，发生异常时，退出调用栈会调用局部变量的析构函数，这样可以保证智能指针管理的内存可以被释放。<br />
+</p>
+
+<p>
+智能指针的陷阱：<br />
+</p>
+<ul class="org-ul">
+<li>不要使用相同的内置指针初始化(或 reset)多个智能指针。这导致多个引用计数对应一个对象。<br /></li>
+<li>不 delete get() 返回的指针。<br /></li>
+<li>不使用 get()初始化或 reset 另一个智能指针。<br /></li>
+<li>如果使用了 get() 返回的指针，记住当最后一个对应的智能指针销毁后，你的指针就变为无效了。<br /></li>
+<li>如果使用智能指针管理的资源不是 new 分配的内存，记住传递给它一个删除器。<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org5e931ee" class="outline-6">
+<h6 id="org5e931ee">unique_ptr</h6>
+<div class="outline-text-6" id="text-org5e931ee">
+<p>
+unique_ptr 不支持 copy 或赋值。不能 copy unique_ptr 有一个例外：我们可以 copy 或赋值一个将要被销毁的 unique_ptr。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-c++"><span style="color: #ce537a; font-weight: bold;">unique_ptr</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt; <span style="color: #bc6ec5; font-weight: bold;">clone</span>(<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">p</span>)
+{
+    <span style="color: #4f97d7; font-weight: bold;">return</span> unique_ptr&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt;(<span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">int</span>(p));
+}
+<span style="color: #ce537a; font-weight: bold;">unique_ptr</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt; <span style="color: #bc6ec5; font-weight: bold;">clone</span>(<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">p</span>)
+{
+    <span style="color: #ce537a; font-weight: bold;">unique_ptr</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt; <span style="color: #7590db;">ret</span>(<span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">int</span>(p));
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">...</span>
+    <span style="color: #4f97d7; font-weight: bold;">return</span> ret;
+}
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-c++"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#31354;unique_ptr,&#21487;&#20197;&#25351;&#21521;&#31867;&#22411;&#20026;T&#30340;&#23545;&#35937;&#12290;u1&#20250;&#20351;&#29992;delete&#37322;&#25918;&#23427;&#30340;&#25351;&#38024;</span>
+<span style="color: #ce537a; font-weight: bold;">unique_ptr</span>&lt;T&gt; <span style="color: #7590db;">u1</span>;
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">u2&#20250;&#20351;&#29992;&#31867;&#22411;&#20026;D&#30340;&#21487;&#35843;&#29992;&#23545;&#35937;&#26469;&#37322;&#25918;&#23427;&#30340;&#25351;&#38024;</span>
+<span style="color: #ce537a; font-weight: bold;">unique_ptr</span>&lt;T, D&gt; <span style="color: #7590db;">u2</span>;
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#31354;unique_ptr,&#21487;&#20197;&#25351;&#21521;&#31867;&#22411;&#20026;T&#30340;&#23545;&#35937;&#12290;&#29992;&#31867;&#22411;&#20026;D&#30340;&#23545;&#35937;d&#20195;&#26367;delete</span>
+<span style="color: #ce537a; font-weight: bold;">unique_ptr</span>&lt;T, D&gt; <span style="color: #bc6ec5; font-weight: bold;">u</span>(d);
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#37322;&#25918;u&#25351;&#21521;&#30340;&#23545;&#35937;&#65292;&#23558;u&#32622;&#20026;&#31354;</span>
+u = <span style="color: #a45bad;">nullptr</span>;
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">u&#25918;&#24323;&#23545;&#25351;&#38024;&#30340;&#25511;&#21046;&#26435;&#65292;&#36820;&#22238;&#20854;&#31649;&#29702;&#30340;&#25351;&#38024;&#65292;&#24182;&#23558;u&#32622;&#20026;&#31354; </span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Tips: release&#19981;&#20250;&#37322;&#25918;u&#25152;&#25351;&#21521;&#23545;&#35937;&#30340;&#20869;&#23384;&#31354;&#38388;</span>
+u.release();
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#37322;&#25918;u&#25351;&#21521;&#30340;&#23545;&#35937;</span>
+u.reset();
+u.reset(<span style="color: #a45bad;">nullptr</span>);
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">q&#20026;&#20869;&#32622;&#25351;&#38024;&#12290;&#19979;&#38754;&#25805;&#20316;&#20250;&#37322;&#25918;u&#25351;&#21521;&#30340;&#23545;&#35937;&#65292;&#24182;&#20196;u&#31649;&#29702;&#25351;&#38024;q&#25351;&#21521;&#30340;&#20869;&#23384;</span>
+u.reset(q);
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgefb059f" class="outline-6">
+<h6 id="orgefb059f">weak_ptr</h6>
+<div class="outline-text-6" id="text-orgefb059f">
+<p>
+weak_ptr 是一种不控制所指对象生存期的智能指针，它指向由一个 shared_ptr 管理的对象。将一个 weak_ptr 绑定到一个 shared_ptr 不会改变 shared_ptr 的引用计数。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-c++"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#31354;weak_ptr&#21487;&#20197;&#25351;&#21521;&#31867;&#22411;&#20026;T&#30340;&#23545;&#35937;</span>
+<span style="color: #ce537a; font-weight: bold;">weak_ptr</span>&lt;T&gt; <span style="color: #7590db;">w</span>; 
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">sp&#20026;shared_ptr, &#23558;w&#32465;&#23450;&#21040;sp</span>
+<span style="color: #ce537a; font-weight: bold;">weak_ptr</span>&lt;T&gt; <span style="color: #bc6ec5; font-weight: bold;">w</span>(sp);
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;w&#32622;&#31354;</span>
+w.reset();
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19982;w&#20849;&#20139;&#23545;&#35937;&#30340;shared_ptr&#30340;&#25968;&#37327;</span>
+w.use_count();
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">expired &#35793;&#20026; &#36807;&#26399;&#12290; &#33509;w.use_count()&#20026;0&#65292;&#36820;&#22238;true&#65292;&#21542;&#21017;&#36820;&#22238;false</span>
+w.expired();
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22914;&#26524;w.expired()&#20026;true&#65292;&#36820;&#22238;&#19968;&#20010;&#31354;shared_ptr&#65307;&#21542;&#21017;&#36820;&#22238;&#19968;&#20010;&#25351;&#21521;w&#30340;&#23545;&#35937;&#30340;shared_ptr</span>
+w.lock();
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org84a77a8" class="outline-5">
+<h5 id="org84a77a8">动态数组</h5>
+<div class="outline-text-5" id="text-org84a77a8">
+</div>
+<div id="outline-container-org52608f2" class="outline-6">
+<h6 id="org52608f2">new 与数组</h6>
+<div class="outline-text-6" id="text-org52608f2">
+<div class="org-src-container">
+<pre class="src src-c++"><span style="color: #2aa1ae; background-color: #292e34;">//</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">=== &#21019;&#24314;&#21160;&#24577;&#25968;&#32452; &#21021;&#22987;&#21270;&#21160;&#24577;&#25968;&#32452; ===</span>
+<span style="color: #2aa1ae; background-color: #292e34;">//</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">get_size&#30830;&#23450;&#20998;&#37197;&#22810;&#23569;&#20010;int&#65307; pia&#25351;&#21521;&#31532;&#19968;&#20010;int</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20998;&#37197;&#19968;&#20010;&#25968;&#32452;&#20250;&#24471;&#21040;&#19968;&#20010;&#20803;&#32032;&#31867;&#22411;&#30340;&#25351;&#38024;</span>
+<span style="color: #ce537a; font-weight: bold;">int</span> *<span style="color: #7590db;">pia</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">int</span>[get_size()];
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">10&#20010;&#26410;&#21021;&#22987;&#21270;&#30340;int</span>
+<span style="color: #ce537a; font-weight: bold;">int</span> *<span style="color: #7590db;">pia</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">int</span>[10]; 
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">10&#20010;&#20540;&#21021;&#22987;&#21270;&#20026;0&#30340;int </span>
+<span style="color: #ce537a; font-weight: bold;">int</span> *<span style="color: #7590db;">pia</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">int</span>[10]();  
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">10&#20010;&#31354;string</span>
+<span style="color: #ce537a; font-weight: bold;">string</span> *<span style="color: #7590db;">psa</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">string</span>[10];
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">10&#20010;&#31354;string</span>
+<span style="color: #ce537a; font-weight: bold;">string</span> *<span style="color: #7590db;">psa</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">string</span>[10]();
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">10&#20010;int&#65292;&#21069;4&#20010;&#29992;&#32473;&#23450;&#21021;&#22987;&#21270;&#22120;&#21021;&#22987;&#21270;&#65292;&#21097;&#20313;&#30340;&#36827;&#34892;&#20540;&#21021;&#22987;&#21270;&#20026;0</span>
+<span style="color: #ce537a; font-weight: bold;">int</span> *<span style="color: #7590db;">pia</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">int</span>[10]{0,1,2,3}; 
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">10&#20010;string&#65292;&#21069;4&#20010;&#29992;&#32473;&#23450;&#21021;&#22987;&#21270;&#22120;&#21021;&#22987;&#21270;&#65292;&#21097;&#20313;&#30340;&#36827;&#34892;&#20540;&#21021;&#22987;&#21270;&#20026;&#31354;string</span>
+<span style="color: #ce537a; font-weight: bold;">string</span> *<span style="color: #7590db;">psa</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">string</span>[10](){<span style="color: #2d9574;">"a"</span>, <span style="color: #2d9574;">"an"</span>, <span style="color: #2d9574;">"the"</span>};
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21160;&#24577;&#20998;&#37197;&#19968;&#20010;&#31354;&#25968;&#32452;&#26159;&#21512;&#27861;&#30340;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19979;&#38754;&#20195;&#30721;&#26159;&#27491;&#30830;&#30340;&#65292;&#20294;&#26159;&#19981;&#33021;&#23545;cp&#36827;&#34892;&#35299;&#24341;&#29992;</span>
+<span style="color: #ce537a; font-weight: bold;">char</span> *<span style="color: #7590db;">cp</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">char</span>[0];
+
+<span style="color: #2aa1ae; background-color: #292e34;">//</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">=== &#37322;&#25918;&#21160;&#24577;&#25968;&#32452;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">//</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">pa&#24517;&#39035;&#25351;&#21521;&#19968;&#20010;&#21160;&#24577;&#20998;&#37197;&#30340;&#25968;&#32452;&#25110;&#31354;</span>
+<span style="color: #4f97d7; font-weight: bold;">delete</span> [] pa;
+
+<span style="color: #2aa1ae; background-color: #292e34;">//</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">=== &#26234;&#33021;&#25351;&#38024;&#31649;&#29702;&#21160;&#24577;&#25968;&#32452;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">//</span>
+<span style="color: #ce537a; font-weight: bold;">unique_ptr</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>[]&gt; <span style="color: #7590db;">up</span>(<span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">int</span>[10]);
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#36820;&#22238;up&#31649;&#29702;&#30340;&#25351;&#38024;&#65292;&#23558;up&#32622;&#31354;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Tips: &#19981;&#20250;&#37322;&#25918;up&#31649;&#29702;&#25351;&#38024;&#25152;&#25351;&#23545;&#35937;&#30340;&#20869;&#23384;</span>
+up.release();
+
+<span style="color: #ce537a; font-weight: bold;">unique_ptr</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>[]&gt; <span style="color: #7590db;">up1</span>(<span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">int</span>[10]);
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#33258;&#21160;&#29992;delete []&#38144;&#27585;&#20854;&#25351;&#38024;</span>
+up1.reset();
+
+<span style="color: #ce537a; font-weight: bold;">unique_ptr</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>[]&gt; <span style="color: #7590db;">up2</span>(<span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">int</span>[10]);
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#36820;&#22238;u&#25317;&#26377;&#30340;&#25968;&#32452;&#20013;&#20301;&#32622;i&#22788;&#30340;&#23545;&#35937;</span>
+up2[0];
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">c++11 shared_ptr&#19981;&#25903;&#25345;&#25968;&#32452;</span>
+<span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt; <span style="color: #7590db;">sp</span>(<span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">int</span>[10], [](<span style="color: #ce537a; font-weight: bold;">int</span>* <span style="color: #7590db;">p</span>){ <span style="color: #4f97d7; font-weight: bold;">delete</span>[] p; });
+<span style="color: #4f97d7; font-weight: bold;">for</span>(<span style="color: #ce537a; font-weight: bold;">size_t</span> <span style="color: #7590db;">i</span>=0; i!=10; ++i)
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">c++11 shared_ptr&#19981;&#25903;&#25345;&#19979;&#26631;&#36816;&#31639;&#31526;&#65292;&#20351;&#29992;get&#33719;&#21462;&#19968;&#20010;&#20869;&#32622;&#25351;&#38024;</span>
+    *(sp.get()+i) = i;
+}
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">c++17 shared_ptr&#25903;&#25345;&#25968;&#32452;</span>
+<span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>[]&gt; <span style="color: #7590db;">sp</span>(<span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">int</span>[10]);
+<span style="color: #4f97d7; font-weight: bold;">for</span>(<span style="color: #ce537a; font-weight: bold;">size_t</span> <span style="color: #7590db;">i</span>=0; i&lt;10; i++)
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">c++17 shared_ptr&#25903;&#25345;&#19979;&#26631;&#36816;&#31639;&#31526;</span>
+    sp[i] = i;
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org284489b" class="outline-6">
+<h6 id="org284489b">allocator 类</h6>
+<div class="outline-text-6" id="text-org284489b">
+<p>
+allocator 类将内存分配和构造对象分开。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-c++"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21487;&#20998;&#37197;string&#30340;allocator&#23545;&#35937;</span>
+<span style="color: #ce537a; font-weight: bold;">allocator</span>&lt;<span style="color: #ce537a; font-weight: bold;">string</span>&gt; <span style="color: #7590db;">alloc</span>;
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20998;&#37197;n&#20010;&#26410;&#21021;&#22987;&#21270;&#30340;string</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">allocator&#20998;&#37197;&#30340;&#20869;&#23384;&#26159;&#26410;&#26500;&#36896;&#30340;</span>
+<span style="color: #4f97d7; font-weight: bold;">auto</span> <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">p</span> = alloc.allocate(n);
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">p&#24517;&#39035;&#20026;&#31867;&#22411;&#20026;string&#30340;&#25351;&#38024;&#65292;&#25351;&#21521;&#19968;&#22359;&#21407;&#22987;&#20869;&#23384;&#65307;args&#34987;&#20256;&#36882;&#32473;string&#30340;&#26500;&#36896;&#20989;&#25968;&#65292;&#29992;&#26469;&#22312;p&#25351;&#21521;&#30340;&#20869;&#23384;&#20013;&#26500;&#36896;&#19968;&#20010;string&#23545;&#35937;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20026;&#20102;&#20351;&#29992;allocate&#36820;&#22238;&#30340;&#20869;&#23384;&#65292;&#24517;&#39035;&#29992;construct&#26500;&#36896;&#23545;&#35937;&#12290;&#20351;&#29992;&#26410;&#26500;&#36896;&#30340;&#20869;&#23384;&#65292;&#20854;&#34892;&#20026;&#26159;&#26410;&#23450;&#20041;&#30340;</span>
+alloc.construct(p, args);
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">p&#24517;&#39035;&#20026;&#31867;&#22411;&#20026;string&#30340;&#25351;&#38024;&#65292;&#35813;&#26041;&#27861;&#23545;p&#25152;&#25351;&#30340;&#23545;&#35937;&#25191;&#34892;&#26512;&#26500;&#20989;&#25968;</span>
+alloc.destroy(p);
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#37322;&#25918;&#20174;p&#25351;&#38024;&#24320;&#22987;&#30340;&#20869;&#23384;&#65292;&#36825;&#22359;&#20869;&#23384;&#20445;&#23384;&#20102;n&#20010;&#31867;&#22411;&#20026;string&#30340;&#23545;&#35937;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">p&#24517;&#39035;&#26159;&#19968;&#20010;&#20043;&#21069;&#30001;allocate&#36820;&#22238;&#30340;&#25351;&#38024;&#65292;n&#24517;&#39035;&#20026;&#21019;&#24314;&#26102;&#35201;&#27714;&#30340;&#22823;&#23567;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#35843;&#29992;deallocate&#20043;&#21069;&#65292;&#29992;&#25143;&#24517;&#39035;&#23545;&#27599;&#20010;&#22312;&#36825;&#22359;&#20869;&#23384;&#20013;&#21019;&#24314;&#30340;&#23545;&#35937;&#35843;&#29992;destroy</span>
+alloc.deallocate(p, n);
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20174;&#36845;&#20195;&#22120;b&#21644;e&#25351;&#20986;&#30340;&#36755;&#20837;&#33539;&#22260;&#20013;copy&#21407;&#22987;&#21040;&#36845;&#20195;&#22120;b2&#25351;&#23450;&#30340;&#26410;&#26500;&#36896;&#30340;&#21407;&#22987;&#20869;&#23384;&#20013;&#12290;b2&#25351;&#21521;&#30340;&#20869;&#23384;&#24517;&#39035;&#36275;&#22815;&#22823;&#65292;&#33021;&#23481;&#32435;&#36755;&#20837;&#24207;&#21015;&#20013;&#20803;&#32032;&#30340;copy</span>
+uninitialized_copy(b, e, b2);
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20174;&#36845;&#20195;&#22120;b&#25351;&#21521;&#30340;&#20803;&#32032;&#24320;&#22987;&#65292;copy n&#20010;&#20803;&#32032;&#21040;b2&#24320;&#22987;&#30340;&#20869;&#23384;&#20013;&#12290;b2&#25351;&#21521;&#30340;&#20869;&#23384;&#24517;&#39035;&#36275;&#22815;&#22823;&#65292;&#33021;&#23481;&#32435;&#36755;&#20837;&#24207;&#21015;&#20013;&#20803;&#32032;&#30340;copy</span>
+uninitialized_copy_n(b, n, b2);
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20174;&#36845;&#20195;&#22120;b&#21644;e&#25351;&#20986;&#30340;&#21407;&#22987;&#20869;&#23384;&#33539;&#22260;&#20013;&#21019;&#24314;&#23545;&#35937;&#65292;&#23545;&#35937;&#30340;&#20540;&#22343;&#20026;t&#30340;copy</span>
+uninitialized_fill(b, e, t);
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20174;&#36845;&#20195;&#22120;b&#25351;&#20986;&#30340;&#21407;&#22987;&#20869;&#23384;&#24320;&#22987;&#21019;&#24314;n&#20010;&#23545;&#35937;&#65292;&#23545;&#35937;&#30340;&#20540;&#22343;&#20026;t&#30340;copy&#12290;b&#25351;&#21521;&#30340;&#20869;&#23384;&#24517;&#39035;&#36275;&#22815;&#22823;&#65292;&#33021;&#23481;&#32435;n&#20803;&#32032;</span>
+uninitialized_fill_n(b, e, t);
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org419e8c6" class="outline-3">
+<h3 id="org419e8c6">类设计者的工具</h3>
+</div>
+<div id="outline-container-org2427236" class="outline-3">
+<h3 id="org2427236">高级主题</h3>
+<div class="outline-text-3" id="text-org2427236">
+</div>
+<div id="outline-container-org4483830" class="outline-4">
+<h4 id="org4483830">19 特殊工具与技术</h4>
+<div class="outline-text-4" id="text-org4483830">
+</div>
+<div id="outline-container-orgdb1c592" class="outline-5">
+<h5 id="orgdb1c592">重载 new 和 delete</h5>
+<div class="outline-text-5" id="text-orgdb1c592">
+<div class="org-src-container">
+<pre class="src src-c++"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">new &#34920;&#36798;&#24335;&#30340;&#24037;&#20316;&#26426;&#21046;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#31532;&#19968;&#27493; new&#34920;&#36798;&#24335;&#35843;&#29992;&#19968;&#20010;&#21517;&#20026;operator new&#25110;operator new[] &#30340;&#26631;&#20934;&#24211;&#20989;&#25968;&#12290;&#35813;&#20989;&#25968;&#20998;&#37197;&#19968;&#22359;&#36275;&#22815;&#22823;&#30340;&#12289;&#21407;&#22987;&#30340;&#12289;&#26410;&#21629;&#21517;&#30340;&#20869;&#23384;&#31354;&#38388;&#20197;&#20415;&#23384;&#20648;&#29305;&#23450;&#31867;&#22411;&#30340;&#23545;&#35937;&#65288;&#25110;&#32773;&#23545;&#35937;&#30340;&#25968;&#32452;&#65289;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#31532;&#20108;&#27493; &#32534;&#35793;&#22120;&#36816;&#34892;&#30456;&#24212;&#30340;&#26500;&#36896;&#20989;&#25968;&#20197;&#26500;&#36896;&#36825;&#20123;&#23545;&#35937;&#65292;&#24182;&#20026;&#20854;&#20256;&#20837;&#21021;&#22987;&#20540;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#31532;&#19977;&#27493; &#23545;&#35937;&#34987;&#20998;&#37197;&#20102;&#31354;&#38388;&#24182;&#26500;&#36896;&#23436;&#25104;&#65292;&#36820;&#22238;&#19968;&#20010;&#25351;&#21521;&#35813;&#23545;&#35937;&#30340;&#25351;&#38024;</span>
+<span style="color: #ce537a; font-weight: bold;">string</span> *<span style="color: #7590db;">sp</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">string</span>(<span style="color: #2d9574;">"a value"</span>);
+<span style="color: #ce537a; font-weight: bold;">string</span> *<span style="color: #7590db;">arr</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">string</span>[10];
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">delete&#34920;&#36798;&#24335;&#30340;&#24037;&#20316;&#26426;&#21046;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#31532;&#19968;&#27493; &#23545;sp&#25152;&#25351;&#30340;&#23545;&#35937;&#25110;&#32773;arr&#25152;&#25351;&#30340;&#25968;&#32452;&#20013;&#30340;&#20803;&#32032;&#25191;&#34892;&#23545;&#24212;&#30340;&#26512;&#26500;&#20989;&#25968;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#31532;&#20108;&#27493; &#32534;&#35793;&#22120;&#35843;&#29992;&#21517;&#20026;operator delete &#25110; operator delete[] &#30340;&#26631;&#20934;&#24211;&#20989;&#25968;&#37322;&#25918;&#20869;&#23384;&#31354;&#38388;&#12290;</span>
+<span style="color: #4f97d7; font-weight: bold;">delete</span> sp;
+<span style="color: #4f97d7; font-weight: bold;">delete</span>[] arr;
+</pre>
+</div>
+
+<p>
+用户可以自定义 operator new 函数和 operator delete 函数。编译器对 operator new 函数和 operator delete 函数的选择按照如下规则：<br />
+</p>
+<ol class="org-ol">
+<li>先在类和基类作用域中查找<br /></li>
+<li>再在全局作用域中查找<br /></li>
+<li>前面都没找到，则使用标准库中的版本<br /></li>
+</ol>
+
+<p>
+Tips: 可以使用域运算符忽略类中的函数。::new ::delete 会直接在全局作用域中查找匹配的函数<br />
+</p>
+
+<p>
+重载 operator new 函数与 operator delete 函数的规则：<br />
+</p>
+<ul class="org-ul">
+<li>operator new 函数与 operator delete 函数是隐式静态函数，即使不显示地声明 static，其也为静态函数。因此，它们不能操作类的任何数据成员。<br /></li>
+<li>operator new 函数和 operator new[] 函数返回类型必须是 void*，第一个形参的类型必须是 size_t 且该形参不能含有默认实参，其为申请的内存空间的字节数。我们可以为这两个函数提供额外的形参。此时，用到这些自定义函数的 new 表达式需要使用 placement new 将实参传给新增的形参。<br /></li>
+<li>void* operator new(size_t, void*); 不允许重新定义这个版本，该形式只供标准库使用。<br /></li>
+<li>operator delete 和 operator delete[] 的返回类型必须为 void, 第一个形参的类型必须是 void*。<br /></li>
+<li>我们将 operator delete 和 operator delete[]定义为类成员函数时，该函数可以包含另外一个类型为 size_t 的形参。此时，该形参的初始值是第一个形参所指对象的字节数。size_t 形参可用于删除继承体系中的对象。如果基类有一个虚析构函数，则传递给 operator delete 的字节数将因待删除指针所指对象的动态类型不同而有所区别。<br /></li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-c++"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#26631;&#20934;&#24211;&#20013;&#40664;&#35748;&#30340;operator new &#21644; operator delete&#20989;&#25968;</span>
+<span style="color: #ce537a; font-weight: bold;">void</span>* <span style="color: #4f97d7; font-weight: bold;">operator</span> <span style="color: #4f97d7; font-weight: bold;">new</span>(<span style="color: #ce537a; font-weight: bold;">size_t</span>);
+<span style="color: #ce537a; font-weight: bold;">void</span>* <span style="color: #4f97d7; font-weight: bold;">operator</span> <span style="color: #4f97d7; font-weight: bold;">new</span>[](size_t);
+<span style="color: #ce537a; font-weight: bold;">void</span>  <span style="color: #4f97d7; font-weight: bold;">operator</span> <span style="color: #4f97d7; font-weight: bold;">delete</span>(<span style="color: #ce537a; font-weight: bold;">void</span>*) <span style="color: #4f97d7; font-weight: bold;">noexcept</span>;
+<span style="color: #ce537a; font-weight: bold;">void</span>  <span style="color: #4f97d7; font-weight: bold;">operator</span> <span style="color: #4f97d7; font-weight: bold;">delete</span>[](<span style="color: #ce537a; font-weight: bold;">void</span>*) <span style="color: #4f97d7; font-weight: bold;">noexcept</span>;
+
+<span style="color: #ce537a; font-weight: bold;">void</span>* <span style="color: #4f97d7; font-weight: bold;">operator</span> <span style="color: #4f97d7; font-weight: bold;">new</span>(size_t, <span style="color: #ce537a; font-weight: bold;">nothrow_t</span>&amp;) <span style="color: #4f97d7; font-weight: bold;">noexcept</span>;
+<span style="color: #ce537a; font-weight: bold;">void</span>* <span style="color: #4f97d7; font-weight: bold;">operator</span> <span style="color: #4f97d7; font-weight: bold;">new</span>[](size_t, <span style="color: #ce537a; font-weight: bold;">nothrow_t</span>&amp;) <span style="color: #4f97d7; font-weight: bold;">noexcept</span>;
+<span style="color: #ce537a; font-weight: bold;">void</span>  <span style="color: #4f97d7; font-weight: bold;">operator</span> <span style="color: #4f97d7; font-weight: bold;">delete</span>(<span style="color: #ce537a; font-weight: bold;">void</span>*, <span style="color: #ce537a; font-weight: bold;">nothrow_t</span>&amp;) <span style="color: #4f97d7; font-weight: bold;">noexcept</span>;
+<span style="color: #ce537a; font-weight: bold;">void</span>  <span style="color: #4f97d7; font-weight: bold;">operator</span> <span style="color: #4f97d7; font-weight: bold;">delete</span>[](<span style="color: #ce537a; font-weight: bold;">void</span>*, <span style="color: #ce537a; font-weight: bold;">nothrow_t</span>&amp;) <span style="color: #4f97d7; font-weight: bold;">noexcept</span>;
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-c++"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19979;&#38754;&#20026;operator new &#21644; operator delete&#30340;&#31616;&#21333;&#23454;&#29616;&#26041;&#24335;</span>
+<span style="color: #ce537a; font-weight: bold;">void</span> *<span style="color: #4f97d7; font-weight: bold;">operator</span> <span style="color: #4f97d7; font-weight: bold;">new</span>(<span style="color: #ce537a; font-weight: bold;">size_t</span> <span style="color: #7590db;">size</span>)
+{
+    <span style="color: #4f97d7; font-weight: bold;">if</span>(<span style="color: #ce537a; font-weight: bold;">void</span>* <span style="color: #7590db;">mem</span> = malloc(size))
+    {
+        <span style="color: #4f97d7; font-weight: bold;">return</span> mem;
+    }
+    <span style="color: #4f97d7; font-weight: bold;">else</span>
+    {
+        <span style="color: #4f97d7; font-weight: bold;">throw</span> bad_alloc();
+    }
+}
+
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #4f97d7; font-weight: bold;">operator</span> <span style="color: #4f97d7; font-weight: bold;">delete</span>(<span style="color: #ce537a; font-weight: bold;">void</span> *<span style="color: #7590db;">mem</span>) <span style="color: #4f97d7; font-weight: bold;">noexcept</span>
+{
+    free(mem);
+}
+</pre>
+</div>
+</div>
+<div id="outline-container-orgb55eddd" class="outline-6">
+<h6 id="orgb55eddd">delete[] 如何知道需要调用多少次析构函数的？</h6>
+<div class="outline-text-6" id="text-orgb55eddd">
+<p>
+c++使用 new SomeType[elemCount] 为数组分配内存空间时，会多分配 4 个字节，并用开始的 4 个字节存放数组元素数量 elemCount。 调用 delete[] ptr 时，就会调用 elemCount 次析构函数。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org40a507d" class="outline-6">
+<h6 id="org40a507d">delete[] 如何知道需要释放多少内存空间的？</h6>
+<div class="outline-text-6" id="text-org40a507d">
+<p>
+delete[] 将内存空间的指针向前偏移 4 字节，传递给 free 函数，free 函数控制释放多少内存空间。<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgce9ecc4" class="outline-6">
+<h6 id="orgce9ecc4">free 函数如何知道需要释放多少内存空间的？</h6>
+<div class="outline-text-6" id="text-orgce9ecc4">
+<p>
+malloc 申请内存时，会申请额外的空间来记录申请内存的大小。调用 free 时，通过读取记录的信息来释放内存。<br />
+</p>
+
+<ul class="org-ul">
+<li><a href="https://stackoverflow.com/questions/1518711/how-does-free-know-how-much-to-free">https://stackoverflow.com/questions/1518711/how-does-free-know-how-much-to-free</a><br /></li>
+<li><a href="https://zhuanlan.zhihu.com/p/98859924">https://zhuanlan.zhihu.com/p/98859924</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgce4cc0e" class="outline-5">
+<h5 id="orgce4cc0e">placement new</h5>
+</div>
+</div>
+</div>
+</div>
+
 <div id="outline-container-org3e44f85" class="outline-2">
 <h2 id="org3e44f85">Misc</h2>
 <div class="outline-text-2" id="text-org3e44f85">

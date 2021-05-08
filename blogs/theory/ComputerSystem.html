@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-03-16 周二 14:34 -->
+<!-- 2021-04-13 周二 14:48 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Computer System</title>
@@ -110,6 +110,9 @@ for the JavaScript code in this tag.
 <li><a href="#org1e5c12d">机器级代码</a>
 <ul>
 <li><a href="#org5b954d0">Code Example</a></li>
+<li><a href="#org931b0f7">数据格式</a></li>
+<li><a href="#org1d09445">机器指令</a></li>
+<li><a href="#orgef6cb0d">数据对齐</a></li>
 </ul>
 </li>
 </ul>
@@ -549,7 +552,7 @@ x86-64 的机器代码和原始 C 代码差别非常大。一些通常对 C 语�
 </p>
 <ul class="org-ul">
 <li>程序计数器（通常称为“PC”，在 x86-64 中用%rip 表示） 其给出将要执行的下一条指令在内存中的地址<br /></li>
-<li>整数寄存器文件  其包含 16 个命名的位置，分布存储 64 位的值。这些寄存器可以存储地址（对应于 C 语言的指针）或整数数据。有的寄存器被用来记录某些重要的程序状态，而其他的寄存器用来保持临时数据，例如过程的参数和局部变量，以及函数的返回值。<br /></li>
+<li>整数寄存器文件  其包含 16 个命名的位置，分别存储 64 位的值。这些寄存器可以存储地址（对应于 C 语言的指针）或整数数据。有的寄存器被用来记录某些重要的程序状态，而其他的寄存器用来保持临时数据，例如过程的参数和局部变量，以及函数的返回值。<br /></li>
 <li>条件码寄存器    其保存着最近执行的算术或逻辑指令的状态信息。他们用来实现控制或数据流中的条件变化，比如说用来实现 if 和 while 语句。<br /></li>
 <li>一组向量寄存器  其可以存放一个或多个整数或浮点数值。<br /></li>
 </ul>
@@ -629,9 +632,310 @@ objdump -d prog.exe &gt; asm-code.txt
   <span style="color: #4f97d7; font-weight: bold;">40159d</span>: 90                    nop
   <span style="color: #4f97d7; font-weight: bold;">40159e</span>: 90                    nop
   <span style="color: #4f97d7; font-weight: bold;">40159f</span>: 90                    nop
-
 </pre>
 </div>
+</div>
+</div>
+<div id="outline-container-org931b0f7" class="outline-6">
+<h6 id="org931b0f7">数据格式</h6>
+<div class="outline-text-6" id="text-org931b0f7">
+<p>
+一开始的 CPU 是 16 位的，因此把 16 位称为字，后来，32 位称为双字，64 位称为 4 字。<br />
+</p>
+
+<p>
+下面为 c 语言数据类型在 x86-64 中的大小：<br />
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">c</th>
+<th scope="col" class="org-left">Intel 数据类型</th>
+<th scope="col" class="org-left">汇编代码后缀</th>
+<th scope="col" class="org-right">字节大小</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">char</td>
+<td class="org-left">字节</td>
+<td class="org-left">b</td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">short</td>
+<td class="org-left">字</td>
+<td class="org-left">w</td>
+<td class="org-right">2</td>
+</tr>
+
+<tr>
+<td class="org-left">int</td>
+<td class="org-left">双字</td>
+<td class="org-left">l</td>
+<td class="org-right">4</td>
+</tr>
+
+<tr>
+<td class="org-left">long</td>
+<td class="org-left">四字</td>
+<td class="org-left">q</td>
+<td class="org-right">8</td>
+</tr>
+
+<tr>
+<td class="org-left">char*</td>
+<td class="org-left">四字</td>
+<td class="org-left">q</td>
+<td class="org-right">8</td>
+</tr>
+
+<tr>
+<td class="org-left">float</td>
+<td class="org-left">单精度</td>
+<td class="org-left">s</td>
+<td class="org-right">4</td>
+</tr>
+
+<tr>
+<td class="org-left">double</td>
+<td class="org-left">双精度</td>
+<td class="org-left">l</td>
+<td class="org-right">8</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+下图展示 x86-64 架构 CPU 的寄存器：<br />
+<img src="./ComputerSystem/x86_register.jpg" alt="x86_register.jpg" /><br />
+</p>
+</div>
+</div>
+<div id="outline-container-org1d09445" class="outline-6">
+<h6 id="org1d09445">机器指令</h6>
+<div class="outline-text-6" id="text-org1d09445">
+<p>
+下表展示了操作数格式<br />
+<img src="./ComputerSystem/x86_operand_forms.jpg" alt="x86_operand_forms.jpg" /><br />
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">指令</th>
+<th scope="col" class="org-left">英文</th>
+<th scope="col" class="org-left">效果</th>
+<th scope="col" class="org-left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">movq S, D</td>
+<td class="org-left">move</td>
+<td class="org-left">D&lt;-S</td>
+<td class="org-left">传送 4 字节</td>
+</tr>
+
+<tr>
+<td class="org-left">leaq S, D</td>
+<td class="org-left">load effective address</td>
+<td class="org-left">D&lt;-&amp;S</td>
+<td class="org-left">加载有效地址</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+假设整型数组 E 的起始地址和整数索引 i 分别存放在寄存器 %rdx 和 %rcx 中，对数组操作的 c 代码，以及对应汇编代码如下：<br />
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">c</th>
+<th scope="col" class="org-left">类型</th>
+<th scope="col" class="org-left">值</th>
+<th scope="col" class="org-left">汇编代码</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">E</td>
+<td class="org-left">int*</td>
+<td class="org-left">xe</td>
+<td class="org-left">movq %rdx,%rax</td>
+</tr>
+
+<tr>
+<td class="org-left">E[0]</td>
+<td class="org-left">int</td>
+<td class="org-left">M[xe]</td>
+<td class="org-left">movl (%rdx),%rax</td>
+</tr>
+
+<tr>
+<td class="org-left">E[i]</td>
+<td class="org-left">int</td>
+<td class="org-left">M[xe+4i]</td>
+<td class="org-left">movl (%rdx,%rcx,4),%eax</td>
+</tr>
+
+<tr>
+<td class="org-left">&amp;E[2]</td>
+<td class="org-left">int*</td>
+<td class="org-left">xe+8</td>
+<td class="org-left">leaq 8(%rdx),%rax</td>
+</tr>
+
+<tr>
+<td class="org-left">E+i-1</td>
+<td class="org-left">int*</td>
+<td class="org-left">xe+4i-4</td>
+<td class="org-left">leaq -4(%edx,%ecx,4),%eax</td>
+</tr>
+
+<tr>
+<td class="org-left">*(E+i-3)</td>
+<td class="org-left">int*</td>
+<td class="org-left">M[xe+4i-12]</td>
+<td class="org-left">movl -12(%3dx,%ecx,4),%eax</td>
+</tr>
+
+<tr>
+<td class="org-left">&amp;E[i]-E</td>
+<td class="org-left">int</td>
+<td class="org-left">i</td>
+<td class="org-left">movl %ecx,%eax</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-orgef6cb0d" class="outline-6">
+<h6 id="orgef6cb0d">数据对齐</h6>
+<div class="outline-text-6" id="text-orgef6cb0d">
+<p>
+对齐数据可以提高内存系统的性能。对齐原则是任何 K 字节的基本对象的地址必须是 K 的倍数。<br />
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">K</th>
+<th scope="col" class="org-left">类型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">1</td>
+<td class="org-left">char</td>
+</tr>
+
+<tr>
+<td class="org-right">2</td>
+<td class="org-left">short</td>
+</tr>
+
+<tr>
+<td class="org-right">4</td>
+<td class="org-left">int,float</td>
+</tr>
+
+<tr>
+<td class="org-right">8</td>
+<td class="org-left">long,double,char*</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+结构体中每个元素都需要满足自己的对齐要求。如下面结构体中为了保证元素 d 数据对齐，在元素 c 后填充 7 个空字节<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-c"><span style="color: #4f97d7; font-weight: bold;">struct</span> <span style="color: #ce537a; font-weight: bold;">S1</span>
+{
+    <span style="color: #ce537a; font-weight: bold;">char</span> <span style="color: #7590db;">c</span>;    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20559;&#31227; 0&#65292;&#25353;1&#23383;&#33410;&#23545;&#40784;&#65292;c&#21518;&#22635;&#20805;7&#20010;&#31354;&#23383;&#33410;</span>
+    <span style="color: #ce537a; font-weight: bold;">double</span> <span style="color: #7590db;">d</span>;  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20559;&#31227;8&#65292;&#25353;8&#23383;&#33410;&#23545;&#40784;</span>
+    <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">i</span>;     <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20559;&#31227;16&#65292;&#25353;4&#23383;&#33410;&#23545;&#40784;</span>
+    <span style="color: #ce537a; font-weight: bold;">char</span> <span style="color: #7590db;">c1</span>;   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20559;&#31227;20&#65292;&#25353;1&#23383;&#33410;&#23545;&#40784;</span>
+}
+</pre>
+</div>
+
+<p>
+编译器会在 struct 的末尾填充一些空字节，这样 struct 数组中的每个元素都可以满足对齐要求。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-c"><span style="color: #4f97d7; font-weight: bold;">struct</span> <span style="color: #ce537a; font-weight: bold;">S2</span>
+{
+    <span style="color: #ce537a; font-weight: bold;">char</span> <span style="color: #7590db;">c</span>;    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20559;&#31227; 0&#65292;&#25353;1&#23383;&#33410;&#23545;&#40784;&#65292;c&#21518;&#22635;&#20805;7&#20010;&#31354;&#23383;&#33410;</span>
+    <span style="color: #ce537a; font-weight: bold;">double</span> <span style="color: #7590db;">d</span>;  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20559;&#31227;8&#65292;&#25353;8&#23383;&#33410;&#23545;&#40784;</span>
+    <span style="color: #ce537a; font-weight: bold;">char</span> <span style="color: #7590db;">c1</span>;   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20559;&#31227;16&#65292;&#25353;1&#23545;&#40784;&#65292;c&#21518;&#22635;&#20805;7&#20010;&#31354;&#23383;&#33410;&#65292;&#32467;&#26500;&#20307;&#25972;&#20307;&#25353;&#29031;24&#23383;&#33410;&#23545;&#40784;</span>
+}
+</pre>
+</div>
+<p>
+Tips:<br />
+数据没对齐时，某些型号的 Intel 和 AMD 处理器对于有些实现多媒体操作的 SSE 指令（Stream SIMD Extensions），无法正确执行。这些指令对 16 字节数据块进行操作，在 SSE 单元和内存之间传送数据的指令要求内存地址必须是 16 的倍数。<br />
+</p>
+
+<p>
+c++11 中的 alignof 关键字可用于得到一个类型的对齐大小。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">struct</span> <span style="color: #ce537a; font-weight: bold;">S3</span>
+{
+    <span style="color: #ce537a; font-weight: bold;">char</span> <span style="color: #7590db;">c</span>;
+    <span style="color: #ce537a; font-weight: bold;">double</span> <span style="color: #7590db;">d</span>;
+    <span style="color: #ce537a; font-weight: bold;">char</span> <span style="color: #7590db;">c1</span>;
+}
+<span style="color: #7590db;">printf</span>(<span style="color: #2d9574;">"S3 alignment = %d\n"</span>, <span style="color: #4f97d7; font-weight: bold;">alignof</span>(A));
+</pre>
+</div>
+
+<ul class="org-ul">
+<li>结构体成员内存对齐问题 <a href="https://imzlp.com/posts/61962/">https://imzlp.com/posts/61962/</a><br /></li>
+</ul>
 </div>
 </div>
 </div>

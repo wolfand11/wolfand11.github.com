@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2021-05-17 周一 10:56 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AtmosphericScattering</title>
+<meta name="generator" content="Org mode" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+           <meta name="viewport" content="width=device-width, initial-scale=1" />
+           <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/css/worg.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/css/worg-zenburn.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
+           <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2020 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href=""> UP </a>
+ |
+ <a accesskey="H" href="https://wolfand11.gitee.io"> HOME </a>
+</div><div id="content">
+<h1 class="title">AtmosphericScattering</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org09dcc08">Unity Procedural Skybox</a></li>
+<li><a href="#org0dd4fa9">AtmosphericScattering</a>
+<ul>
+<li><a href="#orgb5d5fc1">Volumetric Atmospheric Scattering</a>
+<ul>
+<li><a href="#org6bf077d">单次散射</a></li>
+<li><a href="#org26cd78e">Volumetric Single Scattering</a></li>
+</ul>
+</li>
+<li><a href="#org95c6340">参考资料</a>
+<ul>
+<li><a href="#orgfd0e423">alan zucconi Totorials</a></li>
+<li><a href="#org3f95b73">Github</a></li>
+<li><a href="#org37b5a00">Other</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<p>
+AtmosphericScattering note.<br />
+</p>
+<div class="HTML">
+<p>
+&lt;!&#x2013; more &#x2013;&gt;<br />
+</p>
+
+</div>
+
+<div id="outline-container-org09dcc08" class="outline-2">
+<h2 id="org09dcc08">Unity Procedural Skybox</h2>
+<div class="outline-text-2" id="text-org09dcc08">
+
+<div class="figure">
+<p><img src="./AtmosphericScattering/unity_simple_skybox_cloud001.gif" alt="unity_simple_skybox_cloud001.gif" /><br />
+</p>
+</div>
+
+<ul class="org-ul">
+<li><a href="https://medium.com/@jannik_boysen/procedural-skybox-shader-137f6b0cb77c">https://medium.com/@jannik_boysen/procedural-skybox-shader-137f6b0cb77c</a><br /></li>
+<li><a href="https://timcoster.com/2019/09/03/unity-shadergraph-skybox-quick-tutorial/">https://timcoster.com/2019/09/03/unity-shadergraph-skybox-quick-tutorial/</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org0dd4fa9" class="outline-2">
+<h2 id="org0dd4fa9">AtmosphericScattering</h2>
+<div class="outline-text-2" id="text-org0dd4fa9">
+</div>
+<div id="outline-container-orgb5d5fc1" class="outline-3">
+<h3 id="orgb5d5fc1">Volumetric Atmospheric Scattering</h3>
+<div class="outline-text-3" id="text-orgb5d5fc1">
+</div>
+<div id="outline-container-org6bf077d" class="outline-4">
+<h4 id="org6bf077d">单次散射</h4>
+<div class="outline-text-4" id="text-org6bf077d">
+<p>
+外散射<br />
+空气中的分子会将朝向指定方向(如摄像机方向)的光反射到其他方向。<br />
+真实的光源每秒会发射出很多(10^15)个光子，每个光子都有一定概率被空气分子反射。光传播的介质密度越大，单个光子被反射的概率越高。随着传播距离越长，剩余没被反射的光子越少。<br />
+</p>
+
+<p>
+内散射<br />
+空气中的分子会将其他方向的光反射到指定的方向(如摄像机方向)。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org26cd78e" class="outline-4">
+<h4 id="org26cd78e">Volumetric Single Scattering</h4>
+<div class="outline-text-4" id="text-org26cd78e">
+<p>
+单个光子射线可以被反射很多次。这意味着光到达摄像机所经过的路径可能会非常复杂。使用 raytracing 的方式来渲染半透明材质，需要模拟多个独立的光线路径，对于实时渲染来说，这样的计算消耗太昂贵了。本系列教程中使用的技术被称为 single scattering，其只考虑光射线单次散射事件。<br />
+</p>
+
+<p>
+渲染真实感天空的关键是，模拟光线经过星球的大气层所发生的事情。下图展示了一个摄像机，视线穿过了星球的大气层。渲染的基本理念是计算光从 B 传播到 A 的过程中，其如何被散射所影响。也就是说，需要计算光线传播到摄像机过程中，外散射和内散射的贡献。<br />
+依据我们的经验，外散射会导致光的衰减。在任意一点 P 处的光能量都有一定概率被反射到偏离摄像机的方向。<br />
+<img src="./AtmosphericScattering/scattering_05.png" alt="scattering_05.png" /><br />
+</p>
+
+<p>
+为了正确计算在任意 P 点，有多少外散射发生，首先我们需要知道起初在 P 点有多少光能量。假设只有一个恒星(太阳)照亮星球，P点处接收到的所有光都来自太阳。这些光能量中的一部分会被内散射，即被偶然地反射到摄像机。<br />
+<img src="./AtmosphericScattering/scattering_06a.png" alt="scattering_06a.png" /><br />
+考虑上面两步(从 P 到 A 外散射后剩余的部分 和 在 P 点内散射到摄像机方向增加的部分)已经足够近似观察到的大气散射现象了。但是，计算起初在 P 的光能量是比较复杂的，光线经过大气从 C 到达 P，其本身也受外散射。<br />
+<img src="./AtmosphericScattering/scattering_07.png" alt="scattering_07.png" /><br />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org95c6340" class="outline-3">
+<h3 id="org95c6340">参考资料</h3>
+<div class="outline-text-3" id="text-org95c6340">
+</div>
+<div id="outline-container-orgfd0e423" class="outline-4">
+<h4 id="orgfd0e423">alan zucconi Totorials</h4>
+<div class="outline-text-4" id="text-orgfd0e423">
+<ul class="org-ul">
+<li>1-Volumetric Atmospheric Scattering en <a href="https://www.alanzucconi.com/2017/10/10/atmospheric-scattering-1/">https://www.alanzucconi.com/2017/10/10/atmospheric-scattering-1/</a><br /></li>
+<li>1-Volumetric Atmospheric Scattering cn <a href="https://zhuanlan.zhihu.com/p/32525403">https://zhuanlan.zhihu.com/p/32525403</a><br /></li>
+<li>2-The Theory Behind Atmospheric Scattering en <a href="https://www.alanzucconi.com/2017/10/10/atmospheric-scattering-2/">https://www.alanzucconi.com/2017/10/10/atmospheric-scattering-2/</a><br /></li>
+<li>2-The Theory Behind Atmospheric Scattering cn <a href="https://zhuanlan.zhihu.com/p/32594753">https://zhuanlan.zhihu.com/p/32594753</a><br /></li>
+<li>3-The Mathematics of Rayleigh Scattering en <a href="https://www.alanzucconi.com/2017/10/10/atmospheric-scattering-3/">https://www.alanzucconi.com/2017/10/10/atmospheric-scattering-3/</a><br /></li>
+<li>3-The Mathematics of Rayleigh Scattering cn <a href="https://zhuanlan.zhihu.com/p/32676375">https://zhuanlan.zhihu.com/p/32676375</a><br /></li>
+<li>4-A Journey Through the Atmosphere en <a href="https://www.alanzucconi.com/2017/10/10/atmospheric-scattering-4/">https://www.alanzucconi.com/2017/10/10/atmospheric-scattering-4/</a><br /></li>
+<li>4-A Journey Through the Atmosphere cn <a href="https://zhuanlan.zhihu.com/p/32695071">https://zhuanlan.zhihu.com/p/32695071</a><br /></li>
+<li>5-A Shader for the Atmospheric Sphere en <a href="https://www.alanzucconi.com/2017/10/10/shader-atmospheric-sphere/">https://www.alanzucconi.com/2017/10/10/shader-atmospheric-sphere/</a><br /></li>
+<li>5-A Shader for the Atmospheric Sphere cn <a href="https://zhuanlan.zhihu.com/p/32756395">https://zhuanlan.zhihu.com/p/32756395</a><br /></li>
+<li>6-Intersecting The Atmosphere en <a href="https://www.alanzucconi.com/2017/10/10/atmospheric-scattering-6/">https://www.alanzucconi.com/2017/10/10/atmospheric-scattering-6/</a><br /></li>
+<li>6-Intersecting The Atmosphere cn <a href="https://zhuanlan.zhihu.com/p/32790566">https://zhuanlan.zhihu.com/p/32790566</a><br /></li>
+<li>7-Atmospheric Scattering Shader en <a href="https://www.alanzucconi.com/2017/10/10/atmospheric-scattering-7/">https://www.alanzucconi.com/2017/10/10/atmospheric-scattering-7/</a><br /></li>
+<li>7-Atmospheric Scattering Shader cn <a href="https://zhuanlan.zhihu.com/p/32856984">https://zhuanlan.zhihu.com/p/32856984</a><br /></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org3f95b73" class="outline-4">
+<h4 id="org3f95b73">Github</h4>
+<div class="outline-text-4" id="text-org3f95b73">
+<ul class="org-ul">
+<li><a href="https://github.com/SlightlyMad/AtmosphericScattering">https://github.com/SlightlyMad/AtmosphericScattering</a><br /></li>
+<li><a href="https://github.com/Scrawk/Brunetons-Improved-Atmospheric-Scattering">https://github.com/Scrawk/Brunetons-Improved-Atmospheric-Scattering</a><br /></li>
+<li><a href="https://github.com/simeonradivoev/GPU-Planetary-Rendering">https://github.com/simeonradivoev/GPU-Planetary-Rendering</a><br /></li>
+<li><a href="https://github.com/Fewes/MinimalAtmosphere">https://github.com/Fewes/MinimalAtmosphere</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org37b5a00" class="outline-4">
+<h4 id="org37b5a00">Other</h4>
+<div class="outline-text-4" id="text-org37b5a00">
+<ul class="org-ul">
+<li><a href="https://www.scratchapixel.com/lessons/procedural-generation-virtual-worlds/simulating-sky/simulating-colors-of-the-sky">https://www.scratchapixel.com/lessons/procedural-generation-virtual-worlds/simulating-sky/simulating-colors-of-the-sky</a><br /></li>
+<li><a href="https://developer.nvidia.com/gpugems/GPUGems2/gpugems2_chapter16.html">https://developer.nvidia.com/gpugems/GPUGems2/gpugems2_chapter16.html</a><br /></li>
+<li><a href="https://atomworld.wordpress.com/2014/12/22/flexible-physical-accurate-atmosphere-scattering-part-1/">https://atomworld.wordpress.com/2014/12/22/flexible-physical-accurate-atmosphere-scattering-part-1/</a><br /></li>
+<li><a href="https://docs.unity.cn/Packages/com.unity.render-pipelines.high-definition@10.0/manual/Atmospheric-Scattering.html">https://docs.unity.cn/Packages/com.unity.render-pipelines.high-definition@10.0/manual/Atmospheric-Scattering.html</a><br /></li>
+<li><a href="https://blogs.unity3d.com/cn/2015/05/28/atmospheric-scattering-in-the-blacksmith/">https://blogs.unity3d.com/cn/2015/05/28/atmospheric-scattering-in-the-blacksmith/</a><br /></li>
+<li><a href="https://dawnarc.com/2019/12/graphicsatmospheric-scattering-notes/">https://dawnarc.com/2019/12/graphicsatmospheric-scattering-notes/</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2020-11-03 周二 18:26 -->
+<!-- 2021-05-25 周二 21:30 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>UnityPostprocess</title>
@@ -15,50 +15,26 @@
            <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
            <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
 <script type="text/javascript">
-/*
-@licstart  The following is the entire license notice for the
-JavaScript code in this tag.
-
-Copyright (C) 2012-2020 Free Software Foundation, Inc.
-
-The JavaScript code in this tag is free software: you can
-redistribute it and/or modify it under the terms of the GNU
-General Public License (GNU GPL) as published by the Free Software
-Foundation, either version 3 of the License, or (at your option)
-any later version.  The code is distributed WITHOUT ANY WARRANTY;
-without even the implied warranty of MERCHANTABILITY or FITNESS
-FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
-
-As additional permission under GNU GPL version 3 section 7, you
-may distribute non-source (e.g., minimized or compacted) forms of
-that code without the copy of the GNU GPL normally required by
-section 4, provided you include this license notice and a URL
-through which recipients can access the Corresponding Source.
-
-
-@licend  The above is the entire license notice
-for the JavaScript code in this tag.
-*/
+// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
 <!--/*--><![CDATA[/*><!--*/
- function CodeHighlightOn(elem, id)
- {
-   var target = document.getElementById(id);
-   if(null != target) {
-     elem.cacheClassElem = elem.className;
-     elem.cacheClassTarget = target.className;
-     target.className = "code-highlighted";
-     elem.className   = "code-highlighted";
-   }
- }
- function CodeHighlightOff(elem, id)
- {
-   var target = document.getElementById(id);
-   if(elem.cacheClassElem)
-     elem.className = elem.cacheClassElem;
-   if(elem.cacheClassTarget)
-     target.className = elem.cacheClassTarget;
- }
-/*]]>*///-->
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.add("code-highlighted");
+         target.classList.add("code-highlighted");
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.remove("code-highlighted");
+         target.classList.remove("code-highlighted");
+       }
+     }
+    /*]]>*///-->
+// @license-end
 </script>
 </head>
 <body>
@@ -72,34 +48,50 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orga2b994b">UnityPostprocessStack Version 2</a>
+<li><a href="#org42c00f7">UnityPostprocessStack Version 2</a>
 <ul>
-<li><a href="#orgc61a87c">使用 PPS</a></li>
-<li><a href="#org83e8a00">Writing Custom Effects</a>
+<li><a href="#org1d8c554">使用 PPS</a></li>
+<li><a href="#orgfe6c810">Writing Custom Effects</a>
 <ul>
-<li><a href="#org9fbc115">CSharp 实现</a></li>
-<li><a href="#org8471c15">Shader 实现</a></li>
+<li><a href="#orgad3cee3">CSharp 实现</a></li>
+<li><a href="#org223c5d0">Shader 实现</a></li>
 </ul>
 </li>
-<li><a href="#org0bf9ab0">Source Code</a>
+<li><a href="#org6348cf8">Source Code</a>
 <ul>
-<li><a href="#org0109a94">Q&amp;A</a>
+<li><a href="#orga144bd9">Q&amp;A</a>
 <ul>
-<li><a href="#org3726167">RuntimeUtilities.fullscreenTriangle 为什么只有一个三角形，且三角形顶点坐标中会有 3?</a></li>
-<li><a href="#org1203439">PPSV2 整个流程做了哪些事情？</a>
+<li><a href="#orgd197eaf">RuntimeUtilities.fullscreenTriangle 为什么只有一个三角形，且三角形顶点坐标中会有 3?</a></li>
+<li><a href="#org1c2b7ab">PPSV2 整个流程做了哪些事情？</a>
 <ul>
-<li><a href="#org0e96843">初始化</a></li>
-<li><a href="#org216f2df">运行</a></li>
+<li><a href="#org79c0d3c">初始化</a></li>
+<li><a href="#org54d4945">运行</a></li>
 </ul>
 </li>
-<li><a href="#orgbf1ff4b">PPSV2 是如何控制效果生效的时机的？</a></li>
-<li><a href="#orgd375666">ERROR: FrameDebug 死循环，看不到 DrawCall</a></li>
-<li><a href="#org98f7701">ERROR: _MainTex 属性没有传递到自己的 GBloom.shader 中</a></li>
+<li><a href="#org0e5220c">PPSV2 是如何控制效果生效的时机的？</a></li>
+<li><a href="#org73b477a">ERROR: FrameDebug 死循环，看不到 DrawCall</a></li>
+<li><a href="#org11752e8">ERROR: _MainTex 属性没有传递到自己的 GBloom.shader 中</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#org70867f5">参考资料</a></li>
+<li><a href="#orgaea8c32">参考资料</a></li>
+</ul>
+</li>
+<li><a href="#orgcec8f4d">URP Postprocess</a>
+<ul>
+<li><a href="#orgd97e969">使用 URP PP</a>
+<ul>
+<li><a href="#org1974b05">为摄像机指定 VolumeTrigger 和 VolumeLayerMask</a></li>
+</ul>
+</li>
+<li><a href="#org0c4f99b">Writing Custom Effects</a></li>
+<li><a href="#orgb7c7768">Source Code</a>
+<ul>
+<li><a href="#org06ac1c1">代码结构</a></li>
+</ul>
+</li>
+<li><a href="#orga63083a">参考资料</a></li>
 </ul>
 </li>
 </ul>
@@ -108,45 +100,45 @@ for the JavaScript code in this tag.
 <p>
 UnityPostprocess note.<br />
 </p>
-<div class="HTML">
+<div class="HTML" id="org5629a55">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
 
 </div>
 
-<div id="outline-container-orga2b994b" class="outline-2">
-<h2 id="orga2b994b">UnityPostprocessStack Version 2</h2>
-<div class="outline-text-2" id="text-orga2b994b">
+<div id="outline-container-org42c00f7" class="outline-2">
+<h2 id="org42c00f7">UnityPostprocessStack Version 2</h2>
+<div class="outline-text-2" id="text-org42c00f7">
 </div>
-<div id="outline-container-orgc61a87c" class="outline-3">
-<h3 id="orgc61a87c">使用 PPS</h3>
-<div class="outline-text-3" id="text-orgc61a87c">
+<div id="outline-container-org1d8c554" class="outline-3">
+<h3 id="org1d8c554">使用 PPS</h3>
+<div class="outline-text-3" id="text-org1d8c554">
 <ul class="org-ul">
 <li>加载 profile,赋值给 PostProcessVolume。<br /></li>
 <li>修改 Effect 参数, 不写入到后处理配置文件中。<br /></li>
 </ul>
 <div class="org-src-container">
-<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #a45bad;">UnityEngine</span>;
-<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #a45bad;">UnityEngine.Rendering.PostProcessing</span>;
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">UnityEngine</span>;
+<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">UnityEngine</span>.<span style="color: #7590db;">Rendering</span>.<span style="color: #7590db;">PostProcessing</span>;
 
 <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">ChangeGrayscale</span> : <span style="color: #ce537a; font-weight: bold;">MonoBehaviour</span>
 {
     <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">PostProcessProfile</span> <span style="color: #7590db;">profile</span>;
     <span style="color: #ce537a; font-weight: bold;">PostProcessProfile</span> <span style="color: #7590db;">curProfile</span>;
 
-    [<span style="color: #ce537a; font-weight: bold;">Range</span>(0,1)]
+    [<span style="color: #bc6ec5; font-weight: bold;">Range</span>(0,1)]
     <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float</span> blendV = 0.5f;
     <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #7590db;">preBlendV</span> = 0;
     <span style="color: #4f97d7; font-weight: bold;">private</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Start</span>()
     {
-        <span style="color: #4f97d7; font-weight: bold;">var</span> <span style="color: #7590db;">ppl</span> = GetComponent&lt;PostProcessLayer&gt;();
-        <span style="color: #4f97d7; font-weight: bold;">var</span> <span style="color: #7590db;">ppv</span> = GetComponent&lt;PostProcessVolume&gt;();
+        <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">ppl</span> = <span style="color: #bc6ec5; font-weight: bold;">GetComponent</span>&lt;<span style="color: #ce537a; font-weight: bold;">PostProcessLayer</span>&gt;();
+        <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">ppv</span> = <span style="color: #bc6ec5; font-weight: bold;">GetComponent</span>&lt;<span style="color: #ce537a; font-weight: bold;">PostProcessVolume</span>&gt;();
         <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#35774;&#32622;profile&#26102;&#20351;&#29992;sharedProfile &#35774;&#32622;&#20043;&#21069;&#38656;&#35201;&#20808;&#28165;&#38500;&#20043;&#21069;&#35774;&#32622;&#30340;profile</span>
         ppv.profile = <span style="color: #a45bad;">null</span>;
 <span style="color: #bc6ec5;">        #if</span> UNITY_EDITOR
             <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#36991;&#20813;Editor&#19979;&#36816;&#34892;&#26102;&#23545;profile&#30340;&#20462;&#25913;&#34987;&#20445;&#23384;</span>
-            ppv.sharedProfile = UnityEngine.Object.Instantiate&lt;<span style="color: #ce537a; font-weight: bold;">PostProcessProfile</span>&gt;(profile);
+            ppv.sharedProfile = UnityEngine.Object.<span style="color: #bc6ec5; font-weight: bold;">Instantiate</span>&lt;<span style="color: #ce537a; font-weight: bold;">PostProcessProfile</span>&gt;(profile);
 <span style="color: #bc6ec5;">        #else</span>
             ppv.sharedProfile = profile;
 <span style="color: #bc6ec5;">        #endif</span>
@@ -159,9 +151,9 @@ UnityPostprocess note.<br />
         <span style="color: #4f97d7; font-weight: bold;">if</span>(preBlendV != blendV)
         {
             <span style="color: #ce537a; font-weight: bold;">Grayscale</span> <span style="color: #7590db;">grayscale</span>;
-            <span style="color: #4f97d7; font-weight: bold;">if</span>(curProfile.TryGetSettings&lt;<span style="color: #ce537a; font-weight: bold;">Grayscale</span>&gt;(<span style="color: #4f97d7; font-weight: bold;">out</span> <span style="color: #ce537a; font-weight: bold;">grayscale</span>))
+            <span style="color: #4f97d7; font-weight: bold;">if</span>(curProfile.<span style="color: #bc6ec5; font-weight: bold;">TryGetSettings</span>&lt;<span style="color: #ce537a; font-weight: bold;">Grayscale</span>&gt;(<span style="color: #4f97d7; font-weight: bold;">out</span> <span style="color: #ce537a; font-weight: bold;">grayscale</span>))
             {
-                <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">grayscale.blend.</span><span style="color: #bc6ec5; font-weight: bold;">Override</span><span style="color: #2aa1ae; background-color: #292e34;">(blendV);</span>
+                <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">grayscale.blend.Override(blendV);</span>
                 grayscale.blend.<span style="color: #a45bad;">value</span> = blendV;
             }
             preBlendV = blendV;
@@ -172,13 +164,13 @@ UnityPostprocess note.<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org83e8a00" class="outline-3">
-<h3 id="org83e8a00">Writing Custom Effects</h3>
-<div class="outline-text-3" id="text-org83e8a00">
+<div id="outline-container-orgfe6c810" class="outline-3">
+<h3 id="orgfe6c810">Writing Custom Effects</h3>
+<div class="outline-text-3" id="text-orgfe6c810">
 </div>
-<div id="outline-container-org9fbc115" class="outline-4">
-<h4 id="org9fbc115">CSharp 实现</h4>
-<div class="outline-text-4" id="text-org9fbc115">
+<div id="outline-container-orgad3cee3" class="outline-4">
+<h4 id="orgad3cee3">CSharp 实现</h4>
+<div class="outline-text-4" id="text-orgad3cee3">
 <ul class="org-ul">
 <li>PostProcess 性质的第二个参数指定了效果生效的时机<br />
 <ul class="org-ul">
@@ -191,20 +183,20 @@ UnityPostprocess note.<br />
 </ul>
 
 <div class="org-src-container">
-<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #a45bad;">System</span>;
-<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #a45bad;">System.Collections</span>;
-<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #a45bad;">System.Collections.Generic</span>;
-<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #a45bad;">UnityEngine</span>;
-<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #a45bad;">UnityEngine.Rendering.PostProcessing</span>;
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">System</span>;
+<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">System</span>.<span style="color: #7590db;">Collections</span>;
+<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">System</span>.<span style="color: #7590db;">Collections</span>.<span style="color: #7590db;">Generic</span>;
+<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">UnityEngine</span>;
+<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">UnityEngine</span>.<span style="color: #7590db;">Rendering</span>.<span style="color: #7590db;">PostProcessing</span>;
 
 
-[<span style="color: #ce537a; font-weight: bold;">Serializable</span>]
-[<span style="color: #ce537a; font-weight: bold;">PostProcess</span>(<span style="color: #4f97d7; font-weight: bold;">typeof</span>(GDepthOfFieldRenderer), PostProcessEvent.BeforeStack, <span style="color: #2d9574;">"Custom/GDepthOfField"</span>)]
-<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">GDepthOfField</span> : <span style="color: #ce537a; font-weight: bold;">PostProcessEffectSettings</span>
+[<span style="color: #7590db;">Serializable</span>]
+[<span style="color: #bc6ec5; font-weight: bold;">PostProcess</span>(<span style="color: #4f97d7; font-weight: bold;">typeof</span>(GDepthOfFieldRenderer), PostProcessEvent.BeforeStack, <span style="color: #2d9574;">"Custom/GDepthOfField"</span>)]
+<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> GDepthOfField : <span style="color: #ce537a; font-weight: bold;">PostProcessEffectSettings</span>
 {
 }
 
-<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">GDepthOfFieldRenderer</span> : <span style="color: #ce537a; font-weight: bold;">PostProcessEffectRenderer</span>&lt;GDepthOfField&gt;
+<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">GDepthOfFieldRenderer</span> : <span style="color: #ce537a; font-weight: bold;">PostProcessEffectRenderer</span>&lt;<span style="color: #ce537a; font-weight: bold;">GDepthOfField</span>&gt;
 {
     <span style="color: #ce537a; font-weight: bold;">Shader</span> <span style="color: #7590db;">shader</span>;
     <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Init</span>()
@@ -214,10 +206,10 @@ UnityPostprocess note.<br />
 
     <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Render</span>(<span style="color: #ce537a; font-weight: bold;">PostProcessRenderContext</span> <span style="color: #7590db;">context</span>)
     {
-        <span style="color: #4f97d7; font-weight: bold;">var</span> <span style="color: #7590db;">cmd</span> = context.command;
+        <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">cmd</span> = context.command;
 
         <span style="color: #4f97d7; font-weight: bold;">if</span> (shader == <span style="color: #a45bad;">null</span>) <span style="color: #4f97d7; font-weight: bold;">return</span>;
-        <span style="color: #4f97d7; font-weight: bold;">var</span> <span style="color: #7590db;">sheet</span> = context.propertySheets.<span style="color: #bc6ec5; font-weight: bold;">Get</span>(shader);
+        <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">sheet</span> = context.propertySheets.<span style="color: #bc6ec5; font-weight: bold;">Get</span>(shader);
         <span style="color: #4f97d7; font-weight: bold;">if</span> (sheet == <span style="color: #a45bad;">null</span>) <span style="color: #4f97d7; font-weight: bold;">return</span>;
 
         cmd.<span style="color: #bc6ec5; font-weight: bold;">BeginSample</span>(<span style="color: #2d9574;">"GDepthOfField"</span>);
@@ -231,19 +223,19 @@ UnityPostprocess note.<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org8471c15" class="outline-4">
-<h4 id="org8471c15">Shader 实现</h4>
-<div class="outline-text-4" id="text-org8471c15">
+<div id="outline-container-org223c5d0" class="outline-4">
+<h4 id="org223c5d0">Shader 实现</h4>
+<div class="outline-text-4" id="text-org223c5d0">
 <div class="org-src-container">
 <pre class="src src-shader"><span style="color: #4f97d7; font-weight: bold;">Shader</span> <span style="color: #2d9574;">"Hidden/Custom/GDepthOfField"</span>
 {
     <span style="color: #4f97d7; font-weight: bold;">Properties</span>
     {
-        <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">_MainTex ("Texture", 2D) = "white" {}</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">//_MainTex ("Texture", 2D) = "white" {}</span>
     }
     <span style="color: #4f97d7; font-weight: bold;">SubShader</span>
     {
-        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">No culling or depth</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// No culling or depth</span>
         <span style="color: #4f97d7; font-weight: bold;">Cull</span> Off <span style="color: #4f97d7; font-weight: bold;">ZWrite</span> Off <span style="color: #4f97d7; font-weight: bold;">ZTest</span> Always
 
         <span style="color: #4f97d7; font-weight: bold;">CGINCLUDE</span>
@@ -281,7 +273,7 @@ UnityPostprocess note.<br />
         }
 
         <span style="color: #4f97d7; font-weight: bold;">ENDCG</span>
-        <span style="color: #4f97d7; font-weight: bold;">Pass</span> <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">0</span>
+        <span style="color: #4f97d7; font-weight: bold;">Pass</span> <span style="color: #2aa1ae; background-color: #292e34;">// 0</span>
         {
             <span style="color: #4f97d7; font-weight: bold;">CGPROGRAM</span>
 <span style="color: #bc6ec5;">            #pragma</span> vertex vert
@@ -299,17 +291,17 @@ UnityPostprocess note.<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org0bf9ab0" class="outline-3">
-<h3 id="org0bf9ab0">Source Code</h3>
-<div class="outline-text-3" id="text-org0bf9ab0">
+<div id="outline-container-org6348cf8" class="outline-3">
+<h3 id="org6348cf8">Source Code</h3>
+<div class="outline-text-3" id="text-org6348cf8">
 </div>
-<div id="outline-container-org0109a94" class="outline-4">
-<h4 id="org0109a94">Q&amp;A</h4>
-<div class="outline-text-4" id="text-org0109a94">
+<div id="outline-container-orga144bd9" class="outline-4">
+<h4 id="orga144bd9">Q&amp;A</h4>
+<div class="outline-text-4" id="text-orga144bd9">
 </div>
-<div id="outline-container-org3726167" class="outline-5">
-<h5 id="org3726167">RuntimeUtilities.fullscreenTriangle 为什么只有一个三角形，且三角形顶点坐标中会有 3?</h5>
-<div class="outline-text-5" id="text-org3726167">
+<div id="outline-container-orgd197eaf" class="outline-5">
+<h5 id="orgd197eaf">RuntimeUtilities.fullscreenTriangle 为什么只有一个三角形，且三角形顶点坐标中会有 3?</h5>
+<div class="outline-text-5" id="text-orgd197eaf">
 <p>
 Postprocess 没有通过绘制两个三角形来实现绘制整个屏幕,而是通过绘制一个超出屏幕的大三角形来覆盖整个屏幕，这样不仅减少了 DrawCall，而且减少了 Overdraw(绘制两个三角形时，屏幕对角线占用的像素需要绘制两次，从而产生了 Overdraw).<br />
 下图为绘制 fullscreenTriangle 的图示，其中淡黄色区域为实际绘制的部分，其他部分都会被剔除。<br />
@@ -326,8 +318,8 @@ Postprocess 没有通过绘制两个三角形来实现绘制整个屏幕,而是�
 
         s_FullscreenTriangle = <span style="color: #4f97d7; font-weight: bold;">new</span> Mesh { name = <span style="color: #2d9574;">"Fullscreen Triangle"</span> };
 
-        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Because we have to support older platforms (GLES2/3, DX9 etc) we can't do all of</span>
-        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">this directly in the vertex shader using vertex ids :(</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// Because we have to support older platforms (GLES2/3, DX9 etc) we can't do all of</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// this directly in the vertex shader using vertex ids :(</span>
         s_FullscreenTriangle.SetVertices(<span style="color: #4f97d7; font-weight: bold;">new</span> List&lt;Vector3&gt;
             {
                 <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #bc6ec5; font-weight: bold;">Vector3</span>(-1f, -1f, 0f),
@@ -344,7 +336,7 @@ Postprocess 没有通过绘制两个三角形来实现绘制整个屏幕,而是�
 </div>
 
 <div class="org-src-container">
-<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Vertex manipulation</span>
+<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// Vertex manipulation</span>
 <span style="color: #ce537a; font-weight: bold;">float2</span> <span style="color: #bc6ec5; font-weight: bold;">TransformTriangleVertexToUV</span>(<span style="color: #ce537a; font-weight: bold;">float2</span> vertex)
 {
     <span style="color: #ce537a; font-weight: bold;">float2</span> uv = (vertex + 1.0) * 0.5;
@@ -354,9 +346,9 @@ Postprocess 没有通过绘制两个三角形来实现绘制整个屏幕,而是�
 VaryingsDefault <span style="color: #bc6ec5; font-weight: bold;">VertDefault</span>(AttributesDefault v)
 {
     VaryingsDefault o;
-    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#39030;&#28857;&#22352;&#26631;&#19981;&#32463;&#36807;MVP&#21464;&#25442;&#65292;&#39030;&#28857;&#24050;&#32463;&#22312;ClipSpace&#22352;&#26631;&#31995;&#20013;&#65288;[-1,1]&#33539;&#22260;&#22806;&#30340;&#39030;&#28857;&#22312;&#21518;&#32493;&#35009;&#21098;&#25805;&#20316;&#20013;&#37117;&#20250;&#34987;&#21076;&#38500;&#65289;&#12290;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#39030;&#28857;&#22352;&#26631;&#19981;&#32463;&#36807;MVP&#21464;&#25442;&#65292;&#39030;&#28857;&#24050;&#32463;&#22312;ClipSpace&#22352;&#26631;&#31995;&#20013;&#65288;[-1,1]&#33539;&#22260;&#22806;&#30340;&#39030;&#28857;&#22312;&#21518;&#32493;&#35009;&#21098;&#25805;&#20316;&#20013;&#37117;&#20250;&#34987;&#21076;&#38500;&#65289;&#12290;</span>
     o.vertex = <span style="color: #ce537a; font-weight: bold;">float4</span>(v.vertex.xy, 0.0, 1.0);
-    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">uv &#30452;&#25509;&#36890;&#36807;&#39030;&#28857;&#22352;&#26631;&#27714;&#24471;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// uv &#30452;&#25509;&#36890;&#36807;&#39030;&#28857;&#22352;&#26631;&#27714;&#24471;</span>
     o.texcoord = TransformTriangleVertexToUV(v.vertex.xy);
 
 <span style="color: #bc6ec5;">#if</span> UNITY_UV_STARTS_AT_TOP
@@ -372,21 +364,21 @@ VaryingsDefault <span style="color: #bc6ec5; font-weight: bold;">VertDefault</sp
 </div>
 </div>
 
-<div id="outline-container-org1203439" class="outline-5">
-<h5 id="org1203439">PPSV2 整个流程做了哪些事情？</h5>
-<div class="outline-text-5" id="text-org1203439">
+<div id="outline-container-org1c2b7ab" class="outline-5">
+<h5 id="org1c2b7ab">PPSV2 整个流程做了哪些事情？</h5>
+<div class="outline-text-5" id="text-org1c2b7ab">
 </div>
-<div id="outline-container-org0e96843" class="outline-6">
-<h6 id="org0e96843">初始化</h6>
-<div class="outline-text-6" id="text-org0e96843">
+<div id="outline-container-org79c0d3c" class="outline-6">
+<h6 id="org79c0d3c">初始化</h6>
+<div class="outline-text-6" id="text-org79c0d3c">
 <p>
 PostProcessLayer.OnEnable() 中会调用 PostProcessLayer.Init() PostProcessLayer.InitBundles()<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org216f2df" class="outline-6">
-<h6 id="org216f2df">运行</h6>
-<div class="outline-text-6" id="text-org216f2df">
+<div id="outline-container-org54d4945" class="outline-6">
+<h6 id="org54d4945">运行</h6>
+<div class="outline-text-6" id="text-org54d4945">
 <p>
 PostProcessLayer.OnPreRender() 中会调用 PostProcessLayer.BuildCommandBuffers(); 只有在 VR 模式下，OnPreRender 中的 BuildCommandBuffers();才会被调用。<br />
 PostProcessLayer.OnPreCull() 中会调用 PostProcessLayer.BuildCommandBuffers();<br />
@@ -395,27 +387,27 @@ PostProcessLayer.OnPreCull() 中会调用 PostProcessLayer.BuildCommandBuffers()
 </div>
 </div>
 
-<div id="outline-container-orgbf1ff4b" class="outline-5">
-<h5 id="orgbf1ff4b">PPSV2 是如何控制效果生效的时机的？</h5>
-<div class="outline-text-5" id="text-orgbf1ff4b">
+<div id="outline-container-org0e5220c" class="outline-5">
+<h5 id="org0e5220c">PPSV2 是如何控制效果生效的时机的？</h5>
+<div class="outline-text-5" id="text-org0e5220c">
 <div class="org-src-container">
 <pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">enum</span> <span style="color: #ce537a; font-weight: bold;">PostProcessEvent</span>
 {
-    <span style="color: #2aa1ae; background-color: #292e34;">/// </span><span style="color: #2aa1ae; background-color: #292e34;">&lt;summary&gt;</span>
-    <span style="color: #2aa1ae; background-color: #292e34;">/// </span><span style="color: #2aa1ae; background-color: #292e34;">Effects at this injection points will execute before transparent objects are rendered.</span>
-    <span style="color: #2aa1ae; background-color: #292e34;">/// </span><span style="color: #2aa1ae; background-color: #292e34;">&lt;/summary&gt;</span>
+    <span style="color: #9f8766;">/// </span><span style="color: #a45bad;">&lt;summary&gt;</span>
+    <span style="color: #9f8766;">/// Effects at this injection points will execute before transparent objects are rendered.</span>
+    <span style="color: #9f8766;">/// </span><span style="color: #a45bad;">&lt;/summary&gt;</span>
     <span style="color: #7590db;">BeforeTransparent</span> = 0,
 
-    <span style="color: #2aa1ae; background-color: #292e34;">/// </span><span style="color: #2aa1ae; background-color: #292e34;">&lt;summary&gt;</span>
-    <span style="color: #2aa1ae; background-color: #292e34;">/// </span><span style="color: #2aa1ae; background-color: #292e34;">Effects at this injection points will execute after temporal anti-aliasing and before</span>
-    <span style="color: #2aa1ae; background-color: #292e34;">/// </span><span style="color: #2aa1ae; background-color: #292e34;">builtin effects are rendered.</span>
-    <span style="color: #2aa1ae; background-color: #292e34;">/// </span><span style="color: #2aa1ae; background-color: #292e34;">&lt;/summary&gt;</span>
+    <span style="color: #9f8766;">/// </span><span style="color: #a45bad;">&lt;summary&gt;</span>
+    <span style="color: #9f8766;">/// Effects at this injection points will execute after temporal anti-aliasing and before</span>
+    <span style="color: #9f8766;">/// builtin effects are rendered.</span>
+    <span style="color: #9f8766;">/// </span><span style="color: #a45bad;">&lt;/summary&gt;</span>
     <span style="color: #7590db;">BeforeStack</span> = 1,
 
-    <span style="color: #2aa1ae; background-color: #292e34;">/// </span><span style="color: #2aa1ae; background-color: #292e34;">&lt;summary&gt;</span>
-    <span style="color: #2aa1ae; background-color: #292e34;">/// </span><span style="color: #2aa1ae; background-color: #292e34;">Effects at this injection points will execute after builtin effects have been rendered</span>
-    <span style="color: #2aa1ae; background-color: #292e34;">/// </span><span style="color: #2aa1ae; background-color: #292e34;">and before the final pass that does FXAA and applies dithering.</span>
-    <span style="color: #2aa1ae; background-color: #292e34;">/// </span><span style="color: #2aa1ae; background-color: #292e34;">&lt;/summary&gt;</span>
+    <span style="color: #9f8766;">/// </span><span style="color: #a45bad;">&lt;summary&gt;</span>
+    <span style="color: #9f8766;">/// Effects at this injection points will execute after builtin effects have been rendered</span>
+    <span style="color: #9f8766;">/// and before the final pass that does FXAA and applies dithering.</span>
+    <span style="color: #9f8766;">/// </span><span style="color: #a45bad;">&lt;/summary&gt;</span>
     <span style="color: #7590db;">AfterStack</span> = 2,
 }
 </pre>
@@ -426,36 +418,36 @@ PPSV2 中通过 PostProcessEvent 枚举来定义后处理效果生效的时机�
 </div>
 </div>
 
-<div id="outline-container-orgd375666" class="outline-5">
-<h5 id="orgd375666">ERROR: FrameDebug 死循环，看不到 DrawCall</h5>
-<div class="outline-text-5" id="text-orgd375666">
+<div id="outline-container-org73b477a" class="outline-5">
+<h5 id="org73b477a">ERROR: FrameDebug 死循环，看不到 DrawCall</h5>
+<div class="outline-text-5" id="text-org73b477a">
 <div class="org-src-container">
 <pre class="src src-shader">cmd.BeginSample(<span style="color: #2d9574;">"GBloomPyramid"</span>);
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">......</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// ......</span>
 
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#32570;&#23569;EndSample</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// &#32570;&#23569;EndSample</span>
 cmd.EndSample(<span style="color: #2d9574;">"GBloomPyramid-END"</span>); 
 </pre>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org98f7701" class="outline-5">
-<h5 id="org98f7701">ERROR: _MainTex 属性没有传递到自己的 GBloom.shader 中</h5>
-<div class="outline-text-5" id="text-org98f7701">
+<div id="outline-container-org11752e8" class="outline-5">
+<h5 id="org11752e8">ERROR: _MainTex 属性没有传递到自己的 GBloom.shader 中</h5>
+<div class="outline-text-5" id="text-org11752e8">
 <div class="org-src-container">
-<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">RuntimeUtilieties.cs</span>
+<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// RuntimeUtilieties.cs</span>
 <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">BlitFullscreenTriangle</span>(<span style="color: #4f97d7; font-weight: bold;">this</span> CommandBuffer cmd, RenderTargetIdentifier source, RenderTargetIdentifier destination, PropertySheet propertySheet, <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #4f97d7; font-weight: bold;">pass</span>, RenderBufferLoadAction loadAction, Rect? viewport = null)
 {
-    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#36890;&#36807;GlobalTexture&#26469;&#35774;&#32622;&#23646;&#24615;&#30340;&#65292;&#25152;&#20197;&#24403;Property&#21015;&#34920;&#20013;&#21253;&#21547; _MainTex&#23646;&#24615;&#20250;&#23548;&#33268;GlobalTexture&#35774;&#32622;&#22833;&#25928;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#36890;&#36807;GlobalTexture&#26469;&#35774;&#32622;&#23646;&#24615;&#30340;&#65292;&#25152;&#20197;&#24403;Property&#21015;&#34920;&#20013;&#21253;&#21547; _MainTex&#23646;&#24615;&#20250;&#23548;&#33268;GlobalTexture&#35774;&#32622;&#22833;&#25928;</span>
     cmd.SetGlobalTexture(ShaderIDs.MainTex, source);
-    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">......</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// ......</span>
 }
 
 <span style="color: #4f97d7; font-weight: bold;">Properties</span>
 {
     <span style="color: #2aa1ae; background-color: #292e34;">// </span>
-    <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">_MainTex ("Texture", 2D) = "white" {}</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">//_MainTex ("Texture", 2D) = "white" {}</span>
 }
 </pre>
 </div>
@@ -463,11 +455,79 @@ cmd.EndSample(<span style="color: #2d9574;">"GBloomPyramid-END"</span>);
 </div>
 </div>
 </div>
-<div id="outline-container-org70867f5" class="outline-3">
-<h3 id="org70867f5">参考资料</h3>
-<div class="outline-text-3" id="text-org70867f5">
+<div id="outline-container-orgaea8c32" class="outline-3">
+<h3 id="orgaea8c32">参考资料</h3>
+<div class="outline-text-3" id="text-orgaea8c32">
 <ul class="org-ul">
 <li>官方文档 <a href="https://docs.unity3d.com/Packages/com.unity.postprocessing@2.2/manual/Manipulating-the-Stack.html">https://docs.unity3d.com/Packages/com.unity.postprocessing@2.2/manual/Manipulating-the-Stack.html</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgcec8f4d" class="outline-2">
+<h2 id="orgcec8f4d">URP Postprocess</h2>
+<div class="outline-text-2" id="text-orgcec8f4d">
+</div>
+<div id="outline-container-orgd97e969" class="outline-3">
+<h3 id="orgd97e969">使用 URP PP</h3>
+<div class="outline-text-3" id="text-orgd97e969">
+</div>
+<div id="outline-container-org1974b05" class="outline-4">
+<h4 id="org1974b05">为摄像机指定 VolumeTrigger 和 VolumeLayerMask</h4>
+<div class="outline-text-4" id="text-org1974b05">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">uaCamData</span> = camera.<span style="color: #bc6ec5; font-weight: bold;">GetComponent</span>&lt;<span style="color: #ce537a; font-weight: bold;">UniversalAdditionalCameraData</span>&gt;();
+uaCamData.volumeTrigger = someGObj.transform;
+uaCamData.volumeLayerMask = 1&lt;&lt;30;
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org0c4f99b" class="outline-3">
+<h3 id="org0c4f99b">Writing Custom Effects</h3>
+<div class="outline-text-3" id="text-org0c4f99b">
+<ul class="org-ul">
+<li><a href="https://github.com/yahiaetman/URPCustomPostProcessingStack">https://github.com/yahiaetman/URPCustomPostProcessingStack</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgb7c7768" class="outline-3">
+<h3 id="orgb7c7768">Source Code</h3>
+<div class="outline-text-3" id="text-orgb7c7768">
+</div>
+<div id="outline-container-org06ac1c1" class="outline-4">
+<h4 id="org06ac1c1">代码结构</h4>
+<div class="outline-text-4" id="text-org06ac1c1">
+<p>
+下面主要列出 Runtime 下目录结构<br />
+com.unity.render-pipelines.universal@10.5.0<br />
+ ├─Runtime<br />
+ │  ├─2D<br />
+ │  │  ├─Passes<br />
+ │  │  │  └─Utility<br />
+ │  │  └─Shadows<br />
+ │  ├─Data<br />
+ │  ├─External<br />
+ │  │  └─LibTessDotNet<br />
+ │  ├─Materials<br />
+ │  │  ├─ArnoldStandardSurface<br />
+ │  │  └─PhysicalMaterial3DsMax<br />
+ │  ├─Overrides                      <i>/ 内置后处理<br />
+ │  ├─Passes                         /</i> 内置 Pass<br />
+ │  ├─RendererFeatures               // 内置 RendererFeatures<br />
+ │  └─XR<br />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orga63083a" class="outline-3">
+<h3 id="orga63083a">参考资料</h3>
+<div class="outline-text-3" id="text-orga63083a">
+<ul class="org-ul">
+<li><a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.0/manual/integration-with-post-processing.html">https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.0/manual/integration-with-post-processing.html</a><br /></li>
+<li><a href="https://github.com/sebastianhein/urp_kawase_blur">https://github.com/sebastianhein/urp_kawase_blur</a><br /></li>
 </ul>
 </div>
 </div>

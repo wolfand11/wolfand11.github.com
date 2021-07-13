@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2020-10-19 周一 11:48 -->
+<!-- 2021-05-24 周一 18:01 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Unity Optimize</title>
@@ -15,50 +15,26 @@
            <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
            <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
 <script type="text/javascript">
-/*
-@licstart  The following is the entire license notice for the
-JavaScript code in this tag.
-
-Copyright (C) 2012-2020 Free Software Foundation, Inc.
-
-The JavaScript code in this tag is free software: you can
-redistribute it and/or modify it under the terms of the GNU
-General Public License (GNU GPL) as published by the Free Software
-Foundation, either version 3 of the License, or (at your option)
-any later version.  The code is distributed WITHOUT ANY WARRANTY;
-without even the implied warranty of MERCHANTABILITY or FITNESS
-FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
-
-As additional permission under GNU GPL version 3 section 7, you
-may distribute non-source (e.g., minimized or compacted) forms of
-that code without the copy of the GNU GPL normally required by
-section 4, provided you include this license notice and a URL
-through which recipients can access the Corresponding Source.
-
-
-@licend  The above is the entire license notice
-for the JavaScript code in this tag.
-*/
+// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
 <!--/*--><![CDATA[/*><!--*/
- function CodeHighlightOn(elem, id)
- {
-   var target = document.getElementById(id);
-   if(null != target) {
-     elem.cacheClassElem = elem.className;
-     elem.cacheClassTarget = target.className;
-     target.className = "code-highlighted";
-     elem.className   = "code-highlighted";
-   }
- }
- function CodeHighlightOff(elem, id)
- {
-   var target = document.getElementById(id);
-   if(elem.cacheClassElem)
-     elem.className = elem.cacheClassElem;
-   if(elem.cacheClassTarget)
-     target.className = elem.cacheClassTarget;
- }
-/*]]>*///-->
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.add("code-highlighted");
+         target.classList.add("code-highlighted");
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.remove("code-highlighted");
+         target.classList.remove("code-highlighted");
+       }
+     }
+    /*]]>*///-->
+// @license-end
 </script>
 </head>
 <body>
@@ -72,43 +48,43 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orga20d3df">Optimize</a>
+<li><a href="#org57973c1">Optimize</a>
 <ul>
-<li><a href="#org9c51554">Render</a>
+<li><a href="#org7d6317e">Render</a>
 <ul>
-<li><a href="#orgce025d7">Optimizing SkinnedMeshRenderers</a></li>
+<li><a href="#orgfeed034">Optimizing SkinnedMeshRenderers</a></li>
 </ul>
 </li>
-<li><a href="#org2acc89b">Animation</a>
+<li><a href="#org979b94f">Animation</a>
 <ul>
-<li><a href="#org6fb942c">SkinMesh 动画 Bake 为 Mesh 动画</a></li>
+<li><a href="#org6da7e16">SkinMesh 动画 Bake 为 Mesh 动画</a></li>
 </ul>
 </li>
-<li><a href="#org57afc75">Performance Review</a>
+<li><a href="#org6d24db4">Performance Review</a>
 <ul>
-<li><a href="#org42aae69">Unity 性能消耗</a></li>
-<li><a href="#orgfb8d13d">参考资料</a></li>
+<li><a href="#org41e2cb0">Unity 性能消耗</a></li>
+<li><a href="#org88d3d1c">参考资料</a></li>
 </ul>
 </li>
-<li><a href="#org8d2c6a8">Misc</a>
+<li><a href="#org19ade20">Misc</a>
 <ul>
-<li><a href="#org22bafb0">利用 Culling Group 实现 LOD 和剔除逻辑</a></li>
+<li><a href="#org807a99a">利用 Culling Group 实现 LOD 和剔除逻辑</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#orga58503e">tools</a>
+<li><a href="#orgda64297">tools</a>
 <ul>
-<li><a href="#org01df7a5">Unity Profiler</a>
+<li><a href="#org90869dc">Unity Profiler</a>
 <ul>
-<li><a href="#org4676753">Gfx.WaitForPresent</a></li>
+<li><a href="#org4f91794">Gfx.WaitForPresent</a></li>
 </ul>
 </li>
-<li><a href="#orgbd95a66">Xcode</a>
+<li><a href="#org1b12d53">Xcode</a>
 <ul>
-<li><a href="#org6bc6842">Error</a>
+<li><a href="#org606ee7a">Error</a>
 <ul>
-<li><a href="#org851e7d2">Xcode Instruments Call Tree Symbol Name 显示地址而不是函数名</a></li>
+<li><a href="#orgdfcdd30">Xcode Instruments Call Tree Symbol Name 显示地址而不是函数名</a></li>
 </ul>
 </li>
 </ul>
@@ -121,24 +97,24 @@ for the JavaScript code in this tag.
 <p>
 Unity Optimize note.<br />
 </p>
-<div class="HTML">
+<div class="HTML" id="org7576ed8">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
 
 </div>
 
-<div id="outline-container-orga20d3df" class="outline-2">
-<h2 id="orga20d3df">Optimize</h2>
-<div class="outline-text-2" id="text-orga20d3df">
+<div id="outline-container-org57973c1" class="outline-2">
+<h2 id="org57973c1">Optimize</h2>
+<div class="outline-text-2" id="text-org57973c1">
 </div>
-<div id="outline-container-org9c51554" class="outline-3">
-<h3 id="org9c51554">Render</h3>
-<div class="outline-text-3" id="text-org9c51554">
+<div id="outline-container-org7d6317e" class="outline-3">
+<h3 id="org7d6317e">Render</h3>
+<div class="outline-text-3" id="text-org7d6317e">
 </div>
-<div id="outline-container-orgce025d7" class="outline-4">
-<h4 id="orgce025d7">Optimizing SkinnedMeshRenderers</h4>
-<div class="outline-text-4" id="text-orgce025d7">
+<div id="outline-container-orgfeed034" class="outline-4">
+<h4 id="orgfeed034">Optimizing SkinnedMeshRenderers</h4>
+<div class="outline-text-4" id="text-orgfeed034">
 <p>
 <a href="https://www.flamebaitgames.com/optimizing-skinnedmeshrenderers-for-unity-5-2/">https://www.flamebaitgames.com/optimizing-skinnedmeshrenderers-for-unity-5-2/</a><br />
 </p>
@@ -146,13 +122,13 @@ Unity Optimize note.<br />
 </div>
 </div>
 
-<div id="outline-container-org2acc89b" class="outline-3">
-<h3 id="org2acc89b">Animation</h3>
-<div class="outline-text-3" id="text-org2acc89b">
+<div id="outline-container-org979b94f" class="outline-3">
+<h3 id="org979b94f">Animation</h3>
+<div class="outline-text-3" id="text-org979b94f">
 </div>
-<div id="outline-container-org6fb942c" class="outline-4">
-<h4 id="org6fb942c">SkinMesh 动画 Bake 为 Mesh 动画</h4>
-<div class="outline-text-4" id="text-org6fb942c">
+<div id="outline-container-org6da7e16" class="outline-4">
+<h4 id="org6da7e16">SkinMesh 动画 Bake 为 Mesh 动画</h4>
+<div class="outline-text-4" id="text-org6da7e16">
 <p>
 <a href="https://stackoverflow.com/questions/41007012/optimizing-animations-to-show-dozens-or-even-hundreds-on-mobile-in-unity">https://stackoverflow.com/questions/41007012/optimizing-animations-to-show-dozens-or-even-hundreds-on-mobile-in-unity</a><br />
 </p>
@@ -160,16 +136,16 @@ Unity Optimize note.<br />
 </div>
 </div>
 
-<div id="outline-container-org57afc75" class="outline-3">
-<h3 id="org57afc75">Performance Review</h3>
-<div class="outline-text-3" id="text-org57afc75">
+<div id="outline-container-org6d24db4" class="outline-3">
+<h3 id="org6d24db4">Performance Review</h3>
+<div class="outline-text-3" id="text-org6d24db4">
 </div>
-<div id="outline-container-org42aae69" class="outline-4">
-<h4 id="org42aae69">Unity 性能消耗</h4>
+<div id="outline-container-org41e2cb0" class="outline-4">
+<h4 id="org41e2cb0">Unity 性能消耗</h4>
 </div>
-<div id="outline-container-orgfb8d13d" class="outline-4">
-<h4 id="orgfb8d13d">参考资料</h4>
-<div class="outline-text-4" id="text-orgfb8d13d">
+<div id="outline-container-org88d3d1c" class="outline-4">
+<h4 id="org88d3d1c">参考资料</h4>
+<div class="outline-text-4" id="text-org88d3d1c">
 <ul class="org-ul">
 <li>Unity 性能 Review <a href="https://zhuanlan.zhihu.com/p/31345068">https://zhuanlan.zhihu.com/p/31345068</a><br /></li>
 </ul>
@@ -177,13 +153,13 @@ Unity Optimize note.<br />
 </div>
 </div>
 
-<div id="outline-container-org8d2c6a8" class="outline-3">
-<h3 id="org8d2c6a8">Misc</h3>
-<div class="outline-text-3" id="text-org8d2c6a8">
+<div id="outline-container-org19ade20" class="outline-3">
+<h3 id="org19ade20">Misc</h3>
+<div class="outline-text-3" id="text-org19ade20">
 </div>
-<div id="outline-container-org22bafb0" class="outline-4">
-<h4 id="org22bafb0">利用 Culling Group 实现 LOD 和剔除逻辑</h4>
-<div class="outline-text-4" id="text-org22bafb0">
+<div id="outline-container-org807a99a" class="outline-4">
+<h4 id="org807a99a">利用 Culling Group 实现 LOD 和剔除逻辑</h4>
+<div class="outline-text-4" id="text-org807a99a">
 <p>
 <a href="https://blog.csdn.net/u010019717/article/details/97690363">https://blog.csdn.net/u010019717/article/details/97690363</a><br />
 </p>
@@ -192,34 +168,34 @@ Unity Optimize note.<br />
 </div>
 </div>
 
-<div id="outline-container-orga58503e" class="outline-2">
-<h2 id="orga58503e">tools</h2>
-<div class="outline-text-2" id="text-orga58503e">
+<div id="outline-container-orgda64297" class="outline-2">
+<h2 id="orgda64297">tools</h2>
+<div class="outline-text-2" id="text-orgda64297">
 </div>
-<div id="outline-container-org01df7a5" class="outline-3">
-<h3 id="org01df7a5">Unity Profiler</h3>
-<div class="outline-text-3" id="text-org01df7a5">
+<div id="outline-container-org90869dc" class="outline-3">
+<h3 id="org90869dc">Unity Profiler</h3>
+<div class="outline-text-3" id="text-org90869dc">
 </div>
-<div id="outline-container-org4676753" class="outline-4">
-<h4 id="org4676753">Gfx.WaitForPresent</h4>
-<div class="outline-text-4" id="text-org4676753">
+<div id="outline-container-org4f91794" class="outline-4">
+<h4 id="org4f91794">Gfx.WaitForPresent</h4>
+<div class="outline-text-4" id="text-org4f91794">
 <ul class="org-ul">
 <li><a href="https://github.com/UnityCommunity/UnityLibrary/wiki/Profiler:-Overhead---Gfx.WaitForPresent-explained">https://github.com/UnityCommunity/UnityLibrary/wiki/Profiler:-Overhead---Gfx.WaitForPresent-explained</a><br /></li>
 </ul>
 </div>
 </div>
 </div>
-<div id="outline-container-orgbd95a66" class="outline-3">
-<h3 id="orgbd95a66">Xcode</h3>
-<div class="outline-text-3" id="text-orgbd95a66">
+<div id="outline-container-org1b12d53" class="outline-3">
+<h3 id="org1b12d53">Xcode</h3>
+<div class="outline-text-3" id="text-org1b12d53">
 </div>
-<div id="outline-container-org6bc6842" class="outline-4">
-<h4 id="org6bc6842">Error</h4>
-<div class="outline-text-4" id="text-org6bc6842">
+<div id="outline-container-org606ee7a" class="outline-4">
+<h4 id="org606ee7a">Error</h4>
+<div class="outline-text-4" id="text-org606ee7a">
 </div>
-<div id="outline-container-org851e7d2" class="outline-5">
-<h5 id="org851e7d2">Xcode Instruments Call Tree Symbol Name 显示地址而不是函数名</h5>
-<div class="outline-text-5" id="text-org851e7d2">
+<div id="outline-container-orgdfcdd30" class="outline-5">
+<h5 id="orgdfcdd30">Xcode Instruments Call Tree Symbol Name 显示地址而不是函数名</h5>
+<div class="outline-text-5" id="text-orgdfcdd30">
 <p>
 首先保证 build 生成 app 时，同时生成了 dSYM 文件。使用 Product/BuildFor/Profiling 构建 App 可以默认生成 dSYM 文件。<br />
 其次保证 使用 Xcode Instruments Time Profiler 工具 Profile App 时，使用了上一步生成的 dSYM 文件。可以<br />

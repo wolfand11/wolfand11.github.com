@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-05-17 周一 10:57 -->
+<!-- 2021-05-24 周一 17:58 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>ShaderToys</title>
@@ -15,50 +15,26 @@
            <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
            <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
 <script type="text/javascript">
-/*
-@licstart  The following is the entire license notice for the
-JavaScript code in this tag.
-
-Copyright (C) 2012-2020 Free Software Foundation, Inc.
-
-The JavaScript code in this tag is free software: you can
-redistribute it and/or modify it under the terms of the GNU
-General Public License (GNU GPL) as published by the Free Software
-Foundation, either version 3 of the License, or (at your option)
-any later version.  The code is distributed WITHOUT ANY WARRANTY;
-without even the implied warranty of MERCHANTABILITY or FITNESS
-FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
-
-As additional permission under GNU GPL version 3 section 7, you
-may distribute non-source (e.g., minimized or compacted) forms of
-that code without the copy of the GNU GPL normally required by
-section 4, provided you include this license notice and a URL
-through which recipients can access the Corresponding Source.
-
-
-@licend  The above is the entire license notice
-for the JavaScript code in this tag.
-*/
+// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
 <!--/*--><![CDATA[/*><!--*/
- function CodeHighlightOn(elem, id)
- {
-   var target = document.getElementById(id);
-   if(null != target) {
-     elem.cacheClassElem = elem.className;
-     elem.cacheClassTarget = target.className;
-     target.className = "code-highlighted";
-     elem.className   = "code-highlighted";
-   }
- }
- function CodeHighlightOff(elem, id)
- {
-   var target = document.getElementById(id);
-   if(elem.cacheClassElem)
-     elem.className = elem.cacheClassElem;
-   if(elem.cacheClassTarget)
-     target.className = elem.cacheClassTarget;
- }
-/*]]>*///-->
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.add("code-highlighted");
+         target.classList.add("code-highlighted");
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.remove("code-highlighted");
+         target.classList.remove("code-highlighted");
+       }
+     }
+    /*]]>*///-->
+// @license-end
 </script>
 </head>
 <body>
@@ -72,71 +48,71 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org214240e">MyEffect</a>
+<li><a href="#org468a8de">MyEffect</a>
 <ul>
-<li><a href="#orgeb1d936">01OcclusionHighlight</a></li>
-<li><a href="#orgf6d81b5">02ScanEffect</a></li>
-<li><a href="#org053b117">03SSR</a>
+<li><a href="#org103a8ba">01OcclusionHighlight</a></li>
+<li><a href="#orgebf5732">02ScanEffect</a></li>
+<li><a href="#org91f6f13">03SSR</a>
 <ul>
-<li><a href="#org6d142ef">获得深度值和 Normal</a></li>
-<li><a href="#org769f3ea">拖影问题</a></li>
-<li><a href="#orga51f7f4">二分搜索优化</a></li>
-<li><a href="#org6f8ea88"><span class="todo TODO">TODO</span> 屏幕空间光栅化 RayMarching</a></li>
-<li><a href="#org20954b7">参考资料</a></li>
+<li><a href="#org13266de">获得深度值和 Normal</a></li>
+<li><a href="#org1cd01c7">拖影问题</a></li>
+<li><a href="#org81d6c6d">二分搜索优化</a></li>
+<li><a href="#org96fc9a8"><span class="todo TODO">TODO</span> 屏幕空间光栅化 RayMarching</a></li>
+<li><a href="#orgf5493a8">参考资料</a></li>
 </ul>
 </li>
-<li><a href="#org553bd47">04PlanarReflection</a>
+<li><a href="#orgcb227f9">04PlanarReflection</a>
 <ul>
-<li><a href="#org4bfa200">原理</a></li>
-<li><a href="#orgfbe6b45">Error 平面下物体异常反射</a></li>
+<li><a href="#orgdb4682c">原理</a></li>
+<li><a href="#org30e447d">Error 平面下物体异常反射</a></li>
 </ul>
 </li>
-<li><a href="#orge042a64">05SSPR</a>
+<li><a href="#org978b4cc">05SSPR</a>
 <ul>
-<li><a href="#org5cf95e7">基础知识</a>
+<li><a href="#org7ce0619">基础知识</a>
 <ul>
-<li><a href="#org2dee418">InterlockedMin InterlockedMax</a></li>
+<li><a href="#org9a1fba5">InterlockedMin InterlockedMax</a></li>
 </ul>
 </li>
-<li><a href="#orgd99363d">Error</a>
+<li><a href="#org9cd4224">Error</a>
 <ul>
-<li><a href="#org7eaa257">Compute shader (GSSPR): Property (HashRT) at kernel index (0): Attempting to bind Texture ID 157 as UAV but the texture wasn't created with the UAV usage flag set!</a></li>
-<li><a href="#orgbc7b40a">给物体赋予 GSSPRPlane Shader 后，物体变消失</a></li>
-<li><a href="#orgf09ffb5"></a></li>
+<li><a href="#orgc740a27">Compute shader (GSSPR): Property (HashRT) at kernel index (0): Attempting to bind Texture ID 157 as UAV but the texture wasn't created with the UAV usage flag set!</a></li>
+<li><a href="#org23f99b4">给物体赋予 GSSPRPlane Shader 后，物体变消失</a></li>
+<li><a href="#org9305847"></a></li>
 </ul>
 </li>
-<li><a href="#orgcf63a9b">参考资料</a></li>
+<li><a href="#orgbe2fe57">参考资料</a></li>
 </ul>
 </li>
-<li><a href="#orge2e20b5">06NoiseBall</a>
+<li><a href="#org05c9ca8">06NoiseBall</a>
 <ul>
-<li><a href="#org2c5aab4">参考资料</a></li>
+<li><a href="#org7b0bdaf">参考资料</a></li>
 </ul>
 </li>
-<li><a href="#org1132fcc">07RainDropEffect</a>
+<li><a href="#org6cba8cd">07RainDropEffect</a>
 <ul>
-<li><a href="#org13883ca">模拟雨滴流动</a></li>
-<li><a href="#org81afb2b">模拟雨滴折射</a></li>
-<li><a href="#orgabbccbd">使用 GrabPass 实现玻璃效果</a>
+<li><a href="#org64d8028">模拟雨滴流动</a></li>
+<li><a href="#orgdad2910">模拟雨滴折射</a></li>
+<li><a href="#org9e3ceb2">使用 GrabPass 实现玻璃效果</a>
 <ul>
-<li><a href="#org43de41a">GrabPass 使用</a></li>
-<li><a href="#org0f0ddbc">动态开启关闭 GrabPass</a></li>
+<li><a href="#orgef14d83">GrabPass 使用</a></li>
+<li><a href="#orge153f1d">动态开启关闭 GrabPass</a></li>
 </ul>
 </li>
-<li><a href="#orga0b410e">参考资料</a></li>
+<li><a href="#org409f4ca">参考资料</a></li>
 </ul>
 </li>
-<li><a href="#org30a9eb5">08MagnifyingGlassEffect</a></li>
-<li><a href="#orgf25be14">09Skybox</a></li>
+<li><a href="#org87d1394">08MagnifyingGlassEffect</a></li>
+<li><a href="#orgd03d1e0">09Skybox</a></li>
 </ul>
 </li>
-<li><a href="#org929b6bd">TODO</a>
+<li><a href="#org305fc59">TODO</a>
 <ul>
-<li><a href="#orge901f67">Rain On Camera</a></li>
-<li><a href="#org2161e49">keijiro</a></li>
-<li><a href="#org8877168">Ocean</a></li>
-<li><a href="#org4627dd2">Skybox</a></li>
-<li><a href="#org8bf667b">Gem</a></li>
+<li><a href="#org128164e">Rain On Camera</a></li>
+<li><a href="#orge9189dc">keijiro</a></li>
+<li><a href="#org4954772">Ocean</a></li>
+<li><a href="#orga3d2d00">Skybox</a></li>
+<li><a href="#orgc55bab0">Gem</a></li>
 </ul>
 </li>
 </ul>
@@ -145,48 +121,48 @@ for the JavaScript code in this tag.
 <p>
 ShaderToys note.<br />
 </p>
-<div class="HTML">
+<div class="HTML" id="org6b6f98e">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
 
 </div>
-<div id="outline-container-org214240e" class="outline-2">
-<h2 id="org214240e">MyEffect</h2>
-<div class="outline-text-2" id="text-org214240e">
+<div id="outline-container-org468a8de" class="outline-2">
+<h2 id="org468a8de">MyEffect</h2>
+<div class="outline-text-2" id="text-org468a8de">
 </div>
-<div id="outline-container-orgeb1d936" class="outline-3">
-<h3 id="orgeb1d936">01OcclusionHighlight</h3>
-<div class="outline-text-3" id="text-orgeb1d936">
+<div id="outline-container-org103a8ba" class="outline-3">
+<h3 id="org103a8ba">01OcclusionHighlight</h3>
+<div class="outline-text-3" id="text-org103a8ba">
 
-<div class="figure">
+<div id="orgc62496f" class="figure">
 <p><img src="./ShaderToys/OcclusionHighlight.gif" alt="OcclusionHighlight.gif" /><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgf6d81b5" class="outline-3">
-<h3 id="orgf6d81b5">02ScanEffect</h3>
-<div class="outline-text-3" id="text-orgf6d81b5">
+<div id="outline-container-orgebf5732" class="outline-3">
+<h3 id="orgebf5732">02ScanEffect</h3>
+<div class="outline-text-3" id="text-orgebf5732">
 
-<div class="figure">
+<div id="orgc6bbd00" class="figure">
 <p><img src="./ShaderToys/ScanEffect.gif" alt="ScanEffect.gif" /><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-org053b117" class="outline-3">
-<h3 id="org053b117">03SSR</h3>
-<div class="outline-text-3" id="text-org053b117">
+<div id="outline-container-org91f6f13" class="outline-3">
+<h3 id="org91f6f13">03SSR</h3>
+<div class="outline-text-3" id="text-org91f6f13">
 </div>
-<div id="outline-container-org6d142ef" class="outline-4">
-<h4 id="org6d142ef">获得深度值和 Normal</h4>
-<div class="outline-text-4" id="text-org6d142ef">
+<div id="outline-container-org13266de" class="outline-4">
+<h4 id="org13266de">获得深度值和 Normal</h4>
+<div class="outline-text-4" id="text-org13266de">
 <div class="org-src-container">
-<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">common &#24471;&#21040;viewRay</span>
+<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// common &#24471;&#21040;viewRay</span>
 v2f <span style="color: #bc6ec5; font-weight: bold;">vert</span>(appdata v)
 {
-    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">......</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// ......</span>
     <span style="color: #ce537a; font-weight: bold;">float4</span> ndcFarPlanePos = <span style="color: #ce537a; font-weight: bold;">float4</span>(o.uv * 2.0 - 1.0, 1.0, 1.0);
     <span style="color: #ce537a; font-weight: bold;">float4</span> viewDir = <span style="color: #4f97d7;">mul</span>(unity_CameraInvProjection, ndcFarPlanePos);
     o.viewRay = viewDir.xyz / viewDir.w;
@@ -194,12 +170,12 @@ v2f <span style="color: #bc6ec5; font-weight: bold;">vert</span>(appdata v)
 
 <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #bc6ec5; font-weight: bold;">frag</span>(v2f i)
 {
-    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">forward path</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// forward path</span>
     <span style="color: #ce537a; font-weight: bold;">float</span> linear01Depth;
     <span style="color: #ce537a; font-weight: bold;">half3</span> viewSpaceNormal;
     DecodeDepthNormal(<span style="color: #4f97d7;">tex2D</span>(<span style="color: #7590db;">_CameraDepthNormalsTexture</span>, uv), linear01Depth, viewSpaceNormal);
 
-    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">deferred path</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// deferred path</span>
     <span style="color: #ce537a; font-weight: bold;">float</span> decodedDepth = Linear01Depth(<span style="color: #4f97d7;">tex2D</span>(<span style="color: #7590db;">_CameraDepthTexture</span>, i.uv).r);
     <span style="color: #ce537a; font-weight: bold;">float3</span> viewSpaceObjPos = decodedDepth * i.viewRay;
     <span style="color: #ce537a; font-weight: bold;">float3</span> worldSpaceNormal = <span style="color: #4f97d7;">tex2D</span>(<span style="color: #7590db;">_CameraGBufferTexture2</span>, i.uv).rgb * 2.0 - 1.0;
@@ -209,9 +185,9 @@ v2f <span style="color: #bc6ec5; font-weight: bold;">vert</span>(appdata v)
 </div>
 </div>
 </div>
-<div id="outline-container-org769f3ea" class="outline-4">
-<h4 id="org769f3ea">拖影问题</h4>
-<div class="outline-text-4" id="text-org769f3ea">
+<div id="outline-container-org1cd01c7" class="outline-4">
+<h4 id="org1cd01c7">拖影问题</h4>
+<div class="outline-text-4" id="text-org1cd01c7">
 <p>
 <img src="./ShaderToys/ssr_multi_shadow.jpg" alt="ssr_multi_shadow.jpg" /><br />
 导致上面问题的原因如下图所示：<br />
@@ -232,27 +208,27 @@ v2f <span style="color: #bc6ec5; font-weight: bold;">vert</span>(appdata v)
 
     <span style="color: #4f97d7; font-weight: bold;">return</span> screenPos.x &gt; 0 &amp;&amp; screenPos.y &gt; 0 &amp;&amp; 
     screenPos.x &lt; 1.0 &amp;&amp; screenPos.y &lt; 1.0 &amp;&amp; 
-    eyeZ &lt; -viewPos.z &amp;&amp;                 <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">eyeZ &lt; &#24403;&#21069;&#26816;&#27979;&#30340;&#28145;&#24230; (&#35828;&#26126;&#26816;&#27979;&#28857;&#22312;&#24403;&#21069;&#20687;&#32032;&#20043;&#21518;)</span>
-    eyeZ + <span style="color: #7590db;">_DepthThickness</span> &gt; -viewPos.z; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">eyeZ + &#29289;&#20307;&#21402;&#24230; &gt; &#24403;&#21069;&#26816;&#27979;&#30340;&#28145;&#24230; (&#35828;&#26126; eyeZ+_DepthThcikness &#23545;&#24212;&#30340;&#28857;&#22312;&#24403;&#21069;&#26816;&#27979;&#28857;&#20043;&#21069;)</span>
+    eyeZ &lt; -viewPos.z &amp;&amp;                 <span style="color: #2aa1ae; background-color: #292e34;">// eyeZ &lt; &#24403;&#21069;&#26816;&#27979;&#30340;&#28145;&#24230; (&#35828;&#26126;&#26816;&#27979;&#28857;&#22312;&#24403;&#21069;&#20687;&#32032;&#20043;&#21518;)</span>
+    eyeZ + <span style="color: #7590db;">_DepthThickness</span> &gt; -viewPos.z; <span style="color: #2aa1ae; background-color: #292e34;">// eyeZ + &#29289;&#20307;&#21402;&#24230; &gt; &#24403;&#21069;&#26816;&#27979;&#30340;&#28145;&#24230; (&#35828;&#26126; eyeZ+_DepthThcikness &#23545;&#24212;&#30340;&#28857;&#22312;&#24403;&#21069;&#26816;&#27979;&#28857;&#20043;&#21069;)</span>
 }
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-orga51f7f4" class="outline-4">
-<h4 id="orga51f7f4">二分搜索优化</h4>
-<div class="outline-text-4" id="text-orga51f7f4">
+<div id="outline-container-org81d6c6d" class="outline-4">
+<h4 id="org81d6c6d">二分搜索优化</h4>
+<div class="outline-text-4" id="text-org81d6c6d">
 <p>
 RayMarching 找到的点对应的深度超过 _CameraDepthTex 中记录深度后，将 currentPos 退回到上一步位置，并且将 currentRayMarchingStep 减半，再次 RayMarching。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org6f8ea88" class="outline-4">
-<h4 id="org6f8ea88"><span class="todo TODO">TODO</span> 屏幕空间光栅化 RayMarching</h4>
+<div id="outline-container-org96fc9a8" class="outline-4">
+<h4 id="org96fc9a8"><span class="todo TODO">TODO</span> 屏幕空间光栅化 RayMarching</h4>
 </div>
-<div id="outline-container-org20954b7" class="outline-4">
-<h4 id="org20954b7">参考资料</h4>
-<div class="outline-text-4" id="text-org20954b7">
+<div id="outline-container-orgf5493a8" class="outline-4">
+<h4 id="orgf5493a8">参考资料</h4>
+<div class="outline-text-4" id="text-orgf5493a8">
 <ul class="org-ul">
 <li>Unity 反射效果 <a href="https://blog.csdn.net/puppet_master/article/details/80808486">https://blog.csdn.net/puppet_master/article/details/80808486</a><br /></li>
 <li>SSR in Unity5 en <a href="http://www.kode80.com/blog/2015/03/11/screen-space-reflections-in-unity-5/">http://www.kode80.com/blog/2015/03/11/screen-space-reflections-in-unity-5/</a><br /></li>
@@ -263,30 +239,30 @@ RayMarching 找到的点对应的深度超过 _CameraDepthTex 中记录深度后
 </div>
 </div>
 </div>
-<div id="outline-container-org553bd47" class="outline-3">
-<h3 id="org553bd47">04PlanarReflection</h3>
-<div class="outline-text-3" id="text-org553bd47">
+<div id="outline-container-orgcb227f9" class="outline-3">
+<h3 id="orgcb227f9">04PlanarReflection</h3>
+<div class="outline-text-3" id="text-orgcb227f9">
 </div>
-<div id="outline-container-org4bfa200" class="outline-4">
-<h4 id="org4bfa200">原理</h4>
-<div class="outline-text-4" id="text-org4bfa200">
+<div id="outline-container-orgdb4682c" class="outline-4">
+<h4 id="orgdb4682c">原理</h4>
+<div class="outline-text-4" id="text-orgdb4682c">
 <ol class="org-ol">
 <li>将视角摄像机相对于反射平面进行镜像，使用镜像后的反射摄像机对场景进行渲染，将结果写入 ReflectionRT 中。<br /></li>
 <li>使用视角摄像机对反射平面进行渲染。反射平面投影到视角摄像机屏幕空间后的区域与反射平面投影到反射摄像机屏幕空间后的区域相同，因此，视角摄像机渲染反射屏幕时，反射屏幕对 ReflectionRT 的采样 uv 使用屏幕坐标。<br /></li>
 </ol>
 
 
-<div class="figure">
+<div id="org142ed57" class="figure">
 <p><img src="./ShaderToys/plannar_reflection_tex_uv.jpg" alt="plannar_reflection_tex_uv.jpg" /><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgfbe6b45" class="outline-4">
-<h4 id="orgfbe6b45">Error 平面下物体异常反射</h4>
-<div class="outline-text-4" id="text-orgfbe6b45">
+<div id="outline-container-org30e447d" class="outline-4">
+<h4 id="org30e447d">Error 平面下物体异常反射</h4>
+<div class="outline-text-4" id="text-org30e447d">
 
-<div class="figure">
+<div id="orgc831747" class="figure">
 <p><img src="./ShaderToys/plannar_reflection_error01.jpg" alt="plannar_reflection_error01.jpg" /><br />
 </p>
 </div>
@@ -302,26 +278,26 @@ RayMarching 找到的点对应的深度超过 _CameraDepthTex 中记录深度后
 </div>
 </div>
 </div>
-<div id="outline-container-orge042a64" class="outline-3">
-<h3 id="orge042a64">05SSPR</h3>
-<div class="outline-text-3" id="text-orge042a64">
+<div id="outline-container-org978b4cc" class="outline-3">
+<h3 id="org978b4cc">05SSPR</h3>
+<div class="outline-text-3" id="text-org978b4cc">
 </div>
-<div id="outline-container-org5cf95e7" class="outline-4">
-<h4 id="org5cf95e7">基础知识</h4>
-<div class="outline-text-4" id="text-org5cf95e7">
+<div id="outline-container-org7ce0619" class="outline-4">
+<h4 id="org7ce0619">基础知识</h4>
+<div class="outline-text-4" id="text-org7ce0619">
 </div>
-<div id="outline-container-org2dee418" class="outline-5">
-<h5 id="org2dee418">InterlockedMin InterlockedMax</h5>
-<div class="outline-text-5" id="text-org2dee418">
+<div id="outline-container-org9a1fba5" class="outline-5">
+<h5 id="org9a1fba5">InterlockedMin InterlockedMax</h5>
+<div class="outline-text-5" id="text-org9a1fba5">
 <div class="org-src-container">
 <pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">InterlockedMin</span>(<span style="color: #4f97d7; font-weight: bold;">in</span>  R dest, <span style="color: #4f97d7; font-weight: bold;">in</span>  T value, <span style="color: #4f97d7; font-weight: bold;">out</span> T original_value);
 <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">InterlockedMax</span>(<span style="color: #4f97d7; font-weight: bold;">in</span>  R dest, <span style="color: #4f97d7; font-weight: bold;">in</span>  T value, <span style="color: #4f97d7; font-weight: bold;">out</span> T original_value);
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">R dest            &#20026;&#30446;&#26631;&#22320;&#22336;</span>
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">T value           &#20026;&#36755;&#20837;&#20540;</span>
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">T original_value  &#20026;&#21407;&#22987;&#20540;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// R dest            &#20026;&#30446;&#26631;&#22320;&#22336;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// T value           &#20026;&#36755;&#20837;&#20540;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// T original_value  &#20026;&#21407;&#22987;&#20540;</span>
 
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#35813;&#25805;&#20316;&#21482;&#33021;&#22312;int&#21644;uint&#31867;&#22411;&#24182;&#19988;&#26159;&#20849;&#20139;&#20869;&#23384;&#21464;&#37327;&#30340;&#36164;&#28304;&#19978;&#25191;&#34892;</span>
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#35813;&#25805;&#20316;&#38656;&#35201;Shader Model 5 &#25110;&#26356;&#39640;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// &#35813;&#25805;&#20316;&#21482;&#33021;&#22312;int&#21644;uint&#31867;&#22411;&#24182;&#19988;&#26159;&#20849;&#20139;&#20869;&#23384;&#21464;&#37327;&#30340;&#36164;&#28304;&#19978;&#25191;&#34892;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// &#35813;&#25805;&#20316;&#38656;&#35201;Shader Model 5 &#25110;&#26356;&#39640;</span>
 </pre>
 </div>
 <ul class="org-ul">
@@ -331,21 +307,21 @@ RayMarching 找到的点对应的深度超过 _CameraDepthTex 中记录深度后
 </div>
 </div>
 </div>
-<div id="outline-container-orgd99363d" class="outline-4">
-<h4 id="orgd99363d">Error</h4>
-<div class="outline-text-4" id="text-orgd99363d">
+<div id="outline-container-org9cd4224" class="outline-4">
+<h4 id="org9cd4224">Error</h4>
+<div class="outline-text-4" id="text-org9cd4224">
 </div>
-<div id="outline-container-org7eaa257" class="outline-5">
-<h5 id="org7eaa257">Compute shader (GSSPR): Property (HashRT) at kernel index (0): Attempting to bind Texture ID 157 as UAV but the texture wasn't created with the UAV usage flag set!</h5>
-<div class="outline-text-5" id="text-org7eaa257">
+<div id="outline-container-orgc740a27" class="outline-5">
+<h5 id="orgc740a27">Compute shader (GSSPR): Property (HashRT) at kernel index (0): Attempting to bind Texture ID 157 as UAV but the texture wasn't created with the UAV usage flag set!</h5>
+<div class="outline-text-5" id="text-orgc740a27">
 <p>
 没有创建 HashRT 对应的 RenderTexture，导致该问题。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgbc7b40a" class="outline-5">
-<h5 id="orgbc7b40a">给物体赋予 GSSPRPlane Shader 后，物体变消失</h5>
-<div class="outline-text-5" id="text-orgbc7b40a">
+<div id="outline-container-org23f99b4" class="outline-5">
+<h5 id="org23f99b4">给物体赋予 GSSPRPlane Shader 后，物体变消失</h5>
+<div class="outline-text-5" id="text-org23f99b4">
 <p>
 drawingSettings 中指定的 ShaderTagId 和 GSSPRPlane shader 中使用的 ShaderMode 不一致，导致使用 GSSPRPlane Shader 的物体没有被渲染。<br />
 </p>
@@ -354,25 +330,25 @@ drawingSettings 中指定的 ShaderTagId 和 GSSPRPlane shader 中使用的 Shad
 <pre class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">ShaderTagId</span> <span style="color: #7590db;">lightMode_SSPR_STI</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">ShaderTagId</span>(<span style="color: #2d9574;">"GSSPR"</span>);
 
 <span style="color: #2aa1ae; background-color: #292e34;">// </span>
-<span style="color: #4f97d7; font-weight: bold;">var</span> <span style="color: #7590db;">drawingSettings</span> = CreateDrawingSettings(lightMode_SSPR_STI, <span style="color: #4f97d7; font-weight: bold;">ref</span> <span style="color: #ce537a; font-weight: bold;">renderingData</span>, SortingCriteria.CommonOpaque);
-<span style="color: #4f97d7; font-weight: bold;">var</span> <span style="color: #7590db;">filteringSettings</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">FilteringSettings</span>(RenderQueueRange.all);
+<span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">drawingSettings</span> = <span style="color: #bc6ec5; font-weight: bold;">CreateDrawingSettings</span>(lightMode_SSPR_STI, <span style="color: #4f97d7; font-weight: bold;">ref</span> <span style="color: #ce537a; font-weight: bold;">renderingData</span>, SortingCriteria.CommonOpaque);
+<span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">filteringSettings</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">FilteringSettings</span>(RenderQueueRange.all);
 context.<span style="color: #bc6ec5; font-weight: bold;">DrawRenderers</span>(renderingData.cullResults, <span style="color: #4f97d7; font-weight: bold;">ref</span> <span style="color: #ce537a; font-weight: bold;">drawingSettings</span>, <span style="color: #4f97d7; font-weight: bold;">ref</span> <span style="color: #ce537a; font-weight: bold;">filteringSettings</span>);
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-orgf09ffb5" class="outline-5">
-<h5 id="orgf09ffb5"></h5>
-<div class="outline-text-5" id="text-orgf09ffb5">
+<div id="outline-container-org9305847" class="outline-5">
+<h5 id="org9305847"></h5>
+<div class="outline-text-5" id="text-org9305847">
 <ul class="org-ul">
 <li><a href="https://docs.unity3d.com/ScriptReference/GL.GetGPUProjectionMatrix.html">https://docs.unity3d.com/ScriptReference/GL.GetGPUProjectionMatrix.html</a><br /></li>
 </ul>
 </div>
 </div>
 </div>
-<div id="outline-container-orgcf63a9b" class="outline-4">
-<h4 id="orgcf63a9b">参考资料</h4>
-<div class="outline-text-4" id="text-orgcf63a9b">
+<div id="outline-container-orgbe2fe57" class="outline-4">
+<h4 id="orgbe2fe57">参考资料</h4>
+<div class="outline-text-4" id="text-orgbe2fe57">
 <ul class="org-ul">
 <li><a href="http://remi-genin.fr/blog/screen-space-plane-indexed-reflection-in-ghost-recon-wildlands/">http://remi-genin.fr/blog/screen-space-plane-indexed-reflection-in-ghost-recon-wildlands/</a><br /></li>
 <li><a href="https://github.com/ColinLeung-NiloCat/UnityURP-MobileScreenSpacePlanarReflection">https://github.com/ColinLeung-NiloCat/UnityURP-MobileScreenSpacePlanarReflection</a><br /></li>
@@ -383,9 +359,9 @@ context.<span style="color: #bc6ec5; font-weight: bold;">DrawRenderers</span>(re
 </div>
 </div>
 </div>
-<div id="outline-container-orge2e20b5" class="outline-3">
-<h3 id="orge2e20b5">06NoiseBall</h3>
-<div class="outline-text-3" id="text-orge2e20b5">
+<div id="outline-container-org05c9ca8" class="outline-3">
+<h3 id="org05c9ca8">06NoiseBall</h3>
+<div class="outline-text-3" id="text-org05c9ca8">
 <ol class="org-ol">
 <li>利用 ComputeShader 生成三角形三个顶点的位置和法线数据，将数据分布存入 position ComputeBuffer 和 normal ComputeBuffer 中。<br /></li>
 <li>使用 Graphics.DrawMeshInstancedIndirect 以 Instanced 方式绘制三角形<br /></li>
@@ -406,9 +382,9 @@ Graphics.DrawMeshInstancedIndirect 方法的 bufferWithArgs 参数必须包含 5
 </div>
 </div>
 
-<div id="outline-container-org2c5aab4" class="outline-4">
-<h4 id="org2c5aab4">参考资料</h4>
-<div class="outline-text-4" id="text-org2c5aab4">
+<div id="outline-container-org7b0bdaf" class="outline-4">
+<h4 id="org7b0bdaf">参考资料</h4>
+<div class="outline-text-4" id="text-org7b0bdaf">
 <ul class="org-ul">
 <li><a href="https://github.com/keijiro/NoiseBall2">https://github.com/keijiro/NoiseBall2</a><br /></li>
 <li><a href="https://docs.unity3d.com/ScriptReference/Graphics.DrawMeshInstancedIndirect.html">https://docs.unity3d.com/ScriptReference/Graphics.DrawMeshInstancedIndirect.html</a><br /></li>
@@ -417,18 +393,18 @@ Graphics.DrawMeshInstancedIndirect 方法的 bufferWithArgs 参数必须包含 5
 </div>
 </div>
 
-<div id="outline-container-org1132fcc" class="outline-3">
-<h3 id="org1132fcc">07RainDropEffect</h3>
-<div class="outline-text-3" id="text-org1132fcc">
+<div id="outline-container-org6cba8cd" class="outline-3">
+<h3 id="org6cba8cd">07RainDropEffect</h3>
+<div class="outline-text-3" id="text-org6cba8cd">
 
-<div class="figure">
+<div id="org58d1245" class="figure">
 <p><img src="./ShaderToys/rain_drop_effect.gif" alt="rain_drop_effect.gif" /><br />
 </p>
 </div>
 </div>
-<div id="outline-container-org13883ca" class="outline-4">
-<h4 id="org13883ca">模拟雨滴流动</h4>
-<div class="outline-text-4" id="text-org13883ca">
+<div id="outline-container-org64d8028" class="outline-4">
+<h4 id="org64d8028">模拟雨滴流动</h4>
+<div class="outline-text-4" id="text-org64d8028">
 <ul class="org-ul">
 <li>使用 sin(3*w)*pow(sin(w), 6)*0.45 使得雨滴在 grid 内，x方向的位置随机生成<br /></li>
 <li>使用 y=-sin(x+sin(x+sin(x)*0.5))*0.45 来模拟雨滴流动时，先快后慢的特点<br /></li>
@@ -439,50 +415,50 @@ Graphics.DrawMeshInstancedIndirect 方法的 bufferWithArgs 参数必须包含 5
 <pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">float3</span> <span style="color: #bc6ec5; font-weight: bold;">Layer</span>(<span style="color: #ce537a; font-weight: bold;">float2</span> <span style="color: #a45bad;">UV</span>, <span style="color: #ce537a; font-weight: bold;">float</span> t)
 {
     <span style="color: #ce537a; font-weight: bold;">float2</span> aspect = <span style="color: #ce537a; font-weight: bold;">float2</span>(2, 1);
-    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25226;&#23631;&#24149;&#31354;&#38388;&#21010;&#20998;&#20026;&#22810;&#20010;Grid</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#25226;&#23631;&#24149;&#31354;&#38388;&#21010;&#20998;&#20026;&#22810;&#20010;Grid</span>
     <span style="color: #ce537a; font-weight: bold;">float2</span> uv = <span style="color: #a45bad;">UV</span>*<span style="color: #7590db;">_Size</span>*aspect;
     uv.y += t * 0.25;
 
-    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">frac(uv) - 0.5 &#20351;&#24471;grid_uv=(0,0)&#20301;&#32622;&#20026;grid&#30340;&#20013;&#24515;&#28857;</span>
-    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">grid_uv &#34920;&#31034;grid&#20869;&#27599;&#20010;&#20687;&#32032;&#28857;&#30340;grid uv</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// frac(uv) - 0.5 &#20351;&#24471;grid_uv=(0,0)&#20301;&#32622;&#20026;grid&#30340;&#20013;&#24515;&#28857;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// grid_uv &#34920;&#31034;grid&#20869;&#27599;&#20010;&#20687;&#32032;&#28857;&#30340;grid uv</span>
     <span style="color: #ce537a; font-weight: bold;">float2</span> grid_uv = <span style="color: #4f97d7;">frac</span>(uv)-0.5;
     <span style="color: #ce537a; font-weight: bold;">float2</span> id = <span style="color: #4f97d7;">floor</span>(uv);
 
-    <span style="color: #ce537a; font-weight: bold;">float</span> n = N21(id); <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">0 - 1</span>
+    <span style="color: #ce537a; font-weight: bold;">float</span> n = N21(id); <span style="color: #2aa1ae; background-color: #292e34;">// 0 - 1</span>
     t += n*6.2831;
 
-    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;&#23631;&#24149;&#22312;y&#26041;&#21521;&#19978;&#21010;&#20998;&#20026;10&#31561;&#20998;&#65292;&#35753;y&#26041;&#21521;&#19978;&#30340;&#38632;&#28404;&#27969;&#21160;&#36335;&#24452;&#38169;&#24320;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#23558;&#23631;&#24149;&#22312;y&#26041;&#21521;&#19978;&#21010;&#20998;&#20026;10&#31561;&#20998;&#65292;&#35753;y&#26041;&#21521;&#19978;&#30340;&#38632;&#28404;&#27969;&#21160;&#36335;&#24452;&#38169;&#24320;</span>
     <span style="color: #ce537a; font-weight: bold;">float</span> w = <span style="color: #a45bad;">UV</span>.y * 10;
 
-    <span style="color: #ce537a; font-weight: bold;">float</span> x = (n - 0.5)*0.8; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">-0.4 - 0.4</span>
-    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#27169;&#25311;&#38632;&#28404;&#27969;&#21160;&#36807;&#31243;&#20013;x&#26041;&#21521;&#30340;&#36712;&#36857;&#21464;&#21270; &#22823;&#37096;&#20998;&#26102;&#38388;&#23621;&#20013; &#20598;&#23572;&#21521;&#24038;&#27969; &#20598;&#23572;&#21521;&#21491;&#27969;</span>
+    <span style="color: #ce537a; font-weight: bold;">float</span> x = (n - 0.5)*0.8; <span style="color: #2aa1ae; background-color: #292e34;">// -0.4 - 0.4</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#27169;&#25311;&#38632;&#28404;&#27969;&#21160;&#36807;&#31243;&#20013;x&#26041;&#21521;&#30340;&#36712;&#36857;&#21464;&#21270; &#22823;&#37096;&#20998;&#26102;&#38388;&#23621;&#20013; &#20598;&#23572;&#21521;&#24038;&#27969; &#20598;&#23572;&#21521;&#21491;&#27969;</span>
     x += (0.4-<span style="color: #4f97d7;">abs</span>(x)) * <span style="color: #4f97d7;">sin</span>(3*w)*<span style="color: #4f97d7;">pow</span>(<span style="color: #4f97d7;">sin</span>(w), 6)*0.45;
 
-    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#27169;&#25311;&#38632;&#28404;&#27969;&#21160;&#26102;&#20808;&#24555;&#21518;&#24930;&#30340;&#25928;&#26524;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#27169;&#25311;&#38632;&#28404;&#27969;&#21160;&#26102;&#20808;&#24555;&#21518;&#24930;&#30340;&#25928;&#26524;</span>
     <span style="color: #ce537a; font-weight: bold;">float</span> y = -<span style="color: #4f97d7;">sin</span>(t+<span style="color: #4f97d7;">sin</span>(t+<span style="color: #4f97d7;">sin</span>(t)*0.5))*0.45;
-    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25511;&#21046;&#38632;&#28404;&#30340;&#24418;&#29366;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#25511;&#21046;&#38632;&#28404;&#30340;&#24418;&#29366;</span>
     y -= (grid_uv.x - x)*(grid_uv.x - x);
 
-    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">(x,y)&#20026;&#24403;&#21069;&#38632;&#28404;&#30340;&#20301;&#32622; dropToGridPixelDir &#20026;&#38632;&#28404;&#25351;&#21521;grid&#20869;&#20687;&#32032;&#30340;&#26041;&#21521;&#21521;&#37327;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// (x,y)&#20026;&#24403;&#21069;&#38632;&#28404;&#30340;&#20301;&#32622; dropToGridPixelDir &#20026;&#38632;&#28404;&#25351;&#21521;grid&#20869;&#20687;&#32032;&#30340;&#26041;&#21521;&#21521;&#37327;</span>
     <span style="color: #ce537a; font-weight: bold;">float2</span> dropToGridPixelDir = (grid_uv - <span style="color: #ce537a; font-weight: bold;">float2</span>(x, y)) / aspect;
-    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#38480;&#21046;&#38632;&#28404;&#30340;&#33539;&#22260;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#38480;&#21046;&#38632;&#28404;&#30340;&#33539;&#22260;</span>
     <span style="color: #ce537a; font-weight: bold;">float</span> drop = S(0.05, 0.03, <span style="color: #4f97d7;">length</span>(dropToGridPixelDir));
 
-    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">grid_uv - float2(x, t*0.25) &#25269;&#28040;&#25481;&#19978;&#38754; uv.y+=t*0.25 &#20351;&#24471;&#23614;&#37096;&#38632;&#28404;&#19981;&#38543;&#26102;&#38388;&#31227;&#21160;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// grid_uv - float2(x, t*0.25) &#25269;&#28040;&#25481;&#19978;&#38754; uv.y+=t*0.25 &#20351;&#24471;&#23614;&#37096;&#38632;&#28404;&#19981;&#38543;&#26102;&#38388;&#31227;&#21160;</span>
     <span style="color: #ce537a; font-weight: bold;">float2</span> trailToGridPixelDir = (grid_uv - <span style="color: #ce537a; font-weight: bold;">float2</span>(x, t*0.25)) / aspect;
-    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25511;&#21046;&#23614;&#37096;&#38632;&#28404;&#25968;&#37327;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#25511;&#21046;&#23614;&#37096;&#38632;&#28404;&#25968;&#37327;</span>
     trailToGridPixelDir.y = (<span style="color: #4f97d7;">frac</span>(trailToGridPixelDir.y * 8)-0.5)/8;
-    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25511;&#21046;&#23614;&#37096;&#38632;&#28404;&#22823;&#23567;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#25511;&#21046;&#23614;&#37096;&#38632;&#28404;&#22823;&#23567;</span>
     <span style="color: #ce537a; font-weight: bold;">float</span> trail = S(0.03, 0.01, <span style="color: #4f97d7;">length</span>(trailToGridPixelDir));
 
-    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23567;&#20110; dropToGridPixelDir.y &#30340;&#22320;&#26041;&#26159;&#65292;&#38632;&#28404;&#36824;&#26410;&#32463;&#36807;&#30340;&#22320;&#26041;, &#19979;&#38754;&#20195;&#30721;&#20351;&#24471;&#23567;&#20110; dropToGridPixelDir.y &#30340;&#36712;&#36857;&#20026;&#40657;&#33394;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#23567;&#20110; dropToGridPixelDir.y &#30340;&#22320;&#26041;&#26159;&#65292;&#38632;&#28404;&#36824;&#26410;&#32463;&#36807;&#30340;&#22320;&#26041;, &#19979;&#38754;&#20195;&#30721;&#20351;&#24471;&#23567;&#20110; dropToGridPixelDir.y &#30340;&#36712;&#36857;&#20026;&#40657;&#33394;</span>
     <span style="color: #ce537a; font-weight: bold;">float</span> fogTrail = S(-0.05, 0.05, dropToGridPixelDir.y);
-    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#27169;&#25311;&#36712;&#36857;&#36880;&#28176;&#28040;&#22833;&#30340;&#25928;&#26524;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#27169;&#25311;&#36712;&#36857;&#36880;&#28176;&#28040;&#22833;&#30340;&#25928;&#26524;</span>
     fogTrail *= S(0.5, y, grid_uv.y);
-    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#27169;&#25311;&#23614;&#37096;&#38632;&#28404;&#36880;&#28176;&#28040;&#22833;&#30340;&#25928;&#26524;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#27169;&#25311;&#23614;&#37096;&#38632;&#28404;&#36880;&#28176;&#28040;&#22833;&#30340;&#25928;&#26524;</span>
     trail *= fogTrail;
 
-    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20351;&#29992; dropToGridPixelDir.x &#38480;&#21046;fogTrail&#30340;&#33539;&#22260;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#20351;&#29992; dropToGridPixelDir.x &#38480;&#21046;fogTrail&#30340;&#33539;&#22260;</span>
     fogTrail *= S(0.05, 0.04, <span style="color: #4f97d7;">abs</span>(dropToGridPixelDir.x));
 
     <span style="color: #ce537a; font-weight: bold;">float2</span> offs = drop * dropToGridPixelDir + trail * trailToGridPixelDir;
@@ -503,35 +479,35 @@ Graphics.DrawMeshInstancedIndirect 方法的 bufferWithArgs 参数必须包含 5
 </ul>
 </div>
 </div>
-<div id="outline-container-org81afb2b" class="outline-4">
-<h4 id="org81afb2b">模拟雨滴折射</h4>
-<div class="outline-text-4" id="text-org81afb2b">
+<div id="outline-container-orgdad2910" class="outline-4">
+<h4 id="orgdad2910">模拟雨滴折射</h4>
+<div class="outline-text-4" id="text-orgdad2910">
 <div class="org-src-container">
-<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">drops.xy &#23384;&#20648;&#30340;&#26159; drop&#21040;gridPixel&#30340;&#26041;&#21521;</span>
+<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// drops.xy &#23384;&#20648;&#30340;&#26159; drop&#21040;gridPixel&#30340;&#26041;&#21521;</span>
 <span style="color: #ce537a; font-weight: bold;">float3</span> drops = <span style="color: #ce537a; font-weight: bold;">float3</span>(drop * dropToGridPixelDir + trail * trailToGridPixelDir, fogTrail);
 
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">grabUV&#27839;&#30528;dropToGridPixelDir&#26041;&#21521;&#20559;&#31227;&#36827;&#34892;&#37319;&#26679;&#65292;&#26469;&#27169;&#25311;&#25240;&#23556;&#29616;&#35937;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// grabUV&#27839;&#30528;dropToGridPixelDir&#26041;&#21521;&#20559;&#31227;&#36827;&#34892;&#37319;&#26679;&#65292;&#26469;&#27169;&#25311;&#25240;&#23556;&#29616;&#35937;</span>
 grabUV += drops.xy * <span style="color: #7590db;">_Distortion</span> * fade;
 col = <span style="color: #4f97d7;">tex2D</span>(<span style="color: #7590db;">_GrabTexture</span>, grabUV);
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-orgabbccbd" class="outline-4">
-<h4 id="orgabbccbd">使用 GrabPass 实现玻璃效果</h4>
-<div class="outline-text-4" id="text-orgabbccbd">
+<div id="outline-container-org9e3ceb2" class="outline-4">
+<h4 id="org9e3ceb2">使用 GrabPass 实现玻璃效果</h4>
+<div class="outline-text-4" id="text-org9e3ceb2">
 </div>
-<div id="outline-container-org43de41a" class="outline-5">
-<h5 id="org43de41a">GrabPass 使用</h5>
-<div class="outline-text-5" id="text-org43de41a">
+<div id="outline-container-orgef14d83" class="outline-5">
+<h5 id="orgef14d83">GrabPass 使用</h5>
+<div class="outline-text-5" id="text-orgef14d83">
 <ul class="org-ul">
 <li><a href="https://blog.csdn.net/weixin_45979158/article/details/103817139">https://blog.csdn.net/weixin_45979158/article/details/103817139</a><br /></li>
 </ul>
 </div>
 </div>
-<div id="outline-container-org0f0ddbc" class="outline-5">
-<h5 id="org0f0ddbc">动态开启关闭 GrabPass</h5>
-<div class="outline-text-5" id="text-org0f0ddbc">
+<div id="outline-container-orge153f1d" class="outline-5">
+<h5 id="orge153f1d">动态开启关闭 GrabPass</h5>
+<div class="outline-text-5" id="text-orge153f1d">
 <div class="org-src-container">
 <pre class="src src-shader"><span style="color: #4f97d7; font-weight: bold;">SubShader</span>
 {
@@ -546,7 +522,7 @@ col = <span style="color: #4f97d7;">tex2D</span>(<span style="color: #7590db;">_
       <span style="color: #4f97d7; font-weight: bold;">Pass</span>
       {
           <span style="color: #4f97d7; font-weight: bold;">Tags</span> { <span style="color: #2d9574;">"LightMode"</span> = <span style="color: #2d9574;">"ForwardBase"</span> }
-          <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">......</span>
+          <span style="color: #2aa1ae; background-color: #292e34;">// ......</span>
       }
 }
 </pre>
@@ -564,9 +540,9 @@ mat.<span style="color: #bc6ec5; font-weight: bold;">SetShaderPassEnabled</span>
 </div>
 </div>
 </div>
-<div id="outline-container-orga0b410e" class="outline-4">
-<h4 id="orga0b410e">参考资料</h4>
-<div class="outline-text-4" id="text-orga0b410e">
+<div id="outline-container-org409f4ca" class="outline-4">
+<h4 id="org409f4ca">参考资料</h4>
+<div class="outline-text-4" id="text-org409f4ca">
 <ul class="org-ul">
 <li>Part1 <a href="https://www.youtube.com/watch?v=EBrAdahFtuo&amp;t=6s">https://www.youtube.com/watch?v=EBrAdahFtuo&amp;t=6s</a><br /></li>
 <li>Part2 <a href="https://www.youtube.com/watch?v=0flY11lVCwY">https://www.youtube.com/watch?v=0flY11lVCwY</a><br /></li>
@@ -574,28 +550,28 @@ mat.<span style="color: #bc6ec5; font-weight: bold;">SetShaderPassEnabled</span>
 </div>
 </div>
 </div>
-<div id="outline-container-org30a9eb5" class="outline-3">
-<h3 id="org30a9eb5">08MagnifyingGlassEffect</h3>
-<div class="outline-text-3" id="text-org30a9eb5">
+<div id="outline-container-org87d1394" class="outline-3">
+<h3 id="org87d1394">08MagnifyingGlassEffect</h3>
+<div class="outline-text-3" id="text-org87d1394">
 
-<div class="figure">
+<div id="org6f76174" class="figure">
 <p><img src="./ShaderToys/MagnifyingGlassEffect.gif" alt="MagnifyingGlassEffect.gif" /><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgf25be14" class="outline-3">
-<h3 id="orgf25be14">09Skybox</h3>
+<div id="outline-container-orgd03d1e0" class="outline-3">
+<h3 id="orgd03d1e0">09Skybox</h3>
 </div>
 </div>
 
-<div id="outline-container-org929b6bd" class="outline-2">
-<h2 id="org929b6bd">TODO</h2>
-<div class="outline-text-2" id="text-org929b6bd">
+<div id="outline-container-org305fc59" class="outline-2">
+<h2 id="org305fc59">TODO</h2>
+<div class="outline-text-2" id="text-org305fc59">
 </div>
-<div id="outline-container-orge901f67" class="outline-3">
-<h3 id="orge901f67">Rain On Camera</h3>
-<div class="outline-text-3" id="text-orge901f67">
+<div id="outline-container-org128164e" class="outline-3">
+<h3 id="org128164e">Rain On Camera</h3>
+<div class="outline-text-3" id="text-org128164e">
 <ul class="org-ul">
 <li>Unity RainyWindow <a href="https://zhuanlan.zhihu.com/p/141902090">https://zhuanlan.zhihu.com/p/141902090</a><br /></li>
 <li>Unity Shader 之萧萧暗雨打窗声 <a href="https://zhuanlan.zhihu.com/p/77704760">https://zhuanlan.zhihu.com/p/77704760</a><br /></li>
@@ -604,9 +580,9 @@ mat.<span style="color: #bc6ec5; font-weight: bold;">SetShaderPassEnabled</span>
 </ul>
 </div>
 </div>
-<div id="outline-container-org2161e49" class="outline-3">
-<h3 id="org2161e49">keijiro</h3>
-<div class="outline-text-3" id="text-org2161e49">
+<div id="outline-container-orge9189dc" class="outline-3">
+<h3 id="orge9189dc">keijiro</h3>
+<div class="outline-text-3" id="text-orge9189dc">
 <p>
 <a href="https://github.com/keijiro">https://github.com/keijiro</a><br />
 </p>
@@ -620,26 +596,26 @@ mat.<span style="color: #bc6ec5; font-weight: bold;">SetShaderPassEnabled</span>
 </ul>
 </div>
 </div>
-<div id="outline-container-org8877168" class="outline-3">
-<h3 id="org8877168">Ocean</h3>
-<div class="outline-text-3" id="text-org8877168">
+<div id="outline-container-org4954772" class="outline-3">
+<h3 id="org4954772">Ocean</h3>
+<div class="outline-text-3" id="text-org4954772">
 <ul class="org-ul">
 <li><a href="https://github.com/eliasts/Ocean_Community_Next_Gen">https://github.com/eliasts/Ocean_Community_Next_Gen</a><br /></li>
 </ul>
 </div>
 </div>
-<div id="outline-container-org4627dd2" class="outline-3">
-<h3 id="org4627dd2">Skybox</h3>
-<div class="outline-text-3" id="text-org4627dd2">
+<div id="outline-container-orga3d2d00" class="outline-3">
+<h3 id="orga3d2d00">Skybox</h3>
+<div class="outline-text-3" id="text-orga3d2d00">
 <ul class="org-ul">
 <li><a href="https://llapuras.top/%E6%97%A5%E5%A4%9C%E5%BE%AA%E7%8E%AF%E5%A4%A9%E7%A9%BA%E7%90%83/">https://llapuras.top/%E6%97%A5%E5%A4%9C%E5%BE%AA%E7%8E%AF%E5%A4%A9%E7%A9%BA%E7%90%83/</a><br /></li>
 <li><a href="https://medium.com/@jannik_boysen/procedural-skybox-shader-137f6b0cb77c">https://medium.com/@jannik_boysen/procedural-skybox-shader-137f6b0cb77c</a><br /></li>
 </ul>
 </div>
 </div>
-<div id="outline-container-org8bf667b" class="outline-3">
-<h3 id="org8bf667b">Gem</h3>
-<div class="outline-text-3" id="text-org8bf667b">
+<div id="outline-container-orgc55bab0" class="outline-3">
+<h3 id="orgc55bab0">Gem</h3>
+<div class="outline-text-3" id="text-orgc55bab0">
 <ul class="org-ul">
 <li><a href="http://sorumi.xyz/posts/unity-ray-tracing-gem-shader/">http://sorumi.xyz/posts/unity-ray-tracing-gem-shader/</a><br /></li>
 </ul>

@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-03-08 周一 17:20 -->
+<!-- 2021-05-24 周一 17:58 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Stupid Spherical Harmonics Tricks</title>
@@ -15,50 +15,26 @@
            <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
            <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
 <script type="text/javascript">
-/*
-@licstart  The following is the entire license notice for the
-JavaScript code in this tag.
-
-Copyright (C) 2012-2020 Free Software Foundation, Inc.
-
-The JavaScript code in this tag is free software: you can
-redistribute it and/or modify it under the terms of the GNU
-General Public License (GNU GPL) as published by the Free Software
-Foundation, either version 3 of the License, or (at your option)
-any later version.  The code is distributed WITHOUT ANY WARRANTY;
-without even the implied warranty of MERCHANTABILITY or FITNESS
-FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
-
-As additional permission under GNU GPL version 3 section 7, you
-may distribute non-source (e.g., minimized or compacted) forms of
-that code without the copy of the GNU GPL normally required by
-section 4, provided you include this license notice and a URL
-through which recipients can access the Corresponding Source.
-
-
-@licend  The above is the entire license notice
-for the JavaScript code in this tag.
-*/
+// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
 <!--/*--><![CDATA[/*><!--*/
- function CodeHighlightOn(elem, id)
- {
-   var target = document.getElementById(id);
-   if(null != target) {
-     elem.cacheClassElem = elem.className;
-     elem.cacheClassTarget = target.className;
-     target.className = "code-highlighted";
-     elem.className   = "code-highlighted";
-   }
- }
- function CodeHighlightOff(elem, id)
- {
-   var target = document.getElementById(id);
-   if(elem.cacheClassElem)
-     elem.className = elem.cacheClassElem;
-   if(elem.cacheClassTarget)
-     target.className = elem.cacheClassTarget;
- }
-/*]]>*///-->
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.add("code-highlighted");
+         target.classList.add("code-highlighted");
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.remove("code-highlighted");
+         target.classList.remove("code-highlighted");
+       }
+     }
+    /*]]>*///-->
+// @license-end
 </script>
 <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
@@ -94,110 +70,110 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orge5acf3b">Stupid Spherical Harmonics Tricks</a>
+<li><a href="#orgb4bebb4">Stupid Spherical Harmonics Tricks</a>
 <ul>
-<li><a href="#orgb7853bd">Introduction</a></li>
-<li><a href="#orgf570504">Background</a>
+<li><a href="#org8097f13">Introduction</a></li>
+<li><a href="#org6e6f0db">Background</a>
 <ul>
-<li><a href="#org958b6f3">Define</a></li>
-<li><a href="#org3fb0717">Projection and Reconstruction</a></li>
-<li><a href="#orgd825ea8">Properties</a>
+<li><a href="#orge13cc4c">Define</a></li>
+<li><a href="#org7608ac3">Projection and Reconstruction</a></li>
+<li><a href="#org6f951d5">Properties</a>
 <ul>
-<li><a href="#orgae23088">Basic Properties</a>
+<li><a href="#org3af894d">Basic Properties</a>
 <ul>
-<li><a href="#org84d98f8">旋转不变性</a></li>
-<li><a href="#orgf2945c5">正交完备性</a></li>
+<li><a href="#orgad34c1c">旋转不变性</a></li>
+<li><a href="#org61be600">正交完备性</a></li>
 </ul>
 </li>
-<li><a href="#org38245ee">Convolution</a></li>
-<li><a href="#orgdd3fd17">Rotation</a>
+<li><a href="#org14a3188">Convolution</a></li>
+<li><a href="#org173a2b7">Rotation</a>
 <ul>
-<li><a href="#orgb13b400">Rotation 解释 1</a></li>
-<li><a href="#org9ce3a4c">Rotation 解释 2 (来自 Spherical Harmonic Lighting 文档)</a></li>
+<li><a href="#org0820b0d">Rotation 解释 1</a></li>
+<li><a href="#org8be6b73">Rotation 解释 2 (来自 Spherical Harmonic Lighting 文档)</a></li>
 </ul>
 </li>
-<li><a href="#org16f87df">Zonal Harmonics</a></li>
-<li><a href="#org66620da">SH Products</a>
+<li><a href="#org4f9ccfb">Zonal Harmonics</a></li>
+<li><a href="#orgc92d20c">SH Products</a>
 <ul>
-<li><a href="#org854f85d">SH Products 解释 1 (来自 StupidSphericalHarmonics 文档)</a></li>
-<li><a href="#org2b02cce">SH Products 解释 2 (来自 Spherical Harmonic Lighting 文档)</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#org0043ade">Irradiance Environment Maps</a>
-<ul>
-<li><a href="#orgc469582">Irradiance Env Map 原理</a>
-<ul>
-<li><a href="#org77c68da">解释 1</a></li>
-<li><a href="#orga7d77f0">解释 2 (An Efficient Representation for Irradiance Environment Maps)</a></li>
-</ul>
-</li>
-<li><a href="#orgdfe6a05">SH 近似分析</a></li>
-</ul>
-</li>
-<li><a href="#orgfe37b6a">Lighting Models</a>
-<ul>
-<li><a href="#org74fd920">Projection from Cube Maps</a>
-<ul>
-<li><a href="#orgf9b5e97">采样 CubeMap 的原理</a></li>
-</ul>
-</li>
-<li><a href="#orgb545667">Analytic Models</a>
-<ul>
-<li><a href="#orgbf2c8e9">Normalization</a></li>
-</ul>
-</li>
-<li><a href="#orge2c2659">Extracting Conventional Lights from SH</a>
-<ul>
-<li><a href="#orgb28c6f1">解释 1</a></li>
-<li><a href="#orge80a249">解释 2 (Extracting dominant light from Spherical Harmonics)</a></li>
-</ul>
-</li>
-<li><a href="#orgfe7ed43"><span class="todo TODO">TODO</span> Extracting Multiple Lights</a></li>
-</ul>
-</li>
-<li><a href="#org9b706c8">Ringing</a>
-<ul>
-<li><a href="#org19040df">Windowing</a></li>
-<li><a href="#orgfa969fb">Minimizing a functional</a></li>
-<li><a href="#org22f735c">Content Sensitive Windowing</a></li>
-</ul>
-</li>
-<li><a href="#org4024175">SH Products</a>
-<ul>
-<li><a href="#org55c190c">Products with a Constant Function</a></li>
-<li><a href="#org5398be8">Products with varying Orders</a></li>
-<li><a href="#org921187e">Product with Zonal Harmonics</a></li>
-<li><a href="#org2d40b1c">Product with Analytic Function</a></li>
+<li><a href="#org8be076d">SH Products 解释 1 (来自 StupidSphericalHarmonics 文档)</a></li>
+<li><a href="#orgbc171ec">SH Products 解释 2 (来自 Spherical Harmonic Lighting 文档)</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#orgd267939">Misc</a></li>
-<li><a href="#org9629b90">参考资料</a></li>
+</ul>
+</li>
+<li><a href="#orgea60a32">Irradiance Environment Maps</a>
+<ul>
+<li><a href="#org22d4109">Irradiance Env Map 原理</a>
+<ul>
+<li><a href="#orgd2003aa">解释 1</a></li>
+<li><a href="#orgf8ba8dc">解释 2 (An Efficient Representation for Irradiance Environment Maps)</a></li>
+</ul>
+</li>
+<li><a href="#orgc2ab084">SH 近似分析</a></li>
+</ul>
+</li>
+<li><a href="#org5ba7c27">Lighting Models</a>
+<ul>
+<li><a href="#orgcf883d1">Projection from Cube Maps</a>
+<ul>
+<li><a href="#orgcdee6b9">采样 CubeMap 的原理</a></li>
+</ul>
+</li>
+<li><a href="#org8cdb85d">Analytic Models</a>
+<ul>
+<li><a href="#org47e1b4d">Normalization</a></li>
+</ul>
+</li>
+<li><a href="#org10100af">Extracting Conventional Lights from SH</a>
+<ul>
+<li><a href="#org0bab324">解释 1</a></li>
+<li><a href="#org3bc1395">解释 2 (Extracting dominant light from Spherical Harmonics)</a></li>
+</ul>
+</li>
+<li><a href="#orgb12ec0f"><span class="todo TODO">TODO</span> Extracting Multiple Lights</a></li>
+</ul>
+</li>
+<li><a href="#org4a9723b">Ringing</a>
+<ul>
+<li><a href="#orgaa85938">Windowing</a></li>
+<li><a href="#orgeaf90d2">Minimizing a functional</a></li>
+<li><a href="#org0281f06">Content Sensitive Windowing</a></li>
+</ul>
+</li>
+<li><a href="#org445c46c">SH Products</a>
+<ul>
+<li><a href="#orgf9aa6da">Products with a Constant Function</a></li>
+<li><a href="#org153cca9">Products with varying Orders</a></li>
+<li><a href="#org698a714">Product with Zonal Harmonics</a></li>
+<li><a href="#org9ff3910">Product with Analytic Function</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgb608b71">Misc</a></li>
+<li><a href="#orga744612">参考资料</a></li>
 </ul>
 </div>
 </div>
 <p>
 Stupid Spherical Harmonics Tricks note.<br />
 </p>
-<div class="HTML">
+<div class="HTML" id="org2f2655e">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
 
 </div>
 
-<div id="outline-container-orge5acf3b" class="outline-2">
-<h2 id="orge5acf3b">Stupid Spherical Harmonics Tricks</h2>
-<div class="outline-text-2" id="text-orge5acf3b">
+<div id="outline-container-orgb4bebb4" class="outline-2">
+<h2 id="orgb4bebb4">Stupid Spherical Harmonics Tricks</h2>
+<div class="outline-text-2" id="text-orgb4bebb4">
 </div>
-<div id="outline-container-orgb7853bd" class="outline-3">
-<h3 id="orgb7853bd">Introduction</h3>
-<div class="outline-text-3" id="text-orgb7853bd">
+<div id="outline-container-org8097f13" class="outline-3">
+<h3 id="org8097f13">Introduction</h3>
+<div class="outline-text-3" id="text-org8097f13">
 <p>
 Harmonic 函数是 Laplace 方程的解，其广泛应用于多个领域。Spherical Harmonics 是在球坐标系下求解 Laplace 方程时，进行变量分解后（分解为角度部分和半径部分），角度部分的解。SH 已经被应用于物理学中，求解一些潜在的问题，例如，热学方程（模拟温度随时间的变化），以及引力场和电场。其也被应用于量子化学和量子物理学，用于模拟原子中的电子结构以及量子角动量。图形学中，其被应用于模拟散射现象。在计算机图形学中，其也被广泛使用，早期用于模拟体积散射效果，无全局阴影的环境反射，非漫反射的离线光照传输模拟，BRDF 表示，模拟光源的发射。近期的一些例子包括大气散射和计算机视觉。<br />
 </p>
@@ -207,13 +183,13 @@ Harmonic 函数是 Laplace 方程的解，其广泛应用于多个领域。Spher
 </p>
 </div>
 </div>
-<div id="outline-container-orgf570504" class="outline-3">
-<h3 id="orgf570504">Background</h3>
-<div class="outline-text-3" id="text-orgf570504">
+<div id="outline-container-org6e6f0db" class="outline-3">
+<h3 id="org6e6f0db">Background</h3>
+<div class="outline-text-3" id="text-org6e6f0db">
 </div>
-<div id="outline-container-org958b6f3" class="outline-4">
-<h4 id="org958b6f3">Define</h4>
-<div class="outline-text-4" id="text-org958b6f3">
+<div id="outline-container-orge13cc4c" class="outline-4">
+<h4 id="orge13cc4c">Define</h4>
+<div class="outline-text-4" id="text-orge13cc4c">
 <p>
 Spherical Harmonics 定义了一组在球 S 上的正交基函数，且这组基函数是标准正交基函数。<br />
 </p>
@@ -236,9 +212,9 @@ Spherical Harmonics 定义了一组在球 S 上的正交基函数，且这组基
 </p>
 </div>
 </div>
-<div id="outline-container-org3fb0717" class="outline-4">
-<h4 id="org3fb0717">Projection and Reconstruction</h4>
-<div class="outline-text-4" id="text-org3fb0717">
+<div id="outline-container-org7608ac3" class="outline-4">
+<h4 id="org7608ac3">Projection and Reconstruction</h4>
+<div class="outline-text-4" id="text-org7608ac3">
 <p>
 因为 SH 基函数为正交函数，定义在球 S 上的标量函数 f 最小二乘法投影到球谐基函数上就可以得到 f 对应的球谐系数，利用这些系数就可以重建 f 函数。<br />
 随着基带数量增多，重建精确性会变高。本篇文章专注于 f 函数的低频近似，对于更高频的表示，其他类型的基函数可能是更好的选择。<br />
@@ -247,17 +223,17 @@ Spherical Harmonics 定义了一组在球 S 上的正交基函数，且这组基
 </p>
 </div>
 </div>
-<div id="outline-container-orgd825ea8" class="outline-4">
-<h4 id="orgd825ea8">Properties</h4>
-<div class="outline-text-4" id="text-orgd825ea8">
+<div id="outline-container-org6f951d5" class="outline-4">
+<h4 id="org6f951d5">Properties</h4>
+<div class="outline-text-4" id="text-org6f951d5">
 </div>
-<div id="outline-container-orgae23088" class="outline-5">
-<h5 id="orgae23088">Basic Properties</h5>
-<div class="outline-text-5" id="text-orgae23088">
+<div id="outline-container-org3af894d" class="outline-5">
+<h5 id="org3af894d">Basic Properties</h5>
+<div class="outline-text-5" id="text-org3af894d">
 </div>
-<div id="outline-container-org84d98f8" class="outline-6">
-<h6 id="org84d98f8">旋转不变性</h6>
-<div class="outline-text-6" id="text-org84d98f8">
+<div id="outline-container-orgad34c1c" class="outline-6">
+<h6 id="orgad34c1c">旋转不变性</h6>
+<div class="outline-text-6" id="text-orgad34c1c">
 <p>
 给定一个函数 g(s) = f(Q(s)) , 其表示对 s 进行 Q 表示的旋转操作后，求旋转后 s 对应的 f 函数的值。旋转不变性，表示只需要对 f(s)对应的基函数系数 fi 进行变换得到新的系数 fi'，就能保证使用新的系数 fi'，还原出函数 g(s)。<br />
 </p>
@@ -275,9 +251,9 @@ Spherical Harmonics 定义了一组在球 S 上的正交基函数，且这组基
 </div>
 </div>
 
-<div id="outline-container-orgf2945c5" class="outline-6">
-<h6 id="orgf2945c5">正交完备性</h6>
-<div class="outline-text-6" id="text-orgf2945c5">
+<div id="outline-container-org61be600" class="outline-6">
+<h6 id="org61be600">正交完备性</h6>
+<div class="outline-text-6" id="text-org61be600">
 <p>
 由于 SH 基函数的标准正交性，任意两个 SH 函数积的积分只需要对这两个函数的系数向量进行点积就可以了。<br />
 <img src="./StupidSphericalHarmonics/sh_func_product_integrate.jpg" alt="sh_func_product_integrate.jpg" /><br />
@@ -290,9 +266,9 @@ Spherical Harmonics 定义了一组在球 S 上的正交基函数，且这组基
 </div>
 </div>
 </div>
-<div id="outline-container-org38245ee" class="outline-5">
-<h5 id="org38245ee">Convolution</h5>
-<div class="outline-text-5" id="text-org38245ee">
+<div id="outline-container-org14a3188" class="outline-5">
+<h5 id="org14a3188">Convolution</h5>
+<div class="outline-text-5" id="text-org14a3188">
 <p>
 给定圆对称的核函数 h(z)，可以按照下列方式生成 h 和 f 的卷积函数。h必须是圆对称的，这样就可以保证卷积函数依然可以在球 S 上表示，而不是在旋转组 SO(3)上。<br />
 <img src="./StupidSphericalHarmonics/sh-convolution.jpg" alt="sh-convolution.jpg" /><br />
@@ -300,21 +276,21 @@ Spherical Harmonics 定义了一组在球 S 上的正交基函数，且这组基
 </p>
 </div>
 </div>
-<div id="outline-container-orgdd3fd17" class="outline-5">
-<h5 id="orgdd3fd17">Rotation</h5>
-<div class="outline-text-5" id="text-orgdd3fd17">
+<div id="outline-container-org173a2b7" class="outline-5">
+<h5 id="org173a2b7">Rotation</h5>
+<div class="outline-text-5" id="text-org173a2b7">
 </div>
-<div id="outline-container-orgb13b400" class="outline-6">
-<h6 id="orgb13b400">Rotation 解释 1</h6>
-<div class="outline-text-6" id="text-orgb13b400">
+<div id="outline-container-org0820b0d" class="outline-6">
+<h6 id="org0820b0d">Rotation 解释 1</h6>
+<div class="outline-text-6" id="text-org0820b0d">
 <p>
 就像前面提到的一样，SH 对于旋转是封闭的。SH 旋转矩阵成块状结构，每个基的旋转是旋转矩阵中独立的块，独立块为（2l+1)*(2l+1) 大小的子矩阵。有很多种方式用于求解这些旋转矩阵，对于低阶情况（2阶及 2 阶一下）求解非常简单，对于高阶情况，将旋转矩阵分解为 zyz 欧拉角会更容易一些。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org9ce3a4c" class="outline-6">
-<h6 id="org9ce3a4c">Rotation 解释 2 (来自 Spherical Harmonic Lighting 文档)</h6>
-<div class="outline-text-6" id="text-org9ce3a4c">
+<div id="outline-container-org8be6b73" class="outline-6">
+<h6 id="org8be6b73">Rotation 解释 2 (来自 Spherical Harmonic Lighting 文档)</h6>
+<div class="outline-text-6" id="text-org8be6b73">
 <p>
 由于 SH 基函数为一组标准正交函数，因此不同基带的 SH 投影系数在线性变换操作中不会相交。也就是说，我们可以使用旋转矩阵旋转一个 SH 系数向量为另一个 SH 系数向量，旋转矩阵有如下形式：<br />
 <img src="./StupidSphericalHarmonics/sh-roatation-matrix.jpg" alt="sh-roatation-matrix.jpg" /><br />
@@ -335,16 +311,16 @@ Spherical Harmonics 定义了一组在球 S 上的正交基函数，且这组基
 </p>
 
 
-<div class="figure">
+<div id="org0d3a2e8" class="figure">
 <p><img src="./StupidSphericalHarmonics/sh_rotation-matrix.jpg" alt="sh_rotation-matrix.jpg" /><br />
 </p>
 </div>
 </div>
 </div>
 </div>
-<div id="outline-container-org16f87df" class="outline-5">
-<h5 id="org16f87df">Zonal Harmonics</h5>
-<div class="outline-text-5" id="text-org16f87df">
+<div id="outline-container-org4f9ccfb" class="outline-5">
+<h5 id="org4f9ccfb">Zonal Harmonics</h5>
+<div class="outline-text-5" id="text-org4f9ccfb">
 <p>
 函数的 SH 投影绕轴具有旋转对称性时被称为 Zonal Harmonics。如果该轴为 Z 轴，则该函数的零值将形成恒定纬度的线，并且函数只依赖于𝜃。函数的基函数系数在每个基带上只有一个不为 0，此时 n 阶的函数就可以用 n 个系数来代替 n^2 个系数。<br />
 ZH 已经被用于近似 transfer，其是散射理论中表示 phase 函数的通用方法。在本文中，广泛使用 ZH 模拟光源。旋转 ZH 比旋转 SH 更加简单，给定函数的 ZH 系数 \(z_l\) , 通过下面公式可将其旋转到新的方向 d：<br />
@@ -353,13 +329,13 @@ ZH 已经被用于近似 transfer，其是散射理论中表示 phase 函数的�
 </div>
 </div>
 
-<div id="outline-container-org66620da" class="outline-5">
-<h5 id="org66620da">SH Products</h5>
-<div class="outline-text-5" id="text-org66620da">
+<div id="outline-container-orgc92d20c" class="outline-5">
+<h5 id="orgc92d20c">SH Products</h5>
+<div class="outline-text-5" id="text-orgc92d20c">
 </div>
-<div id="outline-container-org854f85d" class="outline-6">
-<h6 id="org854f85d">SH Products 解释 1 (来自 StupidSphericalHarmonics 文档)</h6>
-<div class="outline-text-6" id="text-org854f85d">
+<div id="outline-container-org8be076d" class="outline-6">
+<h6 id="org8be076d">SH Products 解释 1 (来自 StupidSphericalHarmonics 文档)</h6>
+<div class="outline-text-6" id="text-org8be076d">
 <p>
 使用 n 阶球谐表示两个函数 f 和 g，这两个函数的乘积投影到 SH 基函数上得到对应基函数的系数如下：<br />
 <img src="./StupidSphericalHarmonics/sh-products.jpg" alt="sh-products.jpg" /><br />
@@ -370,15 +346,15 @@ ZH 已经被用于近似 transfer，其是散射理论中表示 phase 函数的�
 </div>
 </div>
 
-<div id="outline-container-org2b02cce" class="outline-6">
-<h6 id="org2b02cce">SH Products 解释 2 (来自 Spherical Harmonic Lighting 文档)</h6>
-<div class="outline-text-6" id="text-org2b02cce">
+<div id="outline-container-orgbc171ec" class="outline-6">
+<h6 id="orgbc171ec">SH Products 解释 2 (来自 Spherical Harmonic Lighting 文档)</h6>
+<div class="outline-text-6" id="text-orgbc171ec">
 <p>
 已知 SH 光源 L'(s), 物体表面 SH 遮挡项 T'(s), 求：考虑了遮挡项的 SH 光源 Q'(s)，即，我们需要求 L'(s)*T'(s) 投影到 SH 的系数。我们可以构造一个线性变换，其可以将 L'(s)的 SH 投影系数直接变换为 Q'(s)的 SH 投影系数，该变换适用于任意的 L'(s)。<br />
 </p>
 
 
-<div class="figure">
+<div id="orgdddf2f5" class="figure">
 <p><img src="./StupidSphericalHarmonics/sh-products-Matrix.jpg" alt="sh-products-Matrix.jpg" /><br />
 </p>
 </div>
@@ -392,8 +368,8 @@ ZH 已经被用于近似 transfer，其是散射理论中表示 phase 函数的�
 </ol>
 </div>
 <ul class="org-ul">
-<li><a id="orgb97ddb4"></a>参考资料<br />
-<div class="outline-text-7" id="text-orgb97ddb4">
+<li><a id="org81624ac"></a>参考资料<br />
+<div class="outline-text-7" id="text-org81624ac">
 <ul class="org-ul">
 <li>Spherical Harmonic Lighting <a href="http://silviojemma.com/public/papers/lighting/spherical-harmonic-lighting.pdf">http://silviojemma.com/public/papers/lighting/spherical-harmonic-lighting.pdf</a><br /></li>
 <li><a href="http://www.patapom.com/blog/SHPortal/">http://www.patapom.com/blog/SHPortal/</a><br /></li>
@@ -405,19 +381,19 @@ ZH 已经被用于近似 transfer，其是散射理论中表示 phase 函数的�
 </div>
 </div>
 </div>
-<div id="outline-container-org0043ade" class="outline-3">
-<h3 id="org0043ade">Irradiance Environment Maps</h3>
-<div class="outline-text-3" id="text-org0043ade">
+<div id="outline-container-orgea60a32" class="outline-3">
+<h3 id="orgea60a32">Irradiance Environment Maps</h3>
+<div class="outline-text-3" id="text-orgea60a32">
 </div>
-<div id="outline-container-orgc469582" class="outline-4">
-<h4 id="orgc469582">Irradiance Env Map 原理</h4>
-<div class="outline-text-4" id="text-orgc469582">
+<div id="outline-container-org22d4109" class="outline-4">
+<h4 id="org22d4109">Irradiance Env Map 原理</h4>
+<div class="outline-text-4" id="text-org22d4109">
 </div>
-<div id="outline-container-org77c68da" class="outline-5">
-<h5 id="org77c68da">解释 1</h5>
-<div class="outline-text-5" id="text-org77c68da">
+<div id="outline-container-orgd2003aa" class="outline-5">
+<h5 id="orgd2003aa">解释 1</h5>
+<div class="outline-text-5" id="text-orgd2003aa">
 
-<div class="figure">
+<div id="org837b206" class="figure">
 <p><img src="./StupidSphericalHarmonics/irradiance_env_map.jpg" alt="irradiance_env_map.jpg" /><br />
 </p>
 </div>
@@ -432,11 +408,11 @@ ZH 已经被用于近似 transfer，其是散射理论中表示 phase 函数的�
 </p>
 </div>
 </div>
-<div id="outline-container-orga7d77f0" class="outline-5">
-<h5 id="orga7d77f0">解释 2 (An Efficient Representation for Irradiance Environment Maps)</h5>
-<div class="outline-text-5" id="text-orga7d77f0">
+<div id="outline-container-orgf8ba8dc" class="outline-5">
+<h5 id="orgf8ba8dc">解释 2 (An Efficient Representation for Irradiance Environment Maps)</h5>
+<div class="outline-text-5" id="text-orgf8ba8dc">
 
-<div class="figure">
+<div id="org1d0f39b" class="figure">
 <p><img src="./StupidSphericalHarmonics/irradiance_env_map_to_sh.jpg" alt="irradiance_env_map_to_sh.jpg" /><br />
 </p>
 </div>
@@ -444,11 +420,11 @@ ZH 已经被用于近似 transfer，其是散射理论中表示 phase 函数的�
 </div>
 </div>
 
-<div id="outline-container-orgdfe6a05" class="outline-4">
-<h4 id="orgdfe6a05">SH 近似分析</h4>
-<div class="outline-text-4" id="text-orgdfe6a05">
+<div id="outline-container-orgc2ab084" class="outline-4">
+<h4 id="orgc2ab084">SH 近似分析</h4>
+<div class="outline-text-4" id="text-orgc2ab084">
 
-<div class="figure">
+<div id="org2482224" class="figure">
 <p><img src="./StupidSphericalHarmonics/sh-approximation-clamped-cosine.jpg" alt="sh-approximation-clamped-cosine.jpg" /><br />
 </p>
 </div>
@@ -460,18 +436,18 @@ ZH 已经被用于近似 transfer，其是散射理论中表示 phase 函数的�
 </div>
 </div>
 </div>
-<div id="outline-container-orgfe37b6a" class="outline-3">
-<h3 id="orgfe37b6a">Lighting Models</h3>
-<div class="outline-text-3" id="text-orgfe37b6a">
+<div id="outline-container-org5ba7c27" class="outline-3">
+<h3 id="org5ba7c27">Lighting Models</h3>
+<div class="outline-text-3" id="text-org5ba7c27">
 <p>
 在 SH 中表示 lighting，有很多种方式。最简单的方式就是将 cube map 上存储的 lighting 投影到 SH 上，但是，也有一些解析模型，求解不昂贵，将其显示给美术人员(artists)会很有用。<br />
 </p>
 </div>
-<div id="outline-container-org74fd920" class="outline-4">
-<h4 id="org74fd920">Projection from Cube Maps</h4>
-<div class="outline-text-4" id="text-org74fd920">
+<div id="outline-container-orgcf883d1" class="outline-4">
+<h4 id="orgcf883d1">Projection from Cube Maps</h4>
+<div class="outline-text-4" id="text-orgcf883d1">
 <div class="org-src-container">
-<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21033;&#29992;&#33945;&#29305;&#21345;&#27931;&#20272;&#35745;&#37327;&#35745;&#31639; l&#21644;&#29699;&#35856;&#31215;&#20989;&#25968;&#30340;&#31215;&#20998;&#65292;&#24471;&#21040;l&#23545;&#24212;&#30340;&#29699;&#35856;&#21442;&#25968;</span>
+<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// &#21033;&#29992;&#33945;&#29305;&#21345;&#27931;&#20272;&#35745;&#37327;&#35745;&#31639; l&#21644;&#29699;&#35856;&#31215;&#20989;&#25968;&#30340;&#31215;&#20998;&#65292;&#24471;&#21040;l&#23545;&#24212;&#30340;&#29699;&#35856;&#21442;&#25968;</span>
   <span style="color: #ce537a; font-weight: bold;">float</span> f[],s[];
   <span style="color: #ce537a; font-weight: bold;">float</span> fWtSum=0;
   Foreach(cube map face)
@@ -481,11 +457,11 @@ ZH 已经被用于近似 transfer，其是散射理论中表示 phase 函数的�
           <span style="color: #ce537a; font-weight: bold;">float</span> fTmp = 1 + u^2 + v^2;
           <span style="color: #ce537a; font-weight: bold;">float</span> fWt = 4/(<span style="color: #4f97d7;">sqrt</span>(fTmp)*fTmp);
           s = EvalSHBasis(texel,s);
-          f += t(texel)*fWt*s; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">vector</span>
+          f += t(texel)*fWt*s; <span style="color: #2aa1ae; background-color: #292e34;">// vector</span>
           fWtSum += fWt;
       }
   }
-  f *= 1/fWtSum; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">area of sphere</span>
+  f *= 1/fWtSum; <span style="color: #2aa1ae; background-color: #292e34;">// area of sphere</span>
 </pre>
 </div>
 <p>
@@ -508,7 +484,7 @@ fWt 可以理解为立体角，立体角定义为 dA/r^2, 这里直接使用面�
 </p>
 
 
-<div class="figure">
+<div id="org7e6de55" class="figure">
 <p><img src="./StupidSphericalHarmonics/proj_cube_map_equation.jpg" alt="proj_cube_map_equation.jpg" /><br />
 </p>
 </div>
@@ -522,9 +498,9 @@ fWt 可以理解为立体角，立体角定义为 dA/r^2, 这里直接使用面�
 <img src="./StupidSphericalHarmonics/proj_cube_map_example.jpg" alt="proj_cube_map_example.jpg" /><br />
 </p>
 </div>
-<div id="outline-container-orgf9b5e97" class="outline-5">
-<h5 id="orgf9b5e97">采样 CubeMap 的原理</h5>
-<div class="outline-text-5" id="text-orgf9b5e97">
+<div id="outline-container-orgcdee6b9" class="outline-5">
+<h5 id="orgcdee6b9">采样 CubeMap 的原理</h5>
+<div class="outline-text-5" id="text-orgcdee6b9">
 <p>
 设采样向量为(x,y,z)<br />
 计算 x,y,z 中绝对值最大的分量，假设 z 分量绝对值最大，且 z 分量为正数。则，此时应该对 CubeMap +Z 面对应的贴图进行采样。<br />
@@ -539,9 +515,9 @@ fWt 可以理解为立体角，立体角定义为 dA/r^2, 这里直接使用面�
 </div>
 </div>
 </div>
-<div id="outline-container-orgb545667" class="outline-4">
-<h4 id="orgb545667">Analytic Models</h4>
-<div class="outline-text-4" id="text-orgb545667">
+<div id="outline-container-org8cdb85d" class="outline-4">
+<h4 id="org8cdb85d">Analytic Models</h4>
+<div class="outline-text-4" id="text-org8cdb85d">
 <p>
 方向光计算起来很简单，你只需要求解指定方向的球谐基函数，并且进行合适的缩放。<br />
 球形光源上，球面每个点发出的辐射能量都相同，因此对于场景中任意一点 P，在 P 点选择任意一个方向，光照在该方向两侧分布是对称的，所以可以使用 ZonalHarmonics 高效求解球形光源。如下图所示：<br />
@@ -554,9 +530,9 @@ fWt 可以理解为立体角，立体角定义为 dA/r^2, 这里直接使用面�
 从上图可以看出，添加了衰减的 cone 更精确。<br />
 </p>
 </div>
-<div id="outline-container-orgbf2c8e9" class="outline-5">
-<h5 id="orgbf2c8e9">Normalization</h5>
-<div class="outline-text-5" id="text-orgbf2c8e9">
+<div id="outline-container-org47e1b4d" class="outline-5">
+<h5 id="org47e1b4d">Normalization</h5>
+<div class="outline-text-5" id="text-org47e1b4d">
 <p>
 如果光照的范围为[0,1]，则将 radiance 向量 L 进行归一化会很方便，这样当一个没有被遮挡的接收者，且其法线直接指向光源，那么该接收者反射的辐射率 L 为 1。(Tips: 归一化保证了能量守恒)<br />
 <img src="./StupidSphericalHarmonics/lighting-normalize.jpg" alt="lighting-normalize.jpg" /><br />
@@ -588,27 +564,27 @@ fWt 可以理解为立体角，立体角定义为 dA/r^2, 这里直接使用面�
 </div>
 </div>
 </div>
-<div id="outline-container-orge2c2659" class="outline-4">
-<h4 id="orge2c2659">Extracting Conventional Lights from SH</h4>
-<div class="outline-text-4" id="text-orge2c2659">
+<div id="outline-container-org10100af" class="outline-4">
+<h4 id="org10100af">Extracting Conventional Lights from SH</h4>
+<div class="outline-text-4" id="text-org10100af">
 </div>
-<div id="outline-container-orgb28c6f1" class="outline-5">
-<h5 id="orgb28c6f1">解释 1</h5>
-<div class="outline-text-5" id="text-orgb28c6f1">
+<div id="outline-container-org0bab324" class="outline-5">
+<h5 id="org0bab324">解释 1</h5>
+<div class="outline-text-5" id="text-org0bab324">
 <p>
 给定一个 SH 光照向量（假设使用 3 阶 SH 表示，则该向量有 3*9=27 个分量），可以使用一个方向光和一个环境光来近似该 SH 光照。通过让下面错误函数足够小，来实现近似：<br />
 </p>
 
 
-<div class="figure">
+<div id="orge0de18f" class="figure">
 <p><img src="./StupidSphericalHarmonics/extract-light.jpg" alt="extract-light.jpg" /><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-orge80a249" class="outline-5">
-<h5 id="orge80a249">解释 2 (Extracting dominant light from Spherical Harmonics)</h5>
-<div class="outline-text-5" id="text-orge80a249">
+<div id="outline-container-org3bc1395" class="outline-5">
+<h5 id="org3bc1395">解释 2 (Extracting dominant light from Spherical Harmonics)</h5>
+<div class="outline-text-5" id="text-org3bc1395">
 <ol class="org-ol">
 <li>求方向光方向：求 SH 光照取最大值时，对应的方向，该方向即为方向光方向。<br /></li>
 <li>求方向光亮度：求出归一化因子 c，让 \((Le-sLd)^2\) 取最小值，即可求出亮度 s。<br /></li>
@@ -618,13 +594,13 @@ fWt 可以理解为立体角，立体角定义为 dA/r^2, 这里直接使用面�
 </div>
 </div>
 </div>
-<div id="outline-container-orgfe7ed43" class="outline-4">
-<h4 id="orgfe7ed43"><span class="todo TODO">TODO</span> Extracting Multiple Lights</h4>
+<div id="outline-container-orgb12ec0f" class="outline-4">
+<h4 id="orgb12ec0f"><span class="todo TODO">TODO</span> Extracting Multiple Lights</h4>
 </div>
 </div>
-<div id="outline-container-org9b706c8" class="outline-3">
-<h3 id="org9b706c8">Ringing</h3>
-<div class="outline-text-3" id="text-org9b706c8">
+<div id="outline-container-org4a9723b" class="outline-3">
+<h3 id="org4a9723b">Ringing</h3>
+<div class="outline-text-3" id="text-org4a9723b">
 <p>
 Ringging 也被称为基普斯现象，是信号处理中常见的问题。当不连续的信号投影到有限的傅里叶基函数，在不连续的地方会出现过冲和下冲（overshoot and undershoot）。对于连续函数，如果做截断处理，也会展现出类似的现象。我们在 lighting models 和 SH 表示 irradiance evironment maps 中(该部分内容将 clamped cosine function 投影到 SH 基函数)已经见到这种问题。有两种方法用于解决这类问题：<br />
 </p>
@@ -633,19 +609,19 @@ Ringging 也被称为基普斯现象，是信号处理中常见的问题。当�
 <li>最小化某种形式的变函数，而不仅仅使用标准的最小二乘误差函数。<br /></li>
 </ol>
 </div>
-<div id="outline-container-org19040df" class="outline-4">
-<h4 id="org19040df">Windowing</h4>
+<div id="outline-container-orgaa85938" class="outline-4">
+<h4 id="orgaa85938">Windowing</h4>
 </div>
-<div id="outline-container-orgfa969fb" class="outline-4">
-<h4 id="orgfa969fb">Minimizing a functional</h4>
+<div id="outline-container-orgeaf90d2" class="outline-4">
+<h4 id="orgeaf90d2">Minimizing a functional</h4>
 </div>
-<div id="outline-container-org22f735c" class="outline-4">
-<h4 id="org22f735c">Content Sensitive Windowing</h4>
+<div id="outline-container-org0281f06" class="outline-4">
+<h4 id="org0281f06">Content Sensitive Windowing</h4>
 </div>
 </div>
-<div id="outline-container-org4024175" class="outline-3">
-<h3 id="org4024175">SH Products</h3>
-<div class="outline-text-3" id="text-org4024175">
+<div id="outline-container-org445c46c" class="outline-3">
+<h3 id="org445c46c">SH Products</h3>
+<div class="outline-text-3" id="text-org445c46c">
 <p>
 计算两个 SH 表示的函数的积非常有用。下面一些情形会使用到 SH Products：<br />
 </p>
@@ -659,34 +635,34 @@ Ringging 也被称为基普斯现象，是信号处理中常见的问题。当�
 在频率空间计算乘积非常复杂，其归结为应用一个 triple product tensor 乘两个 SH 向量。<br />
 </p>
 </div>
-<div id="outline-container-org55c190c" class="outline-4">
-<h4 id="org55c190c">Products with a Constant Function</h4>
-<div class="outline-text-4" id="text-org55c190c">
+<div id="outline-container-orgf9aa6da" class="outline-4">
+<h4 id="orgf9aa6da">Products with a Constant Function</h4>
+<div class="outline-text-4" id="text-orgf9aa6da">
 <p>
 如果其中一个函数被使用多次，你可以构建一个被称为乘积矩阵的 dense matrix，其可以将三次乘积转化为简单的矩阵和向量乘积，这可以有效减低消耗。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org5398be8" class="outline-4">
-<h4 id="org5398be8">Products with varying Orders</h4>
-<div class="outline-text-4" id="text-org5398be8">
+<div id="outline-container-org153cca9" class="outline-4">
+<h4 id="org153cca9">Products with varying Orders</h4>
+<div class="outline-text-4" id="text-org153cca9">
 <p>
 输出的阶数比较低是很常见的情况，例如：2次就可以表示局部的辐射率环境。这种情况下，可以有效减低复杂度，例如，计算两个 6 阶的 SH 函数，输出结果为 6 阶时，需要计算 2527 次乘和 1995 次加，而输出结果为 3 阶时，需要计算 933 次乘和 676 次加。<br />
 当两个函数中，有一个阶数比较低时，也可以减少消耗。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org921187e" class="outline-4">
-<h4 id="org921187e">Product with Zonal Harmonics</h4>
-<div class="outline-text-4" id="text-org921187e">
+<div id="outline-container-org698a714" class="outline-4">
+<h4 id="org698a714">Product with Zonal Harmonics</h4>
+<div class="outline-text-4" id="text-org698a714">
 <p>
 如果其中一个函数为 Zonal Harmonic，你可以将另一个函数旋转到同一个 frame（因为对称性，旋转只需要两个 Euler 角），计算乘积然后再旋转回来。ZH 的稀疏明显减少了工作量，这样可以提高性能。两个 6 阶函数，其中一个为 ZH 且朝向 z，只需要 380 次乘和 249 次加。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org2d40b1c" class="outline-4">
-<h4 id="org2d40b1c">Product with Analytic Function</h4>
-<div class="outline-text-4" id="text-org2d40b1c">
+<div id="outline-container-org9ff3910" class="outline-4">
+<h4 id="org9ff3910">Product with Analytic Function</h4>
+<div class="outline-text-4" id="text-org9ff3910">
 <p>
 如果其中一个函数有解析形式，解析方式计算乘积矩阵会更精确。<br />
 </p>
@@ -694,12 +670,12 @@ Ringging 也被称为基普斯现象，是信号处理中常见的问题。当�
 </div>
 </div>
 </div>
-<div id="outline-container-orgd267939" class="outline-2">
-<h2 id="orgd267939">Misc</h2>
+<div id="outline-container-orgb608b71" class="outline-2">
+<h2 id="orgb608b71">Misc</h2>
 </div>
-<div id="outline-container-org9629b90" class="outline-2">
-<h2 id="org9629b90">参考资料</h2>
-<div class="outline-text-2" id="text-org9629b90">
+<div id="outline-container-orga744612" class="outline-2">
+<h2 id="orga744612">参考资料</h2>
+<div class="outline-text-2" id="text-orga744612">
 <ul class="org-ul">
 <li>Notes on Spherical Harmonics in CG (1) <a href="https://zhuanlan.zhihu.com/p/73897562">https://zhuanlan.zhihu.com/p/73897562</a><br /></li>
 <li>球谐光照——球谐函数 <a href="https://zhuanlan.zhihu.com/p/153352797">https://zhuanlan.zhihu.com/p/153352797</a><br /></li>

@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2021-07-13 周二 19:42 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>URP</title>
+<meta name="generator" content="Org mode" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+           <meta name="viewport" content="width=device-width, initial-scale=1" />
+           <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/css/worg.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/css/worg-zenburn.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
+           <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
+<script type="text/javascript">
+// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
+<!--/*--><![CDATA[/*><!--*/
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.add("code-highlighted");
+         target.classList.add("code-highlighted");
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.remove("code-highlighted");
+         target.classList.remove("code-highlighted");
+       }
+     }
+    /*]]>*///-->
+// @license-end
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href=""> UP </a>
+ |
+ <a accesskey="H" href="https://wolfand11.gitee.io"> HOME </a>
+</div><div id="content">
+<h1 class="title">URP</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org019064a">URP</a>
+<ul>
+<li>
+<ul>
+<li><a href="#org7f8edaf">Upgrade Buildin Shader To URP</a>
+<ul>
+<li><a href="#orgf472788">Point Light Effect Error</a></li>
+<li><a href="#org5abb10e">Common</a></li>
+</ul>
+</li>
+<li><a href="#org384543b">Unity Buildin 和 URP 支持的 Feature 对比</a></li>
+<li><a href="#org9ce0014">创建一个 Lit Shader Graph 默认文件，生成的 shader 代码</a></li>
+<li><a href="#org078609b">URP Buildin GI 比较</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org3f29dcf">ERROR</a>
+<ul>
+<li>
+<ul>
+<li><a href="#org49a4dcc">Material 'Liquid' with Shader 'Custom/MyEffect/Unlit/Liquid' doesn't have a texture property '_MainTex' UnityEngine.GUIUtility:ProcessEvent (int,intptr,bool&amp;)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgbab41d2">参考资料</a></li>
+</ul>
+</div>
+</div>
+<p>
+URP note.<br />
+</p>
+<div class="HTML" id="org003931b">
+<p>
+&lt;!&#x2013; more &#x2013;&gt;<br />
+</p>
+
+</div>
+
+<div id="outline-container-org019064a" class="outline-2">
+<h2 id="org019064a">URP</h2>
+<div class="outline-text-2" id="text-org019064a">
+</div>
+<div id="outline-container-org7f8edaf" class="outline-4">
+<h4 id="org7f8edaf">Upgrade Buildin Shader To URP</h4>
+<div class="outline-text-4" id="text-org7f8edaf">
+</div>
+<div id="outline-container-orgf472788" class="outline-5">
+<h5 id="orgf472788">Point Light Effect Error</h5>
+<div class="outline-text-5" id="text-orgf472788">
+<ul class="org-ul">
+<li><a href="http://www.kittehface.com/2020/05/light-universal-render-pipeline-to.html">http://www.kittehface.com/2020/05/light-universal-render-pipeline-to.html</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org5abb10e" class="outline-5">
+<h5 id="org5abb10e">Common</h5>
+<div class="outline-text-5" id="text-org5abb10e">
+<p>
+URP 提供了下面工具，实现自动将 Buildin Shader 升级为 URP。<br />
+Edit/Render Pipeline/Universal Render Pipeline/Upgrade Selected Materials to UniversalRP Materials<br />
+</p>
+
+<p>
+工具实现在下面文件：<br />
+com.unity.render-pipelines.universal@10.5.0\Editor\UniversalRenderPipelineMaterialUpgrader.cs<br />
+</p>
+
+<ul class="org-ul">
+<li><a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.0/manual/upgrading-your-shaders.html">https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.0/manual/upgrading-your-shaders.html</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org384543b" class="outline-4">
+<h4 id="org384543b">Unity Buildin 和 URP 支持的 Feature 对比</h4>
+<div class="outline-text-4" id="text-org384543b">
+<ul class="org-ul">
+<li><a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.0/manual/universalrp-builtin-feature-comparison.html">https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.0/manual/universalrp-builtin-feature-comparison.html</a><br /></li>
+<li>Upgrading shaders from Built-in <a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.0/manual/upgrading-your-shaders.html">https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.0/manual/upgrading-your-shaders.html</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org9ce0014" class="outline-4">
+<h4 id="org9ce0014">创建一个 Lit Shader Graph 默认文件，生成的 shader 代码</h4>
+<div class="outline-text-4" id="text-org9ce0014">
+<p>
+下面文件是对 Lit Shader Graph 默认文件简化后的 shader 代码。<br />
+<a href="./URP/urp_lit_shader_graph.shader">./URP/urp_lit_shader_graph.shader</a><br />
+</p>
+
+<p>
+shader 的 vert frag 入口函数被定义在 com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/PBRForwardPass.hlsl 文件中。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-shader">PackedVaryings <span style="color: #bc6ec5; font-weight: bold;">vert</span>(Attributes input)
+{
+    Varyings output = (Varyings)0;
+    output = BuildVaryings(input);
+    PackedVaryings packedOutput = (PackedVaryings)0;
+    packedOutput = PackVaryings(output);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> packedOutput;
+}
+
+<span style="color: #ce537a; font-weight: bold;">half4</span> <span style="color: #bc6ec5; font-weight: bold;">frag</span>(PackedVaryings packedInput) : SV_TARGET
+{
+    Varyings unpacked = UnpackVaryings(packedInput);
+    UNITY_SETUP_INSTANCE_ID(unpacked);
+    UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(unpacked);
+
+    SurfaceDescriptionInputs surfaceDescriptionInputs = BuildSurfaceDescriptionInputs(unpacked);
+    SurfaceDescription surfaceDescription = SurfaceDescriptionFunction(surfaceDescriptionInputs);
+
+<span style="color: #bc6ec5;">    #if</span> <span style="color: #7590db;">_ALPHATEST_ON</span>
+        <span style="color: #ce537a; font-weight: bold;">half</span> alpha = surfaceDescription.Alpha;
+        <span style="color: #4f97d7;">clip</span>(alpha - surfaceDescription.AlphaClipThreshold);
+<span style="color: #bc6ec5;">    #elif</span> <span style="color: #7590db;">_SURFACE_TYPE_TRANSPARENT</span>
+        <span style="color: #ce537a; font-weight: bold;">half</span> alpha = surfaceDescription.Alpha;
+    #els
+        <span style="color: #ce537a; font-weight: bold;">half</span> alpha = 1;
+<span style="color: #bc6ec5;">    #endif</span>
+
+    InputData inputData;
+    InitializeInputData(unpacked, surfaceDescription, inputData);
+    <span style="color: #2aa1ae; background-color: #292e34;">// TODO: Mip debug modes would require this, open question how to do this on ShaderGraph.</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">//SETUP_DEBUG_TEXTURE_DATA(inputData, unpacked.texCoord1.xy, _MainTex);</span>
+
+<span style="color: #bc6ec5;">    #ifdef</span> <span style="color: #7590db;">_SPECULAR_SETUP</span>
+        <span style="color: #ce537a; font-weight: bold;">float3</span> specular = surfaceDescription.<span style="color: #4f97d7; font-weight: bold;">Specular</span>;
+        <span style="color: #ce537a; font-weight: bold;">float</span> metallic = 1;
+<span style="color: #bc6ec5;">    #else</span>
+        <span style="color: #ce537a; font-weight: bold;">float3</span> specular = 0;
+        <span style="color: #ce537a; font-weight: bold;">float</span> metallic = surfaceDescription.Metallic;
+<span style="color: #bc6ec5;">    #endif</span>
+
+    <span style="color: #ce537a; font-weight: bold;">half3</span> normalTS = <span style="color: #ce537a; font-weight: bold;">half3</span>(0, 0, 0);
+<span style="color: #bc6ec5;">    #if</span> defined(<span style="color: #7590db;">_NORMALMAP</span>) &amp;&amp; defined(<span style="color: #7590db;">_NORMAL_DROPOFF_TS</span>)
+        normalTS = surfaceDescription.NormalTS;
+<span style="color: #bc6ec5;">    #endif</span>
+
+    SurfaceData surface;
+    surface.albedo              = surfaceDescription.BaseColor;
+    surface.metallic            = <span style="color: #4f97d7;">saturate</span>(metallic);
+    surface.specular            = specular;
+    surface.smoothness          = <span style="color: #4f97d7;">saturate</span>(surfaceDescription.Smoothness),
+    surface.occlusion           = surfaceDescription.Occlusion,
+    surface.emission            = surfaceDescription.<span style="color: #4f97d7; font-weight: bold;">Emission</span>,
+    surface.alpha               = <span style="color: #4f97d7;">saturate</span>(alpha);
+    surface.normalTS            = normalTS;
+    surface.clearCoatMask       = 0;
+    surface.clearCoatSmoothness = 1;
+
+<span style="color: #bc6ec5;">    #ifdef</span> <span style="color: #7590db;">_CLEARCOA</span>
+        surface.clearCoatMask       = <span style="color: #4f97d7;">saturate</span>(surfaceDescription.CoatMask);
+        surface.clearCoatSmoothness = <span style="color: #4f97d7;">saturate</span>(surfaceDescription.CoatSmoothness);
+<span style="color: #bc6ec5;">    #endif</span>
+
+<span style="color: #bc6ec5;">#ifdef</span> <span style="color: #7590db;">_DBUFFER</span>
+    ApplyDecalToSurfaceData(unpacked.positionCS, surface, inputData);
+<span style="color: #bc6ec5;">#endif</span>
+
+    <span style="color: #ce537a; font-weight: bold;">half4</span> color = UniversalFragmentPBR(inputData, surface);
+
+    color.rgb = MixFog(color.rgb, inputData.fogCoord);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> color;
+}
+</pre>
+</div>
+<p>
+生成的 shader 代码<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org078609b" class="outline-4">
+<h4 id="org078609b">URP Buildin GI 比较</h4>
+<div class="outline-text-4" id="text-org078609b">
+<p>
+下图为图 1<br />
+<img src="./URP/gi_compare_01.png" alt="gi_compare_01.png" /><br />
+</p>
+
+<p>
+下图为图 2<br />
+<img src="./URP/gi_compare_02.png" alt="gi_compare_02.png" /><br />
+</p>
+
+<p>
+下图为图 3<br />
+<img src="./URP/gi_compare_03.png" alt="gi_compare_03.png" /><br />
+</p>
+
+<p>
+下图为图 4<br />
+<img src="./URP/gi_compare_04.png" alt="gi_compare_04.png" /><br />
+</p>
+
+<p>
+下图为图 5<br />
+<img src="./URP/gi_compare_05.png" alt="gi_compare_05.png" /><br />
+</p>
+
+<p>
+图 1 中，Buildin 下 BakedGI 和 RealtimeGI 差别为什么很大？<br />
+关闭 Mesh 的 LightProbe Blend，后差别几乎没有，说明 BakedGI 和 RealtimeGI 烘培所得的 LightProbe 不同，直接通过 FrameDebug 可以看到球谐系数不同。<br />
+LightProbe 数据来自 AmbientColor，场景中方向光，场景中物体反射的光。前两个数据是相同的，所以只能是最后一个数据不同，而图 3 中，Buildin 下 BakedGI 和 RealtimeGI 差别不大，说明 Surface Shader 和 Standard Shader 烘培出来的结果不同。<br />
+使用默认的 Surface Shader 进行测试，如图 5，发现 Buildin 下 BakedGI 和 RealtimeGI 差别不大。说明自定义的 Surface Shader 和默认的 Surface Shader 烘培出来的结果不同。<br />
+</p>
+
+<p>
+检查自定义的 Surface Shader，发现其中会使用 viewDir，猜测在离线烘焙时，viewDir 的值为（0，0，0），所以导致 Custom Surface Shader MetaPass 返回的 albedo 是错误的。<br />
+另外 Custom Surface Shader 中还使用了 screenUV，离线烘培时，此变量应该也是无意义的吧？ TODO<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org3f29dcf" class="outline-2">
+<h2 id="org3f29dcf">ERROR</h2>
+<div class="outline-text-2" id="text-org3f29dcf">
+</div>
+<div id="outline-container-org49a4dcc" class="outline-4">
+<h4 id="org49a4dcc">Material 'Liquid' with Shader 'Custom/MyEffect/Unlit/Liquid' doesn't have a texture property '_MainTex' UnityEngine.GUIUtility:ProcessEvent (int,intptr,bool&amp;)</h4>
+<div class="outline-text-4" id="text-org49a4dcc">
+<p>
+URP 中使用_BaseMap 代替了_MainTex。并在_BaseMap 的前面标记了[MainTexture]。Editor 中有代码依赖_MainTex 命名，所以导致了该错误。<br />
+在 Shader 'Custom/MyEffect/Unlit/Liquid' 的 Property 部分添加如下代码就可以解决该问题<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// ObsoleteProperties</span>
+<span style="color: #2aa1ae; background-color: #292e34;">//[HideInInspector] _MainTex("BaseMap", 2D) = "white" {}</span>
+<span style="color: #2aa1ae; background-color: #292e34;">//[HideInInspector] _Color("Base Color", Color) = (1, 1, 1, 1)</span>
+</pre>
+</div>
+
+<ul class="org-ul">
+<li><a href="https://docs.unity3d.com/ScriptReference/Material-mainTexture.html">https://docs.unity3d.com/ScriptReference/Material-mainTexture.html</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgbab41d2" class="outline-2">
+<h2 id="orgbab41d2">参考资料</h2>
+<div class="outline-text-2" id="text-orgbab41d2">
+<ul class="org-ul">
+<li><a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.0/manual/index.html">https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.0/manual/index.html</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+</body>
+</html>

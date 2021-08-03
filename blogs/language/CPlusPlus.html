@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-07-13 周二 19:42 -->
+<!-- 2021-07-26 周一 10:13 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>CPlusPlus</title>
@@ -82,7 +82,7 @@
 <li><a href="#org2882f07">Copy 初始化</a></li>
 <li><a href="#org8d09862">Copy 赋值运算符</a></li>
 <li><a href="#org7e0b451">析构函数</a></li>
-<li><a href="#org670740e">Common</a></li>
+<li><a href="#org093b40a">Common</a></li>
 </ul>
 </li>
 <li><a href="#org7d83e6c">拷贝控制和资源管理</a>
@@ -92,7 +92,12 @@
 </ul>
 </li>
 <li><a href="#org125490f">交换操作</a></li>
-<li><a href="#org381eba4">动态内存管理类</a></li>
+<li><a href="#org381eba4">动态内存管理类</a>
+<ul>
+<li><a href="#orgf498656">StrVec 设计</a></li>
+<li><a href="#orge1e49bb">StrVec 实现</a></li>
+</ul>
+</li>
 <li><a href="#org201d634">对象移动</a>
 <ul>
 <li><a href="#org3c13368">右值引用</a></li>
@@ -101,15 +106,27 @@
 <li><a href="#org0f75509">合成的移动操作</a></li>
 <li><a href="#orge67985c">移动迭代器</a></li>
 <li><a href="#org024b849">右值引用和成员函数</a></li>
-<li><a href="#org093b40a">Common</a></li>
+<li><a href="#org8f7e1f8">Common</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li><a href="#org2f0bf22">16 模板与泛型编程</a>
 <ul>
-<li><a href="#orgde47ed2">定义模板</a></li>
-<li><a href="#org6de35fa">模板实参推断</a></li>
+<li><a href="#orgde47ed2">定义模板</a>
+<ul>
+<li><a href="#org05c09f7">函数模板</a></li>
+<li><a href="#org7534e7f">类模板</a></li>
+<li><a href="#org9c013ad">模板参数</a></li>
+<li><a href="#orgbdac41d">成员模板</a></li>
+<li><a href="#orgd66efbe">控制实例化</a></li>
+</ul>
+</li>
+<li><a href="#org6de35fa">模板实参推断</a>
+<ul>
+<li><a href="#orgea89b81">类型转换</a></li>
+</ul>
+</li>
 <li><a href="#org73ef3a3">重载与模板</a></li>
 <li><a href="#org59411bd">可变参数模板</a>
 <ul>
@@ -147,6 +164,27 @@
 </li>
 </ul>
 </li>
+<li><a href="#org7289092">Effective Modern C++</a>
+<ul>
+<li><a href="#orgfee85a3">Deducing Types</a>
+<ul>
+<li><a href="#org9925de8">Understand template type deduction</a>
+<ul>
+<li><a href="#orgf81a958">ParamType 为指针或引用</a></li>
+<li><a href="#orgede65a7">ParamType 为 universal 引用</a></li>
+<li><a href="#org94dc3fe">ParamType 既不是指针也不是引用</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgc35041a">auto</a></li>
+<li><a href="#org7f7eb1b">From C++98 to C++10 and C++14</a></li>
+<li><a href="#orgdb6fd65">Smart Points</a></li>
+<li><a href="#orge7457ca">Rvalue Reference, Move Semantics and Perfect Forwarding</a></li>
+<li><a href="#org9e92b94">Lambda Expression</a></li>
+<li><a href="#org212d42c">The Concurrency API</a></li>
+</ul>
+</li>
 <li><a href="#orgec49ace">Misc</a>
 <ul>
 <li><a href="#org42811d9">Usage</a>
@@ -167,13 +205,14 @@
 </li>
 </ul>
 </li>
+<li><a href="#org60ec0f9">参考资料</a></li>
 </ul>
 </div>
 </div>
 <p>
 CPlusPlus note.<br />
 </p>
-<div class="HTML" id="orgf004d3b">
+<div class="HTML" id="org3f7ed51">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -206,37 +245,37 @@ CPlusPlus note.<br />
 通过引用计数实现指针。<br />
 </p>
 <div class="org-src-container">
-<pre class="src src-c++"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#31354;&#26234;&#33021;&#25351;&#38024;&#65292;&#21487;&#20197;&#25351;&#21521;string&#31867;&#22411;&#30340;&#23545;&#35937;</span>
-<span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;<span style="color: #ce537a; font-weight: bold;">string</span>&gt; <span style="color: #7590db;">p1</span>;
+<pre class="src src-c++">  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#31354;&#26234;&#33021;&#25351;&#38024;&#65292;&#21487;&#20197;&#25351;&#21521;string&#31867;&#22411;&#30340;&#23545;&#35937;</span>
+  <span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;<span style="color: #ce537a; font-weight: bold;">string</span>&gt; <span style="color: #7590db;">p1</span>;
 
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">q&#20026;shared_ptr&#65292;q&#30340;&#24341;&#29992;&#35745;&#31639;&#22120;&#20250;&#22686;&#21152;</span>
-<span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;T&gt; <span style="color: #bc6ec5; font-weight: bold;">p</span>(q);
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">q&#20026;&#20869;&#32622;&#25351;&#38024;&#65292;q&#24517;&#39035;&#25351;&#21521;new&#20998;&#37197;&#30340;&#20869;&#23384;&#65292;&#19988;&#33021;&#22815;&#36716;&#25442;&#20026;T*&#31867;&#22411;</span>
-<span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;T&gt; <span style="color: #bc6ec5; font-weight: bold;">p</span>(q);
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">u&#20026;unique_ptr&#65292;p&#20174;u&#25509;&#31649;&#20102;&#23545;&#35937;&#30340;&#25152;&#26377;&#26435;&#65307;&#23558;u&#32622;&#31354;</span>
-<span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;T&gt; <span style="color: #bc6ec5; font-weight: bold;">p</span>(u);
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">p&#25509;&#31649;&#20102;&#20869;&#32622;&#25351;&#38024;q&#25152;&#25351;&#21521;&#30340;&#23545;&#35937;&#30340;&#25152;&#26377;&#26435;&#12290;q&#24517;&#39035;&#33021;&#36716;&#25442;&#20026;T*&#31867;&#22411;&#12290;p&#23558;&#20351;&#29992;&#21487;&#35843;&#29992;&#23545;&#35937;d&#26469;&#20195;&#26367;delete</span>
-<span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;T&gt; <span style="color: #bc6ec5; font-weight: bold;">p</span>(q, d);
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">p&#26159;shared_ptr p2&#30340;copy,&#21807;&#19968;&#30340;&#21306;&#21035;&#26159;p&#23558;&#29992;&#21487;&#35843;&#29992;&#23545;&#35937;d&#26469;&#20195;&#26367;delete</span>
-<span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;T&gt; <span style="color: #bc6ec5; font-weight: bold;">p</span>(p2,d);
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">q&#20026;shared_ptr&#65292;q&#30340;&#24341;&#29992;&#35745;&#31639;&#22120;&#20250;&#22686;&#21152;</span>
+  <span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;T&gt; <span style="color: #bc6ec5; font-weight: bold;">p</span>(q);
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">q&#20026;&#20869;&#32622;&#25351;&#38024;&#65292;q&#24517;&#39035;&#25351;&#21521;new&#20998;&#37197;&#30340;&#20869;&#23384;&#65292;&#19988;&#33021;&#22815;&#36716;&#25442;&#20026;T*&#31867;&#22411;</span>
+  <span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;T&gt; <span style="color: #bc6ec5; font-weight: bold;">p</span>(q);
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">u&#20026;unique_ptr&#65292;p&#20174;u&#25509;&#31649;&#20102;&#23545;&#35937;&#30340;&#25152;&#26377;&#26435;&#65307;&#23558;u&#32622;&#31354;</span>
+  <span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;T&gt; <span style="color: #bc6ec5; font-weight: bold;">p</span>(u);
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">p&#25509;&#31649;&#20102;&#20869;&#32622;&#25351;&#38024;q&#25152;&#25351;&#21521;&#30340;&#23545;&#35937;&#30340;&#25152;&#26377;&#26435;&#12290;q&#24517;&#39035;&#33021;&#36716;&#25442;&#20026;T*&#31867;&#22411;&#12290;p&#23558;&#20351;&#29992;&#21487;&#35843;&#29992;&#23545;&#35937;d&#26469;&#20195;&#26367;delete</span>
+  <span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;T&gt; <span style="color: #bc6ec5; font-weight: bold;">p</span>(q, d);
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">p&#26159;shared_ptr p2&#30340;copy,&#21807;&#19968;&#30340;&#21306;&#21035;&#26159;p&#23558;&#29992;&#21487;&#35843;&#29992;&#23545;&#35937;d&#26469;&#20195;&#26367;delete</span>
+  <span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;T&gt; <span style="color: #bc6ec5; font-weight: bold;">p</span>(p2,d);
 
-<span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt; <span style="color: #7590db;">p3</span> = make_shared&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt;(42);
-<span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;<span style="color: #ce537a; font-weight: bold;">string</span>&gt; <span style="color: #7590db;">p4</span> = make_shared&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt;(10, <span style="color: #2d9574;">'9'</span>);
-<span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt; <span style="color: #7590db;">p5</span> = make_shared&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt;();
+  <span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt; <span style="color: #7590db;">p3</span> = make_shared&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt;(42);
+  <span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;<span style="color: #ce537a; font-weight: bold;">string</span>&gt; <span style="color: #7590db;">p4</span> = make_shared&lt;<span style="color: #ce537a; font-weight: bold;">string</span>&gt;(10, <span style="color: #2d9574;">'9'</span>);
+  <span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt; <span style="color: #7590db;">p5</span> = make_shared&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt;();
 
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">p &#21644; q&#37117;&#20026;shared_ptr&#12290;&#19979;&#38754;&#36171;&#20540;&#25805;&#20316;&#65292;&#39318;&#20808;&#20250;&#36882;&#20943;p&#30340;&#24341;&#29992;&#35745;&#25968;&#65292;&#22914;&#26524;&#35745;&#25968;&#26410;0&#21017;&#37322;&#25918;p&#25152;&#31649;&#29702;&#30340;&#20869;&#23384;&#65292;&#28982;&#21518;&#65292;&#36882;&#22686;q&#30340;&#24341;&#29992;&#35745;&#25968;&#65292;&#26368;&#21518;&#65292;p&#25351;&#21521;q&#25152;&#25351;&#23545;&#35937;&#12290;</span>
-p = q;
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">p &#21644; q&#37117;&#20026;shared_ptr&#12290;&#19979;&#38754;&#36171;&#20540;&#25805;&#20316;&#65292;&#39318;&#20808;&#20250;&#36882;&#20943;p&#30340;&#24341;&#29992;&#35745;&#25968;&#65292;&#22914;&#26524;&#35745;&#25968;&#20026;0&#21017;&#37322;&#25918;p&#25152;&#31649;&#29702;&#30340;&#20869;&#23384;&#65292;&#28982;&#21518;&#65292;&#36882;&#22686;q&#30340;&#24341;&#29992;&#35745;&#25968;&#65292;&#26368;&#21518;&#65292;p&#25351;&#21521;q&#25152;&#25351;&#23545;&#35937;&#12290;</span>
+  p = q;
 
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#33509;p.use_count()&#20026;1&#65292;&#21017;&#36820;&#22238;true&#65307;&#21542;&#21017;&#36820;&#22238;false</span>
-p.unique();
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#33509;p.use_count()&#20026;1&#65292;&#21017;&#36820;&#22238;true&#65307;&#21542;&#21017;&#36820;&#22238;false</span>
+  p.unique();
 
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#36820;&#22238;&#20849;&#20139;&#23545;&#35937;&#30340;&#26234;&#33021;&#25351;&#38024;&#30340;&#25968;&#37327;</span>
-p.use_count();
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#36820;&#22238;&#20849;&#20139;&#23545;&#35937;&#30340;&#26234;&#33021;&#25351;&#38024;&#30340;&#25968;&#37327;</span>
+  p.use_count();
 
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22914;&#26524;p&#26159;&#21807;&#19968;&#25351;&#21521;&#20854;&#23545;&#35937;&#30340;shared_ptr, reset&#20250;&#37322;&#25918;&#35813;&#23545;&#35937;&#65292;&#24182;&#23558;p&#32622;&#31354;&#65307;&#21542;&#21017;&#65292;p&#24341;&#29992;&#35745;&#25968;&#20943;1&#65292;&#24182;&#23558;p&#32622;&#31354;</span>
-p.reset();
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22914;&#26524;p&#26159;&#21807;&#19968;&#25351;&#21521;&#20854;&#23545;&#35937;&#30340;shared_ptr, reset&#20250;&#37322;&#25918;&#35813;&#23545;&#35937;&#65292;&#24182;&#20196;p&#25351;&#21521;&#20869;&#32622;&#25351;&#38024;q&#65292;&#21021;&#22987;&#21270;&#24341;&#29992;&#35745;&#25968;&#20026;1&#65307;&#21542;&#21017;&#65292;p&#21407;&#22987;&#30340;&#24341;&#29992;&#35745;&#25968;&#20943;1&#65292;&#24182;&#20196;p&#25351;&#21521;&#20869;&#32622;&#25351;&#38024;q&#65292;&#21021;&#22987;&#21270;&#29616;&#22312;&#30340;&#24341;&#29992;&#35745;&#25968;&#20026;1</span>
-p.reset(q);
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22914;&#26524;p&#26159;&#21807;&#19968;&#25351;&#21521;&#20854;&#23545;&#35937;&#30340;shared_ptr, reset&#20250;&#37322;&#25918;&#35813;&#23545;&#35937;&#65292;&#24182;&#23558;p&#32622;&#31354;&#65307;&#21542;&#21017;&#65292;p&#24341;&#29992;&#35745;&#25968;&#20943;1&#65292;&#24182;&#23558;p&#32622;&#31354;</span>
+  p.reset();
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22914;&#26524;p&#26159;&#21807;&#19968;&#25351;&#21521;&#20854;&#23545;&#35937;&#30340;shared_ptr, reset&#20250;&#37322;&#25918;&#35813;&#23545;&#35937;&#65292;&#24182;&#20196;p&#25351;&#21521;&#20869;&#32622;&#25351;&#38024;q&#65292;&#21021;&#22987;&#21270;&#24341;&#29992;&#35745;&#25968;&#20026;1&#65307;&#21542;&#21017;&#65292;p&#21407;&#22987;&#30340;&#24341;&#29992;&#35745;&#25968;&#20943;1&#65292;&#24182;&#20196;p&#25351;&#21521;&#20869;&#32622;&#25351;&#38024;q&#65292;&#21021;&#22987;&#21270;&#29616;&#22312;&#30340;&#24341;&#29992;&#35745;&#25968;&#20026;1</span>
+  p.reset(q);
 </pre>
 </div>
 </div>
@@ -546,9 +585,9 @@ Tips: 析构函数的函数体自身并不直接销毁成员，成员是在析�
 </p>
 </div>
 </div>
-<div id="outline-container-org670740e" class="outline-6">
-<h6 id="org670740e">Common</h6>
-<div class="outline-text-6" id="text-org670740e">
+<div id="outline-container-org093b40a" class="outline-6">
+<h6 id="org093b40a">Common</h6>
+<div class="outline-text-6" id="text-org093b40a">
 <p>
 什么时候需要自定义拷贝构造函数、拷贝赋值操作符、析构函数？<br />
 </p>
@@ -631,9 +670,13 @@ Tips:<br />
 <pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">HasPtr</span>
 {
 <span style="color: #4f97d7; font-weight: bold;">public</span>:
-    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">......</span>
+    <span style="color: #bc6ec5; font-weight: bold;">HasPtr</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span>&amp; <span style="color: #7590db;">s</span>=<span style="color: #a45bad;">std</span>::string()):ps(<span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span>(s)), i(0){}
+    <span style="color: #bc6ec5; font-weight: bold;">HasPtr</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">HasPtr</span>&amp; <span style="color: #7590db;">p</span>):ps(<span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span>(*p.ps)), i(p.i){}
+    <span style="color: #ce537a; font-weight: bold;">HasPtr</span>&amp; <span style="color: #4f97d7; font-weight: bold;">operator</span><span style="color: #bc6ec5; font-weight: bold;">=</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">HasPtr</span>&amp; <span style="color: #7590db;">p</span>);
+    ~<span style="color: #bc6ec5; font-weight: bold;">HasPtr</span>(){ <span style="color: #4f97d7; font-weight: bold;">delete</span> ps; }
 <span style="color: #4f97d7; font-weight: bold;">private</span>:
     <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span> *<span style="color: #7590db;">ps</span>;
+    <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">i</span>;
 }
 <span style="color: #ce537a; font-weight: bold;">HasPtr</span>&amp; <span style="color: #a45bad;">HasPtr</span>::<span style="color: #4f97d7; font-weight: bold;">operator</span><span style="color: #bc6ec5; font-weight: bold;">=</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">HasPtr</span>&amp; <span style="color: #7590db;">rhs</span>)
 {
@@ -660,9 +703,14 @@ Tips:<br />
 <pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">HasPtr</span>
 {
 <span style="color: #4f97d7; font-weight: bold;">public</span>:
+    <span style="color: #bc6ec5; font-weight: bold;">HasPtr</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span>&amp; <span style="color: #7590db;">s</span>=<span style="color: #a45bad;">std</span>::string()):ps(<span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span>(s)), i(0), use(<span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">size_t</span>(1)){}
+    <span style="color: #bc6ec5; font-weight: bold;">HasPtr</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">HasPtr</span>&amp; <span style="color: #7590db;">p</span>):ps(p.ps), i(p.i), use(p.use){ ++*use; }
+    <span style="color: #ce537a; font-weight: bold;">HasPtr</span>&amp; <span style="color: #4f97d7; font-weight: bold;">operator</span><span style="color: #bc6ec5; font-weight: bold;">=</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">HasPtr</span>&amp; <span style="color: #7590db;">p</span>);
+    ~<span style="color: #bc6ec5; font-weight: bold;">HasPtr</span>();
     <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">......</span>
 <span style="color: #4f97d7; font-weight: bold;">private</span>:
     <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span> *<span style="color: #7590db;">ps</span>;
+    <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">i</span>;
     <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">size_t</span> *<span style="color: #7590db;">use</span>; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#29992;&#26469;&#35760;&#24405;&#26377;&#22810;&#23569;&#23545;&#35937;&#20849;&#20139;*ps&#25104;&#21592;</span>
 }
 <span style="color: #a45bad;">HasPtr</span>::~<span style="color: #bc6ec5; font-weight: bold;">HasPtr</span>()
@@ -701,19 +749,199 @@ Tips:<br />
 Tips: swap 函数应该调用 swap，而不是 std::swap<br />
 </p>
 <div class="org-src-container">
-<pre class="src src-cpp"><span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">swap</span>(<span style="color: #ce537a; font-weight: bold;">HasPtr</span>&amp; <span style="color: #7590db;">lhs</span>, <span style="color: #ce537a; font-weight: bold;">HasPtr</span>&amp; <span style="color: #7590db;">rhs</span>)
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">HasPtr</span>
+{
+    <span style="color: #4f97d7; font-weight: bold;">friend</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">swap</span>(<span style="color: #ce537a; font-weight: bold;">HasPtr</span>&amp;,<span style="color: #ce537a; font-weight: bold;">HasPtr</span>&amp;);
+};
+<span style="color: #4f97d7; font-weight: bold;">inline</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">swap</span>(<span style="color: #ce537a; font-weight: bold;">HasPtr</span>&amp; <span style="color: #7590db;">lhs</span>, <span style="color: #ce537a; font-weight: bold;">HasPtr</span>&amp; <span style="color: #7590db;">rhs</span>)
+{
+    <span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">swap</span>;
+    swap(lhs.ps, rhs.ps);
+    swap(lhs.i, rhs.i);
+}
+
+<span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Foo</span>
+{
+    <span style="color: #4f97d7; font-weight: bold;">friend</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">swap</span>(<span style="color: #ce537a; font-weight: bold;">HasPtr</span>&amp;,<span style="color: #ce537a; font-weight: bold;">HasPtr</span>&amp;);
+<span style="color: #4f97d7; font-weight: bold;">private</span>:
+    <span style="color: #ce537a; font-weight: bold;">HasPtr</span> <span style="color: #7590db;">hasPtr</span>;
+};
+<span style="color: #4f97d7; font-weight: bold;">inline</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">swap</span>(<span style="color: #ce537a; font-weight: bold;">Foo</span>&amp; <span style="color: #7590db;">lhs</span>, <span style="color: #ce537a; font-weight: bold;">Foo</span>&amp; <span style="color: #7590db;">rhs</span>)
 {
     <span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">swap</span>;
     <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22914;&#26524;&#23384;&#22312;&#31867;&#22411;&#29305;&#23450;&#30340;swap&#29256;&#26412;&#65292;swap&#20250;&#35843;&#29992;&#19982;&#20043;&#21305;&#37197;&#30340;&#29256;&#26412;&#12290;&#22914;&#26524;&#19981;&#23384;&#22312;&#31867;&#22411;&#29305;&#23450;&#30340;&#29256;&#26412;&#65292;&#21017;&#20250;&#20351;&#29992;std&#20013;&#30340;&#29256;&#26412;(&#20551;&#23450;&#20316;&#29992;&#22495;&#20013;&#26377;using&#22768;&#26126;)</span>
-    swap(lhs.h, rhs.h);   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20351;&#29992;HasPtr&#29256;&#26412;&#30340;swap</span>
+    swap(lhs.hasPtr, rhs.hasPtr);
+}
+</pre>
+</div>
+
+<p>
+定义了 swap 函数的类，通常使用 swap 来实现它们的赋值运算符。其使用了一种被称作拷贝并交换 (Copy and Swap) 的技术，这种技术将左侧运算对象和右侧运算对象的一个副本进行交换，这种技术可以正确处理自赋值。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">TIPS: &#21442;&#25968;&#19981;&#26159;&#24341;&#29992;&#31867;&#22411;</span>
+<span style="color: #ce537a; font-weight: bold;">HasPtr</span>&amp; <span style="color: #4f97d7; font-weight: bold;">operator</span><span style="color: #bc6ec5; font-weight: bold;">=</span>(<span style="color: #ce537a; font-weight: bold;">HasPtr</span> <span style="color: #7590db;">rhs</span>)
+{
+    swap(*<span style="color: #4f97d7; font-weight: bold;">this</span>, rhs);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> *<span style="color: #4f97d7; font-weight: bold;">this</span>;
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#36864;&#20986;&#20316;&#29992;&#22495;&#21518;&#65292;rhs&#20020;&#26102;&#21464;&#37327;&#38144;&#27585;&#65292;&#37322;&#25918;&#20102; lhs &#21407;&#22987;&#20869;&#23384;</span>
+}
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22914;&#26524; HasPtr&#20026;&#20540;&#31867;&#22411;&#31867;&#65292; &#36890;&#36807;&#25335;&#36125;&#26500;&#36896;&#20989;&#25968;&#21019;&#24314;&#20020;&#26102;&#21464;&#37327;rhs&#65292;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">//      </span><span style="color: #2aa1ae; background-color: #292e34;">swap&#23558;lhs&#21644;rhs&#30340;&#20869;&#23481;&#36827;&#34892;&#20132;&#25442;&#65292;&#36864;&#20986;&#20316;&#29992;&#22495;&#21518;rhs &#37322;&#25918;lhs&#21407;&#26469;&#30340;&#20869;&#23481;&#65307;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22914;&#26524; HasPtr&#20026;&#25351;&#38024;&#31867;&#22411;&#31867;&#65292;&#36890;&#36807;&#25335;&#36125;&#26500;&#36896;&#20989;&#25968;&#21019;&#24314;&#20020;&#26102;&#21464;&#37327;rhs&#65292;rhs.use &#24341;&#29992;&#35745;&#25968;&#22686;&#21152;1&#65292;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">//      </span><span style="color: #2aa1ae; background-color: #292e34;">swap&#23558;lhs&#21644;rhs&#30340;&#20869;&#23481;&#36827;&#34892;&#20132;&#25442;&#65292;&#36864;&#20986;&#20316;&#29992;&#22495;&#21518;rhs&#20351;&#24471;&#21407;&#26469;lhs&#30340;&#24341;&#29992;&#35745;&#25968;&#20943;&#23569;1&#65307;</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org381eba4" class="outline-5">
+<h5 id="org381eba4">动态内存管理类</h5>
+<div class="outline-text-5" id="text-org381eba4">
+</div>
+<div id="outline-container-orgf498656" class="outline-6">
+<h6 id="orgf498656">StrVec 设计</h6>
+<div class="outline-text-6" id="text-orgf498656">
+<p>
+StrVec 是标准库 vector 类的一个简化版本。此处的简化是不使用模板，该类只用于 string。因此将其命名为 StrVec。<br />
+StrVec 使用了和 vector 一样的内存管理策略。我们将使用一个 allocator 来获得原始内存。在需要添加新元素时用 allocator 的 construct 成员在原始内存中创建对象。需要删除一个元素时，使用 destroy 成员来销毁元素。<br />
+</p>
+
+<p>
+每个 StrVec 有三个指针成员指向其元素所使用的内存：<br />
+</p>
+<ul class="org-ul">
+<li>elements 指向分配的内存中的首元素<br /></li>
+<li>first_free 指向最后一个实际元素之后的位置<br /></li>
+<li>cap 指向分配的内存末尾之后的位置<br /></li>
+</ul>
+
+<p>
+StrVec 有一个类型为 allocator&lt;string&gt;，名为 alloc 的静态成员。alloc 成员会分配 StrVec 使用的内存。<br />
+</p>
+
+<p>
+StrVec 还包含下面 4 个工具函数：<br />
+</p>
+<ul class="org-ul">
+<li>alloc_n_copy 会分配内存，并 copy 一个给定范围中的元素。<br /></li>
+<li>free 会销毁构造的元素并释放内存<br /></li>
+<li>chk_n_alloc 保证 StrVec 至少有容纳一个新元素的空间。如果没有空间添加新元素，chk_n_alloc 会调用 reallocate 来分配更多内存<br /></li>
+<li>reallocate 在内存用完时为 StrVec 分配新内存。<br /></li>
+</ul>
+
+<p>
+Tips:<br />
+虽然，每个 string 对象对应的字符数量不同，但是，每个 string 对象所占内存的大小是相同的。<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">StrVec</span>
+{
+<span style="color: #4f97d7; font-weight: bold;">public</span>:
+    <span style="color: #bc6ec5; font-weight: bold;">StrVec</span>(): <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">the allocator member is default initialized</span>
+        elements(<span style="color: #a45bad;">nullptr</span>), first_free(<span style="color: #a45bad;">nullptr</span>), cap(<span style="color: #a45bad;">nullptr</span>) { }
+    <span style="color: #bc6ec5; font-weight: bold;">StrVec</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">StrVec</span>&amp;); <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">copy constructor</span>
+    <span style="color: #ce537a; font-weight: bold;">StrVec</span> &amp;<span style="color: #4f97d7; font-weight: bold;">operator</span><span style="color: #bc6ec5; font-weight: bold;">=</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">StrVec</span>&amp;); <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">copy assignment</span>
+    ~<span style="color: #bc6ec5; font-weight: bold;">StrVec</span>(); <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">destructor</span>
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">push_back</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span>&amp;); <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">copy the element</span>
+    <span style="color: #ce537a; font-weight: bold;">size_t</span> <span style="color: #bc6ec5; font-weight: bold;">size</span>() <span style="color: #4f97d7; font-weight: bold;">const</span> { <span style="color: #4f97d7; font-weight: bold;">return</span> first_free - elements; }
+    <span style="color: #ce537a; font-weight: bold;">size_t</span> <span style="color: #bc6ec5; font-weight: bold;">capacity</span>() <span style="color: #4f97d7; font-weight: bold;">const</span> { <span style="color: #4f97d7; font-weight: bold;">return</span> cap - elements; }
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span> *<span style="color: #bc6ec5; font-weight: bold;">begin</span>() <span style="color: #4f97d7; font-weight: bold;">const</span> { <span style="color: #4f97d7; font-weight: bold;">return</span> elements; }
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span> *<span style="color: #bc6ec5; font-weight: bold;">end</span>() <span style="color: #4f97d7; font-weight: bold;">const</span> { <span style="color: #4f97d7; font-weight: bold;">return</span> first_free; }
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">...</span>
+<span style="color: #4f97d7; font-weight: bold;">private</span>:
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">allocator</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span>&gt; <span style="color: #7590db;">alloc</span>; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">allocates the elements</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">used by the functions that add elements to the StrVec</span>
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">chk_n_alloc</span>() { <span style="color: #4f97d7; font-weight: bold;">if</span> (size() == capacity()) reallocate(); }
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">utilities used by the copy constructor, assignment operator, and destructor</span>
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">pair</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span>*, <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span>*&gt; <span style="color: #bc6ec5; font-weight: bold;">alloc_n_copy</span> (<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span>*, <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span>*);
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">free</span>(); <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">destroy the elements and free the space</span>
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">reallocate</span>(); <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">get more space and copy the existing elements</span>
+
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span> *<span style="color: #7590db;">elements</span>; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">pointer to the first element in the array</span>
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span> *<span style="color: #7590db;">first_free</span>; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">pointer to the first free element in the array</span>
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span> *<span style="color: #7590db;">cap</span>; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">pointer to one past the end of the array</span>
+};
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orge1e49bb" class="outline-6">
+<h6 id="orge1e49bb">StrVec 实现</h6>
+<div class="outline-text-6" id="text-orge1e49bb">
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #a45bad;">StrVec</span>::<span style="color: #bc6ec5; font-weight: bold;">push_back</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">string</span>&amp; <span style="color: #7590db;">s</span>)
+{
+    chk_n_alloc(); <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">ensure that there is room for another element</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">construct a copy of s in the element to which first_free points</span>
+    alloc.construct(first_free++, s);
+}
+
+<span style="color: #ce537a; font-weight: bold;">pair</span>&lt;<span style="color: #ce537a; font-weight: bold;">string</span>*, <span style="color: #ce537a; font-weight: bold;">string</span>*&gt;<span style="color: #a45bad;">StrVec</span>::<span style="color: #bc6ec5; font-weight: bold;">alloc_n_copy</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">string</span> *<span style="color: #7590db;">b</span>, <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">string</span> *<span style="color: #7590db;">e</span>)
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">allocate space to hold as many elements as are in the range</span>
+    <span style="color: #4f97d7; font-weight: bold;">auto</span> <span style="color: #7590db;">data</span> = alloc.allocate(e - b);
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">initialize and return a pair constructed from data and</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">the value returned by uninitialized_copy</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">uninitialized_copy &#26159;&#26631;&#20934;&#24211;&#20989;&#25968;&#65292;&#34987;&#23450;&#20041;&#22312;memory&#22836;&#25991;&#20214;&#20013;</span>
+    <span style="color: #4f97d7; font-weight: bold;">return</span> {data, uninitialized_copy(b, e, data)};
+}
+
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #a45bad;">StrVec</span>::<span style="color: #bc6ec5; font-weight: bold;">free</span>()
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">may not pass deallocate a 0 pointer; if elements is 0, there's no work to do</span>
+    <span style="color: #4f97d7; font-weight: bold;">if</span> (elements) {
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">destroy the old elements in reverse order</span>
+        <span style="color: #4f97d7; font-weight: bold;">for</span> (<span style="color: #4f97d7; font-weight: bold;">auto</span> <span style="color: #7590db;">p</span> = first_free; p != elements; <span style="color: #2aa1ae; background-color: #292e34;">/* </span><span style="color: #2aa1ae; background-color: #292e34;">empty</span><span style="color: #2aa1ae; background-color: #292e34;"> */</span>)
+            alloc.destroy(--p);
+        alloc.deallocate(elements, cap - elements);
+    }
+}
+
+<span style="color: #a45bad;">StrVec</span>::<span style="color: #bc6ec5; font-weight: bold;">StrVec</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">StrVec</span> &amp;<span style="color: #7590db;">s</span>)
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">call alloc_n_copy to allocate exactly as many elements as in s</span>
+    <span style="color: #4f97d7; font-weight: bold;">auto</span> <span style="color: #7590db;">newdata</span> = alloc_n_copy(s.begin(), s.end());
+    elements = newdata.first;
+    first_free = cap = newdata.second;
+}
+
+<span style="color: #a45bad;">StrVec</span>::~<span style="color: #bc6ec5; font-weight: bold;">StrVec</span>() { free(); }
+
+<span style="color: #ce537a; font-weight: bold;">StrVec</span> &amp;<span style="color: #a45bad;">StrVec</span>::<span style="color: #4f97d7; font-weight: bold;">operator</span><span style="color: #bc6ec5; font-weight: bold;">=</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">StrVec</span> &amp;<span style="color: #7590db;">rhs</span>)
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">call alloc_n_copy to allocate exactly as many elements as in rhs</span>
+    <span style="color: #4f97d7; font-weight: bold;">auto</span> <span style="color: #7590db;">data</span> = alloc_n_copy(rhs.begin(), rhs.end());
+    free();
+    elements = data.first;
+    first_free = cap = data.second;
+    <span style="color: #4f97d7; font-weight: bold;">return</span> *<span style="color: #4f97d7; font-weight: bold;">this</span>;
+}
+
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #a45bad;">StrVec</span>::<span style="color: #bc6ec5; font-weight: bold;">reallocate</span>()
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">we'll allocate space for twice as many elements as the current size</span>
+    <span style="color: #4f97d7; font-weight: bold;">auto</span> <span style="color: #7590db;">newcapacity</span> = size() ? 2 * size() : 1;
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">allocate new memory</span>
+    <span style="color: #4f97d7; font-weight: bold;">auto</span> <span style="color: #7590db;">newdata</span> = alloc.allocate(newcapacity);
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">move the data from the old memory to the new</span>
+    <span style="color: #4f97d7; font-weight: bold;">auto</span> <span style="color: #7590db;">dest</span> = newdata; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">points to the next free position in the new array</span>
+    <span style="color: #4f97d7; font-weight: bold;">auto</span> <span style="color: #7590db;">elem</span> = elements; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">points to the next element in the old array</span>
+    <span style="color: #4f97d7; font-weight: bold;">for</span> (<span style="color: #ce537a; font-weight: bold;">size_t</span> <span style="color: #7590db;">i</span> = 0; i != size(); ++i)
+    {
+        alloc.construct(dest++, <span style="color: #a45bad;">std</span>::move(*elem++));
+    }
+    free(); <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">free the old space once we've moved the elements</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">update our data structure to point to the new elements</span>
+    elements = newdata;
+    first_free = dest;
+    cap = elements + newcapacity;
 }
 </pre>
 </div>
 </div>
 </div>
-
-<div id="outline-container-org381eba4" class="outline-5">
-<h5 id="org381eba4">动态内存管理类</h5>
 </div>
 <div id="outline-container-org201d634" class="outline-5">
 <h5 id="org201d634">对象移动</h5>
@@ -762,11 +990,21 @@ Tips:<br />
 <div id="outline-container-orga0d11fa" class="outline-6">
 <h6 id="orga0d11fa">标准库 move 函数</h6>
 <div class="outline-text-6" id="text-orga0d11fa">
+<p>
+标准库函数 std::move 可以将一个左值转换为其对应的右值。<br />
+</p>
 <div class="org-src-container">
-<pre class="src src-cpp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#27492;&#22788;&#30452;&#25509;&#35843;&#29992;&#26631;&#20934;&#24211;&#30340;move&#20989;&#25968;&#65292;&#32780;&#19981;&#26159;&#25552;&#20379;using&#22768;&#26126;&#65292;&#35843;&#29992;move&#20989;&#25968;</span>
+<pre class="src src-cpp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20026;&#20102;&#36991;&#20813;&#28508;&#22312;&#30340;&#21517;&#23383;&#20914;&#31361;&#65292;&#27492;&#22788;&#20351;&#29992;std::move&#32780;&#19981;&#26159;move</span>
 <span style="color: #ce537a; font-weight: bold;">int</span> &amp;&amp; <span style="color: #7590db;">rr3</span> = <span style="color: #a45bad;">std</span>::move(rr1);
 </pre>
 </div>
+<p>
+我们可以销毁一个移后源对象，可以给它赋新值，但是不能使用一个移后源对象的值。<br />
+</p>
+
+<ul class="org-ul">
+<li><a href="https://stackoverflow.com/questions/35910615/cant-understand-the-implementation-of-stdmove">https://stackoverflow.com/questions/35910615/cant-understand-the-implementation-of-stdmove</a><br /></li>
+</ul>
 </div>
 </div>
 <div id="outline-container-orgd72f5e1" class="outline-6">
@@ -799,6 +1037,25 @@ Tips:<br />
 </pre>
 </div>
 </div>
+<ul class="org-ul">
+<li><a id="org1474746"></a>什么时候调用移动构造函数和移动赋值运算符<br />
+<div class="outline-text-7" id="text-org1474746">
+<p>
+当提供给构造或赋值函数的参数是右值时，才会调用移动版本的构造函数和赋值运算符<br />
+</p>
+<ul class="org-ul">
+<li><a href="https://stackoverflow.com/questions/11077103/when-to-use-move-constructors-assignments">https://stackoverflow.com/questions/11077103/when-to-use-move-constructors-assignments</a><br /></li>
+</ul>
+</div>
+</li>
+<li><a id="org1d7b817"></a>为什么移动构造函数不需要处理自移动问题？<br />
+<div class="outline-text-7" id="text-org1d7b817">
+<p>
+因为移动构造函数 lhs 是新构造的对象，rhs 是已存在对象，lhs 肯定不可能等于 rhs，故不需要判断 lhs 和 rhs 的相等的问题。<br />
+</p>
+</div>
+</li>
+</ul>
 </div>
 <div id="outline-container-org0f75509" class="outline-6">
 <h6 id="org0f75509">合成的移动操作</h6>
@@ -852,21 +1109,21 @@ hp = <span style="color: #a45bad;">std</span>::move(hp2);   <span style="color: 
 uninitialized_copy 对输入序列中的每个元素调用 construct 来将元素“拷贝或移动”到目的位置。下面代码中，我们传递给他的是移动迭代器，因此解引用运算符生成的是一个右值引用，这意味着 construct 将使用移动构造函数来构造元素。<br />
 </p>
 <div class="org-src-container">
-<pre class="src src-cpp"><span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #a45bad;">StrVec</span>::<span style="color: #bc6ec5; font-weight: bold;">reallocate</span>()
-{
-    <span style="color: #4f97d7; font-weight: bold;">auto</span> <span style="color: #7590db;">newcapacity</span> = size() ? 2 * size() : 1;
-    <span style="color: #4f97d7; font-weight: bold;">auto</span> <span style="color: #7590db;">first</span> = alloc.allocate(newcapacity);
-    <span style="color: #4f97d7; font-weight: bold;">auto</span> <span style="color: #7590db;">last</span> = uninitialized_copy(
-                                   make_move_iterator(begin()),
-                                   make_move_iterator(end()),
-                                   first
-                                   );
+<pre class="src src-cpp">  <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #a45bad;">StrVec</span>::<span style="color: #bc6ec5; font-weight: bold;">reallocate</span>()
+  {
+      <span style="color: #4f97d7; font-weight: bold;">auto</span> <span style="color: #7590db;">newcapacity</span> = size() ? 2 * size() : 1;
+      <span style="color: #4f97d7; font-weight: bold;">auto</span> <span style="color: #7590db;">first</span> = alloc.allocate(newcapacity);
+      <span style="color: #4f97d7; font-weight: bold;">auto</span> <span style="color: #7590db;">last</span> = uninitialized_copy(
+                                     make_move_iterator(begin()),
+                                     make_move_iterator(end()),
+                                     first
+                                     );
 
-    free();
-    elements = first;
-    first_free = last;
-    cap = elements + newcapacity;
-}
+      free();
+      elements = first;
+      first_free = last;
+      cap = elements + newcapacity;
+  }
 </pre>
 </div>
 </div>
@@ -918,9 +1175,9 @@ Tips:<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-org093b40a" class="outline-6">
-<h6 id="org093b40a">Common</h6>
-<div class="outline-text-6" id="text-org093b40a">
+<div id="outline-container-org8f7e1f8" class="outline-6">
+<h6 id="org8f7e1f8">Common</h6>
+<div class="outline-text-6" id="text-org8f7e1f8">
 <p>
 五个拷贝控制成员应该看作一个整体：一般来说，如果类定义了任何一个拷贝操作，它就应该定义所有五个操作。如前所述，某些类拥有一个资源，而拷贝成员必须拷贝此资源，必须定义拷贝构造函数、拷贝赋值操作符和析构函数这些类才能正确工作。一般来说，拷贝一个资源会导致一些额外开销。在这种拷贝并非必要的情况下，定义了移动构造函数和移动赋值运算符的类就可以避免此问题。<br />
 </p>
@@ -935,12 +1192,399 @@ Tips:<br />
 <div id="outline-container-org2f0bf22" class="outline-4">
 <h4 id="org2f0bf22">16 模板与泛型编程</h4>
 <div class="outline-text-4" id="text-org2f0bf22">
+<p>
+利用 OOP 的多态和模板编程都可以实现一套代码处理多种类型。他们的不同之处在于:<br />
+OOP 多态处理运行起来传入的函数参数的类型可以不同，但是这些不同类型属于同一个继承树，函数形参的类型为基类。<br />
+模板编程则利用编译器在编译的时候为不同类型生成不同的实例。<br />
+</p>
 </div>
 <div id="outline-container-orgde47ed2" class="outline-5">
 <h5 id="orgde47ed2">定义模板</h5>
+<div class="outline-text-5" id="text-orgde47ed2">
+</div>
+<div id="outline-container-org05c09f7" class="outline-6">
+<h6 id="org05c09f7">函数模板</h6>
+<div class="outline-text-6" id="text-org05c09f7">
+<p>
+函数模板通过函数调用的实参推导出函数的形参类型，进而推导出模板实参，从而可以将模板实参绑定到模板参数。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">template</span>&lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">T</span>&gt;
+<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #bc6ec5; font-weight: bold;">compare</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">T</span>&amp; <span style="color: #7590db;">v1</span>, <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">T</span>&amp; <span style="color: #7590db;">v2</span>)
+{
+    <span style="color: #4f97d7; font-weight: bold;">if</span>(v1 &gt; v2) <span style="color: #4f97d7; font-weight: bold;">return</span> 1;
+    <span style="color: #4f97d7; font-weight: bold;">else</span> <span style="color: #4f97d7; font-weight: bold;">if</span>(v1 &lt; v2) <span style="color: #4f97d7; font-weight: bold;">return</span> -1;
+    <span style="color: #4f97d7; font-weight: bold;">else</span> <span style="color: #4f97d7; font-weight: bold;">return</span> 0;
+}
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20989;&#25968;&#23454;&#21442;&#31867;&#22411;&#20026;int --&gt; &#20989;&#25968;&#24418;&#21442;&#31867;&#22411;&#20026;const int&amp; --&gt; &#27169;&#26495;&#23454;&#21442;&#20026;int --&gt; &#27169;&#26495;&#21442;&#25968;&#20026; int</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#32534;&#35793;&#22120;&#20351;&#29992;&#25512;&#26029;&#20986;&#30340;&#27169;&#26495;&#21442;&#25968;&#23454;&#20363;&#21270;&#19968;&#20010;&#29305;&#23450;&#29256;&#26412;&#30340;&#20989;&#25968; int compare(const int&amp; v1, const int&amp; v2);</span>
+cout &lt;&lt; compare(1, 0) &lt;&lt; endl;
+</pre>
+</div>
+</div>
+<ul class="org-ul">
+<li><a id="orgdf31ef8"></a>模板参数<br />
+<div class="outline-text-7" id="text-orgdf31ef8">
+<p>
+模板参数分为模板类型参数和非类型模板参数。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">T &#20026;&#27169;&#26495;&#31867;&#22411;&#21442;&#25968;</span>
+<span style="color: #4f97d7; font-weight: bold;">template</span>&lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">T</span>&gt;
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">foo</span>()
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">.......</span>
+}
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">N&#21644;M&#20026;&#38750;&#31867;&#22411;&#27169;&#26495;&#21442;&#25968;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22312;&#27169;&#26495;&#23450;&#20041;&#20869;&#65292;&#38750;&#31867;&#22411;&#27169;&#26495;&#21442;&#25968;&#26159;&#24120;&#25968;&#20540;&#65292;&#22312;&#38656;&#35201;&#24120;&#37327;&#34920;&#36798;&#24335;&#30340;&#22320;&#26041;&#21487;&#20197;&#20351;&#29992;&#38750;&#31867;&#22411;&#27169;&#26495;&#21442;&#25968;&#65288;&#20363;&#22914;&#65292;&#29992;&#20110;&#25351;&#23450;&#25968;&#32452;&#22823;&#23567;&#65289;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">TIPS: &#38750;&#31867;&#22411;&#27169;&#26495;&#21442;&#25968;&#30340;&#27169;&#26495;&#23454;&#21442;&#24517;&#39035;&#26159;&#24120;&#37327;&#34920;&#36798;&#24335;</span>
+<span style="color: #4f97d7; font-weight: bold;">template</span>&lt;<span style="color: #ce537a; font-weight: bold;">unsigned</span> <span style="color: #7590db;">N</span>, <span style="color: #ce537a; font-weight: bold;">unsigned</span> <span style="color: #7590db;">M</span>&gt;
+<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #bc6ec5; font-weight: bold;">compare</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">char</span> (&amp;<span style="color: #7590db;">p1</span>)[N], <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">char</span> (&amp;<span style="color: #7590db;">p2</span>)[M])
+{
+    <span style="color: #4f97d7; font-weight: bold;">return</span> strcmp(p1, p2);
+}
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#32534;&#35793;&#22120;&#23454;&#20363;&#21270;&#30340;&#29305;&#23450;&#29256;&#26412;&#20026; int compare(const char (&amp;p1)[3], const char (&amp;p1)[4]);</span>
+cout &lt;&lt; compare(<span style="color: #2d9574;">"hi"</span>, <span style="color: #2d9574;">"mom"</span>) &lt;&lt; endl;
+</pre>
+</div>
+</div>
+</li>
+<li><a id="orgd96ec50"></a>inline constexpr 修饰符<br />
+<div class="outline-text-7" id="text-orgd96ec50">
+<p>
+可以使用 inline constexpr 修饰模板函数，修饰符放在模板参数列表之后返回值类型之前<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">template</span>&lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">T</span>&gt; <span style="color: #4f97d7; font-weight: bold;">inline</span> <span style="color: #ce537a; font-weight: bold;">T</span> <span style="color: #bc6ec5; font-weight: bold;">min</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">T</span>&amp;, <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">T</span>&amp;);
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19979;&#38754;&#27169;&#26495;&#20989;&#25968;&#36820;&#22238;&#25968;&#32452;&#22823;&#23567;</span>
+<span style="color: #4f97d7; font-weight: bold;">template</span>&lt;<span style="color: #ce537a; font-weight: bold;">unsigned</span> <span style="color: #7590db;">N</span>, <span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">T</span>&gt;
+<span style="color: #4f97d7; font-weight: bold;">constexpr</span> <span style="color: #ce537a; font-weight: bold;">unsigned</span> <span style="color: #bc6ec5; font-weight: bold;">array_len</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">T</span> (&amp;<span style="color: #7590db;">arr</span>)[N])
+{
+    cout &lt;&lt; N &lt;&lt; endl;
+    <span style="color: #4f97d7; font-weight: bold;">return</span> N;
+}
+array_len(<span style="color: #2d9574;">"hi"</span>);
+</pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-org7534e7f" class="outline-6">
+<h6 id="org7534e7f">类模板</h6>
+<div class="outline-text-6" id="text-org7534e7f">
+<p>
+类模板是生成类的蓝图，和函数模板不同的是，编译器无法为类模板推断模板参数类型。因此实例化类模板时，必须指定模板实参。<br />
+</p>
+</div>
+<ul class="org-ul">
+<li><a id="org9385daf"></a>定义类模版<br />
+<div class="outline-text-7" id="text-org9385daf">
+<p>
+当使用类模板类型时，必须提供模板实参，但这一规则有一个例外，在类模板自己的作用域中，可以直接使用模板名而不提供实参。在类模板外定义成员时，并不在类的作用域中，直到遇到类名才表示进入类的作用域。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">template</span> &lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">T</span>&gt; <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Blob</span>
+{
+<span style="color: #4f97d7; font-weight: bold;">public</span>:
+    <span style="color: #4f97d7; font-weight: bold;">typedef</span> <span style="color: #ce537a; font-weight: bold;">T</span> <span style="color: #ce537a; font-weight: bold;">value_type</span>;
+    <span style="color: #4f97d7; font-weight: bold;">typedef</span> <span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #a45bad;">std</span>::<span style="color: #a45bad;">vector</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt;::<span style="color: #ce537a; font-weight: bold;">size_type</span> <span style="color: #ce537a; font-weight: bold;">size_type</span>;
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">constructors </span>
+    <span style="color: #bc6ec5; font-weight: bold;">Blob</span>();
+    <span style="color: #bc6ec5; font-weight: bold;">Blob</span>(<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">initializer_list</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt; <span style="color: #7590db;">il</span>);
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">number of elements in the Blob</span>
+    <span style="color: #ce537a; font-weight: bold;">size_type</span> <span style="color: #bc6ec5; font-weight: bold;">size</span>() <span style="color: #4f97d7; font-weight: bold;">const</span> { <span style="color: #4f97d7; font-weight: bold;">return</span> data-&gt;size(); }
+    <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #bc6ec5; font-weight: bold;">empty</span>() <span style="color: #4f97d7; font-weight: bold;">const</span> { <span style="color: #4f97d7; font-weight: bold;">return</span> data-&gt;empty(); }
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">add and remove elements</span>
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">push_back</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">T</span> &amp;<span style="color: #7590db;">t</span>) {data-&gt;push_back(t);}
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">move version; see &#167; 13.6.3 (p. 548)</span>
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">push_back</span>(<span style="color: #ce537a; font-weight: bold;">T</span> &amp;&amp;<span style="color: #7590db;">t</span>) { data-&gt;push_back(<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">move</span>(<span style="color: #7590db;">t</span>)); } <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">pop_back</span>();
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">element access</span>
+    <span style="color: #ce537a; font-weight: bold;">T</span>&amp; <span style="color: #bc6ec5; font-weight: bold;">back</span>();
+    <span style="color: #ce537a; font-weight: bold;">T</span>&amp; <span style="color: #4f97d7; font-weight: bold;">operator</span><span style="color: #bc6ec5; font-weight: bold;">[]</span>(<span style="color: #ce537a; font-weight: bold;">size_type</span> <span style="color: #7590db;">i</span>); <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">defined in</span>
+<span style="color: #4f97d7; font-weight: bold;">private</span>:
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">vector</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt;&gt; <span style="color: #7590db;">data</span>;
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">throws msg if data[i] isn't valid</span>
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">check</span>(<span style="color: #ce537a; font-weight: bold;">size_type</span> <span style="color: #7590db;">i</span>, <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span> &amp;<span style="color: #7590db;">msg</span>) <span style="color: #4f97d7; font-weight: bold;">const</span>;
+};
+
+<span style="color: #4f97d7; font-weight: bold;">template</span> &lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">T</span>&gt;
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #a45bad;">Blob</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt;::<span style="color: #bc6ec5; font-weight: bold;">check</span>(<span style="color: #ce537a; font-weight: bold;">size_type</span> <span style="color: #7590db;">i</span>, <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span> &amp;<span style="color: #7590db;">msg</span>) <span style="color: #4f97d7; font-weight: bold;">const</span>
+{
+    <span style="color: #4f97d7; font-weight: bold;">if</span> (i &gt;= data-&gt;size())
+        <span style="color: #4f97d7; font-weight: bold;">throw</span> <span style="color: #a45bad;">std</span>::out_of_range(msg);
+}
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">template</span> &lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">T</span>&gt;
+<span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">BlobPtr</span>
+{
+<span style="color: #4f97d7; font-weight: bold;">public</span>:
+    <span style="color: #bc6ec5; font-weight: bold;">BlobPtr</span>(): curr(0) { }
+    <span style="color: #bc6ec5; font-weight: bold;">BlobPtr</span>(<span style="color: #ce537a; font-weight: bold;">Blob</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt; &amp;<span style="color: #7590db;">a</span>, <span style="color: #ce537a; font-weight: bold;">size_t</span> <span style="color: #7590db;">sz</span> = 0): wptr(a.data), curr(sz) { }
+    <span style="color: #ce537a; font-weight: bold;">T</span>&amp; <span style="color: #4f97d7; font-weight: bold;">operator</span><span style="color: #bc6ec5; font-weight: bold;">*</span>() <span style="color: #4f97d7; font-weight: bold;">const</span>
+    {
+        <span style="color: #4f97d7; font-weight: bold;">auto</span> <span style="color: #7590db;">p</span> = check(curr, <span style="color: #2d9574;">"dereference past end"</span>);
+        <span style="color: #4f97d7; font-weight: bold;">return</span> (*p)[curr]; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">(*p) is the vector to which this object points</span>
+    }
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">increment and decrement &#27880;&#24847; &#19979;&#38754;&#20004;&#20010;&#20989;&#25968;&#30340;&#36820;&#22238;&#20540;&#31867;&#22411;&#30465;&#30053;&#20102;&#27169;&#26495;&#21442;&#25968;</span>
+    <span style="color: #ce537a; font-weight: bold;">BlobPtr</span>&amp; <span style="color: #4f97d7; font-weight: bold;">operator</span><span style="color: #bc6ec5; font-weight: bold;">++</span>(); <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">prefix operators</span>
+    <span style="color: #ce537a; font-weight: bold;">BlobPtr</span>&amp; <span style="color: #4f97d7; font-weight: bold;">operator</span><span style="color: #bc6ec5; font-weight: bold;">--</span>();
+<span style="color: #4f97d7; font-weight: bold;">private</span>:
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">check returns a shared_ptr to the vector if the check succeeds std::shared_ptr&lt;std::vector&lt;T&gt;&gt;</span>
+    check(<span style="color: #a45bad;">std</span>::size_t, <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span>&amp;) <span style="color: #4f97d7; font-weight: bold;">const</span>;
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">store a weak_ptr, which means the underlying vector might be destroyed std::weak_ptr&lt;std::vector&lt;T&gt;&gt; wptr;</span>
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">size_t</span> <span style="color: #7590db;">curr</span>; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">current position within the array</span>
+};
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#27880;&#24847; &#19979;&#38754;&#20989;&#25968;&#30340;&#36820;&#22238;&#20540;&#31867;&#22411;&#19981;&#22312;&#31867;&#20316;&#29992;&#22495;&#20869;&#65292;&#19981;&#33021;&#30465;&#30053;&#27169;&#26495;&#21442;&#25968;</span>
+<span style="color: #ce537a; font-weight: bold;">BlobPtr</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt; <span style="color: #a45bad;">BlobPtr</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt;::<span style="color: #4f97d7; font-weight: bold;">operator</span><span style="color: #bc6ec5; font-weight: bold;">++</span>(<span style="color: #ce537a; font-weight: bold;">int</span>)
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">no check needed here; the call to prefix increment will do the check</span>
+    <span style="color: #ce537a; font-weight: bold;">BlobPtr</span> <span style="color: #7590db;">ret</span> = *<span style="color: #4f97d7; font-weight: bold;">this</span>; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">save the current value  Tips: &#22312;&#31867;&#20316;&#29992;&#22495;&#20869;&#21487;&#30465;&#30053;&#27169;&#26495;&#21442;&#25968;</span>
+    ++*<span style="color: #4f97d7; font-weight: bold;">this</span>; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">advance one element; prefix ++ checks the increment</span>
+    <span style="color: #4f97d7; font-weight: bold;">return</span> ret; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">return the saved state</span>
+}
+</pre>
+</div>
+</div>
+</li>
+<li><a id="org87e9031"></a>类模板和友元<br />
+<div class="outline-text-7" id="text-org87e9031">
+<p>
+下面代码将 BlobPtr 和 模板版本的 Blob 相等运算符定义为 Blob 的友元：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#27169;&#26495;1&#23545;1&#21451;&#20803;&#65292;&#38656;&#35201;&#23545;&#27169;&#26495;&#21451;&#20803;&#36827;&#34892;&#21069;&#32622;&#22768;&#26126;</span>
+<span style="color: #4f97d7; font-weight: bold;">template</span> &lt;<span style="color: #4f97d7; font-weight: bold;">typename</span>&gt; <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">BlobPtr</span>;
+<span style="color: #4f97d7; font-weight: bold;">template</span> &lt;<span style="color: #4f97d7; font-weight: bold;">typename</span>&gt; <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Blob</span>;
+<span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #4f97d7; font-weight: bold;">operator</span><span style="color: #bc6ec5; font-weight: bold;">==</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">Blob</span>&lt;T&gt;&amp;, <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">Blob</span>&lt;T&gt;&amp;);
+
+<span style="color: #4f97d7; font-weight: bold;">template</span> &lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">T</span>&gt;
+<span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Blob</span>
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">each instantiation of Blob grants access to the version of</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">BlobPtr and the equality operator instantiated with the same type</span>
+    <span style="color: #4f97d7; font-weight: bold;">friend</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">BlobPtr</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt;;
+    <span style="color: #4f97d7; font-weight: bold;">friend</span> <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #4f97d7; font-weight: bold;">operator</span><span style="color: #7590db;">==</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt; (<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">Blob</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt;&amp;, <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">Blob</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt;&amp;);
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">......</span>
+};
+
+<span style="color: #ce537a; font-weight: bold;">Blob</span>&lt;<span style="color: #ce537a; font-weight: bold;">char</span>&gt; <span style="color: #7590db;">a</span>;    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">BlotPtr&lt;char&gt; &#21644; bool operator==(const Blob&lt;char&gt;&amp;, const Blob&lt;char&gt;&amp;) &#37117;&#26159; Blob&lt;char&gt; &#30340;&#21451;&#20803;&#12290;</span>
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Pal &#27169;&#26495;&#31867;&#30340;&#21069;&#32622;&#22768;&#26126;</span>
+<span style="color: #4f97d7; font-weight: bold;">template</span> &lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">T</span>&gt; <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Pal</span>;
+<span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">C</span>
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Pal&#27169;&#26495;&#31867;&#30340;Pal&lt;C&gt;&#23454;&#20363;&#26159;&#31867;C&#30340;&#21451;&#20803;&#65292;&#22240;&#27492;&#38656;&#35201;&#21069;&#32622;&#22768;&#26126;</span>
+    <span style="color: #4f97d7; font-weight: bold;">friend</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Pal</span>&lt;<span style="color: #ce537a; font-weight: bold;">C</span>&gt;; 
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Pal2&#27169;&#26495;&#31867;&#30340;&#25152;&#26377;&#23454;&#20363;&#37117;&#26159;&#31867;C &#30340;&#21451;&#20803;&#65292;&#22240;&#27492;&#19981;&#38656;&#35201;&#21069;&#32622;&#22768;&#26126;</span>
+    <span style="color: #4f97d7; font-weight: bold;">template</span> &lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">T</span>&gt; <span style="color: #4f97d7; font-weight: bold;">friend</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Pal2</span>;
+};
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Pal &#27169;&#26495;&#31867;&#30340;&#21069;&#32622;&#22768;&#26126;</span>
+<span style="color: #4f97d7; font-weight: bold;">template</span> &lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">T</span>&gt; <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Pal</span>;
+<span style="color: #4f97d7; font-weight: bold;">template</span> &lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">T</span>&gt; <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">C2</span>
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Pal&#27169;&#26495;&#31867;&#30340;Pal&lt;C&gt;&#23454;&#20363;&#26159;&#31867;C2&#30340;&#21451;&#20803;&#65292;&#22240;&#27492;&#38656;&#35201;&#21069;&#32622;&#22768;&#26126;</span>
+    <span style="color: #4f97d7; font-weight: bold;">friend</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Pal</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt;;
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Pal2 &#30446;&#26631;&#31867;&#30340;&#25152;&#26377;&#23454;&#20363;&#37117;&#26159;&#31867;C2 &#30340;&#21451;&#20803;&#65292;&#22240;&#27492;&#19981;&#38656;&#35201;&#21069;&#32622;&#22768;&#26126;</span>
+    <span style="color: #4f97d7; font-weight: bold;">template</span> &lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">X</span>&gt; <span style="color: #4f97d7; font-weight: bold;">friend</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Pal2</span>;
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Pal3 &#20026;&#38750;&#27169;&#26495;&#31867;&#65292;&#22240;&#27492;&#19981;&#38656;&#35201;&#21069;&#32622;&#22768;&#26126;</span>
+    <span style="color: #4f97d7; font-weight: bold;">friend</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Pal3</span>;
+};
+</pre>
+</div>
+</div>
+</li>
+
+<li><a id="org88d79a5"></a>模板类型别名<br />
+<div class="outline-text-7" id="text-org88d79a5">
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">template</span>&lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">T</span>&gt; <span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #ce537a; font-weight: bold;">twin</span> = <span style="color: #ce537a; font-weight: bold;">pair</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>, <span style="color: #ce537a; font-weight: bold;">T</span>&gt;;
+<span style="color: #ce537a; font-weight: bold;">twin</span>&lt;<span style="color: #ce537a; font-weight: bold;">string</span>&gt; <span style="color: #7590db;">authors</span>; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">authors is a pair&lt;string, string&gt;</span>
+<span style="color: #ce537a; font-weight: bold;">twin</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt; <span style="color: #7590db;">win_loss</span>;   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">win_loss is a pair&lt;int, int&gt;</span>
+<span style="color: #ce537a; font-weight: bold;">twin</span>&lt;<span style="color: #ce537a; font-weight: bold;">double</span>&gt; <span style="color: #7590db;">area</span>;    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">area is a pair&lt;double, double&gt;</span>
+
+<span style="color: #4f97d7; font-weight: bold;">template</span> &lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">T</span>&gt; <span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #ce537a; font-weight: bold;">partNo</span> = <span style="color: #ce537a; font-weight: bold;">pair</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>, <span style="color: #ce537a; font-weight: bold;">unsigned</span>&gt;;
+<span style="color: #ce537a; font-weight: bold;">partNo</span>&lt;<span style="color: #ce537a; font-weight: bold;">string</span>&gt; <span style="color: #7590db;">books</span>; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">books is a pair&lt;string, unsigned&gt;</span>
+<span style="color: #ce537a; font-weight: bold;">partNo</span>&lt;Vehicle&gt; <span style="color: #7590db;">cars</span>; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">cars is a pair&lt;Vehicle, unsigned&gt;</span>
+<span style="color: #ce537a; font-weight: bold;">partNo</span>&lt;Student&gt; <span style="color: #7590db;">kids</span>; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">kids is a pair&lt;Student, unsigned&gt;</span>
+</pre>
+</div>
+</div>
+</li>
+<li><a id="org3c8cb48"></a>类模板 static 成员<br />
+<div class="outline-text-7" id="text-org3c8cb48">
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">template</span> &lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">T</span>&gt; <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Foo</span>
+{
+<span style="color: #4f97d7; font-weight: bold;">public</span>:
+    <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">size_t</span> <span style="color: #bc6ec5; font-weight: bold;">count</span>() { <span style="color: #4f97d7; font-weight: bold;">return</span> ctr; }
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">other interface members private:</span>
+    <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">size_t</span> <span style="color: #7590db;">ctr</span>;
+};
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23450;&#20041;&#24182;&#21021;&#22987;&#21270;&#38745;&#24577;&#25104;&#21592;</span>
+<span style="color: #4f97d7; font-weight: bold;">template</span> &lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">T</span>&gt; <span style="color: #ce537a; font-weight: bold;">size_t</span> <span style="color: #a45bad;">Foo</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt;::<span style="color: #7590db;">ctr</span> = 0;
+</pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-org9c013ad" class="outline-6">
+<h6 id="org9c013ad">模板参数</h6>
+<div class="outline-text-6" id="text-org9c013ad">
+<p>
+模板参数的作用域遵循普通作用域规则。一个模板参数名的可用范围是在其声明之后，到模板声明或定义结束之前。与任何其他名字一样，模板参数名会隐藏外层作用域中声明的相同名字。<br />
+</p>
+
+<p>
+模板声明必须包含模板参数，但是模板参数的名字可以和定义中不同。<br />
+</p>
+</div>
+<ul class="org-ul">
+<li><a id="org2baae5b"></a>模板参数的类型成员<br />
+<div class="outline-text-7" id="text-org2baae5b">
+<p>
+假设 T 为模板参数，当编译器遇到 T::mem 这样的代码时，无法识别 T::mem 为类型成员，还是一个 static 数据成员。但是，为了处理模板编译器必须确定 T::mem 到底是哪一者。这样才能确认 T::mem * p; 这样的代码是定义一个 T::mem 类型的指针对象，还是计算 T::mem 和 p 的乘积。为此，编译器默认 T::mem 为数据成员，如果需要指定 T::mem 为类型成员，需要在 T::mem 前加 typename。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">template</span> &lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">T</span>&gt;
+<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #a45bad;">T</span>::<span style="color: #ce537a; font-weight: bold;">value_type</span> <span style="color: #bc6ec5; font-weight: bold;">top</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">T</span>&amp; <span style="color: #7590db;">c</span>)
+{
+    <span style="color: #4f97d7; font-weight: bold;">if</span> (<span style="color: #a45bad;">!</span>c.empty())
+        <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #a45bad;">T</span>::value_type();
+    <span style="color: #4f97d7; font-weight: bold;">else</span>
+        <span style="color: #4f97d7; font-weight: bold;">return</span> c.back();
+}
+</pre>
+</div>
+</div>
+</li>
+<li><a id="org5c78b04"></a>默认模板实参<br />
+<div class="outline-text-7" id="text-org5c78b04">
+<p>
+函数模板默认模板实参<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">template</span> &lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">T</span>, <span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">F</span> = <span style="color: #ce537a; font-weight: bold;">less</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt;&gt;
+<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #bc6ec5; font-weight: bold;">compare</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">T</span> &amp;<span style="color: #7590db;">v1</span>, <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">T</span> &amp;<span style="color: #7590db;">v2</span>, <span style="color: #ce537a; font-weight: bold;">F</span> <span style="color: #7590db;">f</span> = F())
+{
+    <span style="color: #4f97d7; font-weight: bold;">if</span> (f(v2, v1)) <span style="color: #4f97d7; font-weight: bold;">return</span> 1;
+    <span style="color: #4f97d7; font-weight: bold;">if</span> (f(v1, v2)) <span style="color: #4f97d7; font-weight: bold;">return</span> -1;
+    <span style="color: #4f97d7; font-weight: bold;">return</span> 0;
+}
+
+<span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #7590db;">i</span> = compare(0, 42); <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">uses less; i is -1 // result depends on the isbns in item1 and item2</span>
+<span style="color: #ce537a; font-weight: bold;">Sales_data</span> <span style="color: #bc6ec5; font-weight: bold;">item1</span>(cin), <span style="color: #bc6ec5; font-weight: bold;">item2</span>(cin);
+<span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #7590db;">j</span> = compare(item1, item2, compareIsbn);
+</pre>
+</div>
+
+<p>
+类模板默认模板实参<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">template</span> &lt;<span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">T</span> = <span style="color: #ce537a; font-weight: bold;">int</span>&gt;
+<span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Numbers</span>
+{
+<span style="color: #4f97d7; font-weight: bold;">public</span>:
+    <span style="color: #bc6ec5; font-weight: bold;">Numbers</span>(<span style="color: #ce537a; font-weight: bold;">T</span> <span style="color: #7590db;">v</span> = 0): <span style="color: #bc6ec5; font-weight: bold;">val</span>(v) { }
+<span style="color: #4f97d7; font-weight: bold;">private</span>:
+    <span style="color: #ce537a; font-weight: bold;">T</span> <span style="color: #7590db;">val</span>;
+};
+
+<span style="color: #ce537a; font-weight: bold;">Numbers</span>&lt;<span style="color: #ce537a; font-weight: bold;">long</span> <span style="color: #ce537a; font-weight: bold;">double</span>&gt; <span style="color: #7590db;">lots_of_precision</span>;
+<span style="color: #ce537a; font-weight: bold;">Numbers</span>&lt;&gt; <span style="color: #7590db;">average_precision</span>;
+</pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-orgbdac41d" class="outline-6">
+<h6 id="orgbdac41d">成员模板</h6>
+</div>
+<div id="outline-container-orgd66efbe" class="outline-6">
+<h6 id="orgd66efbe">控制实例化</h6>
+<div class="outline-text-6" id="text-orgd66efbe">
+<p>
+当模板被使用的时候才会实例化，这一特性意味着，当两个或多个独立编译的源文件你用了相同的模板，并提供了相同的目标参数时，每个文件中都有该模板的一个实例。<br />
+在大系统中，在多个文件中实例化相同模板实例的额外开销可能非常严重。可以通过显示实例化来避免这种开销。一个显示实例化有如下形式：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">extern</span> <span style="color: #4f97d7; font-weight: bold;">template</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Blob</span>&lt;<span style="color: #ce537a; font-weight: bold;">string</span>&gt;; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23454;&#20363;&#21270;&#22768;&#26126;</span>
+<span style="color: #4f97d7; font-weight: bold;">template</span> <span style="color: #ce537a; font-weight: bold;">Blob</span>&lt;<span style="color: #ce537a; font-weight: bold;">string</span>&gt;;              <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23454;&#20363;&#21270;&#23450;&#20041;</span>
+</pre>
+</div>
+<p>
+当编译器遇到实例化声明不会在该文件中生成实例化代码。将一个实例化声明为 extern 就表示承诺在程序的其他位置有该声明对应的实例化定义。在使用模板之前没有对模板进行声明，编译器就会自动对其进行实例化。<br />
+</p>
+
+<p>
+Tips： 实例化定义会实例化所有成员。<br />
+</p>
+</div>
+</div>
 </div>
 <div id="outline-container-org6de35fa" class="outline-5">
 <h5 id="org6de35fa">模板实参推断</h5>
+<div class="outline-text-5" id="text-org6de35fa">
+</div>
+<div id="outline-container-orgea89b81" class="outline-6">
+<h6 id="orgea89b81">类型转换</h6>
+<div class="outline-text-6" id="text-orgea89b81">
+<p>
+和非模板函数一样，调用模板函数时，传递给函数模板的实参被用来实例化函数的形参。如果一个函数形参的类型使用了模板类型参数，则该形参的初始化使用特殊规则。编译器通常不是对实参进行类型转换，而是生成一个新的模板实例。<br />
+</p>
+
+<p>
+与往常一样，顶层 const 无论是在形参中还是在实参中，都会被忽略。其他转换中，能在调用中应用于函数模板的包括以下两项：<br />
+</p>
+<ol class="org-ol">
+<li>const 转换：<br /></li>
+<li>数组或函数指针的转换：<br /></li>
+</ol>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">f1</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">arg</span>)
+{
+    <span style="color: #a45bad;">std</span>::cout &lt;&lt; arg;
+}
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">f2</span>(<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">arg</span>)
+{
+    <span style="color: #a45bad;">std</span>::cout &lt;&lt; arg;
+}
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">f3</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">int</span>&amp; <span style="color: #7590db;">arg</span>)
+{
+    <span style="color: #a45bad;">std</span>::cout &lt;&lt; arg;
+}
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">f4</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">int</span>* <span style="color: #7590db;">arg</span>)
+{
+    <span style="color: #a45bad;">std</span>::cout &lt;&lt; *arg;
+}
+<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">i</span>=10;
+<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">j</span>=10;
+<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">int</span>&amp; <span style="color: #7590db;">k</span> = 10;
+f1(i);    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#24418;&#21442;&#20013;&#30340;&#39030;&#23618;const &#34987;&#24573;&#30053;&#12290;&#20540;&#20256;&#36882;&#65292;&#21487;&#20197;&#20351;&#29992;int i&#21021;&#22987;&#21270; const int &#31867;&#22411;&#30340;&#24418;&#21442; arg</span>
+f2(j);    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23454;&#21442;&#20013;&#30340;&#39030;&#23618;const&#34987;&#24573;&#30053;&#12290;&#20540;&#20256;&#36882;&#65292;&#21487;&#20197;&#20351;&#29992;const int j &#21021;&#22987;&#21270; int &#31867;&#22411;&#30340;&#24418;&#21442; arg</span>
+f2(k);    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23454;&#21442;&#20013;&#30340;&#39030;&#23618;const&#34987;&#24573;&#30053;&#12290;&#20540;&#20256;&#36882;&#65292;&#21487;&#20197;&#20351;&#29992;const int&amp; k &#21021;&#22987;&#21270; int &#31867;&#22411;&#30340;&#24418;&#21442; arg</span>
+f3(i);    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#24418;&#21442;&#20013;&#30340;&#39030;&#23618;const&#34987;&#24573;&#30053;&#12290;&#24341;&#29992;&#20256;&#36882;&#65292;&#21487;&#20197;&#20351;&#29992;int j &#21021;&#22987;&#21270; const int&amp; &#31867;&#22411;&#30340;&#24418;&#21442; arg</span>
+</pre>
+</div>
+</div>
+</div>
 </div>
 <div id="outline-container-org73ef3a3" class="outline-5">
 <h5 id="org73ef3a3">重载与模板</h5>
@@ -963,9 +1607,9 @@ Tips:<br />
 
 <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">i</span>=0; <span style="color: #ce537a; font-weight: bold;">double</span> <span style="color: #7590db;">d</span>=3.14; <span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #7590db;">s</span>=<span style="color: #2d9574;">"hi"</span>;
 <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#32534;&#35793;&#22120;&#20174;&#23454;&#21442;&#25512;&#26029;&#27169;&#26495;&#21442;&#25968;&#31867;&#22411;&#65292;&#20197;&#21450;&#21442;&#25968;&#21253;&#20013;&#21442;&#25968;&#30340;&#25968;&#30446;&#12290;</span>
-foo(i, s, 42, d);     <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21253;&#20013;&#26377;3&#20010;&#21442;&#25968;  &#32534;&#35793;&#22120;&#23454;&#20363;&#21270;&#29256;&#26412;void foo(const int&amp;, const string, const int&amp;, const double&amp;)</span>
-foo(i, s, <span style="color: #2d9574;">"hi"</span>);      <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21253;&#20013;&#26377;2&#20010;&#21442;&#25968;  &#32534;&#35793;&#22120;&#23454;&#20363;&#21270;&#29256;&#26412;void foo(const int&amp;, const string, const char[3]&amp;)</span>
-foo(i, s);            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21253;&#20013;&#26377;1&#20010;&#21442;&#25968;  &#32534;&#35793;&#22120;&#23454;&#20363;&#21270;&#29256;&#26412;void foo(const int&amp;, const string)</span>
+foo(i, s, 42, d);     <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21253;&#20013;&#26377;3&#20010;&#21442;&#25968;  &#32534;&#35793;&#22120;&#23454;&#20363;&#21270;&#29256;&#26412;void foo(const int&amp;, const string&amp;, const int&amp;, const double&amp;)</span>
+foo(i, s, <span style="color: #2d9574;">"hi"</span>);      <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21253;&#20013;&#26377;2&#20010;&#21442;&#25968;  &#32534;&#35793;&#22120;&#23454;&#20363;&#21270;&#29256;&#26412;void foo(const int&amp;, const string&amp;, const char[3]&amp;)</span>
+foo(i, s);            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21253;&#20013;&#26377;1&#20010;&#21442;&#25968;  &#32534;&#35793;&#22120;&#23454;&#20363;&#21270;&#29256;&#26412;void foo(const int&amp;, const string&amp;)</span>
 foo(i);               <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#31354;&#21253;            &#32534;&#35793;&#22120;&#23454;&#20363;&#21270;&#29256;&#26412;void foo(const int&amp;)</span>
 </pre>
 </div>
@@ -1233,11 +1877,23 @@ typeid(e)   //e 可以是任意表达式或类型的名字。<br />
 <ul class="org-ul">
 <li>如果表达式是一个引用，则 typeid 返回该引用所引对象的类型。<br /></li>
 <li>typeid 作用域数组或函数时，并不执行向指针的标准类型转换。因此，如果对数组 a 执行 typeid(a)，则所得的结果是数组类型而非指针类型<br /></li>
-<li>typeid 作用于指针时，返回的结果时该指针的静态编译时类型<br /></li>
+<li>typeid 作用于指针时，返回的结果是该指针的静态编译时类型<br /></li>
 </ul>
 <p>
 typeid 操作的结果是一个常量对象的引用，该对象的类型是标准库类型 type_info 或者 type_info 的公有派生类型。<br />
 </p>
+
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;iostream&gt;</span>
+<span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;typeinfo&gt;</span>
+<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #4f97d7; font-weight: bold;">namespace</span> <span style="color: #a45bad;">std</span>;
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">f</span>()
+{
+    <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #4f97d7; font-weight: bold;">auto</span>&amp; <span style="color: #7590db;">t_info</span> = <span style="color: #4f97d7; font-weight: bold;">typeid</span>(t);
+    cout &lt;&lt; t_info.name() &lt;&lt; endl;
+}
+</pre>
+</div>
 </div>
 </div>
 <div id="outline-container-orga7a632a" class="outline-6">
@@ -1338,6 +1994,134 @@ t1.before(t2)    <span style="color: #2aa1ae; background-color: #292e34;">// </s
 </div>
 </div>
 </div>
+<div id="outline-container-org7289092" class="outline-2">
+<h2 id="org7289092">Effective Modern C++</h2>
+<div class="outline-text-2" id="text-org7289092">
+</div>
+<div id="outline-container-orgfee85a3" class="outline-3">
+<h3 id="orgfee85a3">Deducing Types</h3>
+<div class="outline-text-3" id="text-orgfee85a3">
+</div>
+<div id="outline-container-org9925de8" class="outline-4">
+<h4 id="org9925de8">Understand template type deduction</h4>
+<div class="outline-text-4" id="text-org9925de8">
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19979;&#38754;&#20026;&#27169;&#26495;&#20989;&#25968;&#30340;&#22768;&#26126;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">ParamType &#26377;&#20197;&#19979;&#19977;&#31181;&#24773;&#20917;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">case 1 : ParamType &#20026;&#25351;&#38024;&#25110;&#24341;&#29992;(&#38750; universal &#24341;&#29992;)</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">case 2 : ParamType &#20026;universal &#24341;&#29992;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">case 3 : ParamType &#26082;&#19981;&#26159;&#25351;&#38024;&#20063;&#19981;&#26159;&#24341;&#29992;</span>
+<span style="color: #4f97d7; font-weight: bold;">template</span>&lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">T</span>&gt;
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">f</span>(<span style="color: #ce537a; font-weight: bold;">ParamType</span> <span style="color: #7590db;">param</span>);  
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19979;&#38754;&#20026;&#27169;&#26495;&#20989;&#25968;&#30340;&#23454;&#20363;&#21270;</span>
+f(expr);
+</pre>
+</div>
+</div>
+<div id="outline-container-orgf81a958" class="outline-5">
+<h5 id="orgf81a958">ParamType 为指针或引用</h5>
+<div class="outline-text-5" id="text-orgf81a958">
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #2aa1ae; background-color: #292e34;">/////////////////////</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">subcase 1</span>
+<span style="color: #4f97d7; font-weight: bold;">template</span>&lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">T</span>&gt;
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">f</span>(<span style="color: #ce537a; font-weight: bold;">T</span>&amp; <span style="color: #7590db;">param</span>);     <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">ParamType &#20026;&#24341;&#29992;</span>
+
+<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">x</span> = 27;           <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">x &#20026; int</span>
+<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">cx</span> = x;     <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">cx &#20026; const int</span>
+<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">int</span>&amp; <span style="color: #7590db;">rx</span> = x;    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">rx &#20026; x&#30340;const&#21035;&#21517;</span>
+
+f(x);    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">ParamType&#20026;int&amp;       -- T &#20026;int</span>
+f(cx);   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">ParamType&#20026;const int&amp; -- T &#20026;const int</span>
+f(rx);   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">ParamType&#20026;const int&amp; -- T &#20026;const int</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;">/////////////////////</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">subcase 2</span>
+<span style="color: #4f97d7; font-weight: bold;">template</span>&lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">T</span>&gt;
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">f</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">T</span>&amp; <span style="color: #7590db;">param</span>);     <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">ParamType &#20026;&#24341;&#29992;</span>
+
+<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">x</span> = 27;                 <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">x &#20026; int</span>
+<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">cx</span> = x;           <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">cx &#20026; const int</span>
+<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">int</span>&amp; <span style="color: #7590db;">rx</span> = x;          <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">rx &#20026; x&#30340;const&#21035;&#21517;</span>
+
+f(x);           <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">ParamType&#20026; constint&amp; -- T &#20026;int</span>
+f(cx);          <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">ParamType&#20026;const int&amp; -- T &#20026;int</span>
+f(rx);          <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">ParamType&#20026;const int&amp; -- T &#20026;int</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;">/////////////////////</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">subcase 3</span>
+<span style="color: #4f97d7; font-weight: bold;">template</span>&lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">T</span>&gt;
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">f</span>(<span style="color: #ce537a; font-weight: bold;">T</span>* <span style="color: #7590db;">param</span>);           <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">ParamType &#20026;&#24341;&#29992;</span>
+
+<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">x</span> = 27;                 <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">x &#20026; int</span>
+<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">int</span>* <span style="color: #7590db;">cx</span> = &amp;x;         <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">cx &#20026; const int*</span>
+
+f(&amp;x);                      <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">ParamType&#20026;       int* -- T &#20026; int</span>
+f(cx);                      <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">ParamType&#20026; const int* -- T &#20026; const int</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgede65a7" class="outline-5">
+<h5 id="orgede65a7">ParamType 为 universal 引用</h5>
+<div class="outline-text-5" id="text-orgede65a7">
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">template</span>&lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">T</span>&gt;
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">f</span>(<span style="color: #ce537a; font-weight: bold;">T</span>&amp;&amp; <span style="color: #7590db;">param</span>);       <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">ParamType &#20026;universal&#24341;&#29992;</span>
+
+<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">x</span> = 27;              <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">x &#20026; int &#24038;&#20540;</span>
+<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">cx</span> = x;        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">cx &#20026; const int</span>
+<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">int</span>&amp; <span style="color: #7590db;">rx</span> = x;       <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">rx &#20026; const int&amp;</span>
+
+f(x);                    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">x&#20026;&#24038;&#20540;ParamType&#20026;int&amp;        -- T &#20026;int&amp;</span>
+f(cx);                   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">cx&#20026;&#24038;&#20540;ParamType&#20026;const int&amp; -- T &#20026;const int&amp;</span>
+f(rx);                   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">rx&#20026;&#24038;&#20540;ParamType&#20026;const int&amp; -- T &#20026;const int&amp;</span>
+f(27);                   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">27&#20026;&#21491;&#20540;ParamType&#20026;int&amp;&amp;      -- T &#20026;int</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org94dc3fe" class="outline-5">
+<h5 id="org94dc3fe">ParamType 既不是指针也不是引用</h5>
+<div class="outline-text-5" id="text-org94dc3fe">
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">template</span>&lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">T</span>&gt;
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">f</span>(<span style="color: #ce537a; font-weight: bold;">T</span> <span style="color: #7590db;">param</span>);       <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">ParamType &#20026;&#26082;&#19981;&#26159;&#25351;&#38024;&#20063;&#19981;&#26159;&#24341;&#29992;</span>
+
+<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">x</span> = 27;              <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">x &#20026; int &#24038;&#20540;</span>
+<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">cx</span> = x;        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">cx &#20026; const int</span>
+<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">int</span>&amp; <span style="color: #7590db;">rx</span> = x;       <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">rx &#20026; const int&amp;</span>
+
+f(x);                    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">ParamType&#20026;int -- T &#20026;int</span>
+f(cx);                   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">ParamType&#20026;int -- T &#20026;int</span>
+f(rx);                   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">ParamType&#20026;int -- T &#20026;int</span>
+f(27);                   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">ParamType&#20026;int -- T &#20026;int</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc35041a" class="outline-3">
+<h3 id="orgc35041a">auto</h3>
+</div>
+<div id="outline-container-org7f7eb1b" class="outline-3">
+<h3 id="org7f7eb1b">From C++98 to C++10 and C++14</h3>
+</div>
+<div id="outline-container-orgdb6fd65" class="outline-3">
+<h3 id="orgdb6fd65">Smart Points</h3>
+</div>
+<div id="outline-container-orge7457ca" class="outline-3">
+<h3 id="orge7457ca">Rvalue Reference, Move Semantics and Perfect Forwarding</h3>
+</div>
+<div id="outline-container-org9e92b94" class="outline-3">
+<h3 id="org9e92b94">Lambda Expression</h3>
+</div>
+<div id="outline-container-org212d42c" class="outline-3">
+<h3 id="org212d42c">The Concurrency API</h3>
+</div>
+</div>
 <div id="outline-container-orgec49ace" class="outline-2">
 <h2 id="orgec49ace">Misc</h2>
 <div class="outline-text-2" id="text-orgec49ace">
@@ -1396,6 +2180,15 @@ t1.before(t2)    <span style="color: #2aa1ae; background-color: #292e34;">// </s
 </ul>
 </div>
 </div>
+</div>
+</div>
+<div id="outline-container-org60ec0f9" class="outline-2">
+<h2 id="org60ec0f9">参考资料</h2>
+<div class="outline-text-2" id="text-org60ec0f9">
+<ul class="org-ul">
+<li>Microsoft CPP STL 实现 <a href="https://github.com/microsoft/STL">https://github.com/microsoft/STL</a><br /></li>
+<li>LLVM CPP STL 实现 <a href="https://github.com/llvm/llvm-project/tree/main/libcxx/">https://github.com/llvm/llvm-project/tree/main/libcxx/</a><br /></li>
+</ul>
 </div>
 </div>
 </div>

@@ -1,0 +1,2123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2021-08-03 周二 10:51 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AsynchronousProgramming</title>
+<meta name="generator" content="Org mode" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+           <meta name="viewport" content="width=device-width, initial-scale=1" />
+           <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/css/worg.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/css/worg-zenburn.css" type="text/css" />
+           <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
+           <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
+<script type="text/javascript">
+// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
+<!--/*--><![CDATA[/*><!--*/
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.add("code-highlighted");
+         target.classList.add("code-highlighted");
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.remove("code-highlighted");
+         target.classList.remove("code-highlighted");
+       }
+     }
+    /*]]>*///-->
+// @license-end
+</script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href=""> UP </a>
+ |
+ <a accesskey="H" href="https://wolfand11.gitee.io"> HOME </a>
+</div><div id="content">
+<h1 class="title">AsynchronousProgramming</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org9cc2c3b">C++ Concurrency In Action</a>
+<ul>
+<li><a href="#orgc5f1a8f">01 hello world of concurrency in c++</a>
+<ul>
+<li><a href="#org2f487e3">What is Concurrency?</a>
+<ul>
+<li><a href="#org1eaf900">将应用程序设计为多进程来实现并发</a></li>
+<li><a href="#orga957e3d">将应用程序设计为多线程来实现并发</a></li>
+<li><a href="#orgcafd037">并发(concurrency) VS 并行(parallelism)</a></li>
+</ul>
+</li>
+<li><a href="#orge8b1076">Why use Concurrency?</a>
+<ul>
+<li><a href="#orgbb3c779">使用 concurrency 来分离关注点 使用 concurrency 来提高性能</a></li>
+<li><a href="#orgb3484b8">什么时候不要使用 concurrency?</a></li>
+</ul>
+</li>
+<li><a href="#org5733a31">Concurrency and multithreading in C++</a>
+<ul>
+<li><a href="#org70bdc46">History of multithreading in C++</a></li>
+<li><a href="#org4f57a54">Concurrency support in the C++11 standard</a></li>
+<li><a href="#org595474f">Efficiency in the C++ Thread Library</a></li>
+<li><a href="#orgcf64184">Platform-specific facilities</a></li>
+</ul>
+</li>
+<li><a href="#org797acd7">Getting started</a></li>
+</ul>
+</li>
+<li><a href="#orgaa86eef">02 managing threads</a>
+<ul>
+<li><a href="#org404434d">Basic thread management</a>
+<ul>
+<li><a href="#org23ed669">创建进程</a></li>
+<li><a href="#org8f43cbd">等待进程结束</a>
+<ul>
+<li><a href="#org9fde78d">case1</a></li>
+<li><a href="#org1444a5c">case2</a></li>
+<li><a href="#orgebdbd62">case3</a></li>
+<li><a href="#orgcfca390">case4</a></li>
+<li><a href="#org943a09b">case5</a></li>
+<li><a href="#org0ca907c">利用 RAII 来等待线程结束</a></li>
+<li><a href="#org2377857">利用 detach 来使线程在后台运行</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org485fabf">Passing arguments to a thread function</a>
+<ul>
+<li><a href="#orgffd51b9">通过传递对象指针，就可以使用成员函数作为线程入口函数</a></li>
+<li><a href="#org7810686">传递只能 move 而不能 copy 的参数</a></li>
+</ul>
+</li>
+<li><a href="#orgaf43aae">Transferring ownership of a thread</a>
+<ul>
+<li><a href="#org08c4ad6">scoped_thread</a></li>
+<li><a href="#orgced868b">joining_thread</a></li>
+<li><a href="#org5c6d6d6">thread and container</a></li>
+</ul>
+</li>
+<li><a href="#org86cb5eb">Choosing the number of threads at runtime</a></li>
+<li><a href="#org307cb0f">Identifying threads</a></li>
+</ul>
+</li>
+<li><a href="#orgab44313">03 sharing data between threads</a>
+<ul>
+<li><a href="#org00cd723">Problems with sharing data between threads</a>
+<ul>
+<li><a href="#orgc6c8ab4">Race conditions</a></li>
+<li><a href="#org455efcb">Avoiding problematic race conditions</a></li>
+</ul>
+</li>
+<li><a href="#org7eed7a0">Protecting data with mutexes</a>
+<ul>
+<li><a href="#orgfdfef4b">Using mutexes in C++</a>
+<ul>
+<li><a href="#orgaf803b0">mutex</a></li>
+<li><a href="#org9262ca0">lock_guard</a></li>
+</ul>
+</li>
+<li><a href="#org8dbfb7c">Structuring code for protecting shared data</a></li>
+<li><a href="#orgcb58817">Spotting race conditions inherent in interfaces</a>
+<ul>
+<li><a href="#orgf0f29e5">方法 1: Pass in a reference</a></li>
+<li><a href="#org92d9156">方法 2: REQUIRE A NO-THROW COPY CONSTRUCTOR OR MOVE CONSTRUCTOR</a></li>
+<li><a href="#org3ccb3b5">方法 3: RETURN A POINTER TO THE POPPED ITEM</a></li>
+<li><a href="#orgeacecbc">方法 4: PROVIDE BOTH OPTION 1 AND EITHER OPTION 2 OR 3</a></li>
+</ul>
+</li>
+<li><a href="#orgfd6d73f">Deadlock: the problem and a solution</a></li>
+<li><a href="#org3e6f079">Further guidelines for avoiding deadlock</a>
+<ul>
+<li><a href="#org1266483">AVOID NESTED LOCKS</a></li>
+<li><a href="#orgb3905ff">AVOID CALLING USER-SUPPLIED CODE WHILE HOLDING A LOCK</a></li>
+<li><a href="#org69db1c8">ACQUIRE LOCKS IN A FIXED ORDER</a></li>
+<li><a href="#org8dc79d7">USE A LOCK HIERARCHY</a></li>
+<li><a href="#org63032e2">EXTENDING THESE GUIDELINES BEYOND LOCKS</a></li>
+</ul>
+</li>
+<li><a href="#orgb699b38">Flexible locking with std::unique_lock</a></li>
+<li><a href="#orga6c870d">Transferring mutex ownership between scopes</a></li>
+<li><a href="#org3f336f6">Locking at an appropriate granularity</a></li>
+</ul>
+</li>
+<li><a href="#org655820e">Alternative facilities for protecting shared data</a>
+<ul>
+<li><a href="#org19ba5b7">Protecting shared data during initialization</a></li>
+<li><a href="#orgae5765d">Protecting rarely updated data structures</a></li>
+<li><a href="#orgdc2e24a">Recursive locking</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orga726318">04 synchronizing concurrent operations on atomic types</a></li>
+<li><a href="#orgc6650c1">05 designing lock-based concurrent data structures</a></li>
+<li><a href="#orgac3f189">06 designing lock-free concurrent data structures</a></li>
+<li><a href="#org34fbb4d">07 designing concurrent code</a></li>
+<li><a href="#orgfd236a1">08 advanced thread management</a></li>
+<li><a href="#org4705ed7">09 parallel algorithms</a></li>
+<li><a href="#org7ab6f3c">10 testing and debugging multithreaded applications</a></li>
+</ul>
+</li>
+<li><a href="#org3bc08f6">c++ 多线程编程</a>
+<ul>
+<li><a href="#orgb49f7d3">实例分析</a>
+<ul>
+<li><a href="#org37146c6">cocos2dx CCTextureCache 多线程使用</a></li>
+<li><a href="#org0b3124d">semaphore 信号量的实现</a></li>
+<li><a href="#org4ced0a6">多线程下载文件</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org5a59cdc">参考资料</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org9cc2c3b" class="outline-2">
+<h2 id="org9cc2c3b">C++ Concurrency In Action</h2>
+<div class="outline-text-2" id="text-org9cc2c3b">
+</div>
+<div id="outline-container-orgc5f1a8f" class="outline-3">
+<h3 id="orgc5f1a8f">01 hello world of concurrency in c++</h3>
+<div class="outline-text-3" id="text-orgc5f1a8f">
+</div>
+<div id="outline-container-org2f487e3" class="outline-4">
+<h4 id="org2f487e3">What is Concurrency?</h4>
+<div class="outline-text-4" id="text-org2f487e3">
+</div>
+<div id="outline-container-org1eaf900" class="outline-5">
+<h5 id="org1eaf900">将应用程序设计为多进程来实现并发</h5>
+<div class="outline-text-5" id="text-org1eaf900">
+<p>
+通信方式：进程之间通过常见的内部进程间通信（例如 信号、socket、files、pipes 等等）来互相交流信息<br />
+缺点：<br />
+</p>
+<ul class="org-ul">
+<li>进程之间的通信比较复杂或者比较慢，或者又复杂又慢，因为操作系统通常提供了很多保护为了避免一个进程意外修改另一个进程的数据。<br /></li>
+<li>运行多个进程有天然的消耗，操作系统必须拿一部分内部资源用于管理进程。<br /></li>
+</ul>
+<p>
+优点：<br />
+</p>
+<ul class="org-ul">
+<li>操作系统为进程间提供的保护和高阶通信机制，有利于编写安全的同步代码。Erlang 编程语言就是基于进程实现并行的。<br /></li>
+<li>使用分开的进程来实现并发时，可以将分开的进程在不同的机器上运行，这些机器通过网络链接在一起。<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orga957e3d" class="outline-5">
+<h5 id="orga957e3d">将应用程序设计为多线程来实现并发</h5>
+<div class="outline-text-5" id="text-orga957e3d">
+<p>
+通信方式：一个进程内的所有线程共享相同的地址空间，大多数数据可以被多线程直接访问（全局变量依然是全局的，对象或数据的指针或引用可以在线程之间进行传递）<br />
+缺点：<br />
+</p>
+<ul class="org-ul">
+<li>当数据被多个线程访问时，应用程序开发者需要确保每个线程在任意时刻访问该数据时看到的值是一致的。<br /></li>
+<li>多线程共享数据可能会引起很多问题，为了避免这些问题，要使用一些工具，还要遵守一些指导原则。<br /></li>
+</ul>
+<p>
+优点：<br />
+</p>
+<ul class="org-ul">
+<li>共享地址空间加上线程之间没有数据保护，使得多线程比多进程的开销要小很多，操作系统不需要过多的记录。<br /></li>
+<li>C++标准没有为多进程的通信提供任何内置支持，使用多进程需要开发人员依赖平台相关的特定 API。<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgcafd037" class="outline-5">
+<h5 id="orgcafd037">并发(concurrency) VS 并行(parallelism)</h5>
+<div class="outline-text-5" id="text-orgcafd037">
+<p>
+这两个术语都是指，利用可用的硬件同时执行多个任务。但是并行更多是面向性能的，当人们谈到并行时，他们主要关心的是利用可用硬件的优势来提升大量数据处理的性能。当人们谈到并发时，他们主要关心的是任务的分割(关注点分离 Separation of concerns)。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orge8b1076" class="outline-4">
+<h4 id="orge8b1076">Why use Concurrency?</h4>
+<div class="outline-text-4" id="text-orge8b1076">
+<p>
+使用 concurrency 主要有两个原因：分离关注点（Separation of concerns）和性能。<br />
+</p>
+</div>
+<div id="outline-container-orgbb3c779" class="outline-5">
+<h5 id="orgbb3c779">使用 concurrency 来分离关注点 使用 concurrency 来提高性能</h5>
+<div class="outline-text-5" id="text-orgbb3c779">
+<p>
+可以利用 concurrency 通过两种方式来提高性能：<br />
+第一种方式：将一个整体划分为多个部分。听上去很简单，但是划分可能很复杂，因为各个部分可能会有依赖。划分既可以是对处理流程的划分（任务并行），也可以是对数据的划分（数据并行）。<br />
+</p>
+
+<p>
+第二种方式：利用可行的并行解决更大的问题。一次处理不止一个文件，而是处理两个或 10 个或 20 个。尽管这是数据并行的一种应用，但是侧重不同。其使用相同的时间处理一大批数据。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgb3484b8" class="outline-5">
+<h5 id="orgb3484b8">什么时候不要使用 concurrency?</h5>
+<div class="outline-text-5" id="text-orgb3484b8">
+<p>
+当使用 concurrency 得到的收益比不上付出的代价，就不应该使用 concurrency。<br />
+</p>
+
+<p>
+启动一个线程有天生的开销。OS 需要申请对应的内核资源，栈空间，还需要将线程加到 scheduler，这些都需要消耗时间。如果线程上的任务很快就结束了，可能任务消耗的时间还没启动线程消耗的时间多，这可能使得性能更差。<br />
+</p>
+
+<p>
+线程是有限的资源。如果你同时运行很多线程，这消耗了 OS 资源，可能使系统整体会变慢。不仅如此，使用太多线程可以耗尽一个进程的可用内存或地址空间，因为每个线程都需要一个独立的栈空间。对于 平坦架构的 32 位进程，地址空间的大小限制为 4GB，如果每个线程的栈占用 1MB，则最多可以有 4096 个线程。尽管可以使用线程池来限制线程的数量，但是并不能解决所有的问题，线程池有其自身的问题。<br />
+</p>
+
+<p>
+在 client/server 应用程序中，为每个连接启动一个线程，这对于少量连接来说是可行的，对于需要处理很多连接的高需求服务，这会很快耗尽系统的资源。这种情况下，可以使用线程池来优化性能。<br />
+</p>
+
+<p>
+线程越多，操作系统要做的上下文切换就越多。添加额外的线程将会减低应用程序整体的性能。因此，为了达到系统最佳性能，需要依据硬件的并行能力来调整线程数量。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org5733a31" class="outline-4">
+<h4 id="org5733a31">Concurrency and multithreading in C++</h4>
+<div class="outline-text-4" id="text-org5733a31">
+</div>
+<div id="outline-container-org70bdc46" class="outline-5">
+<h5 id="org70bdc46">History of multithreading in C++</h5>
+<div class="outline-text-5" id="text-org70bdc46">
+<p>
+1998 C++ 标准没有包含多线程，当时内存模型也没有正式定义，没有编译器扩展是无法编写多线程应用的。<br />
+很多编译器提供商利用当时很流行的平台相关的 C 多线程 API(POSIX C 标准和 Windows API)来支持 C++多线程。编译器的支持只是允许调用对应平台的 C API，以及保证 C++ 运行时库在多线程存在的情况下也可以正确执行。尽管很少有编译器商家提供正式的可感知多线程的内存模型，但是编译器和进程的行为已经足够好，因此编写了大量多线程 C++程序。<br />
+</p>
+
+<p>
+不满足于使用平台特定的 C API 来处理多线程，C++程序员指望他们的类库来提供面向对象的多线程设施。MFC、Boost、ACE 等等，都累积了一些列类，对底层平台相关的 API 进行了封装，为多线程提供更高级的设施，来简化多线程编程任务。尽管这些类库的具体细节差异很大，特别是启动新线程的处理，这些类的整体有很多共同点。他们都使用了 RAII 的习惯方法来管理 mutex。<br />
+</p>
+
+<p>
+大部分情况下支持多线程的 C++编译器和平台无关的类库是足够了的。但是缺乏 C++标准的支持,意味着由于缺少多线程感知的内存模型可能会在偶然的地方导致问题，特别是利用处理器硬件知识来获得更高性能的时候，以及编写跨平台代码而编译器在不同平台上行为不同时。<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org4f57a54" class="outline-5">
+<h5 id="org4f57a54">Concurrency support in the C++11 standard</h5>
+<div class="outline-text-5" id="text-org4f57a54">
+<p>
+C++11 不止提供了多线程感知内存模型。C++标准库还包含了管理线程的类，保护共享数据的类，在线程之间同步操作的类，以及低级的原子操作。<br />
+</p>
+
+<p>
+C++14 中新加了一种 mutex 类型用于保护共享的数据。<br />
+</p>
+
+<p>
+C++17 中添加了一整套并行算法。<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org595474f" class="outline-5">
+<h5 id="org595474f">Efficiency in the C++ Thread Library</h5>
+<div class="outline-text-5" id="text-org595474f">
+<p>
+高性能计算领域，开发者关心的其中一个问题是 C++的效率。如果你追求极致的性能，那么你需要知道，任何高阶工具都会有一定的消耗，这是抽象的代价。<br />
+</p>
+
+<p>
+C++ Standard Library 和 Thread Library 的设计目标之一是和直接使用低阶 API 相比，消耗相同或差距不大。另一个设计目标是提供低阶的工具用于实现极限性能。<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgcf64184" class="outline-5">
+<h5 id="orgcf64184">Platform-specific facilities</h5>
+<div class="outline-text-5" id="text-orgcf64184">
+<p>
+C++ Thread Library 为多线程和并发提供了全面的工具，而总会有平台特定的一些工具，为了便于访问平台特定的工具 C++ Thread Library 提供了 native_handler() 成员函数，其允许底层实现直接操作平台相关的 API。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org797acd7" class="outline-4">
+<h4 id="org797acd7">Getting started</h4>
+<div class="outline-text-4" id="text-org797acd7">
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #bc6ec5;">  #include</span> <span style="color: #2d9574;">&lt;iostream&gt;</span>
+<span style="color: #bc6ec5;">  #include</span> <span style="color: #2d9574;">&lt;thread&gt;</span>
+  <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">hello</span>()
+  {
+      <span style="color: #a45bad;">std</span>::cout&lt;&lt;<span style="color: #2d9574;">"Hello Concurrent World\n"</span>;
+  }
+  <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #bc6ec5; font-weight: bold;">main</span>()
+  {
+      <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span> <span style="color: #7590db;">t</span>(hello);
+      t.join();
+  }
+</pre>
+</div>
+<p>
+每个线程都有一个初始化函数，对于应用程序的初始线程(主线程)来说，这个函数就是 main 函数。其他线程的初始函数是通过 std::thread 对象构造时来指定的。<br />
+</p>
+
+<p>
+新的线程被启动后，主线程会继续执行。如果主线程不等待新线程结束，主线程会直接执行完成(可能在新线程获得执行机会之前)。通过调用 join() 来让主线程等待关联的新线程。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgaa86eef" class="outline-3">
+<h3 id="orgaa86eef">02 managing threads</h3>
+<div class="outline-text-3" id="text-orgaa86eef">
+</div>
+<div id="outline-container-org404434d" class="outline-4">
+<h4 id="org404434d">Basic thread management</h4>
+<div class="outline-text-4" id="text-org404434d">
+</div>
+<div id="outline-container-org23ed669" class="outline-5">
+<h5 id="org23ed669">创建进程</h5>
+<div class="outline-text-5" id="text-org23ed669">
+<div class="org-src-container">
+<pre class="src src-cpp">  <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">background_task</span>
+  {
+  <span style="color: #4f97d7; font-weight: bold;">public</span>:
+      <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #4f97d7; font-weight: bold;">operator</span><span style="color: #bc6ec5; font-weight: bold;">()</span>() <span style="color: #4f97d7; font-weight: bold;">const</span>
+      {
+          do_something();
+          do_something_else();
+      }
+  };
+  
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">thread &#25509;&#21463;&#20219;&#24847;&#21487;&#35843;&#29992;&#23545;&#35937;&#65292;&#20989;&#25968;&#12289;&#37325;&#36733;&#20102;&#35843;&#29992;&#25805;&#20316;&#31526;&#30340;&#31867;&#12289;lambda&#31561;</span>
+  <span style="color: #ce537a; font-weight: bold;">background_task</span> <span style="color: #7590db;">f</span>;
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">f&#20250;&#34987;copy&#21040;&#23646;&#20110;&#26032;&#32447;&#31243;&#30340;&#23384;&#20648;&#31354;&#38388;&#65292;&#24182;&#34987;&#35843;&#29992;</span>
+  <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span> <span style="color: #bc6ec5; font-weight: bold;">my_thread</span>(f);
+  
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Tips&#65306;</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19979;&#38754;&#30340;&#20195;&#30721;&#20250;&#34987;&#35299;&#26512;&#20026;&#22768;&#26126;&#19968;&#20010;&#21517;&#31216;&#20026;my_thread&#30340;&#20989;&#25968;</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20989;&#25968;&#21442;&#25968;&#20026;&#20989;&#25968;&#25351;&#38024;</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21442;&#25968;&#20989;&#25968;&#30340;&#21442;&#25968;&#20026;&#31354;</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21442;&#25968;&#20989;&#25968;&#30340;&#36820;&#22238;&#20540;&#31867;&#22411;&#20026;background_task</span>
+  <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span> <span style="color: #bc6ec5; font-weight: bold;">my_thread</span>(<span style="color: #ce537a; font-weight: bold;">background_task</span>());
+  
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#27491;&#30830;&#30340;&#26041;&#24335;&#22914;&#19979;</span>
+  <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span> <span style="color: #7590db;">my_thread</span>((<span style="color: #ce537a; font-weight: bold;">background_task</span>()));
+  <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span> <span style="color: #7590db;">my_thread</span>{background_task()};
+  
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20351;&#29992; lambda &#20316;&#20026; thread &#30340;&#25191;&#34892;&#20989;&#25968;</span>
+  <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span> <span style="color: #7590db;">my_thread</span>([]{
+      do_something();
+      do_something_else();
+  });
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org8f43cbd" class="outline-5">
+<h5 id="org8f43cbd">等待进程结束</h5>
+<div class="outline-text-5" id="text-org8f43cbd">
+<p>
+线程启动后，需要显示地指定是否等待其结束（调用 thread 对象的 join 函数）还是让线程自己运行（调用 thread 对象的 detach 函数）。如果在线程对象销毁前不进行指定，std::thread 的析构函数会调用 std::terminate()，这会导致进程被终止。<br />
+</p>
+</div>
+<div id="outline-container-org9fde78d" class="outline-6">
+<h6 id="org9fde78d">case1</h6>
+<div class="outline-text-6" id="text-org9fde78d">
+<p>
+创建线程后，执行 detach，线程执行的函数永不结束，当主线程结束后，子线程也会被迫结束。<br />
+</p>
+
+<ul class="org-ul">
+<li><a href="https://stackoverflow.com/questions/4666628/do-child-threads-exit-when-the-parent-thread-terminates">https://stackoverflow.com/questions/4666628/do-child-threads-exit-when-the-parent-thread-terminates</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org1444a5c" class="outline-6">
+<h6 id="org1444a5c">case2</h6>
+<div class="outline-text-6" id="text-org1444a5c">
+<p>
+创建线程后，主线程将局部变量的引用或指针传递给线程，执行 detach，主线程离开局部变量作用域，局部变量会被释放掉，之后线程引用的数据将是错误的。<br />
+</p>
+<pre class="example" id="orged84e5a">
+id: 100504 print ival = 10              // 子线程启动后打印引用变量的值10
+id: 89912 main-thread sleep 1 second    // 主线程sleep 1s
+id: 100504 print ival = 10              // 此时主线程还在sleep局部变量还未被释放，子线程此时打印的值依然正确
+id: 100504 print ival = 143             // 主线程已经离开创建子线程的作用域，局部变量被释放，子线程打印的值为随机值，每次运行该值都不同
+id: 100504 print ival = 143
+id: 100504 print ival = 143
+id: 100504 print ival = 143
+id: 89912 main-thread sleep 5 second
+</pre>
+</div>
+</div>
+
+<div id="outline-container-orgebdbd62" class="outline-6">
+<h6 id="orgebdbd62">case3</h6>
+<div class="outline-text-6" id="text-orgebdbd62">
+<p>
+创建线程后，主线程将局部变量的引用或指针传递给线程，执行 join，主线程会等待子线程执行完毕后，才会继续执行，离开局部变量作用域。<br />
+</p>
+<pre class="example" id="orgfd16e8f">
+id: 97172 print ival = 10               // 子线程启动后打印引用变量的值10，主线程等待子线程执行完毕后，才会继续执行
+id: 97172 print ival = 10
+id: 97172 print ival = 10
+id: 97172 print ival = 10
+id: 97172 print ival = 10
+id: 93504 main-thread sleep 1 second
+id: 93504 main-thread sleep 5 second
+</pre>
+
+<p>
+join() 会清理子线程关联的存储空间，因此 std::thread 对象不再关联结束的线程，其不再关联任意线程。所以，只能对指定的线程调用一次 join，join 之后再调用 joinable 将返回 false。<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgcfca390" class="outline-6">
+<h6 id="orgcfca390">case4</h6>
+<div class="outline-text-6" id="text-orgcfca390">
+<p>
+主线程创建子线程后 sleep 2 秒，然后再调用 join.<br />
+子线程只执行一次打印就结束.<br />
+</p>
+
+<p>
+主线程创建子线程后 sleep 2 秒，然后再调用 detach.<br />
+子线程只执行一次打印就结束.<br />
+</p>
+
+<p>
+TIPS: 子线程很快就会完成的情况下，并不会报错。只要在 std::thread 的析构之前调用 join 或 detach 就可以了。<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org943a09b" class="outline-6">
+<h6 id="org943a09b">case5</h6>
+<div class="outline-text-6" id="text-org943a09b">
+<p>
+主线程创建子线程 A, 子线程 A 创建子线程 B，子线程 A 完成后，子线程 B 会依然执行，不会被迫结束。<br />
+</p>
+
+<ul class="org-ul">
+<li><a href="https://stackoverflow.com/questions/4666628/do-child-threads-exit-when-the-parent-thread-terminates">https://stackoverflow.com/questions/4666628/do-child-threads-exit-when-the-parent-thread-terminates</a><br /></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org0ca907c" class="outline-6">
+<h6 id="org0ca907c">利用 RAII 来等待线程结束</h6>
+<div class="outline-text-6" id="text-org0ca907c">
+<div class="org-src-container">
+<pre class="src src-cpp">  <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">thread_guard</span>
+  {
+      <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span>&amp; <span style="color: #7590db;">t</span>;
+  <span style="color: #4f97d7; font-weight: bold;">public</span>:
+      <span style="color: #4f97d7; font-weight: bold;">explicit</span> <span style="color: #bc6ec5; font-weight: bold;">thread_guard</span>(<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span>&amp; <span style="color: #7590db;">t_</span>):<span style="color: #bc6ec5; font-weight: bold;">t</span>(t_){}
+      ~<span style="color: #bc6ec5; font-weight: bold;">thread_guard</span>()
+      {
+          <span style="color: #4f97d7; font-weight: bold;">if</span>(t.joinable())
+          {
+              t.join();
+          }
+      }
+      <span style="color: #bc6ec5; font-weight: bold;">thread_guard</span>(<span style="color: #ce537a; font-weight: bold;">thread_guard</span> <span style="color: #4f97d7; font-weight: bold;">const</span>&amp;)=<span style="color: #4f97d7; font-weight: bold;">delete</span>;
+      <span style="color: #ce537a; font-weight: bold;">thread_guard</span>&amp; <span style="color: #4f97d7; font-weight: bold;">operator</span><span style="color: #bc6ec5; font-weight: bold;">=</span>(<span style="color: #ce537a; font-weight: bold;">thread_guard</span> <span style="color: #4f97d7; font-weight: bold;">const</span>&amp;)=<span style="color: #4f97d7; font-weight: bold;">delete</span>;
+  };
+  <span style="color: #4f97d7; font-weight: bold;">struct</span> <span style="color: #ce537a; font-weight: bold;">func</span>;
+  <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">f</span>()
+  {
+      <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">some_local_state</span> = 0;
+      <span style="color: #ce537a; font-weight: bold;">func</span> <span style="color: #7590db;">my_func</span>(some_local_state);
+      <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span> <span style="color: #7590db;">t</span>(my_func);
+      <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">RAII&#26469;&#31561;&#24453;&#32447;&#31243;&#32467;&#26463;</span>
+      thread_guard(t);
+      do_something_in_current_thread();
+  }
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org2377857" class="outline-6">
+<h6 id="org2377857">利用 detach 来使线程在后台运行</h6>
+<div class="outline-text-6" id="text-org2377857">
+<p>
+detached 的线程通常被称为后台线程(daemon threads)，其概念来源于操作系统中后台进程(daemon process)。<br />
+下面是利用 detach 线程实现的文字处理器，其可以同时处理多个文件，每个线程处理一个文件。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp">  <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">edit_document</span>(<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #4f97d7; font-weight: bold;">const</span>&amp; <span style="color: #7590db;">filename</span>)
+  {
+      open_document_and_display_gui(filename);
+      <span style="color: #4f97d7; font-weight: bold;">while</span>(<span style="color: #a45bad;">!</span>done_editing())
+      {
+          <span style="color: #ce537a; font-weight: bold;">user_command</span> <span style="color: #7590db;">cmd</span> = get_user_input();
+          <span style="color: #4f97d7; font-weight: bold;">if</span>(cmd.type == open_new_document)
+          {
+              <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #7590db;">new_name</span> = get_filename_from_user();
+              <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span> <span style="color: #7590db;">t</span>(edit_document, new_name);
+              t.detach();
+          }
+          <span style="color: #4f97d7; font-weight: bold;">else</span>
+          {
+              process_user_input(cmd);
+          }
+      }
+  }
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org485fabf" class="outline-4">
+<h4 id="org485fabf">Passing arguments to a thread function</h4>
+<div class="outline-text-4" id="text-org485fabf">
+<p>
+传递指针参数给线程非常容易引起访问悬挂指针的问题，指针所指对象已经被回收了，线程还使用指针进行访问。<br />
+传递给线程参数的处理分两步：<br />
+</p>
+<ol class="org-ol">
+<li>将参数传递给 thread 构造函数，thread 构造函数会将参数 copy 一份记录下来。<br /></li>
+<li>thread 对象再将记录下来的参数传递给线程入口函数。传递给线程入口函数的实参是在子线程的上下文中进行构造的。<br /></li>
+
+<li><a href="https://www.zhihu.com/question/40428244">https://www.zhihu.com/question/40428244</a>   <br /></li>
+</ol>
+<div class="org-src-container">
+<pre class="src src-cpp">  <span style="color: #2aa1ae; background-color: #292e34;">////////////////////////////</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">case 1 &#19979;&#38754;&#20195;&#30721;&#23558;char const* &#20256;&#36882;&#32473;thread&#65292;thread&#20197;char const*&#20026;&#21442;&#25968;&#26500;&#36896;std::string&#23545;&#35937;</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22240;&#20026;"hello"&#20026;&#24120;&#37327;&#23383;&#31526;&#20018;&#65292;&#20854;&#23384;&#20648;&#22312;&#24120;&#37327;&#25968;&#25454;&#21306;&#65288;&#36827;&#31243;&#36864;&#20986;&#26102;&#25165;&#37322;&#25918;&#65289;&#65292;&#31163;&#24320;&#23616;&#37096;&#20316;&#29992;&#22495;&#21518;&#19981;&#20250;&#34987;&#37322;&#25918;&#65292;&#25152;&#20197;&#22914;&#19979;&#20195;&#30721;&#19981;&#20250;&#23384;&#22312;&#26410;&#23450;&#20041;&#34892;&#20026;</span>
+  <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">f</span>(<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">i</span>,<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #4f97d7; font-weight: bold;">const</span>&amp; <span style="color: #7590db;">s</span>);
+  <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">opps</span>(<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">some_param</span>)
+  {
+      <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span> <span style="color: #7590db;">t</span>(f, 3, <span style="color: #2d9574;">"hello"</span>);
+  }
+  
+  <span style="color: #2aa1ae; background-color: #292e34;">////////////////////////////</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">case 2.1 &#19979;&#38754;&#20195;&#30721;&#23558;char* buffer &#20256;&#36882;&#32473;thread&#65292;thread &#20197; char const*&#20026;&#21442;&#25968;&#26500;&#36896;std::string&#23545;&#35937;</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22240;&#20026;buffer&#20026;&#23616;&#37096;&#23383;&#31526;&#25968;&#32452;&#65292;&#31163;&#24320;&#23616;&#37096;&#20316;&#29992;&#22495;&#21518;&#20250;&#34987;&#37322;&#25918;&#65292;&#25152;&#20197;&#24403;&#20027;&#32447;&#31243;&#20808;&#31163;&#24320;oops&#23376;&#32447;&#31243;&#25165;&#24320;&#22987;&#36816;&#34892;&#26102;&#65292;&#22914;&#19979;&#20195;&#30721;&#20250;&#23384;&#22312;&#26410;&#23450;&#20041;&#34892;&#20026;&#65281;</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">https://www.zhihu.com/question/40428244</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">https://www.jianshu.com/p/816df045f93e</span>
+  <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">oops</span>(<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">some_param</span>)
+  {
+      <span style="color: #ce537a; font-weight: bold;">char</span> <span style="color: #7590db;">buffer</span>[1024];
+      sprintf(buffer, <span style="color: #2d9574;">"%i"</span>, some_param);
+      <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span> <span style="color: #7590db;">t</span>(f, 3, buffer);
+      t.detach();
+  }
+  
+  <span style="color: #2aa1ae; background-color: #292e34;">////////////////////////////</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">case 2.2 &#19979;&#38754;&#20195;&#30721;&#23558;string&#23545;&#35937;&#30340;&#26500;&#36896;&#31227;&#21040;&#20102;&#20027;&#32447;&#31243;&#20013;&#65292;&#20256;&#36882;&#32473;thread&#26500;&#36896;&#20989;&#25968;&#30340;&#26159;string&#23545;&#35937;&#65292;thread&#26500;&#36896;&#20989;&#25968;&#20250;copy&#19968;&#20221;string&#23545;&#35937;&#20445;&#23384;&#19979;&#26469;&#65292;&#28982;&#21518;&#20250;&#23558;copy&#19979;&#26469;&#30340;string&#23545;&#35937;&#20256;&#36882;&#32473;&#32447;&#31243;&#20837;&#21475;&#20989;&#25968;&#12290;&#36825;&#26679;&#23601;&#19981;&#20250;&#23384;&#22312;&#35775;&#38382;&#23545;&#35937;&#34987;&#37322;&#25918;&#30340;&#24773;&#20917;&#20102;</span>
+  <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">oops</span>(<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">some_param</span>)
+  {
+      <span style="color: #ce537a; font-weight: bold;">char</span> <span style="color: #7590db;">buffer</span>[1024];
+      sprintf(buffer, <span style="color: #2d9574;">"%i"</span>, some_param);
+      <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span> <span style="color: #7590db;">t</span>(f, 3, <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span>(<span style="color: #7590db;">buffer</span>));
+      t.detach();
+  }
+  
+  <span style="color: #2aa1ae; background-color: #292e34;">////////////////////////////</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">case 3.1 &#19979;&#38754;&#20195;&#30721;&#24076;&#26395;&#36890;&#36807;&#23376;&#32447;&#31243;&#21435;&#20462;&#25913;data&#65292;&#23376;&#32447;&#31243;&#32467;&#26463;&#21518;&#65292;&#20027;&#32447;&#31243;&#20877;&#32487;&#32493;&#22788;&#29702;&#25968;&#25454;</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20294;&#26159;&#65292;&#32447;&#31243;&#26500;&#36896;&#20989;&#25968;&#30340;&#21442;&#25968;&#26159;&#20540;&#31867;&#22411;&#65292;&#25152;&#20197;&#32447;&#31243;&#20256;&#36882;&#32473;&#20837;&#21475;&#20989;&#25968;&#30340;&#23454;&#21442;&#26159;data&#30340;copy&#12290;&#20027;&#32447;&#31243;&#30340;data&#23545;&#35937;&#24182;&#27809;&#26377;&#34987;&#20462;&#25913;</span>
+  <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">update_data_for_widget</span>(<span style="color: #ce537a; font-weight: bold;">widget_id</span> <span style="color: #7590db;">w</span>, <span style="color: #ce537a; font-weight: bold;">widget_data</span>&amp; <span style="color: #7590db;">data</span>);
+  <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">oops_again</span>(<span style="color: #ce537a; font-weight: bold;">widget_id</span> <span style="color: #7590db;">w</span>)
+  {
+      <span style="color: #ce537a; font-weight: bold;">widget_data</span> <span style="color: #7590db;">data</span>;
+      <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span> <span style="color: #7590db;">t</span>(update_data_for_widget, w, data);
+      display_status();
+      t.join();
+      process_widget_data(data);
+  }
+  
+  <span style="color: #2aa1ae; background-color: #292e34;">////////////////////////////</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">case 3.2 &#19979;&#38754;&#20195;&#30721;&#20351;&#29992;std::ref &#23558;data&#30340;&#24341;&#29992;&#20256;&#36882;&#32473;&#32447;&#31243;&#26500;&#36896;&#20989;&#25968;&#65292;&#20351;&#24471;&#32447;&#31243;&#35775;&#38382;&#30340;data&#25968;&#25454;&#23601;&#26159;&#20027;&#32447;&#31243;&#30340;data</span>
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">update_data_for_widget</span>(<span style="color: #ce537a; font-weight: bold;">widget_id</span> <span style="color: #7590db;">w</span>, <span style="color: #ce537a; font-weight: bold;">widget_data</span>&amp; <span style="color: #7590db;">data</span>);
+  <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">oops_again</span>(<span style="color: #ce537a; font-weight: bold;">widget_id</span> <span style="color: #7590db;">w</span>)
+  {
+      <span style="color: #ce537a; font-weight: bold;">widget_data</span> <span style="color: #7590db;">data</span>;
+      <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span> <span style="color: #7590db;">t</span>(update_data_for_widget, w, <span style="color: #a45bad;">std</span>::ref(data));
+      display_status();
+      t.join();
+      process_widget_data(data);
+  }
+</pre>
+</div>
+</div>
+<div id="outline-container-orgffd51b9" class="outline-5">
+<h5 id="orgffd51b9">通过传递对象指针，就可以使用成员函数作为线程入口函数</h5>
+<div class="outline-text-5" id="text-orgffd51b9">
+<div class="org-src-container">
+<pre class="src src-cpp">  <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">X</span>
+  {
+  <span style="color: #4f97d7; font-weight: bold;">public</span>:
+      <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">do_lengthy_work</span>();
+  };
+  
+  <span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #7590db;">my_x</span>;
+  <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span> <span style="color: #7590db;">t</span>(&amp;<span style="color: #a45bad;">X</span>::do_lengthy_work, &amp;my_x);
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org7810686" class="outline-5">
+<h5 id="org7810686">传递只能 move 而不能 copy 的参数</h5>
+<div class="outline-text-5" id="text-org7810686">
+<div class="org-src-container">
+<pre class="src src-cpp">  <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">process_big_object</span>(<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">unique_ptr</span>&lt;big_object&gt;);
+  <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">unique_ptr</span>&lt;big_object&gt; <span style="color: #7590db;">p</span>(<span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">big_object</span>);
+  p-&gt;prepare_data(42);
+  <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span> <span style="color: #bc6ec5; font-weight: bold;">t</span>(process_big_object, <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">move</span>(<span style="color: #7590db;">p</span>));
+</pre>
+</div>
+<p>
+std::thread 对象和 std::unique_ptr 对象一样，只能 move 而不能 copy<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgaf43aae" class="outline-4">
+<h4 id="orgaf43aae">Transferring ownership of a thread</h4>
+<div class="outline-text-4" id="text-orgaf43aae">
+<div class="org-src-container">
+<pre class="src src-cpp">  <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">some_function</span>();
+  <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">some_other_function</span>();
+  <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span> <span style="color: #bc6ec5; font-weight: bold;">t1</span>(some_function);
+  <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span> <span style="color: #7590db;">t2</span>=<span style="color: #a45bad;">std</span>::move(t1);          <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;t1&#25152;&#26377;&#26435;&#31227;&#21160;&#32473;t2</span>
+  t1 = <span style="color: #a45bad;">std</span>::thread(some_other_function); <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#36890;&#36807;&#31227;&#21160;&#26500;&#36896;&#20989;&#25968;&#23558;&#26032;&#26500;&#36896;&#30340;&#32447;&#31243;&#25152;&#26377;&#26435;&#31227;&#21160;&#32473;t1</span>
+  <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span> <span style="color: #7590db;">t3</span>;                        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#40664;&#35748;&#26500;&#36896;std::thread&#23545;&#35937;t3&#65292;&#20854;&#19981;&#20851;&#32852;&#20219;&#20309;&#32447;&#31243;</span>
+  t3 = <span style="color: #a45bad;">std</span>::move(t2);                    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;t2&#25152;&#26377;&#26435;&#31227;&#21160;&#32473;t3</span>
+  t1 = <span style="color: #a45bad;">std</span>::move(t3);                    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#39318;&#20808;&#23558;t1&#33258;&#36523;&#25152;&#26377;&#26435;&#37322;&#25918;&#65288;&#30001;&#20110;&#27809;&#26377;&#23545;t1&#25191;&#34892;join&#25110;detach&#65292;&#25152;&#20197;&#65292;&#36825;&#37324;&#20250;&#30452;&#25509;&#35843;&#29992;std::terminate &#32467;&#26463;&#36827;&#31243;&#65289;&#65292;==(&#36827;&#31243;&#32467;&#26463;&#65292;&#27809;&#26377;&#28982;&#21518;&#20102;&#65281;)==</span>
+</pre>
+</div>
+
+<p>
+std::thread 支持 move 意味着，可以将 std::thread 的所有权传递到函数外：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span> <span style="color: #bc6ec5; font-weight: bold;">f</span>()
+{
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #7590db;">some_function</span>();
+    <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #a45bad;">std</span>::thread(some_function);
+}
+
+<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span> <span style="color: #bc6ec5; font-weight: bold;">g</span>()
+{
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #7590db;">some_other_function</span>(<span style="color: #ce537a; font-weight: bold;">int</span>);
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span> <span style="color: #7590db;">t</span>(some_other_function, 42);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> t;
+}
+</pre>
+</div>
+
+<p>
+同理，也可以将所有权传递到一个函数内：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">f</span>(<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span> <span style="color: #7590db;">t</span>);
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">g</span>()
+{
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #7590db;">some_function</span>();
+    f(<span style="color: #a45bad;">std</span>::thread(some_function));
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span> <span style="color: #7590db;">t</span>(some_function);
+    f(<span style="color: #a45bad;">std</span>::move(t));
+    <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">f(t);   // TIPS: &#27492;&#22788;&#35843;&#29992;&#20102;thread&#30340;copy&#26500;&#36896;&#20989;&#25968;&#65292;&#35813;&#20989;&#25968;&#34987;thread&#26631;&#35760;&#20026;&#20102;delete&#65292;&#22240;&#27492;&#20250;&#32534;&#35793;&#38169;&#35823;</span>
+}
+</pre>
+</div>
+</div>
+<div id="outline-container-org08c4ad6" class="outline-5">
+<h5 id="org08c4ad6">scoped_thread</h5>
+<div class="outline-text-5" id="text-org08c4ad6">
+<p>
+std::thread 支持移动的一个好处是，可以依赖 scoped_thread 类，让其拥有 thread 的所有权。这避免了不好的事情发生，thread_guard 对象要比其管理的 thread 的生命期长，而且一旦 thread 的所有权移动到 scoped_thread 对象中，其他对象将不能再对线程进行 join 或 detach 操作。因为，该类的目的是让 thread 在作用域内执行完成，因此将该类命名为 scoped_thread。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">scoped_thread</span>
+{
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span> <span style="color: #7590db;">t</span>;
+<span style="color: #4f97d7; font-weight: bold;">public</span>:
+    <span style="color: #4f97d7; font-weight: bold;">explicit</span> <span style="color: #bc6ec5; font-weight: bold;">scoped_thread</span>(<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span> <span style="color: #7590db;">t_</span>): t(<span style="color: #a45bad;">std</span>::move(t_))
+    {
+        <span style="color: #4f97d7; font-weight: bold;">if</span>(<span style="color: #a45bad;">!</span>t.joinable())
+            <span style="color: #4f97d7; font-weight: bold;">throw</span> <span style="color: #a45bad;">std</span>::logic_error(&#8220;No thread&#8221;);
+    }
+    ~<span style="color: #bc6ec5; font-weight: bold;">scoped_thread</span>()
+    {
+        t.join();
+    }
+    <span style="color: #bc6ec5; font-weight: bold;">scoped_thread</span>(<span style="color: #ce537a; font-weight: bold;">scoped_thread</span> <span style="color: #4f97d7; font-weight: bold;">const</span>&amp;)=<span style="color: #4f97d7; font-weight: bold;">delete</span>;
+    <span style="color: #ce537a; font-weight: bold;">scoped_thread</span>&amp; <span style="color: #4f97d7; font-weight: bold;">operator</span><span style="color: #bc6ec5; font-weight: bold;">=</span>(<span style="color: #ce537a; font-weight: bold;">scoped_thread</span> <span style="color: #4f97d7; font-weight: bold;">const</span>&amp;)=<span style="color: #4f97d7; font-weight: bold;">delete</span>;
+};
+<span style="color: #4f97d7; font-weight: bold;">struct</span> <span style="color: #ce537a; font-weight: bold;">func</span>; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23454;&#29616;&#20102;&#35843;&#29992;&#25805;&#20316;&#31526;&#30340;struct</span>
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">f</span>()
+{
+    <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">some_local_state</span>;
+    <span style="color: #ce537a; font-weight: bold;">scoped_thread</span> <span style="color: #7590db;">t</span>{<span style="color: #a45bad;">std</span>::thread(func(some_local_state))};
+    do_something_in_current_thread();
+}
+</pre>
+</div>
+<p>
+上面 scoped_thread 和前面 thread_guard 类实现类似，不同之处在于，scoped_thread 接受直接构造的 thread 对象，而 thread_guard 则需要先创建一个 thread 对象，再将该对象通过引用传递给 thread_guard。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgced868b" class="outline-5">
+<h5 id="orgced868b">joining_thread</h5>
+<div class="outline-text-5" id="text-orgced868b">
+<p>
+C++17 有一个提议是 joining_thread，其和 thread 类似，但是会在 joining_thread 对象释放时自动执行 join。该提议没有被同意，C++20 有一个相同的提议 jthread。我们可以很容易自己实现 joining_thread,如下：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">joining_thread</span>
+{
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span> <span style="color: #7590db;">t</span>;
+<span style="color: #4f97d7; font-weight: bold;">public</span>:
+    <span style="color: #bc6ec5; font-weight: bold;">joining_thread</span>() <span style="color: #4f97d7; font-weight: bold;">noexcept</span>=<span style="color: #4f97d7; font-weight: bold;">default</span>;
+    <span style="color: #4f97d7; font-weight: bold;">template</span>&lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">Callable</span>,<span style="color: #4f97d7; font-weight: bold;">typename</span> ... <span style="color: #ce537a; font-weight: bold;">Args</span>&gt;
+    <span style="color: #4f97d7; font-weight: bold;">explicit</span> <span style="color: #bc6ec5; font-weight: bold;">joining_thread</span>(<span style="color: #ce537a; font-weight: bold;">Callable</span>&amp;&amp; <span style="color: #7590db;">func</span>,<span style="color: #ce537a; font-weight: bold;">Args</span>&amp;&amp; ... <span style="color: #7590db;">args</span>): <span style="color: #bc6ec5; font-weight: bold;">t</span>(<span style="color: #a45bad;">std</span>::forward&lt;<span style="color: #ce537a; font-weight: bold;">Callable</span>&gt;(func),<span style="color: #a45bad;">std</span>::forward&lt;<span style="color: #ce537a; font-weight: bold;">Args</span>&gt;(args)...)
+    {}
+    <span style="color: #4f97d7; font-weight: bold;">explicit</span> <span style="color: #bc6ec5; font-weight: bold;">joining_thread</span>(<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span> <span style="color: #7590db;">t_</span>) <span style="color: #4f97d7; font-weight: bold;">noexcept</span>:
+        t(<span style="color: #a45bad;">std</span>::move(t_))
+    {}
+    <span style="color: #bc6ec5; font-weight: bold;">joining_thread</span>(<span style="color: #ce537a; font-weight: bold;">joining_thread</span>&amp;&amp; <span style="color: #7590db;">other</span>) <span style="color: #4f97d7; font-weight: bold;">noexcept</span>:
+        t(<span style="color: #a45bad;">std</span>::move(other.t))
+    {}
+    <span style="color: #ce537a; font-weight: bold;">joining_thread</span>&amp; <span style="color: #4f97d7; font-weight: bold;">operator</span><span style="color: #bc6ec5; font-weight: bold;">=</span>(<span style="color: #ce537a; font-weight: bold;">joining_thread</span>&amp;&amp; <span style="color: #7590db;">other</span>) <span style="color: #4f97d7; font-weight: bold;">noexcept</span>
+    {
+        <span style="color: #4f97d7; font-weight: bold;">if</span>(joinable())
+            join();
+        t=<span style="color: #a45bad;">std</span>::move(other.t);
+        <span style="color: #4f97d7; font-weight: bold;">return</span> *<span style="color: #4f97d7; font-weight: bold;">this</span>;
+    }
+    <span style="color: #ce537a; font-weight: bold;">joining_thread</span>&amp; <span style="color: #4f97d7; font-weight: bold;">operator</span><span style="color: #bc6ec5; font-weight: bold;">=</span>(<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span> <span style="color: #7590db;">other</span>) <span style="color: #4f97d7; font-weight: bold;">noexcept</span>
+    {
+        <span style="color: #4f97d7; font-weight: bold;">if</span>(joinable())
+            join();
+        t=<span style="color: #a45bad;">std</span>::move(other);
+        <span style="color: #4f97d7; font-weight: bold;">return</span> *<span style="color: #4f97d7; font-weight: bold;">this</span>;
+    }
+    ~joining_thread() <span style="color: #4f97d7; font-weight: bold;">noexcept</span>
+    {
+        <span style="color: #4f97d7; font-weight: bold;">if</span>(joinable())
+            join();
+    }
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">swap</span>(<span style="color: #ce537a; font-weight: bold;">joining_thread</span>&amp; <span style="color: #7590db;">other</span>) <span style="color: #4f97d7; font-weight: bold;">noexcept</span>
+    {
+        t.swap(other.t);
+    }
+    <span style="color: #a45bad;">std</span>::<span style="color: #a45bad;">thread</span>::<span style="color: #ce537a; font-weight: bold;">id</span> <span style="color: #bc6ec5; font-weight: bold;">get_id</span>() <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #4f97d7; font-weight: bold;">noexcept</span>
+    {
+        <span style="color: #4f97d7; font-weight: bold;">return</span> t.get_id();
+    }
+    <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #bc6ec5; font-weight: bold;">joinable</span>() <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #4f97d7; font-weight: bold;">noexcept</span>
+    {
+        <span style="color: #4f97d7; font-weight: bold;">return</span> t.joinable();
+    }
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">join</span>() { t.join(); }
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">detach</span>()
+    {
+        t.detach();
+    }
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span>&amp; <span style="color: #bc6ec5; font-weight: bold;">as_thread</span>() <span style="color: #4f97d7; font-weight: bold;">noexcept</span>
+    {
+        <span style="color: #4f97d7; font-weight: bold;">return</span> t;
+    }
+    <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span>&amp; <span style="color: #bc6ec5; font-weight: bold;">as_thread</span>() <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #4f97d7; font-weight: bold;">noexcept</span>
+    {
+        <span style="color: #4f97d7; font-weight: bold;">return</span> t;
+    }
+};
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org5c6d6d6" class="outline-5">
+<h5 id="org5c6d6d6">thread and container</h5>
+<div class="outline-text-5" id="text-org5c6d6d6">
+<p>
+thread 支持移动，使得可以用识别移动的 container 来存放 thread。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">do_work</span>(<span style="color: #ce537a; font-weight: bold;">unsigned</span> <span style="color: #7590db;">id</span>);
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">f</span>()
+{
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">vector</span>&lt;<span style="color: #a45bad;">std</span>::thread&gt; <span style="color: #7590db;">threads</span>;
+    <span style="color: #4f97d7; font-weight: bold;">for</span>(<span style="color: #ce537a; font-weight: bold;">unsigned</span> <span style="color: #7590db;">i</span>=0;i&lt;20;++i)
+    {
+        threads.emplace_back(do_work,i);
+    }
+    <span style="color: #4f97d7; font-weight: bold;">for</span>(<span style="color: #4f97d7; font-weight: bold;">auto</span>&amp; <span style="color: #7590db;">entry</span>: threads)
+        entry.join();
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org86cb5eb" class="outline-4">
+<h4 id="org86cb5eb">Choosing the number of threads at runtime</h4>
+<div class="outline-text-4" id="text-org86cb5eb">
+<p>
+std::thread::hardware_concurrency() 返回真正可以并行执行的线程数量。在一个多核系统中，其返回的可能是 CPU 的核心数量。如果相关信息不可用时，其可能返回 0。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">template</span>&lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">Iterator</span>,<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">T</span>&gt;
+<span style="color: #4f97d7; font-weight: bold;">struct</span> <span style="color: #ce537a; font-weight: bold;">accumulate_block</span>
+{
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #4f97d7; font-weight: bold;">operator</span><span style="color: #bc6ec5; font-weight: bold;">()</span>(<span style="color: #ce537a; font-weight: bold;">Iterator</span> <span style="color: #7590db;">first</span>,<span style="color: #ce537a; font-weight: bold;">Iterator</span> <span style="color: #7590db;">last</span>,<span style="color: #ce537a; font-weight: bold;">T</span>&amp; <span style="color: #7590db;">result</span>)
+    {
+        result=<span style="color: #a45bad;">std</span>::accumulate(first,last,result);
+    }
+};
+<span style="color: #4f97d7; font-weight: bold;">template</span>&lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">Iterator</span>,<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">T</span>&gt;
+<span style="color: #ce537a; font-weight: bold;">T</span> <span style="color: #bc6ec5; font-weight: bold;">parallel_accumulate</span>(<span style="color: #ce537a; font-weight: bold;">Iterator</span> <span style="color: #7590db;">first</span>,<span style="color: #ce537a; font-weight: bold;">Iterator</span> <span style="color: #7590db;">last</span>,<span style="color: #ce537a; font-weight: bold;">T</span> <span style="color: #7590db;">init</span>)
+{
+    <span style="color: #ce537a; font-weight: bold;">unsigned</span> <span style="color: #ce537a; font-weight: bold;">long</span> <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #7590db;">length</span>=<span style="color: #a45bad;">std</span>::distance(first,last);
+    <span style="color: #4f97d7; font-weight: bold;">if</span>(<span style="color: #a45bad;">!</span>length)
+        <span style="color: #4f97d7; font-weight: bold;">return</span> init;
+    <span style="color: #ce537a; font-weight: bold;">unsigned</span> <span style="color: #ce537a; font-weight: bold;">long</span> <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #7590db;">min_per_thread</span>=25;
+    <span style="color: #ce537a; font-weight: bold;">unsigned</span> <span style="color: #ce537a; font-weight: bold;">long</span> <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #7590db;">max_threads</span>=
+        (length+min_per_thread-1)/min_per_thread;
+    <span style="color: #ce537a; font-weight: bold;">unsigned</span> <span style="color: #ce537a; font-weight: bold;">long</span> <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #7590db;">hardware_threads</span>=
+        <span style="color: #a45bad;">std</span>::<span style="color: #a45bad;">thread</span>::hardware_concurrency();
+    <span style="color: #ce537a; font-weight: bold;">unsigned</span> <span style="color: #ce537a; font-weight: bold;">long</span> <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #7590db;">num_threads</span>=
+        <span style="color: #a45bad;">std</span>::min(hardware_threads!=0?hardware_threads:2,max_threads);
+    <span style="color: #ce537a; font-weight: bold;">unsigned</span> <span style="color: #ce537a; font-weight: bold;">long</span> <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #7590db;">block_size</span>=length/num_threads;
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">vector</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt; <span style="color: #7590db;">results</span>(num_threads);
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">vector</span>&lt;<span style="color: #a45bad;">std</span>::thread&gt;  <span style="color: #7590db;">threads</span>(num_threads-1);
+    <span style="color: #ce537a; font-weight: bold;">Iterator</span> <span style="color: #7590db;">block_start</span>=first;
+    <span style="color: #4f97d7; font-weight: bold;">for</span>(<span style="color: #ce537a; font-weight: bold;">unsigned</span> <span style="color: #ce537a; font-weight: bold;">long</span> <span style="color: #7590db;">i</span>=0;i&lt;(num_threads-1);++i)
+    {
+        <span style="color: #ce537a; font-weight: bold;">Iterator</span> <span style="color: #7590db;">block_end</span>=block_start;
+        <span style="color: #a45bad;">std</span>::advance(block_end,block_size);
+        threads[i]=<span style="color: #a45bad;">std</span>::thread(
+            accumulate_block&lt;Iterator,T&gt;(),
+            block_start,block_end,<span style="color: #a45bad;">std</span>::ref(results[i]));
+        block_start=block_end;
+    }
+    accumulate_block&lt;<span style="color: #ce537a; font-weight: bold;">Iterator</span>,<span style="color: #ce537a; font-weight: bold;">T</span>&gt;()(
+        block_start,last,results[num_threads-1]);
+    <span style="color: #4f97d7; font-weight: bold;">for</span>(<span style="color: #4f97d7; font-weight: bold;">auto</span>&amp; <span style="color: #7590db;">entry</span>: threads)
+        entry.join();
+    <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #a45bad;">std</span>::accumulate(results.begin(),results.end(),init);
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org307cb0f" class="outline-4">
+<h4 id="org307cb0f">Identifying threads</h4>
+<div class="outline-text-4" id="text-org307cb0f">
+<p>
+thread 身份标识的类型为 std::thread::id，可以通过两种方式获得 thread 的身份标识。<br />
+</p>
+<ol class="org-ol">
+<li>通过 std::thread 的 get_id()成员函数获得 std::thread 关联线程的身份标识。如果 std::thread 对象不关联任何线程，则 get_id()成员函数返回一个默认的 std::thread::id 对象。<br /></li>
+<li>通过 std::this_thread::get_id() 获得当前线程的身份标识。TIPS: std::this_thread 为一个命名空间。<br /></li>
+</ol>
+
+<p>
+std::thread::id 类型的对象可以被自由地 copy 和比较。如果两个 std::thread::id 类型的对象相等，说明他们表示相同的线程，或者他们都不关联任何线程。<br />
+std::thread::id 提供了完整的比较操作集合，其可以作为关联容器的 key，也可以对其进行排序。标准库还提供了 std::hash&lt;std::thread::id&gt;，因此其还可以作为新的非排序关联容器的 key。<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #a45bad;">std</span>::<span style="color: #a45bad;">thread</span>::<span style="color: #ce537a; font-weight: bold;">id</span> <span style="color: #7590db;">master_thread</span>;
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">some_core_part_of_algorithm</span>()
+{
+    <span style="color: #4f97d7; font-weight: bold;">if</span>(<span style="color: #a45bad;">std</span>::<span style="color: #a45bad;">this_thread</span>::get_id()==master_thread)
+    {
+        do_master_thread_work();
+    }
+    do_common_work();
+}
+</pre>
+</div>
+
+<p>
+可以将 std::thread::id 输出。TIPS：std::thread::id 的输出是依赖于实现的，不同实现输出可能不同。输出值只用于调试，其没有任何意义。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #a45bad;">std</span>::cout&lt;&lt;<span style="color: #a45bad;">std</span>::<span style="color: #a45bad;">this_thread</span>::get_id();
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgab44313" class="outline-3">
+<h3 id="orgab44313">03 sharing data between threads</h3>
+<div class="outline-text-3" id="text-orgab44313">
+<p>
+使用线程来实现并发的一个关键好处是，线程之间可以更容易，更直接地共享数据。<br />
+</p>
+
+<p>
+共享也会带来一些问题。假如你和一个普通朋友共享一间公寓。这间公寓只有一个厨房一个卫生间。你和你的朋友无法同时使用卫生间。如果在你需要使用卫生间时，你的朋友占用卫生间很长时间，这会使你非常沮丧。类似地，假如厨房有一个组合在一起的烤炉和烤架，如果你在烤香肠的同时，你室友在烘培蛋糕。这样做你们得到的结果不会很好。（你室友会得到混有香肠味的蛋糕）<br />
+</p>
+
+<p>
+对线程来说也一样。多个线程之间共享数据时，你需要有规则规定，哪个线程可以在什么时候可以访问数据的哪些位，以及任何对该数据的改动如何同步给关心该数据的其他线程。可以很容易地在多线程之间共享数据不只是一个便利，其也是一个很大的麻烦。不正确地使用共享数据是导致并发相关 bug 的最大原因之一。<br />
+</p>
+</div>
+<div id="outline-container-org00cd723" class="outline-4">
+<h4 id="org00cd723">Problems with sharing data between threads</h4>
+<div class="outline-text-4" id="text-org00cd723">
+<p>
+归根结底，多线程共享数据的问题都是由于修改数据导致的。如果所有共享的数据都是只读的，就不会有任何问题，因为数据被一个线程读取并不会影响其他线程对该数据的读取。但是，如果多个线程之间共享数据，其中一个或多个线程对数据进行修改，这将有很多潜在的问题。<br />
+</p>
+
+<p>
+不变性（invariants）被广泛使用，来帮助程序员思考他们的代码。在做数据更新时，这些不变性常常会被破坏，特别是数据结构比较复杂，需要修改不只一个值的时候。考虑一个双向链表，每个节点有两个指针，指针 pre 指向前一个节点，指针 next 指向后一个节点。其包含这样的不变性：假如 A.next = B，则 B.pre=A。当删除一个节点时，被删除节点的两侧的节点都需要更新，只有一个节点更新后，不变性就会被破坏，直到另一个节点也更新完毕，不变性得以再次保持。<br />
+</p>
+
+<p>
+在不变性被破坏的时候，从两个方向遍历列表获得的结果是不一致的。不变性被破坏的后果会各不相同；如果一个线程从左到右读列表，其会忽略被删除的节点。另一方面，如果另一个线程试图删除最右边的节点，则其可能永远将数据结构污染，甚至使进程 crash。这是一个 race conditions 的例子，其是在并行代码中最常见的导致 bug 的一种原因。<br />
+</p>
+
+<ul class="org-ul">
+<li><a href="https://en.wikipedia.org/wiki/Invariant">https://en.wikipedia.org/wiki/Invariant</a><br /></li>
+<li>计算机科学中的不变式思想 <a href="https://zhuanlan.zhihu.com/p/148144901">https://zhuanlan.zhihu.com/p/148144901</a><br /></li>
+</ul>
+</div>
+<div id="outline-container-orgc6c8ab4" class="outline-5">
+<h5 id="orgc6c8ab4">Race conditions</h5>
+<div class="outline-text-5" id="text-orgc6c8ab4">
+<p>
+假如你在一个很大的电影院买电影票，有很多售票员，因此同时有很多人可以购票。如果另一个售票员窗口的购票者正在和你买同一场电影的电影票，那么你可选的座位依赖于你和另一个人谁先订票。如果所剩座位不多，谁先谁后的差别就会非常重要：其甚至是一场竞赛，看谁拿到最后一张票。这是一个 race condition 的例子：你获得哪个座位(或者你是否能得到座位)取决于两次购买的先后顺序。<br />
+</p>
+
+<p>
+在并行中，当结果依赖于两个或多个线程上执行的操作的相对顺序时，这种情况就是 race condition。多个线程竞争执行他们各自的操作。大多数时间，这种竞争是良性的，因为各种结果都是可接受的。例如，如果两个线程添加 item 到一个队列中，通常哪个 item 被先添加到队列并不重要，其系统的不变性一直被保持。当 race condition 导致不变性被破坏时，才会产生问题。在并行中谈到 race condition 时，通常是指有问题的 race condition；C++ 标准还定义了 data race 专业术语，用于表示一种特殊的 race condition，其专指对当个对象进行异步修改；data races 会导致可怕的未定义行为。<br />
+</p>
+
+<p>
+有问题的 race conditions 通常发生在完成一个操作需要修改两个或多个不同的的数据。例如，上面提到的双向链表中删除节点。因为操作必须访问两个分开的数据，这些修改必须在分开的指令中，因此另一个线程可能在只有其中一个修改完成时就对数据进行访问。Race conditions 通常很难被发现并且很难被复现，因为复现的窗口机会非常小。如果修改是由连续的 CPU 指令完成的，该问题显露的机会在任何一次执行中都很小，即使是该数据结构被另一个线程同步访问。随着系统负载的增加，以及该操作执行次数的增加，有问题的执行次序出现的机会也会增加。这类问题几乎必然会在大多数不顺畅的时候出现。因为 race conditions 通常是时机敏感的，而 debugger 会影响程序的执行时机，因此在调试程序时，race conditions 通常会消失。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org455efcb" class="outline-5">
+<h5 id="org455efcb">Avoiding problematic race conditions</h5>
+<div class="outline-text-5" id="text-org455efcb">
+<p>
+有很多种方式来处理 problematic race conditions,最简单的方式是使用保护机制来封装数据结构，确保只有一个线程可以修改数据结构，只有修改数据结构的线程可以看到 invariants 被破坏的中间状态。从其他访问该数据结构的线程看，对数据结构的修改要么还没开始，要么已经完成。C++标准库提供了很多这样的机制。<br />
+</p>
+
+<p>
+另一种方法是，修改你的数据结构的设计和不变性，使得对数据结构的修改是通过一系列不可分的修改来完成的，每个小的修改都保持了不变性。这种方式通常被称为无锁编程(lock-free programming)，其通常很难达到正确结果。如果您在此级别工作，内存模型的细微差别以及识别哪些线程可能会看到哪组值可能会变得复杂。内存模型在第 5 章介绍，无锁编程在第 7 章介绍。<br />
+</p>
+
+<p>
+还有一种方法是，将对数据结构的修改当作事务（transaction），就像对数据库的更新是在一个事务内完成的。所需的一系列数据修改和读取存储在事务日志中，然后在一个步骤中提交。如果由于数据结构被其他线程修改提交无法被处理，事务会被重启。这种方法的专业术语名称为 software transactional memory (STM),当前是一个活跃的研究领域。本书不会介绍该方法，因为 c++中没有直接支持 STM（有一个对 c++进行 Transactional Memory 扩展的技术规范）。但是，秘密地做一些事，然后在单个步骤提交的基本理念会在后面提到。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org7eed7a0" class="outline-4">
+<h4 id="org7eed7a0">Protecting data with mutexes</h4>
+<div class="outline-text-4" id="text-org7eed7a0">
+<p>
+为了保护共享数据结构，如果你可以标记所有代码片段，使他们互相排斥地(mutually exclusive)访问共享数据结构，当任何一个线程在执行其中一个代码片段时，其他试图访问共享数据结构的线程必须等待直到第一个线程访问结束。这将会保证除了做修改的线程外，其他线程无法看到不变性被破坏。<br />
+使用互斥锁同步原语即可达到上面效果。mutex 是 mutual exclusion 的缩写。<br />
+</p>
+
+<p>
+mutex 是 c++中最通用的数据保护机制。但是其不是银弹；你还需要组织你的代码以保护正确的数据，在你的接口中避免固有的 race conditions。mutexs 还会带来 deadlock 的问题。<br />
+</p>
+</div>
+<div id="outline-container-orgfdfef4b" class="outline-5">
+<h5 id="orgfdfef4b">Using mutexes in C++</h5>
+<div class="outline-text-5" id="text-orgfdfef4b">
+</div>
+<div id="outline-container-orgaf803b0" class="outline-6">
+<h6 id="orgaf803b0">mutex</h6>
+<div class="outline-text-6" id="text-orgaf803b0">
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;list&gt;</span>
+<span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;mutex&gt;</span>
+<span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;algorithm&gt;</span>
+<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">list</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt; <span style="color: #7590db;">some_list</span>;
+<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span> <span style="color: #7590db;">some_mutex</span>;
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">add_to_list</span>(<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">new_value</span>)
+{
+    some_mutex.lock();
+    some_list.push_back(new_value);
+    some_mutex.unlock();
+    
+}
+<span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #bc6ec5; font-weight: bold;">list_contains</span>(<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">value_to_find</span>)
+{
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">lock_guard</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span>&gt; <span style="color: #7590db;">guard</span>(some_mutex);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #a45bad;">std</span>::find(some_list.begin(),some_list.end(),value_to_find) != some_list.end();
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org9262ca0" class="outline-6">
+<h6 id="org9262ca0">lock_guard</h6>
+<div class="outline-text-6" id="text-org9262ca0">
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;list&gt;</span>
+<span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;mutex&gt;</span>
+<span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;algorithm&gt;</span>
+<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">list</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt; <span style="color: #7590db;">some_list</span>;
+<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span> <span style="color: #7590db;">some_mutex</span>;
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">add_to_list</span>(<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">new_value</span>)
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">std::lock_guard &#21033;&#29992;RAII&#30340;&#29702;&#24565;&#26469;&#31649;&#29702; mutex</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">c++17&#20013;&#24341;&#20837;&#20102;&#22686;&#24378;&#29256;&#26412;&#30340; lock guard&#65292;&#20854;&#20026;std::scoped_lock</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">std::scoped_lock guard(some_mutex);</span>
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">lock_guard</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span>&gt; <span style="color: #7590db;">guard</span>(some_mutex);
+    some_list.push_back(new_value);
+}
+<span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #bc6ec5; font-weight: bold;">list_contains</span>(<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">value_to_find</span>)
+{
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">lock_guard</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span>&gt; <span style="color: #7590db;">guard</span>(some_mutex);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #a45bad;">std</span>::find(some_list.begin(),some_list.end(),value_to_find) != some_list.end();
+}
+
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org8dbfb7c" class="outline-5">
+<h5 id="org8dbfb7c">Structuring code for protecting shared data</h5>
+<div class="outline-text-5" id="text-org8dbfb7c">
+<p>
+使用 mutex 保护数据不单单是在每个成员函数中放置 lock_guard 对象。一个逃逸的指针或引用会使得所有数据保护都是徒劳的。从某种角度看，检查逃逸指针或引用是比较容易的。只要没有成员函数返回共享数据的指针或引用给函数调用者。如果你更深入地挖掘，你会发现并不那么简单。你还要检查成员函数不会将共享数据的指针或引用传递进不受你控制的函数。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">some_data</span>
+{
+    <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">a</span>;
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #7590db;">b</span>;
+<span style="color: #4f97d7; font-weight: bold;">public</span>:
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">do_something</span>();
+};
+<span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">data_wrapper</span>
+{
+<span style="color: #4f97d7; font-weight: bold;">private</span>:
+    <span style="color: #ce537a; font-weight: bold;">some_data</span> <span style="color: #7590db;">data</span>;
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span> <span style="color: #7590db;">m</span>;
+<span style="color: #4f97d7; font-weight: bold;">public</span>:
+    <span style="color: #4f97d7; font-weight: bold;">template</span>&lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">Function</span>&gt;
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">process_data</span>(<span style="color: #ce537a; font-weight: bold;">Function</span> <span style="color: #7590db;">func</span>)
+    {
+        <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">lock_guard</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span>&gt; <span style="color: #7590db;">l</span>(m);
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;&#20445;&#25252;&#25968;&#25454;&#30340;&#24341;&#29992;&#20256;&#36882;&#32473;&#19981;&#21463;&#25511;&#21046;&#30340;func&#20989;&#25968;&#65292;func&#20989;&#25968;&#23558;&#20445;&#25252;&#25968;&#25454;&#30340;&#25351;&#38024;&#20445;&#23384;&#19979;&#26469;&#65292;&#23548;&#33268;&#20102;&#20849;&#20139;&#25968;&#25454;&#25351;&#38024;&#30340;&#36867;&#36920;</span>
+        func(data);
+    }
+};
+<span style="color: #ce537a; font-weight: bold;">some_data</span>* <span style="color: #7590db;">unprotected</span>;
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">malicious_function</span>(<span style="color: #ce537a; font-weight: bold;">some_data</span>&amp; <span style="color: #7590db;">protected_data</span>)
+{
+    unprotected=&amp;protected_data;
+}
+<span style="color: #ce537a; font-weight: bold;">data_wrapper</span> <span style="color: #7590db;">x</span>;
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">foo</span>()
+{
+    x.process_data(malicious_function);
+    unprotected-&gt;do_something();
+}
+</pre>
+</div>
+
+<p>
+TIPS:<br />
+不要通过函数返回共享数据的指针或引用，不要将共享数据的指针或引用存储在外部可见的地方，不要将共享数据的指针或引用当作参数传递给用户提供的函数。总之就是，不要将共享数据的指针或引用传递到锁的作用域外。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgcb58817" class="outline-5">
+<h5 id="orgcb58817">Spotting race conditions inherent in interfaces</h5>
+<div class="outline-text-5" id="text-orgcb58817">
+<p>
+仅仅使用互斥锁或其他机制来保护共享数据，并不意味着就不会受 race condition 影响。你依然必须确保适当的数据被保护。考虑双向链表的例子，为了使一个线程安全地删除一个节点，必须避免其他线程同步访问 3 个节点：被删除的节点，以及该节点的前后节点。如果你独立地保护访问每个节点的指针，这样做不会比不使用互斥锁的代码更好，因为 race conditions 依然存在。最简单的方式是，使用一个互斥锁保护整个链表。<br />
+</p>
+
+<p>
+仅仅使链表上的单个操作是安全的，也并不意味着不受 race condition 影响。考虑一个栈数据结构，如果你修改 top()函数使其返回一个数据 copy 而不是引用，并且使用 mutex 保护内部数据，这个接口本质上依然受 race condition 影响。该问题并不是只存在于基于 mutex 的实现方式，对于 lock-free 的实现方式也存在该问题，该问题是接口的问题。此处的问题是，empty()和 size()不能够被信赖。尽管在调用的时候，他们是正确的，但是一旦返回，其他线程即可自由地访问 stack，他们可能 push 新的元素或者 pop 老元素出来，此时再使用 empty()和 size()返回的结果将是错误的。<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">template</span>&lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">T</span>,<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">Container</span>=<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">deque</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt; &gt;
+<span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">stack</span>
+{
+<span style="color: #4f97d7; font-weight: bold;">public</span>:
+    <span style="color: #4f97d7; font-weight: bold;">explicit</span> <span style="color: #bc6ec5; font-weight: bold;">stack</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">Container</span>&amp;);
+    <span style="color: #4f97d7; font-weight: bold;">explicit</span> <span style="color: #bc6ec5; font-weight: bold;">stack</span>(<span style="color: #ce537a; font-weight: bold;">Container</span>&amp;&amp; = Container());
+    <span style="color: #4f97d7; font-weight: bold;">template</span> &lt;<span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Alloc</span>&gt; <span style="color: #4f97d7; font-weight: bold;">explicit</span> <span style="color: #bc6ec5; font-weight: bold;">stack</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">Alloc</span>&amp;);
+    <span style="color: #4f97d7; font-weight: bold;">template</span> &lt;<span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Alloc</span>&gt; <span style="color: #bc6ec5; font-weight: bold;">stack</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">Container</span>&amp;, <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">Alloc</span>&amp;);
+    <span style="color: #4f97d7; font-weight: bold;">template</span> &lt;<span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Alloc</span>&gt; <span style="color: #bc6ec5; font-weight: bold;">stack</span>(<span style="color: #ce537a; font-weight: bold;">Container</span>&amp;&amp;, <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">Alloc</span>&amp;);
+    <span style="color: #4f97d7; font-weight: bold;">template</span> &lt;<span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Alloc</span>&gt; <span style="color: #bc6ec5; font-weight: bold;">stack</span>(<span style="color: #ce537a; font-weight: bold;">stack</span>&amp;&amp;, <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">Alloc</span>&amp;);
+    <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #bc6ec5; font-weight: bold;">empty</span>() <span style="color: #4f97d7; font-weight: bold;">const</span>;
+    <span style="color: #ce537a; font-weight: bold;">size_t</span> <span style="color: #bc6ec5; font-weight: bold;">size</span>() <span style="color: #4f97d7; font-weight: bold;">const</span>;
+    <span style="color: #ce537a; font-weight: bold;">T</span>&amp; <span style="color: #bc6ec5; font-weight: bold;">top</span>();
+    <span style="color: #ce537a; font-weight: bold;">T</span> <span style="color: #4f97d7; font-weight: bold;">const</span>&amp; <span style="color: #bc6ec5; font-weight: bold;">top</span>() <span style="color: #4f97d7; font-weight: bold;">const</span>;
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">push</span>(<span style="color: #ce537a; font-weight: bold;">T</span> <span style="color: #4f97d7; font-weight: bold;">const</span>&amp;);
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">push</span>(<span style="color: #ce537a; font-weight: bold;">T</span>&amp;&amp;);
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">pop</span>();
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">swap</span>(<span style="color: #ce537a; font-weight: bold;">stack</span>&amp;&amp;);
+    <span style="color: #4f97d7; font-weight: bold;">template</span> &lt;<span style="color: #4f97d7; font-weight: bold;">class</span>... <span style="color: #ce537a; font-weight: bold;">Args</span>&gt; <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">emplace</span>(<span style="color: #ce537a; font-weight: bold;">Args</span>&amp;&amp;... <span style="color: #7590db;">args</span>);
+};
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #ce537a; font-weight: bold;">stack</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt; <span style="color: #7590db;">s</span>;
+<span style="color: #4f97d7; font-weight: bold;">if</span>(<span style="color: #a45bad;">!</span>s.empty())                <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">mark 1</span>
+{
+    <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #7590db;">value</span>=s.top();  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">mark 2</span>
+    s.pop();                  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">mark 3</span>
+    do_something(value);
+}
+</pre>
+</div>
+<p>
+当 stack 实例不被共享时，上面的代码是安全的。当 stack 实例被共享时，上面的代码就会有问题。该问题是由于接口设计导致的，因此需要修改接口。<br />
+问题 1: mark1 和 mark2 之间可能有其他线程调用 pop。mark2 处调用 top 时，可能 stack 中已经没有数据了。这是因为 empty 和 top 的竞争导致的。解决该问题最简单的方式是，声明当 stack 中没数据时，top 会抛出异常。这样处理虽然定位了问题，它使得编程更加繁琐，你需要在 empty 返回 false 的情况下也要捕获异常。<br />
+问题 2: 假设只有两个线程，且他们按照下面的顺序执行代码，两个线程的 value 变量是相同的值，所以两个线程中 do_something 处理的数据相同。stack 中 pop 出了两个元素，其中一个被处理两次，另一个没有被处理。这也是一种 race condition，其非常隐蔽，很难被发现。解决该问题需要对接口做更激进的修改。<br />
+<img src="./AsynchronousProgramming/2021_07_29_stack_two_t.png" alt="2021_07_29_stack_two_t.png" /><br />
+可以将 top 和 pop 合并在一起使用互斥量进行保护。但是，将 top 和 pop 合并也会引入新的问题。假如 stack 的类型为 stack&lt;vector&lt;int&gt;&gt;，vector 是一个尺寸动态变化的容器，当调用 top 时，执行 vector 的 copy，如果此时内存不够，则 copy 构造 vector 会抛出 std::bad_alloc 异常。新的 pop 函数被定义为返回弹出的数据，同时将其从 stack 上删除。你所面对的问题是，返回弹出的数据给调用者在，从 stack 上删除数据之后。如果从 stack 上删除数据成功，而返回数据给调用者抛出异常，则数据会永远丢失。可以通过下面几种方式来解决该问题：<br />
+</p>
+</div>
+<div id="outline-container-orgf0f29e5" class="outline-6">
+<h6 id="orgf0f29e5">方法 1: Pass in a reference</h6>
+<div class="outline-text-6" id="text-orgf0f29e5">
+<p>
+这种方案在大多数情况下是可行的。但是，其缺点是需要调用者在调用之前构造一个 stack 元素的实例。对一些类型来说，这是不切实际的，构造一个实例是比较昂贵的。而对另外一些类型来说，这是不可行的，因为构造对象需要参数，而此处参数可能是不可行的。最后，其还需要 stack 的元素类型支持赋值。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">vector</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt; <span style="color: #7590db;">result</span>;
+some_stack.pop(result);
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org92d9156" class="outline-6">
+<h6 id="org92d9156">方法 2: REQUIRE A NO-THROW COPY CONSTRUCTOR OR MOVE CONSTRUCTOR</h6>
+<div class="outline-text-6" id="text-org92d9156">
+<p>
+限制 stack 元素的类型具有不抛异常的 copy 构造函数或具有不抛异常的 move 构造函数。这种方案限制了很多类型的元素无法存储在该 stack 中。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org3ccb3b5" class="outline-6">
+<h6 id="org3ccb3b5">方法 3: RETURN A POINTER TO THE POPPED ITEM</h6>
+<div class="outline-text-6" id="text-org3ccb3b5">
+<p>
+返回一个指针而不是返回元素的值。可以使用 std::shared_ptr 来管理指针。这种方案对于简单类型来说，比直接返回值性能要低。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgeacecbc" class="outline-6">
+<h6 id="orgeacecbc">方法 4: PROVIDE BOTH OPTION 1 AND EITHER OPTION 2 OR 3</h6>
+<div class="outline-text-6" id="text-orgeacecbc">
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;exception&gt;</span>
+<span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;memory&gt;</span>
+<span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;mutex&gt;</span>
+<span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;stack&gt;</span>
+<span style="color: #4f97d7; font-weight: bold;">struct</span> <span style="color: #ce537a; font-weight: bold;">empty_stack</span>: <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">exception</span>
+{
+    <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">char</span>* <span style="color: #bc6ec5; font-weight: bold;">what</span>() <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #4f97d7; font-weight: bold;">throw</span>();
+};
+<span style="color: #4f97d7; font-weight: bold;">template</span>&lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">T</span>&gt;
+<span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">threadsafe_stack</span>
+{
+<span style="color: #4f97d7; font-weight: bold;">private</span>:
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">stack</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt; <span style="color: #7590db;">data</span>;
+    <span style="color: #4f97d7; font-weight: bold;">mutable</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span> <span style="color: #7590db;">m</span>;
+<span style="color: #4f97d7; font-weight: bold;">public</span>:
+    <span style="color: #bc6ec5; font-weight: bold;">threadsafe_stack</span>(){}
+    <span style="color: #bc6ec5; font-weight: bold;">threadsafe_stack</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">threadsafe_stack</span>&amp; <span style="color: #7590db;">other</span>)
+    {
+        <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">lock_guard</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span>&gt; <span style="color: #7590db;">lock</span>(other.m);
+        data=other.data;
+    }
+    <span style="color: #ce537a; font-weight: bold;">threadsafe_stack</span>&amp; <span style="color: #4f97d7; font-weight: bold;">operator</span><span style="color: #bc6ec5; font-weight: bold;">=</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">threadsafe_stack</span>&amp;) = <span style="color: #4f97d7; font-weight: bold;">delete</span>; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#36171;&#20540;&#36816;&#31639;&#31526;&#34987;&#21024;&#38500;</span>
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">push</span>(<span style="color: #ce537a; font-weight: bold;">T</span> <span style="color: #7590db;">new_value</span>)
+    {
+        <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">lock_guard</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span>&gt; <span style="color: #7590db;">lock</span>(m);
+        data.push(<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">move</span>(<span style="color: #7590db;">new_value</span>));
+    }
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt; <span style="color: #bc6ec5; font-weight: bold;">pop</span>()
+    {
+        <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">lock_guard</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span>&gt; <span style="color: #7590db;">lock</span>(m);
+        <span style="color: #4f97d7; font-weight: bold;">if</span>(data.empty()) <span style="color: #4f97d7; font-weight: bold;">throw</span> empty_stack();
+        <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt; <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #7590db;">res</span>(<span style="color: #a45bad;">std</span>::make_shared&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt;(data.top()));
+        data.pop();
+        <span style="color: #4f97d7; font-weight: bold;">return</span> res;
+    }
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">pop</span>(<span style="color: #ce537a; font-weight: bold;">T</span>&amp; <span style="color: #7590db;">value</span>)
+    {
+        <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">lock_guard</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span>&gt; <span style="color: #7590db;">lock</span>(m);
+        <span style="color: #4f97d7; font-weight: bold;">if</span>(data.empty()) <span style="color: #4f97d7; font-weight: bold;">throw</span> empty_stack();
+        value=data.top();
+        data.pop();
+    }
+    <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #bc6ec5; font-weight: bold;">empty</span>() <span style="color: #4f97d7; font-weight: bold;">const</span>
+    {
+        <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">lock_guard</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span>&gt; <span style="color: #7590db;">lock</span>(m);
+        <span style="color: #4f97d7; font-weight: bold;">return</span> data.empty();
+    }
+};
+</pre>
+</div>
+
+<p>
+前面讨论的 top 和 pop 接口之间的 race conditions，是因为锁的粒度太小导致的，锁没有覆盖到所有要保护的代码。将 top 和 pop 合为 pop 之后，解决了该问题。锁的粒度过大同样也会带来问题，极端情况下只用一个锁来保护所有的共享数据，这会消除所有平行带来的性能提升，因为同一时间只能执行一个线程。<br />
+</p>
+
+<p>
+粒度适当的锁机制，有时候需要你使用多个互斥量来保护一个操作中的所有共享数据。例如，某个操作使用了某个类的多个实例，多个互斥量分别保护某个类的多个实例。在这种情况下，需要在上一级进行锁定，要么把锁定操作留给用户来做，要么就需要对类的所有实例进行锁定。这两种方式都不够好。<br />
+</p>
+
+<p>
+当你需要为某个操作对两个或更多互斥量上锁时，这可能会导致死锁。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgfd6d73f" class="outline-5">
+<h5 id="orgfd6d73f">Deadlock: the problem and a solution</h5>
+<div class="outline-text-5" id="text-orgfd6d73f">
+<p>
+假如你有两个小孩，你为他们买了一个玩具，该玩具有两部分：锣和锤。只有同时获得锣和锤才能玩敲锣的游戏。这时，你的两个孩子一个拿到了锣一个拿到了锤，他们都在等对方不让出拿到的一部分，这导致他们谁也不能玩敲锣游戏。这就是典型的死锁情况。<br />
+两个线程也会发生这样的情况。死锁和 race conditions 完全相反，发生死锁后，每个线程都在等待对方完成。导致该问题的核心原因是完成某个操作需要同时对多个互斥量上锁。<br />
+</p>
+
+<p>
+解决死锁的最平常的方式是，始终按照一定的顺序对互斥量进行上锁。这样，你将永远不会死锁。但是，有时候不容易做到。例如，某个函数是交换同一个类的两个实例，该函数的两个参数是等价的，调用该函数时，实参顺序可以被调换，这就破坏了上锁的顺序。<br />
+</p>
+
+<p>
+C++标准库提供了 std::lock 函数，其可以对多个互斥量同时上锁。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">some_big_object</span>;
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">swap</span>(<span style="color: #ce537a; font-weight: bold;">some_big_object</span>&amp; <span style="color: #7590db;">lhs</span>,<span style="color: #ce537a; font-weight: bold;">some_big_object</span>&amp; <span style="color: #7590db;">rhs</span>);
+<span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">X</span>
+{
+<span style="color: #4f97d7; font-weight: bold;">private</span>:
+    <span style="color: #ce537a; font-weight: bold;">some_big_object</span> <span style="color: #7590db;">some_detail</span>;
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span> <span style="color: #7590db;">m</span>;
+<span style="color: #4f97d7; font-weight: bold;">public</span>:
+    <span style="color: #bc6ec5; font-weight: bold;">X</span>(<span style="color: #ce537a; font-weight: bold;">some_big_object</span> <span style="color: #4f97d7; font-weight: bold;">const</span>&amp; <span style="color: #7590db;">sd</span>):<span style="color: #bc6ec5; font-weight: bold;">some_detail</span>(sd){}
+    <span style="color: #4f97d7; font-weight: bold;">friend</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">swap</span>(<span style="color: #ce537a; font-weight: bold;">X</span>&amp; <span style="color: #7590db;">lhs</span>, <span style="color: #ce537a; font-weight: bold;">X</span>&amp; <span style="color: #7590db;">rhs</span>)
+    {
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22914;&#26524;&#20004;&#20010;&#21442;&#25968;&#26159;&#21516;&#19968;&#20010;&#23545;&#35937;&#65292;&#21017;&#36820;&#22238;&#12290;&#36991;&#20813;&#23545;&#21516;&#19968;&#20010;&#20114;&#26021;&#37327;&#19978;&#38145;&#22810;&#27425;</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23545;&#21516;&#19968;&#20010;&#20114;&#26021;&#37327;&#19978;&#38145;&#22810;&#27425;&#23646;&#20110;&#26410;&#23450;&#20041;&#34892;&#20026;</span>
+        <span style="color: #4f97d7; font-weight: bold;">if</span>(&amp;lhs==&amp;rhs) 
+            <span style="color: #4f97d7; font-weight: bold;">return</span>;
+        <span style="color: #a45bad;">std</span>::lock(lhs.m,rhs.m);
+        <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">lock_guard</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span>&gt; <span style="color: #7590db;">lock_a</span>(lhs.m,<span style="color: #a45bad;">std</span>::adopt_lock);
+        <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">lock_guard</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span>&gt; <span style="color: #7590db;">lock_b</span>(rhs.m,<span style="color: #a45bad;">std</span>::adopt_lock);
+        swap(lhs.some_detail,rhs.some_detail);
+    }
+};
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">C++17 &#24341;&#20837;&#20102; std::scoped_lock&lt;&gt; &#21487;&#20197;&#23545;&#19978;&#38754;swap&#20989;&#25968;&#36827;&#34892;&#31616;&#21270;</span>
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">swap</span>(<span style="color: #ce537a; font-weight: bold;">X</span>&amp; <span style="color: #7590db;">lhs</span>, <span style="color: #ce537a; font-weight: bold;">X</span>&amp; <span style="color: #7590db;">rhs</span>)
+{
+    <span style="color: #4f97d7; font-weight: bold;">if</span>(&amp;lhs==&amp;rhs)  
+        <span style="color: #4f97d7; font-weight: bold;">return</span>;
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">std::scoped_lock &#26159;&#19968;&#20010;&#27169;&#26495;&#31867;&#65292;&#27492;&#22788;&#21033;&#29992;&#20102;C++17&#20013;&#24341;&#20837;&#30340;&#31867;&#27169;&#26495;&#21442;&#25968;&#31867;&#22411;&#25512;&#26029;</span>
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">scoped_lock</span> <span style="color: #7590db;">guard</span>(lhs.m,rhs.m);
+    swap(lhs.some_detail,rhs.some_detail);
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org3e6f079" class="outline-5">
+<h5 id="org3e6f079">Further guidelines for avoiding deadlock</h5>
+<div class="outline-text-5" id="text-org3e6f079">
+<p>
+死锁不止发生在互斥量上锁的时候。当两个线程互相调用对方 std::thread 对象的 join 函数，也会导致死锁。此时两个线程都无法向前执行，因为他们都在等待对方结束。<br />
+所有避免死锁的指导原则都可以归结为：如果有机会等着你，那么就不要等另外其他线程。<br />
+</p>
+</div>
+<div id="outline-container-org1266483" class="outline-6">
+<h6 id="org1266483">AVOID NESTED LOCKS</h6>
+<div class="outline-text-6" id="text-org1266483">
+<p>
+如果你已经对一个互斥量上了锁，不要再对其他互斥量上锁。这样就不会因为对互斥量上锁而导致死锁。如果需要对多个互斥量上锁，应该使用 std::lock。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgb3905ff" class="outline-6">
+<h6 id="orgb3905ff">AVOID CALLING USER-SUPPLIED CODE WHILE HOLDING A LOCK</h6>
+<div class="outline-text-6" id="text-orgb3905ff">
+<p>
+用户的代码可能执行任何操作，其可能对互斥量上锁。如果你已经对一个互斥量上了锁，若用户的代码又对其他互斥量上锁，这破坏了第一条 guideline，有可能导致死锁。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org69db1c8" class="outline-6">
+<h6 id="org69db1c8">ACQUIRE LOCKS IN A FIXED ORDER</h6>
+<div class="outline-text-6" id="text-org69db1c8">
+<p>
+如果你需要对获得多个锁，并且无法同时间对这些互斥量进行上锁，那么你需要在所有线程中保证按照相同的顺序对 mutex 进行上锁。<br />
+有时候无法很容易做到，考虑双向链表的例子。对于删除一个节点，我们需要获得 3 个节点的锁；遍历列表时，为了避免同时有其他线程对当前节点的 next ptr 有修改，当其获取下一个节点的锁时，其必须保持当前节点的锁。一旦获得下一个节点的锁，则可以释放当前节点的锁，下一个节点变为当前节点。这种 hand-over-hand 上锁方式，可以让多个线程同时访问列表的不同节点。但是，为了避免死锁，节点必须按照相同的顺序上锁。例如：如果一个线程从头到尾遍历列表，另一个线程从尾到头遍历列表，就会出现死锁，详细分析如下：<br />
+<img src="./AsynchronousProgramming/03_02_05_list_traverse.png" alt="03_02_05_list_traverse.png" /><br />
+类似的，假设 A,B,C 是按顺序的三个节点。当删除节点 B 时，需要分别获得 A，B，C 的锁，如果先获得 B 的锁，此时其他线程有可能获得 A 的锁或 C 的锁，从而导致死锁。如果始终遵守获得锁的顺序则可避免死锁的问题。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org8dc79d7" class="outline-6">
+<h6 id="org8dc79d7">USE A LOCK HIERARCHY</h6>
+<div class="outline-text-6" id="text-org8dc79d7">
+<p>
+这是一种特殊的获取锁的顺序。层次锁结构提供了一种方法来检查在运行时约定规则是否被遵守。其理念是，将应用程序分层，确定给定层所有可能被锁定的互斥量。当代码试图对互斥量上锁时，如果其已经持有一个更底层的锁，则不允许其当前的操作。你可以为每个互斥量赋予一个层次编号，并记录哪些互斥量被哪些线程持有。C++标准库，没有直接提供这种机制。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #ce537a; font-weight: bold;">hierarchical_mutex</span> <span style="color: #7590db;">high_level_mutex</span>(10000);
+<span style="color: #ce537a; font-weight: bold;">hierarchical_mutex</span> <span style="color: #7590db;">low_level_mutex</span>(5000);
+<span style="color: #ce537a; font-weight: bold;">hierarchical_mutex</span> <span style="color: #7590db;">other_mutex</span>(6000);
+<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #bc6ec5; font-weight: bold;">do_low_level_stuff</span>();
+
+<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #bc6ec5; font-weight: bold;">low_level_func</span>()
+{
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">lock_guard</span>&lt;<span style="color: #ce537a; font-weight: bold;">hierarchical_mutex</span>&gt; <span style="color: #7590db;">lk</span>(low_level_mutex);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> do_low_level_stuff();
+}
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">high_level_stuff</span>(<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">some_param</span>);
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">high_level_func</span>()
+{
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">lock_guard</span>&lt;<span style="color: #ce537a; font-weight: bold;">hierarchical_mutex</span>&gt; <span style="color: #7590db;">lk</span>(high_level_mutex);
+    high_level_stuff(low_level_func()); 
+}
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">thread_a &#36981;&#23432;&#20102;&#35268;&#21017;&#65292;&#20854;&#21487;&#20197;&#27491;&#30830;&#36816;&#34892;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20854;&#25345;&#26377; high level&#38145;&#65292;&#20801;&#35768;&#20877;&#33719;&#21462;low level&#38145;</span>
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">thread_a</span>() 
+{
+    high_level_func();
+}
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">do_other_stuff</span>();
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">other_stuff</span>()
+{
+    high_level_func();
+    do_other_stuff();
+}
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">thread_b &#36829;&#21453;&#20102;&#35268;&#21017;&#65292;&#25345;&#26377;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20854;&#25345;&#26377;middle level&#38145;&#65292;&#21448;&#21435;&#33719;&#21462;high level&#38145;&#65292;&#36825;&#26159;&#19981;&#34987;&#20801;&#35768;&#30340;</span>
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">thread_b</span>()  
+{
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">lock_guard</span>&lt;<span style="color: #ce537a; font-weight: bold;">hierarchical_mutex</span>&gt; <span style="color: #7590db;">lk</span>(other_mutex);
+    other_stuff();
+}
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">hierarchical_mutex</span>
+{
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span> <span style="color: #7590db;">internal_mutex</span>;
+    <span style="color: #ce537a; font-weight: bold;">unsigned</span> <span style="color: #ce537a; font-weight: bold;">long</span> <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #7590db;">hierarchy_value</span>;
+    <span style="color: #ce537a; font-weight: bold;">unsigned</span> <span style="color: #ce537a; font-weight: bold;">long</span> <span style="color: #7590db;">previous_hierarchy_value</span>;
+    
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#34987;thread_local &#26631;&#35760;&#30340;&#21464;&#37327;&#65292;&#27599;&#20010;&#32447;&#31243;&#37117;&#26377;&#33258;&#24049;&#30340;copy</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25152;&#26377;hierarchical_mutex &#23454;&#20363;&#37117;&#21487;&#20197;&#35775;&#38382;&#35813;&#21464;&#37327;&#65292;&#20294;&#26159;&#19981;&#21516;&#32447;&#31243;&#65292;&#35813;&#21464;&#37327;&#30340;&#20540;&#19981;&#21516;&#12290;</span>
+    <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #4f97d7; font-weight: bold;">thread_local</span> <span style="color: #ce537a; font-weight: bold;">unsigned</span> <span style="color: #ce537a; font-weight: bold;">long</span> <span style="color: #7590db;">this_thread_hierarchy_value</span>;
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">check_for_hierarchy_violation</span>()
+    {
+        <span style="color: #4f97d7; font-weight: bold;">if</span>(this_thread_hierarchy_value &lt;= hierarchy_value)
+        {
+            <span style="color: #4f97d7; font-weight: bold;">throw</span> <span style="color: #a45bad;">std</span>::logic_error(<span style="color: #2d9574;">"mutex hierarchy violated"</span>);
+        }
+    }
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">update_hierarchy_value</span>()
+    {
+        previous_hierarchy_value=this_thread_hierarchy_value;
+        this_thread_hierarchy_value=hierarchy_value;
+    }
+<span style="color: #4f97d7; font-weight: bold;">public</span>:
+    <span style="color: #4f97d7; font-weight: bold;">explicit</span> <span style="color: #bc6ec5; font-weight: bold;">hierarchical_mutex</span>(<span style="color: #ce537a; font-weight: bold;">unsigned</span> <span style="color: #ce537a; font-weight: bold;">long</span> <span style="color: #7590db;">value</span>): hierarchy_value(value), previous_hierarchy_value(0) {}
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">lock</span>() {
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19978;&#38145;&#26102;&#65292;&#26816;&#26597;&#32447;&#31243;&#30340;&#38145;&#31561;&#32423;&#26159;&#21542;&#39640;&#20110;&#20114;&#26021;&#37327;&#38145;&#31561;&#32423;</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">this_thread_hierarchy_value &lt;= hierarchy_value &#33719;&#21462;&#26356;&#39640;&#31561;&#32423;&#30340;&#38145;&#65292;&#34987;&#31105;&#27490;</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">this_thread_hierarchy_value &gt; hierarchy_value  &#33719;&#21462;&#26356;&#20302;&#31561;&#32423;&#30340;&#38145;&#65292;&#34987;&#20801;&#35768;</span>
+        check_for_hierarchy_violation(); 
+        internal_mutex.lock();
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#26356;&#26032;&#24403;&#21069;&#32447;&#31243;&#30340;&#38145;&#31561;&#32423;</span>
+        update_hierarchy_value();
+    }
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">unlock</span>()
+    {
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#37322;&#25918;&#38145;&#26102;&#65292;&#26816;&#26597;&#32447;&#31243;&#30340;&#38145;&#31561;&#32423;&#26159;&#21542;&#31561;&#20110;&#20114;&#26021;&#37327;&#38145;&#31561;&#32423;</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20081;&#24207;&#35299;&#38145;&#65292;&#20250;&#23548;&#33268;&#32447;&#31243;&#30340;&#38145;&#31561;&#32423;&#38169;&#35823;</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">//                                    </span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20363;&#22914;&#65306;&#33719;&#21462;&#38145;&#30340;&#39034;&#24207;&#20026; high-&gt;low&#65292;&#37322;&#25918;&#38145;&#30340;&#39034;&#24207;&#20063;&#20026; high-low</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">//               </span><span style="color: #2aa1ae; background-color: #292e34;">hierachy_value     previous_hierachy_value     this_thread_hierachy_value</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">lock high     high               ULONG_MAX                   high</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">lock low      low                high                        low</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">unlock high   high               ULONG_MAX                   ULONG_MAX</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">unlock low    low                high                        high</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22240;&#27492;&#24212;&#35813;&#36870;&#24207;&#37322;&#25918;&#38145;&#65281;</span>
+        <span style="color: #4f97d7; font-weight: bold;">if</span>(this_thread_hierarchy_value!=hierarchy_value) <span style="color: #4f97d7; font-weight: bold;">throw</span> <span style="color: #a45bad;">std</span>::logic_error(<span style="color: #2d9574;">"mutex hierarchy violated"</span>);
+        this_thread_hierarchy_value=previous_hierarchy_value;
+        internal_mutex.unlock();
+    }
+    <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #bc6ec5; font-weight: bold;">try_lock</span>()
+    {
+        check_for_hierarchy_violation();
+        <span style="color: #4f97d7; font-weight: bold;">if</span>(<span style="color: #a45bad;">!</span>internal_mutex.try_lock())
+            <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #a45bad;">false</span>;
+        update_hierarchy_value();
+        <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #a45bad;">true</span>;
+    }
+};
+<span style="color: #4f97d7; font-weight: bold;">thread_local</span> <span style="color: #ce537a; font-weight: bold;">unsigned</span> <span style="color: #ce537a; font-weight: bold;">long</span> <span style="color: #a45bad;">hierarchical_mutex</span>::<span style="color: #bc6ec5; font-weight: bold;">this_thread_hierarchy_value</span>(ULONG_MAX);
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org63032e2" class="outline-6">
+<h6 id="org63032e2">EXTENDING THESE GUIDELINES BEYOND LOCKS</h6>
+<div class="outline-text-6" id="text-org63032e2">
+<p>
+导致死锁的不止是对互斥量上锁，任何同步操作也会导致循环等待。因此，需要将上面的 guidelines 扩展到其他情况。例如，我们可以扩展 Avoid nested locks 这条 guideline。当线程获得一个锁时，不要去等待其他线程结束（等待的线程，可能正在获取当前线程持有的锁）。类似地，对于 Use a lock hierarchy 这条 guideliine，对于等待线程结束也适用，可以为线程指定 hierarchy，低等级的线程不能等待高等级的线程。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgb699b38" class="outline-5">
+<h5 id="orgb699b38">Flexible locking with std::unique_lock</h5>
+<div class="outline-text-5" id="text-orgb699b38">
+<p>
+通过放松不变性，std::unique_lock 和 lock_guard 相比，提供了更多的灵活性。std::unique_lock 内部有一个 flag 用来标记其是否拥有 mutex 的所有权，如果其没有，则在析构函数中将不会对 mutex 进行 unlock，否则才会对 mutex 进行 unlock。std::unique_lock 的成员函数 owns_lock()可以用于查询 std::unique_lock 是否对 mutex 具有所有权。<br />
+std::unique_lock 内部有 flag，因此，其所占内存大小要比 std::lock_guard 要大。由于 flag 的存在，std::unique_lock 的相关操作中需要对 flag 进行检查或更新，其性能也要比 std::lock_guard 要差一些。如果 std::lock_guard 满足你的需求，尽量使用 std::lock_guard，需要 defer lock 或需要将锁的所有权从一个作用域转移到另外作用域时，再使用 std::unique_lock .<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">some_big_object</span>;
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">swap</span>(<span style="color: #ce537a; font-weight: bold;">some_big_object</span>&amp; <span style="color: #7590db;">lhs</span>,<span style="color: #ce537a; font-weight: bold;">some_big_object</span>&amp; <span style="color: #7590db;">rhs</span>);
+<span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">X</span>
+{
+<span style="color: #4f97d7; font-weight: bold;">private</span>:
+    <span style="color: #ce537a; font-weight: bold;">some_big_object</span> <span style="color: #7590db;">some_detail</span>;
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span> <span style="color: #7590db;">m</span>;
+<span style="color: #4f97d7; font-weight: bold;">public</span>:
+    <span style="color: #bc6ec5; font-weight: bold;">X</span>(<span style="color: #ce537a; font-weight: bold;">some_big_object</span> <span style="color: #4f97d7; font-weight: bold;">const</span>&amp; <span style="color: #7590db;">sd</span>):<span style="color: #bc6ec5; font-weight: bold;">some_detail</span>(sd){}
+    <span style="color: #4f97d7; font-weight: bold;">friend</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">swap</span>(<span style="color: #ce537a; font-weight: bold;">X</span>&amp; <span style="color: #7590db;">lhs</span>, <span style="color: #ce537a; font-weight: bold;">X</span>&amp; <span style="color: #7590db;">rhs</span>)
+    {
+        <span style="color: #4f97d7; font-weight: bold;">if</span>(&amp;lhs==&amp;rhs)
+            <span style="color: #4f97d7; font-weight: bold;">return</span>;
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">std::defer_lock &#34920;&#31034;&#65292;&#26242;&#26102;&#19981;&#23545;mutex&#19978;&#38145;</span>
+        <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">unique_lock</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span>&gt; <span style="color: #7590db;">lock_a</span>(lhs.m,<span style="color: #a45bad;">std</span>::defer_lock);
+        <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">unique_lock</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span>&gt; <span style="color: #7590db;">lock_b</span>(rhs.m,<span style="color: #a45bad;">std</span>::defer_lock);
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#27492;&#22788;&#20351;&#29992;std::lock&#23545; std::unique_lock &#19978;&#38145;&#65292;&#20250;&#35843;&#29992;std::unique_lock&#30340;lock&#25104;&#21592;&#20989;&#25968;&#65292;&#36827;&#32780;&#35843;&#29992;mutex&#30340;lock&#25104;&#21592;&#20989;&#25968;</span>
+        <span style="color: #a45bad;">std</span>::lock(lock_a,lock_b);
+        swap(lhs.some_detail,rhs.some_detail);
+    }
+};
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orga6c870d" class="outline-5">
+<h5 id="orga6c870d">Transferring mutex ownership between scopes</h5>
+<div class="outline-text-5" id="text-orga6c870d">
+<p>
+由于 std::unique_lock 实例可以不拥有其所关联的 mutex，因此可以通过 moving 在 std::unique_lock 实例之间传递 mutex 的所有权。std::unique_lock 类型是 movable 类型，但不是 copyable 类型，当 std::unique_lock 实例 w 为 rvalue 时可以自动传递，当 std::unique_lock 实例为 lvalue 时需要使用 std::move 将其转化为 rvalue。<br />
+一种使用 std::unique_lock 传递 mutex 所有权的方式如下，get_lock 函数对 mutex 进行上锁，然后将所有权转移给调用者，调用者在锁的保护下可以继续做一些事情，调用者退出时，std::unique_lock 对象销毁，自动解锁 mutex。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">unique_lock</span>&lt;<span style="color: #a45bad;">std</span>::mutex&gt; <span style="color: #bc6ec5; font-weight: bold;">get_lock</span>()
+{
+    <span style="color: #4f97d7; font-weight: bold;">extern</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span> <span style="color: #7590db;">some_mutex</span>;
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">unique_lock</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span>&gt; <span style="color: #7590db;">lk</span>(some_mutex);
+    prepare_data();
+    <span style="color: #4f97d7; font-weight: bold;">return</span> lk;
+}
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">process_data</span>()
+{
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">unique_lock</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span>&gt; <span style="color: #7590db;">lk</span>(get_lock());
+    do_something();
+}
+</pre>
+</div>
+<p>
+通常当对 mutex 的上锁依赖于程序状态或传入函数的参数时，会使用这种模式。一种方式是不直接返回 std::unique_lock 对象，而是将其作为一个 gateway 类的数据成员，用于保证正确上锁访问某些保护数据。这种情况下，所有对保护数据的访问都需要通过 gateway 类：当你需要访问数据时，你需要获得一个 gateway 的实例，然后通过该实例的成员函数来访问数据。当你访问结束后，你销毁了 gateway 对象，这样其他线程就可以访问保护数据了。该 gateway 对象很可能是 movable 的，此时锁对象也需要是 movable 的。<br />
+</p>
+
+<p>
+std::unique_lock 还允许在对象销毁之前释放锁，只要调用其成员函数 unlock 就可以了。这样可以灵活控制锁的粒度，提高并行性能。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org3f336f6" class="outline-5">
+<h5 id="org3f336f6">Locking at an appropriate granularity</h5>
+<div class="outline-text-5" id="text-org3f336f6">
+<p>
+锁的粒度是一个形象的术语用于描述被一个锁保护的数据的量。细粒度锁保护少量数据，粗粒度锁保护大量数据。 选择足够粗的锁粒度以确保所需数据受到保护很重要，只为那些需要保护的操作持有锁也很重要。<br />
+在超市购买商品，排队去结账，结账的时候发现漏买了果酱，其跑去拿果酱，使得其他所有人都等待；付款的时候，其又在包里找信用卡，此时别人也只能等待，这样减低了整体的速度。如果能提前检查购物清单，提前准备好信用卡，就可以消除其他客户不必要的等待。对于多线程也一样，当多个线程都在等待某个资源，如果任何一个线程持有该锁的时间包含了不必要保护的操作，都会导致整体的等待时间上升。尽可能只在访问共享数据时锁定互斥量，尽量在锁外对数据进行处理。特别是不要在持有锁时进行任何耗时的活动，例如文件 I/O。除非锁是用于保护对特定文件的访问。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">get_and_process_data</span>()
+{
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">unique_lock</span>&lt;<span style="color: #a45bad;">std</span>::mutex&gt; <span style="color: #7590db;">my_lock</span>(the_mutex);
+    <span style="color: #ce537a; font-weight: bold;">some_class</span> <span style="color: #7590db;">data_to_process</span>=get_next_data_chunk();
+    my_lock.unlock(); <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#33719;&#24471;&#25968;&#25454;&#21518;&#65292;&#37322;&#25918;&#38145;</span>
+    <span style="color: #ce537a; font-weight: bold;">result_type</span> <span style="color: #7590db;">result</span>=process(data_to_process);
+    my_lock.lock();   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20889;&#25968;&#25454;&#26102;&#65292;&#20877;&#19978;&#38145;</span>
+    write_result(data_to_process,result);
+}
+</pre>
+</div>
+<p>
+适当粒度的锁不仅是保护的数据量要尽可能少，持有锁的时间也要尽可能小。当持有锁时，不要去执行耗时很长的操作，例如文件 IO 和获取另一个锁（获取另一个锁时，可能会被阻塞，这样可能会等待很长时间）。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Y</span>
+{
+<span style="color: #4f97d7; font-weight: bold;">private</span>:
+    <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">some_detail</span>;
+    <span style="color: #4f97d7; font-weight: bold;">mutable</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span> <span style="color: #7590db;">m</span>;
+    <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #bc6ec5; font-weight: bold;">get_detail</span>() <span style="color: #4f97d7; font-weight: bold;">const</span>
+    {
+        <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">lock_guard</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span>&gt; <span style="color: #7590db;">lock_a</span>(m);
+        <span style="color: #4f97d7; font-weight: bold;">return</span> some_detail;
+    }
+<span style="color: #4f97d7; font-weight: bold;">public</span>:
+    <span style="color: #bc6ec5; font-weight: bold;">Y</span>(<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">sd</span>):<span style="color: #bc6ec5; font-weight: bold;">some_detail</span>(sd){}
+    <span style="color: #4f97d7; font-weight: bold;">friend</span> <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #4f97d7; font-weight: bold;">operator</span><span style="color: #bc6ec5; font-weight: bold;">==</span>(<span style="color: #ce537a; font-weight: bold;">Y</span> <span style="color: #4f97d7; font-weight: bold;">const</span>&amp; <span style="color: #7590db;">lhs</span>, <span style="color: #ce537a; font-weight: bold;">Y</span> <span style="color: #4f97d7; font-weight: bold;">const</span>&amp; <span style="color: #7590db;">rhs</span>)
+    {
+        <span style="color: #4f97d7; font-weight: bold;">if</span>(&amp;lhs==&amp;rhs)
+            <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #a45bad;">true</span>;
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#27492;&#22788;&#20998;&#24320;&#23545;&#20004;&#20010;&#21442;&#25968;&#36827;&#34892;&#19978;&#38145;&#65292;&#20943;&#20302;&#20102;&#38145;&#30340;&#31890;&#24230;&#65292;&#25552;&#39640;&#20102;&#24615;&#33021;&#12290;</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20294;&#26159;&#65292;&#20063;&#20462;&#25913;&#20102;operator==&#30340;&#35821;&#24847;&#65292;&#20854;&#19981;&#20877;&#34920;&#31034;&#26576;&#20010;&#26102;&#38388;&#28857;&#20004;&#20010;&#23545;&#35937;&#30456;&#31561;&#65292;&#32780;&#26159;&#34920;&#31034;&#26576;&#20004;&#20010;&#26102;&#38388;&#28857;&#20004;&#20010;&#23545;&#35937;&#30456;&#31561;</span>
+        <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #7590db;">lhs_value</span>=lhs.get_detail();
+        <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #7590db;">rhs_value</span>=rhs.get_detail();
+        <span style="color: #4f97d7; font-weight: bold;">return</span> lhs_value==rhs_value;
+    }
+};
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org655820e" class="outline-4">
+<h4 id="org655820e">Alternative facilities for protecting shared data</h4>
+<div class="outline-text-4" id="text-org655820e">
+</div>
+<div id="outline-container-org19ba5b7" class="outline-5">
+<h5 id="org19ba5b7">Protecting shared data during initialization</h5>
+</div>
+<div id="outline-container-orgae5765d" class="outline-5">
+<h5 id="orgae5765d">Protecting rarely updated data structures</h5>
+</div>
+<div id="outline-container-orgdc2e24a" class="outline-5">
+<h5 id="orgdc2e24a">Recursive locking</h5>
+</div>
+</div>
+</div>
+<div id="outline-container-orga726318" class="outline-3">
+<h3 id="orga726318">04 synchronizing concurrent operations on atomic types</h3>
+</div>
+<div id="outline-container-orgc6650c1" class="outline-3">
+<h3 id="orgc6650c1">05 designing lock-based concurrent data structures</h3>
+</div>
+<div id="outline-container-orgac3f189" class="outline-3">
+<h3 id="orgac3f189">06 designing lock-free concurrent data structures</h3>
+</div>
+<div id="outline-container-org34fbb4d" class="outline-3">
+<h3 id="org34fbb4d">07 designing concurrent code</h3>
+</div>
+<div id="outline-container-orgfd236a1" class="outline-3">
+<h3 id="orgfd236a1">08 advanced thread management</h3>
+</div>
+<div id="outline-container-org4705ed7" class="outline-3">
+<h3 id="org4705ed7">09 parallel algorithms</h3>
+</div>
+<div id="outline-container-org7ab6f3c" class="outline-3">
+<h3 id="org7ab6f3c">10 testing and debugging multithreaded applications</h3>
+</div>
+</div>
+<div id="outline-container-org3bc08f6" class="outline-2">
+<h2 id="org3bc08f6">c++ 多线程编程</h2>
+<div class="outline-text-2" id="text-org3bc08f6">
+</div>
+<div id="outline-container-orgb49f7d3" class="outline-3">
+<h3 id="orgb49f7d3">实例分析</h3>
+<div class="outline-text-3" id="text-orgb49f7d3">
+</div>
+<div id="outline-container-org37146c6" class="outline-4">
+<h4 id="org37146c6">cocos2dx CCTextureCache 多线程使用</h4>
+<div class="outline-text-4" id="text-org37146c6">
+<div class="org-src-container">
+<pre class="src src-c++">  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20027;&#32447;&#31243;&#35843;&#29992;&#19979;&#38754;&#20989;&#25968;&#65292;&#35831;&#27714;&#24322;&#27493;&#21152;&#36733;&#22270;&#29255;</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;&#35831;&#27714;&#23553;&#35013;&#20026; AsyncStruct &#23545;&#35937;&#25918;&#20837;&#38431;&#21015; _asyncStructQueue&#65288;&#23545;&#35813;&#38431;&#21015;&#30340;&#25805;&#20316;&#38656;&#35201;&#20351;&#29992;&#20114;&#26021;&#37327;&#21152;&#38145;&#65289;&#20013;</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">_sleepCondition.notify_one() &#36890;&#30693;&#24037;&#20316;&#23376;&#32447;&#31243;&#65292;&#24320;&#22987;&#24322;&#27493;&#21152;&#36733;&#22270;&#29255;</span>
+  <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #a45bad;">TextureCache</span>::<span style="color: #bc6ec5; font-weight: bold;">addImageAsync</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span> &amp;<span style="color: #7590db;">path</span>, <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">function</span>&lt;<span style="color: #ce537a; font-weight: bold;">void</span>(<span style="color: #ce537a; font-weight: bold;">Texture2D</span>*)&gt;&amp; <span style="color: #7590db;">callback</span>)
+  {
+      <span style="color: #ce537a; font-weight: bold;">Texture2D</span> *<span style="color: #7590db;">texture</span> = <span style="color: #a45bad;">nullptr</span>;
+
+      <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #7590db;">fullpath</span> = <span style="color: #a45bad;">FileUtils</span>::getInstance()-&gt;fullPathForFilename(path);
+
+      <span style="color: #4f97d7; font-weight: bold;">auto</span> <span style="color: #7590db;">it</span> = _textures.find(fullpath);
+      <span style="color: #4f97d7; font-weight: bold;">if</span>( it != _textures.end() )
+          texture = it-&gt;second;
+
+      <span style="color: #4f97d7; font-weight: bold;">if</span> (texture != <span style="color: #a45bad;">nullptr</span>)
+      {
+          callback(texture);
+          <span style="color: #4f97d7; font-weight: bold;">return</span>;
+      }
+
+      <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">lazy init</span>
+      <span style="color: #4f97d7; font-weight: bold;">if</span> (_asyncStructQueue == <span style="color: #a45bad;">nullptr</span>)
+      {
+          _asyncStructQueue = <span style="color: #4f97d7; font-weight: bold;">new</span> queue&lt;<span style="color: #ce537a; font-weight: bold;">AsyncStruct</span>*&gt;();
+          _imageInfoQueue   = <span style="color: #4f97d7; font-weight: bold;">new</span> deque&lt;<span style="color: #ce537a; font-weight: bold;">ImageInfo</span>*&gt;();
+
+          <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">create a new thread to load images</span>
+          _loadingThread = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span>(&amp;<span style="color: #a45bad;">TextureCache</span>::loadImage, <span style="color: #4f97d7; font-weight: bold;">this</span>);
+
+          _needQuit = <span style="color: #a45bad;">false</span>;
+      }
+
+      <span style="color: #4f97d7; font-weight: bold;">if</span> (0 == _asyncRefCount)
+      {
+          <span style="color: #a45bad;">Director</span>::getInstance()-&gt;getScheduler()-&gt;schedule(CC_SCHEDULE_SELECTOR(<span style="color: #a45bad;">TextureCache</span>::addImageAsyncCallBack), <span style="color: #4f97d7; font-weight: bold;">this</span>, 0, <span style="color: #a45bad;">false</span>);
+      }
+
+      ++_asyncRefCount;
+
+      <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">generate async struct</span>
+      <span style="color: #ce537a; font-weight: bold;">AsyncStruct</span> *<span style="color: #7590db;">data</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> (<span style="color: #a45bad;">std</span>::nothrow) <span style="color: #ce537a; font-weight: bold;">AsyncStruct</span>(fullpath, callback);
+
+      <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">add async struct into queue</span>
+      _asyncStructQueueMutex.lock();
+      _asyncStructQueue-&gt;push(data);
+      _asyncStructQueueMutex.unlock();
+
+      <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">_sleepCondition &#30340;&#31867;&#22411;&#20026; std::condition_variable</span>
+      _sleepCondition.notify_one();
+  }
+
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#24037;&#20316;&#32447;&#31243;&#65292;&#21028;&#26029;_asyncStructQueue &#20013;&#26159;&#21542;&#20026;&#31354;&#65292;&#22914;&#26524;&#31354;&#65292;&#21017;&#35843;&#29992;_sleepCondition.wait(lk)&#25346;&#36215;&#31561;&#24453;</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#24403;&#20027;&#32447;&#31243;&#23558;&#24037;&#20316;&#32447;&#31243;&#21796;&#37266;&#21518;&#65292;&#24037;&#20316;&#32447;&#31243;&#24320;&#22987;&#21152;&#36733;&#22270;&#29255;&#65292;&#21152;&#36733;&#23436;&#25104;&#21518;&#65292;&#23558;&#22270;&#29255;&#20449;&#24687;&#25918;&#21040;_imageInfoQueue &#38431;&#21015;&#20013;</span>
+  <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #a45bad;">TextureCache</span>::<span style="color: #bc6ec5; font-weight: bold;">loadImage</span>()
+  {
+      <span style="color: #ce537a; font-weight: bold;">AsyncStruct</span> *<span style="color: #7590db;">asyncStruct</span> = <span style="color: #a45bad;">nullptr</span>;
+
+      <span style="color: #4f97d7; font-weight: bold;">while</span> (<span style="color: #a45bad;">true</span>)
+      {
+          <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">queue</span>&lt;<span style="color: #ce537a; font-weight: bold;">AsyncStruct</span>*&gt; *<span style="color: #7590db;">pQueue</span> = _asyncStructQueue;
+          _asyncStructQueueMutex.lock();
+          <span style="color: #4f97d7; font-weight: bold;">if</span> (pQueue-&gt;empty())
+          {
+              _asyncStructQueueMutex.unlock();
+              <span style="color: #4f97d7; font-weight: bold;">if</span> (_needQuit) {
+                  <span style="color: #4f97d7; font-weight: bold;">break</span>;
+              }
+              <span style="color: #4f97d7; font-weight: bold;">else</span> {
+                  <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">unique_lock</span>&lt;<span style="color: #a45bad;">std</span>::mutex&gt; <span style="color: #7590db;">lk</span>(_sleepMutex);
+                  _sleepCondition.wait(lk);
+                  <span style="color: #4f97d7; font-weight: bold;">continue</span>;
+              }
+          }
+          <span style="color: #4f97d7; font-weight: bold;">else</span>
+          {
+              asyncStruct = pQueue-&gt;front();
+              pQueue-&gt;pop();
+              _asyncStructQueueMutex.unlock();
+          }
+
+          <span style="color: #ce537a; font-weight: bold;">Image</span> *<span style="color: #7590db;">image</span> = <span style="color: #a45bad;">nullptr</span>;
+          <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #7590db;">generateImage</span> = <span style="color: #a45bad;">false</span>;
+
+          <span style="color: #4f97d7; font-weight: bold;">auto</span> <span style="color: #7590db;">it</span> = _textures.find(asyncStruct-&gt;filename);
+          <span style="color: #4f97d7; font-weight: bold;">if</span>( it == _textures.end() )
+          {
+              _imageInfoMutex.lock();
+              <span style="color: #ce537a; font-weight: bold;">ImageInfo</span> *<span style="color: #7590db;">imageInfo</span>;
+              <span style="color: #ce537a; font-weight: bold;">size_t</span> <span style="color: #7590db;">pos</span> = 0;
+              <span style="color: #ce537a; font-weight: bold;">size_t</span> <span style="color: #7590db;">infoSize</span> = _imageInfoQueue-&gt;size();
+              <span style="color: #4f97d7; font-weight: bold;">for</span> (; pos &lt; infoSize; pos++)
+              {
+                  imageInfo = (*_imageInfoQueue)[pos];
+                  <span style="color: #4f97d7; font-weight: bold;">if</span>(imageInfo-&gt;asyncStruct-&gt;filename.compare(asyncStruct-&gt;filename) == 0)
+                      <span style="color: #4f97d7; font-weight: bold;">break</span>;
+              }
+              _imageInfoMutex.unlock();
+              <span style="color: #4f97d7; font-weight: bold;">if</span>(infoSize == 0 || pos == infoSize)
+                  generateImage = <span style="color: #a45bad;">true</span>;
+          }
+
+          <span style="color: #4f97d7; font-weight: bold;">if</span> (generateImage)
+          {
+              <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span>&amp; <span style="color: #7590db;">filename</span> = asyncStruct-&gt;filename;
+              <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">generate image</span>
+              image = <span style="color: #4f97d7; font-weight: bold;">new</span> (<span style="color: #a45bad;">std</span>::nothrow) <span style="color: #ce537a; font-weight: bold;">Image</span>();
+              <span style="color: #4f97d7; font-weight: bold;">if</span>(image){
+                  <span style="color: #4f97d7; font-weight: bold;">if</span> (<span style="color: #a45bad;">!</span>image-&gt;initWithImageFileThreadSafe(filename))
+                  {
+                      CC_SAFE_RELEASE(image);
+                      image = <span style="color: #a45bad;">nullptr</span>;
+                      CCLOG(<span style="color: #2d9574;">"can not load %s"</span>, filename.c_str());
+                      <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">@yuxiaofei, whether success or not, send main thread message</span>
+                      <span style="color: #2aa1ae; background-color: #292e34;">//                </span><span style="color: #2aa1ae; background-color: #292e34;">continue;</span>
+                  }
+                  <span style="color: #4f97d7; font-weight: bold;">else</span>{
+                      <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">load success, try load sub image for pvr file</span>
+                      <span style="color: #4f97d7; font-weight: bold;">if</span> (filename.size() &gt; 4 &amp;&amp;
+                          filename[filename.size() - 4] == <span style="color: #2d9574;">'.'</span> &amp;&amp;
+                          filename[filename.size() - 3] == <span style="color: #2d9574;">'p'</span> &amp;&amp;
+                          filename[filename.size() - 2] == <span style="color: #2d9574;">'v'</span> &amp;&amp;
+                          filename[filename.size() - 1] == <span style="color: #2d9574;">'r'</span>) {
+                          <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #7590db;">subTexPath</span> = filename;
+                          subTexPath.insert(subTexPath.size() - 4, <span style="color: #2d9574;">".alpha"</span>);
+
+                          <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">check if sub tex exist</span>
+                          <span style="color: #ce537a; font-weight: bold;">Image</span>* <span style="color: #7590db;">subImage</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> (<span style="color: #a45bad;">std</span>::nothrow) <span style="color: #ce537a; font-weight: bold;">Image</span>();
+                          <span style="color: #4f97d7; font-weight: bold;">if</span> (subImage) {
+                              <span style="color: #a45bad;">cocos2d</span>::log(<span style="color: #2d9574;">"addImage load sub image %s"</span>, subTexPath.c_str());
+
+                              <span style="color: #4f97d7; font-weight: bold;">if</span>(subImage-&gt;initWithImageFile(subTexPath)){
+                                  image-&gt;setSubImage(subImage);
+                                  <span style="color: #2aa1ae; background-color: #292e34;">//                                </span><span style="color: #2aa1ae; background-color: #292e34;">Texture2D* subTex = new (std::nothrow) Texture2D();</span>
+                                  <span style="color: #2aa1ae; background-color: #292e34;">//                                </span><span style="color: #2aa1ae; background-color: #292e34;">subTex-&gt;autorelease();</span>
+                                  <span style="color: #2aa1ae; background-color: #292e34;">//                                </span><span style="color: #2aa1ae; background-color: #292e34;">if (subTex-&gt;initWithImage(subImage)) {</span>
+                                  <span style="color: #2aa1ae; background-color: #292e34;">//                                    </span><span style="color: #2aa1ae; background-color: #292e34;">texture-&gt;setSubTexture(subTex);</span>
+                                  <span style="color: #2aa1ae; background-color: #292e34;">//                                </span><span style="color: #2aa1ae; background-color: #292e34;">}</span>
+                              }
+                              CC_SAFE_RELEASE(subImage);
+                          }
+                      }
+
+                  }
+              }
+          }
+
+          <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">generate image info</span>
+          <span style="color: #ce537a; font-weight: bold;">ImageInfo</span> *<span style="color: #7590db;">imageInfo</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> (<span style="color: #a45bad;">std</span>::nothrow) <span style="color: #ce537a; font-weight: bold;">ImageInfo</span>();
+          imageInfo-&gt;asyncStruct = asyncStruct;
+          imageInfo-&gt;image = image;
+
+          <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">put the image info into the queue</span>
+          _imageInfoMutex.lock();
+          _imageInfoQueue-&gt;push_back(imageInfo);
+          _imageInfoMutex.unlock();
+      }
+
+      <span style="color: #4f97d7; font-weight: bold;">if</span>(_asyncStructQueue != <span style="color: #a45bad;">nullptr</span>)
+      {
+          <span style="color: #4f97d7; font-weight: bold;">delete</span> _asyncStructQueue;
+          _asyncStructQueue = <span style="color: #a45bad;">nullptr</span>;
+          <span style="color: #4f97d7; font-weight: bold;">delete</span> _imageInfoQueue;
+          _imageInfoQueue = <span style="color: #a45bad;">nullptr</span>;
+      }
+  }
+
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20027;&#32447;&#31243;&#36890;&#36807; schedule &#26469;&#24490;&#29615;&#21028;&#26029;&#65292;&#26159;&#21542;&#26377;&#21152;&#36733;&#22909;&#30340;&#22270;&#29255;&#65292;&#22914;&#26524;&#26377;&#21017;&#35843;&#29992;&#23545;&#24212;&#30340;&#22238;&#35843;&#20989;&#25968;</span>
+  <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #a45bad;">TextureCache</span>::<span style="color: #bc6ec5; font-weight: bold;">addImageAsyncCallBack</span>(<span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #7590db;">dt</span>)
+  {
+      <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">the image is generated in loading thread</span>
+      <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">deque</span>&lt;<span style="color: #ce537a; font-weight: bold;">ImageInfo</span>*&gt; *<span style="color: #7590db;">imagesQueue</span> = _imageInfoQueue;
+
+      _imageInfoMutex.lock();
+      <span style="color: #4f97d7; font-weight: bold;">if</span> (imagesQueue-&gt;empty())
+      {
+          _imageInfoMutex.unlock();
+      }
+      <span style="color: #4f97d7; font-weight: bold;">else</span>
+      {
+          <span style="color: #ce537a; font-weight: bold;">ImageInfo</span> *<span style="color: #7590db;">imageInfo</span> = imagesQueue-&gt;front();
+          imagesQueue-&gt;pop_front();
+          _imageInfoMutex.unlock();
+
+          <span style="color: #ce537a; font-weight: bold;">AsyncStruct</span> *<span style="color: #7590db;">asyncStruct</span> = imageInfo-&gt;asyncStruct;
+          <span style="color: #ce537a; font-weight: bold;">Image</span> *<span style="color: #7590db;">image</span> = imageInfo-&gt;image;
+
+          <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span>&amp; <span style="color: #7590db;">filename</span> = asyncStruct-&gt;filename;
+
+          <span style="color: #ce537a; font-weight: bold;">Texture2D</span> *<span style="color: #7590db;">texture</span> = <span style="color: #a45bad;">nullptr</span>;
+          <span style="color: #4f97d7; font-weight: bold;">if</span> (image)
+          {
+              <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">generate texture in render thread</span>
+              texture = <span style="color: #4f97d7; font-weight: bold;">new</span> (<span style="color: #a45bad;">std</span>::nothrow) <span style="color: #ce537a; font-weight: bold;">Texture2D</span>();
+
+              texture-&gt;initWithImage(image);
+
+<span style="color: #bc6ec5;">  #if</span> CC_ENABLE_CACHE_TEXTURE_DATA
+              <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">cache the texture file name</span>
+              <span style="color: #a45bad;">VolatileTextureMgr</span>::addImageTexture(texture, filename);
+<span style="color: #bc6ec5;">  #endif</span>
+              <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">cache the texture. retain it, since it is added in the map</span>
+              _textures.insert( <span style="color: #a45bad;">std</span>::make_pair(filename, texture) );
+              texture-&gt;retain();
+
+              texture-&gt;autorelease();
+          }
+          <span style="color: #4f97d7; font-weight: bold;">else</span>
+          {
+              <span style="color: #4f97d7; font-weight: bold;">auto</span> <span style="color: #7590db;">it</span> = _textures.find(asyncStruct-&gt;filename);
+              <span style="color: #4f97d7; font-weight: bold;">if</span>(it != _textures.end())
+                  texture = it-&gt;second;
+          }
+
+          <span style="color: #4f97d7; font-weight: bold;">if</span> (asyncStruct-&gt;callback)
+          {
+              asyncStruct-&gt;callback(texture);
+          }
+
+          <span style="color: #4f97d7; font-weight: bold;">if</span>(image)
+          {
+              image-&gt;release();
+          }
+          <span style="color: #4f97d7; font-weight: bold;">delete</span> asyncStruct;
+          <span style="color: #4f97d7; font-weight: bold;">delete</span> imageInfo;
+
+          --_asyncRefCount;
+          <span style="color: #4f97d7; font-weight: bold;">if</span> (0 == _asyncRefCount)
+          {
+              <span style="color: #a45bad;">Director</span>::getInstance()-&gt;getScheduler()-&gt;unschedule(CC_SCHEDULE_SELECTOR(<span style="color: #a45bad;">TextureCache</span>::addImageAsyncCallBack), <span style="color: #4f97d7; font-weight: bold;">this</span>);
+          }
+      }
+  }
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org0b3124d" class="outline-4">
+<h4 id="org0b3124d">semaphore 信号量的实现</h4>
+<div class="outline-text-4" id="text-org0b3124d">
+<p>
+信号量允许主线程和子线程进行同步。<br />
+<a href="http://blog.csdn.net/elisonwu/article/details/20145399">http://blog.csdn.net/elisonwu/article/details/20145399</a><br />
+<a href="https://stackoverflow.com/questions/4792449/c0x-has-no-semaphores-how-to-synchronize-threads">https://stackoverflow.com/questions/4792449/c0x-has-no-semaphores-how-to-synchronize-threads</a><br />
+<a href="https://segmentfault.com/a/1190000006818772">https://segmentfault.com/a/1190000006818772</a><br />
+</p>
+<div class="org-src-container">
+<pre class="src src-c"><span style="color: #bc6ec5;">  #include</span> <span style="color: #2d9574;">&lt;mutex&gt;</span>
+<span style="color: #bc6ec5;">  #include</span> <span style="color: #2d9574;">&lt;condition_variable&gt;</span>
+
+  <span style="color: #ce537a; font-weight: bold;">class</span> <span style="color: #7590db;">Semaphore</span> {
+   <span style="color: #a45bad;">public</span>:
+      Semaphore (<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">count_</span> = 0)
+          : count(count_) {}
+
+      <span style="color: #4f97d7; font-weight: bold;">inline</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">notify</span>()
+      {
+          std::unique_lock&lt;std::mutex&gt; lock(mtx);
+          count++;
+          cv.notify_one();
+      }
+
+      <span style="color: #4f97d7; font-weight: bold;">inline</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">wait</span>()
+      {
+          std::unique_lock&lt;std::mutex&gt; lock(mtx);
+
+          <span style="color: #4f97d7; font-weight: bold;">while</span>(count == 0){
+              cv.wait(lock);
+          }
+          count--;
+      }
+
+   <span style="color: #a45bad;">private</span>:
+      std::mutex mtx;
+      std::condition_variable cv;
+      <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">count</span>;
+  };
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org4ced0a6" class="outline-4">
+<h4 id="org4ced0a6">多线程下载文件</h4>
+<div class="outline-text-4" id="text-org4ced0a6">
+<div class="org-src-container">
+<pre class="src src-c">  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">dw hh_HttpClient.h</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Send &#30340;&#26102;&#20505;&#65292;&#23558; HttpRequest &#25918;&#20837; s_requestQueue &#20013;,&#28982;&#21518;&#65292;&#36890;&#36807;&#20449;&#21495;&#37327;&#36890;&#30693;&#24037;&#20316;&#32447;&#31243;&#24037;&#20316;</span>
+  <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">HttpClient</span>::Send( <span style="color: #ce537a; font-weight: bold;">HttpRequest</span>* <span style="color: #7590db;">pRequest</span> )
+  {
+      <span style="color: #4f97d7; font-weight: bold;">if</span>(s_pSem == <span style="color: #a45bad;">NULL</span>) <span style="color: #4f97d7; font-weight: bold;">return</span> ;
+      <span style="color: #4f97d7; font-weight: bold;">if</span> ( pRequest == <span style="color: #a45bad;">NULL</span> ) <span style="color: #4f97d7; font-weight: bold;">return</span>;
+
+      s_requestQueueMutex.lock();
+      s_requestQueue.push_back( pRequest );
+      s_requestQueueMutex.unlock();
+
+      s_pSem-&gt;signal();
+  }
+
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21021;&#22987;&#21270;&#30340;&#26102;&#20505;&#65292;&#24037;&#20316;&#32447;&#31243;&#35843;&#29992; s_pSem-&gt;wait()&#20808;&#30452;&#25509;&#38459;&#22622;</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#34987;&#20027;&#32447;&#31243;&#21796;&#37266;&#21518;&#65292;&#24037;&#20316;&#32447;&#31243;&#20174; s_requestQueue &#20013;&#21462;&#20986;&#19968;&#20010; Http &#35831;&#27714;&#36827;&#34892;&#22788;&#29702;,&#22788;&#29702;&#23436;&#25104;&#21518;&#65292;&#23558;&#23545;&#24212;&#30340; response &#25918;&#20837; s_responseQueue &#20013;</span>
+  <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">HttpClient</span>::NetworkThread(  )
+  {
+      <span style="color: #ce537a; font-weight: bold;">char</span> <span style="color: #7590db;">bufferError</span>[128] = {0};
+      <span style="color: #ce537a; font-weight: bold;">HttpRequest</span>* <span style="color: #7590db;">request</span> = <span style="color: #a45bad;">NULL</span>;
+
+      <span style="color: #4f97d7; font-weight: bold;">while</span> (<span style="color: #a45bad;">true</span>)
+      {
+          s_pSem-&gt;wait();
+          <span style="color: #4f97d7; font-weight: bold;">if</span> ( need_quit ) <span style="color: #4f97d7; font-weight: bold;">break</span>;
+
+          request = <span style="color: #a45bad;">NULL</span>;
+          s_requestQueueMutex.lock();
+          <span style="color: #4f97d7; font-weight: bold;">if</span> ( s_requestQueue.size() &gt; 0 )
+          {
+              request = s_requestQueue.front();
+              s_requestQueue.pop_front();
+          }
+          s_requestQueueMutex.unlock();
+
+          <span style="color: #4f97d7; font-weight: bold;">if</span>( request == <span style="color: #a45bad;">NULL</span> ) <span style="color: #4f97d7; font-weight: bold;">continue</span>;
+          <span style="color: #ce537a; font-weight: bold;">HttpResponse</span>* <span style="color: #7590db;">response</span> = new HttpResponse( request );
+
+          <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">responseCode</span> = -1, <span style="color: #7590db;">retValue</span> = 0;
+          memset( s_errorBuffer, 0, <span style="color: #4f97d7; font-weight: bold;">sizeof</span>( s_errorBuffer ) );
+
+          <span style="color: #4f97d7; font-weight: bold;">switch</span> ( request-&gt;GetType() )
+          {
+              <span style="color: #4f97d7; font-weight: bold;">case</span> HttpRequest::E_HTTP_GET:
+
+                  retValue = processGetTask(
+                          request,
+                          WriteData,
+                          (<span style="color: #ce537a; font-weight: bold;">void</span> *)response-&gt;GetResponseData(),
+                          &amp;responseCode );
+                  <span style="color: #4f97d7; font-weight: bold;">break</span>;
+
+              <span style="color: #4f97d7; font-weight: bold;">case</span> HttpRequest::E_HTTP_POST:
+
+                  retValue = processPostTask(
+                          request,
+                          WriteData,
+                          (<span style="color: #ce537a; font-weight: bold;">void</span> *)response-&gt;GetResponseData(),
+                          &amp;responseCode );
+
+                  <span style="color: #4f97d7; font-weight: bold;">break</span>;
+
+              <span style="color: #4f97d7; font-weight: bold;">default</span>:
+                  snprintf( bufferError , 128 ,<span style="color: #2d9574;">"HttpClient: Unknown request type[%d]"</span>, request-&gt;GetType() );
+                  DOWNLOAD_ERROR(  bufferError);
+                  IME_ERROR( bufferError);
+                  <span style="color: #4f97d7; font-weight: bold;">break</span>;
+          }
+          response-&gt;SetResponseCode( responseCode );
+
+          <span style="color: #4f97d7; font-weight: bold;">if</span> ( retValue != 0 )
+          {
+              response-&gt;SetSucceed( <span style="color: #a45bad;">false</span> );
+              response-&gt;SetErrorMsg( s_errorBuffer );
+          }
+          <span style="color: #4f97d7; font-weight: bold;">else</span>
+          {
+              response-&gt;SetSucceed( <span style="color: #a45bad;">true</span> );
+          }
+
+
+          s_responseQueueMutex.lock();
+          s_responseQueue.push_back( response );
+          s_responseQueueMutex.unlock();
+      }
+
+      <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">quit. cleanup here</span>
+
+      s_responseQueueMutex.lock();
+      <span style="color: #4f97d7; font-weight: bold;">for</span> ( std::list&lt; HttpResponse* &gt;::iterator it = s_responseQueue.begin();
+              it != s_responseQueue.end(); ++it )
+      {
+          <span style="color: #ce537a; font-weight: bold;">delete</span> *<span style="color: #7590db;">it</span>;
+      }
+      s_responseQueue.clear();
+      s_responseQueueMutex.unlock();
+
+
+      s_requestQueueMutex.lock();
+      <span style="color: #4f97d7; font-weight: bold;">for</span> ( std::list&lt; HttpRequest* &gt;::iterator it = s_requestQueue.begin();
+              it != s_requestQueue.end(); ++it )
+      {
+          <span style="color: #ce537a; font-weight: bold;">delete</span> *<span style="color: #7590db;">it</span>;
+      }
+      s_requestQueue.clear();
+      s_requestQueueMutex.unlock();
+
+  }
+
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22312;&#20027;&#32447;&#31243;&#20013;&#65292;&#36890;&#36807; update &#26469;&#35843;&#29992;&#19979;&#38754;&#30340;&#26041;&#27861;</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#27599;&#27425;&#25191;&#34892;&#65292;&#20174; s_responseQueue &#20013;&#21462;&#20986;&#19968;&#20010; response&#65292;&#28982;&#21518;&#35843;&#29992;&#23545;&#24212;&#30340;&#22238;&#35843;&#20989;&#25968;&#36827;&#34892;&#22788;&#29702;</span>
+  <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">HttpClient</span>::DispatchResponse()
+  {
+      <span style="color: #ce537a; font-weight: bold;">HttpResponse</span>* <span style="color: #7590db;">response</span> = <span style="color: #a45bad;">NULL</span>;
+
+      <span style="color: #4f97d7; font-weight: bold;">if</span>( need_quit <span style="color: #2aa1ae; background-color: #292e34;">/*</span><span style="color: #2aa1ae; background-color: #292e34;">|| s_responseQueueMutex == NULL</span><span style="color: #2aa1ae; background-color: #292e34;">*/</span>){
+          <span style="color: #4f97d7; font-weight: bold;">return</span>;
+      }
+
+      <span style="color: #4f97d7; font-weight: bold;">while</span> ( <span style="color: #a45bad;">true</span> )
+      {
+          response = <span style="color: #a45bad;">NULL</span>;
+
+          s_responseQueueMutex.lock();
+          <span style="color: #4f97d7; font-weight: bold;">if</span> ( s_responseQueue.size() )
+              {
+                  response = s_responseQueue.front();
+                  s_responseQueue.pop_front();
+              }
+          s_responseQueueMutex.unlock();
+
+          <span style="color: #4f97d7; font-weight: bold;">if</span> ( response )
+              {
+                  <span style="color: #ce537a; font-weight: bold;">HttpRequest</span>* <span style="color: #7590db;">request</span> = response-&gt;GetRequest();
+                  HttpRequest::ResponseCallback fctCallback = request-&gt;GetCallback();
+
+                  (*fctCallback)( request-&gt;GetTarget(), response );
+
+                  <span style="color: #ce537a; font-weight: bold;">delete</span> <span style="color: #7590db;">request</span>;
+                  <span style="color: #ce537a; font-weight: bold;">delete</span> <span style="color: #7590db;">response</span>;
+              }
+          <span style="color: #4f97d7; font-weight: bold;">else</span>
+              {
+                  <span style="color: #4f97d7; font-weight: bold;">break</span>;
+              }
+
+          <span style="color: #4f97d7; font-weight: bold;">if</span>( need_quit <span style="color: #2aa1ae; background-color: #292e34;">/*</span><span style="color: #2aa1ae; background-color: #292e34;">|| s_responseQueueMutex == NULL</span><span style="color: #2aa1ae; background-color: #292e34;">*/</span>){
+              <span style="color: #4f97d7; font-weight: bold;">return</span>;
+          }
+
+      }
+  }
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org5a59cdc" class="outline-2">
+<h2 id="org5a59cdc">参考资料</h2>
+<div class="outline-text-2" id="text-org5a59cdc">
+<ul class="org-ul">
+<li><a href="https://github.com/downdemo/Cpp-Concurrency-in-Action-2ed">https://github.com/downdemo/Cpp-Concurrency-in-Action-2ed</a><br /></li>
+<li><a href="https://github.com/xiaoweiChen/CPP-Concurrency-In-Action-2ed-2019">https://github.com/xiaoweiChen/CPP-Concurrency-In-Action-2ed-2019</a><br /></li>
+<li><a href="https://github.com/taskflow/taskflow">https://github.com/taskflow/taskflow</a><br /></li>
+<li><a href="https://taskflow.github.io/taskflow/index.html">https://taskflow.github.io/taskflow/index.html</a><br /></li>
+<li>TaskFlow DAG 部分源码阅读 <a href="https://www.jianshu.com/p/12d416d37dd8">https://www.jianshu.com/p/12d416d37dd8</a><br /></li>
+<li>cpp-taskflow 源码分析 <a href="https://blog.csdn.net/yockie/article/details/104190147">https://blog.csdn.net/yockie/article/details/104190147</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+</body>
+</html>

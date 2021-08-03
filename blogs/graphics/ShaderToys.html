@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-05-24 周一 17:58 -->
+<!-- 2021-07-26 周一 10:13 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>ShaderToys</title>
@@ -58,7 +58,7 @@
 <li><a href="#org1cd01c7">拖影问题</a></li>
 <li><a href="#org81d6c6d">二分搜索优化</a></li>
 <li><a href="#org96fc9a8"><span class="todo TODO">TODO</span> 屏幕空间光栅化 RayMarching</a></li>
-<li><a href="#orgf5493a8">参考资料</a></li>
+<li><a href="#org409f4ca">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#orgcb227f9">04PlanarReflection</a>
@@ -81,12 +81,12 @@
 <li><a href="#org9305847"></a></li>
 </ul>
 </li>
-<li><a href="#orgbe2fe57">参考资料</a></li>
+<li><a href="#org6a9979d">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#org05c9ca8">06NoiseBall</a>
 <ul>
-<li><a href="#org7b0bdaf">参考资料</a></li>
+<li><a href="#org836c661">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#org6cba8cd">07RainDropEffect</a>
@@ -99,11 +99,12 @@
 <li><a href="#orge153f1d">动态开启关闭 GrabPass</a></li>
 </ul>
 </li>
-<li><a href="#org409f4ca">参考资料</a></li>
+<li><a href="#orgd41f2cb">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#org87d1394">08MagnifyingGlassEffect</a></li>
 <li><a href="#orgd03d1e0">09Skybox</a></li>
+<li><a href="#org58d41e3">10WaterFish</a></li>
 </ul>
 </li>
 <li><a href="#org305fc59">TODO</a>
@@ -121,7 +122,7 @@
 <p>
 ShaderToys note.<br />
 </p>
-<div class="HTML" id="org6b6f98e">
+<div class="HTML" id="orgea94848">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -135,7 +136,7 @@ ShaderToys note.<br />
 <h3 id="org103a8ba">01OcclusionHighlight</h3>
 <div class="outline-text-3" id="text-org103a8ba">
 
-<div id="orgc62496f" class="figure">
+<div id="org8930af3" class="figure">
 <p><img src="./ShaderToys/OcclusionHighlight.gif" alt="OcclusionHighlight.gif" /><br />
 </p>
 </div>
@@ -145,7 +146,7 @@ ShaderToys note.<br />
 <h3 id="orgebf5732">02ScanEffect</h3>
 <div class="outline-text-3" id="text-orgebf5732">
 
-<div id="orgc6bbd00" class="figure">
+<div id="org1536b61" class="figure">
 <p><img src="./ShaderToys/ScanEffect.gif" alt="ScanEffect.gif" /><br />
 </p>
 </div>
@@ -164,8 +165,8 @@ v2f <span style="color: #bc6ec5; font-weight: bold;">vert</span>(appdata v)
 {
     <span style="color: #2aa1ae; background-color: #292e34;">// ......</span>
     <span style="color: #ce537a; font-weight: bold;">float4</span> ndcFarPlanePos = <span style="color: #ce537a; font-weight: bold;">float4</span>(o.uv * 2.0 - 1.0, 1.0, 1.0);
-    <span style="color: #ce537a; font-weight: bold;">float4</span> viewDir = <span style="color: #4f97d7;">mul</span>(unity_CameraInvProjection, ndcFarPlanePos);
-    o.viewRay = viewDir.xyz / viewDir.w;
+        <span style="color: #ce537a; font-weight: bold;">float4</span> viewDir = <span style="color: #4f97d7;">mul</span>(unity_CameraInvProjection, ndcFarPlanePos);
+        o.viewRay = viewDir.xyz / viewDir.w;
 }
 
 <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #bc6ec5; font-weight: bold;">frag</span>(v2f i)
@@ -199,18 +200,18 @@ v2f <span style="color: #bc6ec5; font-weight: bold;">vert</span>(appdata v)
 得到每个像素点对应物体的厚度，可以精确避免上面问题。通过下面代码定义了一个参考的厚度_DepthThickness，可以一定程度上消除上面问题；<br />
 </p>
 <div class="org-src-container">
-<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #bc6ec5; font-weight: bold;">CheckDepthCollision</span>(<span style="color: #ce537a; font-weight: bold;">float3</span> viewPos, <span style="color: #4f97d7; font-weight: bold;">out</span> <span style="color: #ce537a; font-weight: bold;">float2</span> screenPos)
-{
-    <span style="color: #ce537a; font-weight: bold;">float4</span> clipPos = <span style="color: #4f97d7;">mul</span>(UNITY_MATRIX_P, <span style="color: #ce537a; font-weight: bold;">float4</span>(viewPos, 1.0));
-    clipPos = clipPos / clipPos.w;
-    screenPos = <span style="color: #ce537a; font-weight: bold;">float2</span>(clipPos.x, clipPos.y) * 0.5 + 0.5;
-    <span style="color: #ce537a; font-weight: bold;">float</span> eyeZ = GetEyeZ(screenPos);
+<pre class="src src-shader">  <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #bc6ec5; font-weight: bold;">CheckDepthCollision</span>(<span style="color: #ce537a; font-weight: bold;">float3</span> viewPos, <span style="color: #4f97d7; font-weight: bold;">out</span> <span style="color: #ce537a; font-weight: bold;">float2</span> screenPos)
+  {
+      <span style="color: #ce537a; font-weight: bold;">float4</span> clipPos = <span style="color: #4f97d7;">mul</span>(UNITY_MATRIX_P, <span style="color: #ce537a; font-weight: bold;">float4</span>(viewPos, 1.0));
+      clipPos = clipPos / clipPos.w;
+      screenPos = <span style="color: #ce537a; font-weight: bold;">float2</span>(clipPos.x, clipPos.y) * 0.5 + 0.5;
+      <span style="color: #ce537a; font-weight: bold;">float</span> eyeZ = GetEyeZ(screenPos);
 
-    <span style="color: #4f97d7; font-weight: bold;">return</span> screenPos.x &gt; 0 &amp;&amp; screenPos.y &gt; 0 &amp;&amp; 
-    screenPos.x &lt; 1.0 &amp;&amp; screenPos.y &lt; 1.0 &amp;&amp; 
-    eyeZ &lt; -viewPos.z &amp;&amp;                 <span style="color: #2aa1ae; background-color: #292e34;">// eyeZ &lt; &#24403;&#21069;&#26816;&#27979;&#30340;&#28145;&#24230; (&#35828;&#26126;&#26816;&#27979;&#28857;&#22312;&#24403;&#21069;&#20687;&#32032;&#20043;&#21518;)</span>
-    eyeZ + <span style="color: #7590db;">_DepthThickness</span> &gt; -viewPos.z; <span style="color: #2aa1ae; background-color: #292e34;">// eyeZ + &#29289;&#20307;&#21402;&#24230; &gt; &#24403;&#21069;&#26816;&#27979;&#30340;&#28145;&#24230; (&#35828;&#26126; eyeZ+_DepthThcikness &#23545;&#24212;&#30340;&#28857;&#22312;&#24403;&#21069;&#26816;&#27979;&#28857;&#20043;&#21069;)</span>
-}
+      <span style="color: #4f97d7; font-weight: bold;">return</span> screenPos.x &gt; 0 &amp;&amp; screenPos.y &gt; 0 &amp;&amp; 
+      screenPos.x &lt; 1.0 &amp;&amp; screenPos.y &lt; 1.0 &amp;&amp; 
+      eyeZ &lt; -viewPos.z &amp;&amp;                 <span style="color: #2aa1ae; background-color: #292e34;">// eyeZ &lt; &#24403;&#21069;&#26816;&#27979;&#30340;&#28145;&#24230; (&#35828;&#26126;&#26816;&#27979;&#28857;&#22312;&#24403;&#21069;&#20687;&#32032;&#20043;&#21518;)</span>
+      eyeZ + <span style="color: #7590db;">_DepthThickness</span> &gt; -viewPos.z; <span style="color: #2aa1ae; background-color: #292e34;">// eyeZ + &#29289;&#20307;&#21402;&#24230; &gt; &#24403;&#21069;&#26816;&#27979;&#30340;&#28145;&#24230; (&#35828;&#26126; eyeZ+_DepthThcikness &#23545;&#24212;&#30340;&#28857;&#22312;&#24403;&#21069;&#26816;&#27979;&#28857;&#20043;&#21069;)</span>
+  }
 </pre>
 </div>
 </div>
@@ -226,9 +227,9 @@ RayMarching 找到的点对应的深度超过 _CameraDepthTex 中记录深度后
 <div id="outline-container-org96fc9a8" class="outline-4">
 <h4 id="org96fc9a8"><span class="todo TODO">TODO</span> 屏幕空间光栅化 RayMarching</h4>
 </div>
-<div id="outline-container-orgf5493a8" class="outline-4">
-<h4 id="orgf5493a8">参考资料</h4>
-<div class="outline-text-4" id="text-orgf5493a8">
+<div id="outline-container-org409f4ca" class="outline-4">
+<h4 id="org409f4ca">参考资料</h4>
+<div class="outline-text-4" id="text-org409f4ca">
 <ul class="org-ul">
 <li>Unity 反射效果 <a href="https://blog.csdn.net/puppet_master/article/details/80808486">https://blog.csdn.net/puppet_master/article/details/80808486</a><br /></li>
 <li>SSR in Unity5 en <a href="http://www.kode80.com/blog/2015/03/11/screen-space-reflections-in-unity-5/">http://www.kode80.com/blog/2015/03/11/screen-space-reflections-in-unity-5/</a><br /></li>
@@ -252,7 +253,7 @@ RayMarching 找到的点对应的深度超过 _CameraDepthTex 中记录深度后
 </ol>
 
 
-<div id="org142ed57" class="figure">
+<div id="org28e4b16" class="figure">
 <p><img src="./ShaderToys/plannar_reflection_tex_uv.jpg" alt="plannar_reflection_tex_uv.jpg" /><br />
 </p>
 </div>
@@ -262,7 +263,7 @@ RayMarching 找到的点对应的深度超过 _CameraDepthTex 中记录深度后
 <h4 id="org30e447d">Error 平面下物体异常反射</h4>
 <div class="outline-text-4" id="text-org30e447d">
 
-<div id="orgc831747" class="figure">
+<div id="org1796bca" class="figure">
 <p><img src="./ShaderToys/plannar_reflection_error01.jpg" alt="plannar_reflection_error01.jpg" /><br />
 </p>
 </div>
@@ -346,9 +347,9 @@ context.<span style="color: #bc6ec5; font-weight: bold;">DrawRenderers</span>(re
 </div>
 </div>
 </div>
-<div id="outline-container-orgbe2fe57" class="outline-4">
-<h4 id="orgbe2fe57">参考资料</h4>
-<div class="outline-text-4" id="text-orgbe2fe57">
+<div id="outline-container-org6a9979d" class="outline-4">
+<h4 id="org6a9979d">参考资料</h4>
+<div class="outline-text-4" id="text-org6a9979d">
 <ul class="org-ul">
 <li><a href="http://remi-genin.fr/blog/screen-space-plane-indexed-reflection-in-ghost-recon-wildlands/">http://remi-genin.fr/blog/screen-space-plane-indexed-reflection-in-ghost-recon-wildlands/</a><br /></li>
 <li><a href="https://github.com/ColinLeung-NiloCat/UnityURP-MobileScreenSpacePlanarReflection">https://github.com/ColinLeung-NiloCat/UnityURP-MobileScreenSpacePlanarReflection</a><br /></li>
@@ -363,7 +364,7 @@ context.<span style="color: #bc6ec5; font-weight: bold;">DrawRenderers</span>(re
 <h3 id="org05c9ca8">06NoiseBall</h3>
 <div class="outline-text-3" id="text-org05c9ca8">
 <ol class="org-ol">
-<li>利用 ComputeShader 生成三角形三个顶点的位置和法线数据，将数据分布存入 position ComputeBuffer 和 normal ComputeBuffer 中。<br /></li>
+<li>利用 ComputeShader 生成三角形三个顶点的位置和法线数据，将数据分别存入 position ComputeBuffer 和 normal ComputeBuffer 中。<br /></li>
 <li>使用 Graphics.DrawMeshInstancedIndirect 以 Instanced 方式绘制三角形<br /></li>
 </ol>
 
@@ -382,9 +383,9 @@ Graphics.DrawMeshInstancedIndirect 方法的 bufferWithArgs 参数必须包含 5
 </div>
 </div>
 
-<div id="outline-container-org7b0bdaf" class="outline-4">
-<h4 id="org7b0bdaf">参考资料</h4>
-<div class="outline-text-4" id="text-org7b0bdaf">
+<div id="outline-container-org836c661" class="outline-4">
+<h4 id="org836c661">参考资料</h4>
+<div class="outline-text-4" id="text-org836c661">
 <ul class="org-ul">
 <li><a href="https://github.com/keijiro/NoiseBall2">https://github.com/keijiro/NoiseBall2</a><br /></li>
 <li><a href="https://docs.unity3d.com/ScriptReference/Graphics.DrawMeshInstancedIndirect.html">https://docs.unity3d.com/ScriptReference/Graphics.DrawMeshInstancedIndirect.html</a><br /></li>
@@ -397,7 +398,7 @@ Graphics.DrawMeshInstancedIndirect 方法的 bufferWithArgs 参数必须包含 5
 <h3 id="org6cba8cd">07RainDropEffect</h3>
 <div class="outline-text-3" id="text-org6cba8cd">
 
-<div id="org58d1245" class="figure">
+<div id="org4d7e01a" class="figure">
 <p><img src="./ShaderToys/rain_drop_effect.gif" alt="rain_drop_effect.gif" /><br />
 </p>
 </div>
@@ -412,58 +413,58 @@ Graphics.DrawMeshInstancedIndirect 方法的 bufferWithArgs 参数必须包含 5
 </ul>
 
 <div class="org-src-container">
-<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">float3</span> <span style="color: #bc6ec5; font-weight: bold;">Layer</span>(<span style="color: #ce537a; font-weight: bold;">float2</span> <span style="color: #a45bad;">UV</span>, <span style="color: #ce537a; font-weight: bold;">float</span> t)
-{
-    <span style="color: #ce537a; font-weight: bold;">float2</span> aspect = <span style="color: #ce537a; font-weight: bold;">float2</span>(2, 1);
-    <span style="color: #2aa1ae; background-color: #292e34;">// &#25226;&#23631;&#24149;&#31354;&#38388;&#21010;&#20998;&#20026;&#22810;&#20010;Grid</span>
-    <span style="color: #ce537a; font-weight: bold;">float2</span> uv = <span style="color: #a45bad;">UV</span>*<span style="color: #7590db;">_Size</span>*aspect;
-    uv.y += t * 0.25;
+<pre class="src src-shader">  <span style="color: #ce537a; font-weight: bold;">float3</span> <span style="color: #bc6ec5; font-weight: bold;">Layer</span>(<span style="color: #ce537a; font-weight: bold;">float2</span> <span style="color: #a45bad;">UV</span>, <span style="color: #ce537a; font-weight: bold;">float</span> t)
+  {
+      <span style="color: #ce537a; font-weight: bold;">float2</span> aspect = <span style="color: #ce537a; font-weight: bold;">float2</span>(2, 1);
+      <span style="color: #2aa1ae; background-color: #292e34;">// &#25226;&#23631;&#24149;&#31354;&#38388;&#21010;&#20998;&#20026;&#22810;&#20010;Grid</span>
+      <span style="color: #ce537a; font-weight: bold;">float2</span> uv = <span style="color: #a45bad;">UV</span>*<span style="color: #7590db;">_Size</span>*aspect;
+      uv.y += t * 0.25;
 
-    <span style="color: #2aa1ae; background-color: #292e34;">// frac(uv) - 0.5 &#20351;&#24471;grid_uv=(0,0)&#20301;&#32622;&#20026;grid&#30340;&#20013;&#24515;&#28857;</span>
-    <span style="color: #2aa1ae; background-color: #292e34;">// grid_uv &#34920;&#31034;grid&#20869;&#27599;&#20010;&#20687;&#32032;&#28857;&#30340;grid uv</span>
-    <span style="color: #ce537a; font-weight: bold;">float2</span> grid_uv = <span style="color: #4f97d7;">frac</span>(uv)-0.5;
-    <span style="color: #ce537a; font-weight: bold;">float2</span> id = <span style="color: #4f97d7;">floor</span>(uv);
+      <span style="color: #2aa1ae; background-color: #292e34;">// frac(uv) - 0.5 &#20351;&#24471;grid_uv=(0,0)&#20301;&#32622;&#20026;grid&#30340;&#20013;&#24515;&#28857;</span>
+      <span style="color: #2aa1ae; background-color: #292e34;">// grid_uv &#34920;&#31034;grid&#20869;&#27599;&#20010;&#20687;&#32032;&#28857;&#30340;grid uv</span>
+      <span style="color: #ce537a; font-weight: bold;">float2</span> grid_uv = <span style="color: #4f97d7;">frac</span>(uv)-0.5;
+      <span style="color: #ce537a; font-weight: bold;">float2</span> id = <span style="color: #4f97d7;">floor</span>(uv);
 
-    <span style="color: #ce537a; font-weight: bold;">float</span> n = N21(id); <span style="color: #2aa1ae; background-color: #292e34;">// 0 - 1</span>
-    t += n*6.2831;
+      <span style="color: #ce537a; font-weight: bold;">float</span> n = N21(id); <span style="color: #2aa1ae; background-color: #292e34;">// 0 - 1</span>
+      t += n*6.2831;
 
-    <span style="color: #2aa1ae; background-color: #292e34;">// &#23558;&#23631;&#24149;&#22312;y&#26041;&#21521;&#19978;&#21010;&#20998;&#20026;10&#31561;&#20998;&#65292;&#35753;y&#26041;&#21521;&#19978;&#30340;&#38632;&#28404;&#27969;&#21160;&#36335;&#24452;&#38169;&#24320;</span>
-    <span style="color: #ce537a; font-weight: bold;">float</span> w = <span style="color: #a45bad;">UV</span>.y * 10;
+      <span style="color: #2aa1ae; background-color: #292e34;">// &#23558;&#23631;&#24149;&#22312;y&#26041;&#21521;&#19978;&#21010;&#20998;&#20026;10&#31561;&#20998;&#65292;&#35753;y&#26041;&#21521;&#19978;&#30340;&#38632;&#28404;&#27969;&#21160;&#36335;&#24452;&#38169;&#24320;</span>
+      <span style="color: #ce537a; font-weight: bold;">float</span> w = <span style="color: #a45bad;">UV</span>.y * 10;
 
-    <span style="color: #ce537a; font-weight: bold;">float</span> x = (n - 0.5)*0.8; <span style="color: #2aa1ae; background-color: #292e34;">// -0.4 - 0.4</span>
-    <span style="color: #2aa1ae; background-color: #292e34;">// &#27169;&#25311;&#38632;&#28404;&#27969;&#21160;&#36807;&#31243;&#20013;x&#26041;&#21521;&#30340;&#36712;&#36857;&#21464;&#21270; &#22823;&#37096;&#20998;&#26102;&#38388;&#23621;&#20013; &#20598;&#23572;&#21521;&#24038;&#27969; &#20598;&#23572;&#21521;&#21491;&#27969;</span>
-    x += (0.4-<span style="color: #4f97d7;">abs</span>(x)) * <span style="color: #4f97d7;">sin</span>(3*w)*<span style="color: #4f97d7;">pow</span>(<span style="color: #4f97d7;">sin</span>(w), 6)*0.45;
+      <span style="color: #ce537a; font-weight: bold;">float</span> x = (n - 0.5)*0.8; <span style="color: #2aa1ae; background-color: #292e34;">// -0.4 - 0.4</span>
+      <span style="color: #2aa1ae; background-color: #292e34;">// &#27169;&#25311;&#38632;&#28404;&#27969;&#21160;&#36807;&#31243;&#20013;x&#26041;&#21521;&#30340;&#36712;&#36857;&#21464;&#21270; &#22823;&#37096;&#20998;&#26102;&#38388;&#23621;&#20013; &#20598;&#23572;&#21521;&#24038;&#27969; &#20598;&#23572;&#21521;&#21491;&#27969;</span>
+      x += (0.4-<span style="color: #4f97d7;">abs</span>(x)) * <span style="color: #4f97d7;">sin</span>(3*w)*<span style="color: #4f97d7;">pow</span>(<span style="color: #4f97d7;">sin</span>(w), 6)*0.45;
 
-    <span style="color: #2aa1ae; background-color: #292e34;">// &#27169;&#25311;&#38632;&#28404;&#27969;&#21160;&#26102;&#20808;&#24555;&#21518;&#24930;&#30340;&#25928;&#26524;</span>
-    <span style="color: #ce537a; font-weight: bold;">float</span> y = -<span style="color: #4f97d7;">sin</span>(t+<span style="color: #4f97d7;">sin</span>(t+<span style="color: #4f97d7;">sin</span>(t)*0.5))*0.45;
-    <span style="color: #2aa1ae; background-color: #292e34;">// &#25511;&#21046;&#38632;&#28404;&#30340;&#24418;&#29366;</span>
-    y -= (grid_uv.x - x)*(grid_uv.x - x);
+      <span style="color: #2aa1ae; background-color: #292e34;">// &#27169;&#25311;&#38632;&#28404;&#27969;&#21160;&#26102;&#20808;&#24555;&#21518;&#24930;&#30340;&#25928;&#26524;</span>
+      <span style="color: #ce537a; font-weight: bold;">float</span> y = -<span style="color: #4f97d7;">sin</span>(t+<span style="color: #4f97d7;">sin</span>(t+<span style="color: #4f97d7;">sin</span>(t)*0.5))*0.45;
+      <span style="color: #2aa1ae; background-color: #292e34;">// &#25511;&#21046;&#38632;&#28404;&#30340;&#24418;&#29366;</span>
+      y -= (grid_uv.x - x)*(grid_uv.x - x);
 
-    <span style="color: #2aa1ae; background-color: #292e34;">// (x,y)&#20026;&#24403;&#21069;&#38632;&#28404;&#30340;&#20301;&#32622; dropToGridPixelDir &#20026;&#38632;&#28404;&#25351;&#21521;grid&#20869;&#20687;&#32032;&#30340;&#26041;&#21521;&#21521;&#37327;</span>
-    <span style="color: #ce537a; font-weight: bold;">float2</span> dropToGridPixelDir = (grid_uv - <span style="color: #ce537a; font-weight: bold;">float2</span>(x, y)) / aspect;
-    <span style="color: #2aa1ae; background-color: #292e34;">// &#38480;&#21046;&#38632;&#28404;&#30340;&#33539;&#22260;</span>
-    <span style="color: #ce537a; font-weight: bold;">float</span> drop = S(0.05, 0.03, <span style="color: #4f97d7;">length</span>(dropToGridPixelDir));
+      <span style="color: #2aa1ae; background-color: #292e34;">// (x,y)&#20026;&#24403;&#21069;&#38632;&#28404;&#30340;&#20301;&#32622; dropToGridPixelDir &#20026;&#38632;&#28404;&#25351;&#21521;grid&#20869;&#20687;&#32032;&#30340;&#26041;&#21521;&#21521;&#37327;</span>
+      <span style="color: #ce537a; font-weight: bold;">float2</span> dropToGridPixelDir = (grid_uv - <span style="color: #ce537a; font-weight: bold;">float2</span>(x, y)) / aspect;
+      <span style="color: #2aa1ae; background-color: #292e34;">// &#38480;&#21046;&#38632;&#28404;&#30340;&#33539;&#22260;</span>
+      <span style="color: #ce537a; font-weight: bold;">float</span> drop = S(0.05, 0.03, <span style="color: #4f97d7;">length</span>(dropToGridPixelDir));
 
-    <span style="color: #2aa1ae; background-color: #292e34;">// grid_uv - float2(x, t*0.25) &#25269;&#28040;&#25481;&#19978;&#38754; uv.y+=t*0.25 &#20351;&#24471;&#23614;&#37096;&#38632;&#28404;&#19981;&#38543;&#26102;&#38388;&#31227;&#21160;</span>
-    <span style="color: #ce537a; font-weight: bold;">float2</span> trailToGridPixelDir = (grid_uv - <span style="color: #ce537a; font-weight: bold;">float2</span>(x, t*0.25)) / aspect;
-    <span style="color: #2aa1ae; background-color: #292e34;">// &#25511;&#21046;&#23614;&#37096;&#38632;&#28404;&#25968;&#37327;</span>
-    trailToGridPixelDir.y = (<span style="color: #4f97d7;">frac</span>(trailToGridPixelDir.y * 8)-0.5)/8;
-    <span style="color: #2aa1ae; background-color: #292e34;">// &#25511;&#21046;&#23614;&#37096;&#38632;&#28404;&#22823;&#23567;</span>
-    <span style="color: #ce537a; font-weight: bold;">float</span> trail = S(0.03, 0.01, <span style="color: #4f97d7;">length</span>(trailToGridPixelDir));
+      <span style="color: #2aa1ae; background-color: #292e34;">// grid_uv - float2(x, t*0.25) &#25269;&#28040;&#25481;&#19978;&#38754; uv.y+=t*0.25 &#20351;&#24471;&#23614;&#37096;&#38632;&#28404;&#19981;&#38543;&#26102;&#38388;&#31227;&#21160;</span>
+      <span style="color: #ce537a; font-weight: bold;">float2</span> trailToGridPixelDir = (grid_uv - <span style="color: #ce537a; font-weight: bold;">float2</span>(x, t*0.25)) / aspect;
+      <span style="color: #2aa1ae; background-color: #292e34;">// &#25511;&#21046;&#23614;&#37096;&#38632;&#28404;&#25968;&#37327;</span>
+      trailToGridPixelDir.y = (<span style="color: #4f97d7;">frac</span>(trailToGridPixelDir.y * 8)-0.5)/8;
+      <span style="color: #2aa1ae; background-color: #292e34;">// &#25511;&#21046;&#23614;&#37096;&#38632;&#28404;&#22823;&#23567;</span>
+      <span style="color: #ce537a; font-weight: bold;">float</span> trail = S(0.03, 0.01, <span style="color: #4f97d7;">length</span>(trailToGridPixelDir));
 
-    <span style="color: #2aa1ae; background-color: #292e34;">// &#23567;&#20110; dropToGridPixelDir.y &#30340;&#22320;&#26041;&#26159;&#65292;&#38632;&#28404;&#36824;&#26410;&#32463;&#36807;&#30340;&#22320;&#26041;, &#19979;&#38754;&#20195;&#30721;&#20351;&#24471;&#23567;&#20110; dropToGridPixelDir.y &#30340;&#36712;&#36857;&#20026;&#40657;&#33394;</span>
-    <span style="color: #ce537a; font-weight: bold;">float</span> fogTrail = S(-0.05, 0.05, dropToGridPixelDir.y);
-    <span style="color: #2aa1ae; background-color: #292e34;">// &#27169;&#25311;&#36712;&#36857;&#36880;&#28176;&#28040;&#22833;&#30340;&#25928;&#26524;</span>
-    fogTrail *= S(0.5, y, grid_uv.y);
-    <span style="color: #2aa1ae; background-color: #292e34;">// &#27169;&#25311;&#23614;&#37096;&#38632;&#28404;&#36880;&#28176;&#28040;&#22833;&#30340;&#25928;&#26524;</span>
-    trail *= fogTrail;
+      <span style="color: #2aa1ae; background-color: #292e34;">// &#23567;&#20110; dropToGridPixelDir.y &#30340;&#22320;&#26041;&#26159;&#65292;&#38632;&#28404;&#36824;&#26410;&#32463;&#36807;&#30340;&#22320;&#26041;, &#19979;&#38754;&#20195;&#30721;&#20351;&#24471;&#23567;&#20110; dropToGridPixelDir.y &#30340;&#36712;&#36857;&#20026;&#40657;&#33394;</span>
+      <span style="color: #ce537a; font-weight: bold;">float</span> fogTrail = S(-0.05, 0.05, dropToGridPixelDir.y);
+      <span style="color: #2aa1ae; background-color: #292e34;">// &#27169;&#25311;&#36712;&#36857;&#36880;&#28176;&#28040;&#22833;&#30340;&#25928;&#26524;</span>
+      fogTrail *= S(0.5, y, grid_uv.y);
+      <span style="color: #2aa1ae; background-color: #292e34;">// &#27169;&#25311;&#23614;&#37096;&#38632;&#28404;&#36880;&#28176;&#28040;&#22833;&#30340;&#25928;&#26524;</span>
+      trail *= fogTrail;
 
-    <span style="color: #2aa1ae; background-color: #292e34;">// &#20351;&#29992; dropToGridPixelDir.x &#38480;&#21046;fogTrail&#30340;&#33539;&#22260;</span>
-    fogTrail *= S(0.05, 0.04, <span style="color: #4f97d7;">abs</span>(dropToGridPixelDir.x));
-
-    <span style="color: #ce537a; font-weight: bold;">float2</span> offs = drop * dropToGridPixelDir + trail * trailToGridPixelDir;
-    <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #bc6ec5; font-weight: bold;">float3</span>(offs, fogTrail);
-}
+      <span style="color: #2aa1ae; background-color: #292e34;">// &#20351;&#29992; dropToGridPixelDir.x &#38480;&#21046;fogTrail&#30340;&#33539;&#22260;</span>
+      fogTrail *= S(0.05, 0.04, <span style="color: #4f97d7;">abs</span>(dropToGridPixelDir.x));
+      
+      <span style="color: #ce537a; font-weight: bold;">float2</span> offs = drop * dropToGridPixelDir + trail * trailToGridPixelDir;
+      <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #bc6ec5; font-weight: bold;">float3</span>(offs, fogTrail);
+  }
 </pre>
 </div>
 
@@ -540,9 +541,9 @@ mat.<span style="color: #bc6ec5; font-weight: bold;">SetShaderPassEnabled</span>
 </div>
 </div>
 </div>
-<div id="outline-container-org409f4ca" class="outline-4">
-<h4 id="org409f4ca">参考资料</h4>
-<div class="outline-text-4" id="text-org409f4ca">
+<div id="outline-container-orgd41f2cb" class="outline-4">
+<h4 id="orgd41f2cb">参考资料</h4>
+<div class="outline-text-4" id="text-orgd41f2cb">
 <ul class="org-ul">
 <li>Part1 <a href="https://www.youtube.com/watch?v=EBrAdahFtuo&amp;t=6s">https://www.youtube.com/watch?v=EBrAdahFtuo&amp;t=6s</a><br /></li>
 <li>Part2 <a href="https://www.youtube.com/watch?v=0flY11lVCwY">https://www.youtube.com/watch?v=0flY11lVCwY</a><br /></li>
@@ -554,7 +555,7 @@ mat.<span style="color: #bc6ec5; font-weight: bold;">SetShaderPassEnabled</span>
 <h3 id="org87d1394">08MagnifyingGlassEffect</h3>
 <div class="outline-text-3" id="text-org87d1394">
 
-<div id="org6f76174" class="figure">
+<div id="orgdca964e" class="figure">
 <p><img src="./ShaderToys/MagnifyingGlassEffect.gif" alt="MagnifyingGlassEffect.gif" /><br />
 </p>
 </div>
@@ -563,8 +564,15 @@ mat.<span style="color: #bc6ec5; font-weight: bold;">SetShaderPassEnabled</span>
 <div id="outline-container-orgd03d1e0" class="outline-3">
 <h3 id="orgd03d1e0">09Skybox</h3>
 </div>
+<div id="outline-container-org58d41e3" class="outline-3">
+<h3 id="org58d41e3">10WaterFish</h3>
+<div class="outline-text-3" id="text-org58d41e3">
+<video class="wp-video-shortcode" width="640" height="360" preload="metadata" controls="controls">
+<source type="video/mp4" src="./ShaderToys/JobSystem_FishWater.mp4" />
+</video>
 </div>
-
+</div>
+</div>
 <div id="outline-container-org305fc59" class="outline-2">
 <h2 id="org305fc59">TODO</h2>
 <div class="outline-text-2" id="text-org305fc59">

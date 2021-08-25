@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-08-03 周二 10:51 -->
+<!-- 2021-08-24 周二 10:28 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>AsynchronousProgramming</title>
@@ -153,14 +153,45 @@
 </li>
 <li><a href="#org655820e">Alternative facilities for protecting shared data</a>
 <ul>
-<li><a href="#org19ba5b7">Protecting shared data during initialization</a></li>
+<li><a href="#org19ba5b7">Protecting shared data during initialization</a>
+<ul>
+<li><a href="#org3a95b43">最简单的方式，但性能低下</a></li>
+<li><a href="#org33a464a">double-checked locking 方式，尝试优化性能，但引入了 data race</a></li>
+<li><a href="#org1e82069">std::call_once std::once_flag 方案</a></li>
+<li><a href="#org111a314">static 方案</a></li>
+</ul>
+</li>
 <li><a href="#orgae5765d">Protecting rarely updated data structures</a></li>
 <li><a href="#orgdc2e24a">Recursive locking</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#orga726318">04 synchronizing concurrent operations on atomic types</a></li>
+<li><a href="#orga726318">04 synchronizing concurrent operations on atomic types</a>
+<ul>
+<li><a href="#org58ab91b">Waiting for an event or other condition</a>
+<ul>
+<li><a href="#org3cc4ad0">Waiting for a condition with condition variables</a></li>
+<li><a href="#orgf1d470a">Building a thread-safe queue with condition variables</a></li>
+</ul>
+</li>
+<li><a href="#orgd5650f1">Waiting for one-off events with futures</a>
+<ul>
+<li><a href="#orgb7f02fb">Returning values from background tasks</a></li>
+<li><a href="#org39aaff9">Associating a task with a future</a>
+<ul>
+<li><a href="#org5f9c2ce">Passing Task between thread</a></li>
+</ul>
+</li>
+<li><a href="#orgdaa7557">Making (std::)promises</a></li>
+<li><a href="#org5423a38">Saving an exception for the future</a></li>
+<li><a href="#org61202e0">Waiting from multiple threads</a></li>
+</ul>
+</li>
+<li><a href="#org2bd913c">Waiting with a time limit</a></li>
+<li><a href="#org0295227">Using synchronization of operations to simplify code</a></li>
+</ul>
+</li>
 <li><a href="#orgc6650c1">05 designing lock-based concurrent data structures</a></li>
 <li><a href="#orgac3f189">06 designing lock-free concurrent data structures</a></li>
 <li><a href="#org34fbb4d">07 designing concurrent code</a></li>
@@ -304,7 +335,7 @@
 </p>
 
 <p>
-不满足于使用平台特定的 C API 来处理多线程，C++程序员指望他们的类库来提供面向对象的多线程设施。MFC、Boost、ACE 等等，都累积了一些列类，对底层平台相关的 API 进行了封装，为多线程提供更高级的设施，来简化多线程编程任务。尽管这些类库的具体细节差异很大，特别是启动新线程的处理，这些类的整体有很多共同点。他们都使用了 RAII 的习惯方法来管理 mutex。<br />
+不满足于使用平台特定的 C API 来处理多线程，C++程序员指望他们的类库来提供面向对象的多线程设施。MFC、Boost、ACE 等等，都累积了一系列类，对底层平台相关的 API 进行了封装，为多线程提供更高级的设施，来简化多线程编程任务。尽管这些类库的具体细节差异很大，特别是启动新线程的处理，这些类的整体上也有很多共同点。他们都使用了 RAII 惯用方法来管理 mutex。<br />
 </p>
 
 <p>
@@ -452,7 +483,7 @@ C++ Thread Library 为多线程和并发提供了全面的工具，而总会有�
 <p>
 创建线程后，主线程将局部变量的引用或指针传递给线程，执行 detach，主线程离开局部变量作用域，局部变量会被释放掉，之后线程引用的数据将是错误的。<br />
 </p>
-<pre class="example" id="orged84e5a">
+<pre class="example" id="org3008c6b">
 id: 100504 print ival = 10              // 子线程启动后打印引用变量的值10
 id: 89912 main-thread sleep 1 second    // 主线程sleep 1s
 id: 100504 print ival = 10              // 此时主线程还在sleep局部变量还未被释放，子线程此时打印的值依然正确
@@ -471,7 +502,7 @@ id: 89912 main-thread sleep 5 second
 <p>
 创建线程后，主线程将局部变量的引用或指针传递给线程，执行 join，主线程会等待子线程执行完毕后，才会继续执行，离开局部变量作用域。<br />
 </p>
-<pre class="example" id="orgfd16e8f">
+<pre class="example" id="orga95edb4">
 id: 97172 print ival = 10               // 子线程启动后打印引用变量的值10，主线程等待子线程执行完毕后，才会继续执行
 id: 97172 print ival = 10
 id: 97172 print ival = 10
@@ -594,9 +625,12 @@ detached 的线程通常被称为后台线程(daemon threads)，其概念来源�
 <ol class="org-ol">
 <li>将参数传递给 thread 构造函数，thread 构造函数会将参数 copy 一份记录下来。<br /></li>
 <li>thread 对象再将记录下来的参数传递给线程入口函数。传递给线程入口函数的实参是在子线程的上下文中进行构造的。<br /></li>
-
-<li><a href="https://www.zhihu.com/question/40428244">https://www.zhihu.com/question/40428244</a>   <br /></li>
 </ol>
+
+
+<ul class="org-ul">
+<li>C++的 std::thread 是怎么进行参数传递的？ <a href="https://www.zhihu.com/question/40428244">https://www.zhihu.com/question/40428244</a>   <br /></li>
+</ul>
 <div class="org-src-container">
 <pre class="src src-cpp">  <span style="color: #2aa1ae; background-color: #292e34;">////////////////////////////</span>
   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">case 1 &#19979;&#38754;&#20195;&#30721;&#23558;char const* &#20256;&#36882;&#32473;thread&#65292;thread&#20197;char const*&#20026;&#21442;&#25968;&#26500;&#36896;std::string&#23545;&#35937;</span>
@@ -743,7 +777,7 @@ std::thread 支持 move 意味着，可以将 std::thread 的所有权传递到�
 <h5 id="org08c4ad6">scoped_thread</h5>
 <div class="outline-text-5" id="text-org08c4ad6">
 <p>
-std::thread 支持移动的一个好处是，可以依赖 scoped_thread 类，让其拥有 thread 的所有权。这避免了不好的事情发生，thread_guard 对象要比其管理的 thread 的生命期长，而且一旦 thread 的所有权移动到 scoped_thread 对象中，其他对象将不能再对线程进行 join 或 detach 操作。因为，该类的目的是让 thread 在作用域内执行完成，因此将该类命名为 scoped_thread。<br />
+std::thread 支持移动的一个好处是，可以依赖 scoped_thread 类，让其拥有 thread 的所有权。这避免了不好的事情发生，thread_scoped 对象要比其管理的 thread 的生命期长，而且一旦 thread 的所有权移动到 scoped_thread 对象中，其他对象将不能再对线程进行 join 或 detach 操作。因为，该类的目的是让 thread 在作用域内执行完成，因此将该类命名为 scoped_thread。<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">scoped_thread</span>
@@ -772,7 +806,7 @@ std::thread 支持移动的一个好处是，可以依赖 scoped_thread 类，�
 </pre>
 </div>
 <p>
-上面 scoped_thread 和前面 thread_guard 类实现类似，不同之处在于，scoped_thread 接受直接构造的 thread 对象，而 thread_guard 则需要先创建一个 thread 对象，再将该对象通过引用传递给 thread_guard。<br />
+上面 scoped_thread 和前面 thread_guard 类实现类似，不同之处在于，scoped_thread 可以接受直接构造的 thread 对象，而 thread_guard 则需要先创建一个 thread 对象，再将该对象通过引用传递给 thread_guard。<br />
 </p>
 </div>
 </div>
@@ -1002,7 +1036,7 @@ std::thread::id 提供了完整的比较操作集合，其可以作为关联容�
 </p>
 
 <p>
-在并行中，当结果依赖于两个或多个线程上执行的操作的相对顺序时，这种情况就是 race condition。多个线程竞争执行他们各自的操作。大多数时间，这种竞争是良性的，因为各种结果都是可接受的。例如，如果两个线程添加 item 到一个队列中，通常哪个 item 被先添加到队列并不重要，其系统的不变性一直被保持。当 race condition 导致不变性被破坏时，才会产生问题。在并行中谈到 race condition 时，通常是指有问题的 race condition；C++ 标准还定义了 data race 专业术语，用于表示一种特殊的 race condition，其专指对当个对象进行异步修改；data races 会导致可怕的未定义行为。<br />
+在并行中，当结果依赖于两个或多个线程上执行的操作的相对顺序时，这种情况就是 race condition。多个线程竞争执行他们各自的操作。大多数时间，这种竞争是良性的，因为各种结果都是可接受的。例如，如果两个线程添加 item 到一个队列中，通常哪个 item 被先添加到队列并不重要，其系统的不变性一直被保持。当 race condition 导致不变性被破坏时，才会产生问题。在并行中谈到 race condition 时，通常是指有问题的 race condition；C++ 标准还定义了 data race 专业术语，用于表示一种特殊的 race condition，其专指对单个对象进行异步修改；data races 会导致可怕的未定义行为。<br />
 </p>
 
 <p>
@@ -1243,7 +1277,7 @@ some_stack.pop(result);
 {
 <span style="color: #4f97d7; font-weight: bold;">private</span>:
     <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">stack</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt; <span style="color: #7590db;">data</span>;
-    <span style="color: #4f97d7; font-weight: bold;">mutable</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span> <span style="color: #7590db;">m</span>;
+    <span style="color: #4f97d7; font-weight: bold;">mutable</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span> <span style="color: #7590db;">m</span>; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">mutable &#34920;&#31034;&#21487;&#20197;&#22312;const&#25104;&#21592;&#20989;&#25968;&#20013;&#20462;&#25913;&#35813;&#25104;&#21592;&#21464;&#37327;</span>
 <span style="color: #4f97d7; font-weight: bold;">public</span>:
     <span style="color: #bc6ec5; font-weight: bold;">threadsafe_stack</span>(){}
     <span style="color: #bc6ec5; font-weight: bold;">threadsafe_stack</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">threadsafe_stack</span>&amp; <span style="color: #7590db;">other</span>)
@@ -1251,7 +1285,7 @@ some_stack.pop(result);
         <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">lock_guard</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span>&gt; <span style="color: #7590db;">lock</span>(other.m);
         data=other.data;
     }
-    <span style="color: #ce537a; font-weight: bold;">threadsafe_stack</span>&amp; <span style="color: #4f97d7; font-weight: bold;">operator</span><span style="color: #bc6ec5; font-weight: bold;">=</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">threadsafe_stack</span>&amp;) = <span style="color: #4f97d7; font-weight: bold;">delete</span>; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#36171;&#20540;&#36816;&#31639;&#31526;&#34987;&#21024;&#38500;</span>
+    <span style="color: #ce537a; font-weight: bold;">threadsafe_stack</span>&amp; <span style="color: #4f97d7; font-weight: bold;">operator</span><span style="color: #bc6ec5; font-weight: bold;">=</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">threadsafe_stack</span>&amp;) = <span style="color: #4f97d7; font-weight: bold;">delete</span>; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#36171;&#20540;&#36816;&#31639;&#31526;&#34987;&#21024;&#38500; &#22240;&#20026;std::mutex&#26159;&#19981;&#33021;copy &#19981;&#33021;move&#30340;&#23545;&#35937;</span>
     <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">push</span>(<span style="color: #ce537a; font-weight: bold;">T</span> <span style="color: #7590db;">new_value</span>)
     {
         <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">lock_guard</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span>&gt; <span style="color: #7590db;">lock</span>(m);
@@ -1282,7 +1316,7 @@ some_stack.pop(result);
 </div>
 
 <p>
-前面讨论的 top 和 pop 接口之间的 race conditions，是因为锁的粒度太小导致的，锁没有覆盖到所有要保护的代码。将 top 和 pop 合为 pop 之后，解决了该问题。锁的粒度过大同样也会带来问题，极端情况下只用一个锁来保护所有的共享数据，这会消除所有平行带来的性能提升，因为同一时间只能执行一个线程。<br />
+前面讨论的 top 和 pop 接口之间的 race conditions，是因为锁的粒度太小导致的，锁没有覆盖到所有要保护的代码。将 top 和 pop 合为 pop 之后，解决了该问题。锁的粒度过大同样也会带来问题，极端情况下只用一个锁来保护所有的共享数据，这会消除所有并行带来的性能提升，因为同一时间只能执行一个线程。<br />
 </p>
 
 <p>
@@ -1292,6 +1326,10 @@ some_stack.pop(result);
 <p>
 当你需要为某个操作对两个或更多互斥量上锁时，这可能会导致死锁。<br />
 </p>
+
+<ul class="org-ul">
+<li>C++ 中的 mutable 关键字 <a href="https://liam.page/2017/05/25/the-mutable-keyword-in-Cxx/">https://liam.page/2017/05/25/the-mutable-keyword-in-Cxx/</a><br /></li>
+</ul>
 </div>
 </div>
 </div>
@@ -1374,7 +1412,7 @@ C++标准库提供了 std::lock 函数，其可以对多个互斥量同时上锁
 <h6 id="org69db1c8">ACQUIRE LOCKS IN A FIXED ORDER</h6>
 <div class="outline-text-6" id="text-org69db1c8">
 <p>
-如果你需要对获得多个锁，并且无法同时间对这些互斥量进行上锁，那么你需要在所有线程中保证按照相同的顺序对 mutex 进行上锁。<br />
+如果你需要获得多个锁，并且无法同时对这些互斥量进行上锁，那么你需要在所有线程中保证按照相同的顺序对 mutex 进行上锁。<br />
 有时候无法很容易做到，考虑双向链表的例子。对于删除一个节点，我们需要获得 3 个节点的锁；遍历列表时，为了避免同时有其他线程对当前节点的 next ptr 有修改，当其获取下一个节点的锁时，其必须保持当前节点的锁。一旦获得下一个节点的锁，则可以释放当前节点的锁，下一个节点变为当前节点。这种 hand-over-hand 上锁方式，可以让多个线程同时访问列表的不同节点。但是，为了避免死锁，节点必须按照相同的顺序上锁。例如：如果一个线程从头到尾遍历列表，另一个线程从尾到头遍历列表，就会出现死锁，详细分析如下：<br />
 <img src="./AsynchronousProgramming/03_02_05_list_traverse.png" alt="03_02_05_list_traverse.png" /><br />
 类似的，假设 A,B,C 是按顺序的三个节点。当删除节点 B 时，需要分别获得 A，B，C 的锁，如果先获得 B 的锁，此时其他线程有可能获得 A 的锁或 C 的锁，从而导致死锁。如果始终遵守获得锁的顺序则可避免死锁的问题。<br />
@@ -1530,22 +1568,27 @@ std::unique_lock 内部有 flag，因此，其所占内存大小要比 std::lock
 };
 </pre>
 </div>
-</div>
-</div>
 
+<ul class="org-ul">
+<li>std::unique_lock 源代码分析 <a href="https://blog.csdn.net/q943520218/article/details/95721696">https://blog.csdn.net/q943520218/article/details/95721696</a><br /></li>
+</ul>
+</div>
+</div>
 <div id="outline-container-orga6c870d" class="outline-5">
 <h5 id="orga6c870d">Transferring mutex ownership between scopes</h5>
 <div class="outline-text-5" id="text-orga6c870d">
 <p>
-由于 std::unique_lock 实例可以不拥有其所关联的 mutex，因此可以通过 moving 在 std::unique_lock 实例之间传递 mutex 的所有权。std::unique_lock 类型是 movable 类型，但不是 copyable 类型，当 std::unique_lock 实例 w 为 rvalue 时可以自动传递，当 std::unique_lock 实例为 lvalue 时需要使用 std::move 将其转化为 rvalue。<br />
+由于 std::unique_lock 实例可以不拥有其所关联的 mutex，因此可以通过 moving 在 std::unique_lock 实例之间传递 mutex 的所有权。std::unique_lock 类型是 movable 类型，但不是 copyable 类型，当 std::unique_lock 实例为 rvalue 时可以自动传递，当 std::unique_lock 实例为 lvalue 时需要使用 std::move 将其转化为 rvalue。<br />
 一种使用 std::unique_lock 传递 mutex 所有权的方式如下，get_lock 函数对 mutex 进行上锁，然后将所有权转移给调用者，调用者在锁的保护下可以继续做一些事情，调用者退出时，std::unique_lock 对象销毁，自动解锁 mutex。<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-cpp"><span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">unique_lock</span>&lt;<span style="color: #a45bad;">std</span>::mutex&gt; <span style="color: #bc6ec5; font-weight: bold;">get_lock</span>()
 {
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">TODO Why extern?</span>
     <span style="color: #4f97d7; font-weight: bold;">extern</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span> <span style="color: #7590db;">some_mutex</span>;
     <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">unique_lock</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span>&gt; <span style="color: #7590db;">lk</span>(some_mutex);
     prepare_data();
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">TODO mutex &#26080;&#27861;copy&#65292;&#37027;&#20040;lk&#23545;&#35937;&#22914;&#20309;&#20256;&#36882;&#20854;&#20851;&#32852;&#30340;mutex&#65311;</span>
     <span style="color: #4f97d7; font-weight: bold;">return</span> lk;
 }
 <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">process_data</span>()
@@ -1584,7 +1627,7 @@ std::unique_lock 还允许在对象销毁之前释放锁，只要调用其成员
 </pre>
 </div>
 <p>
-适当粒度的锁不仅是保护的数据量要尽可能少，持有锁的时间也要尽可能小。当持有锁时，不要去执行耗时很长的操作，例如文件 IO 和获取另一个锁（获取另一个锁时，可能会被阻塞，这样可能会等待很长时间）。<br />
+适当粒度的锁不仅是保护的数据量要尽可能少，持有锁的时间也要尽可能短。当持有锁时，不要去执行耗时很长的操作，例如文件 IO 或获取另一个锁（获取另一个锁时，可能会被阻塞，这样可能会等待很长时间）。<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Y</span>
@@ -1621,17 +1664,741 @@ std::unique_lock 还允许在对象销毁之前释放锁，只要调用其成员
 </div>
 <div id="outline-container-org19ba5b7" class="outline-5">
 <h5 id="org19ba5b7">Protecting shared data during initialization</h5>
+<div class="outline-text-5" id="text-org19ba5b7">
+<p>
+假设你有一个共享资源，构造该共享资源消耗比较大(例如：连接数据库或申请一大块内存)，你希望在使用的时候才执行构造。这种设计方式被称为 Lazy Initialization。单线程情况下，其实现方法如下：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;some_resource&gt; <span style="color: #7590db;">resource_ptr</span>;
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">foo</span>()
+{
+    <span style="color: #4f97d7; font-weight: bold;">if</span>(<span style="color: #a45bad;">!</span>resource_ptr)
+    {
+        resource_ptr.reset(<span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">some_resource</span>);
+    }
+    resource_ptr-&gt;do_something();
+}
+</pre>
+</div>
+<p>
+上面的方式只能工作在单线程模式下，多线程情况下可能会多次执行初始化。可以通过下面几种方法来实现多线程模式的 Lazy Initialization。<br />
+</p>
+</div>
+<div id="outline-container-org3a95b43" class="outline-6">
+<h6 id="org3a95b43">最简单的方式，但性能低下</h6>
+<div class="outline-text-6" id="text-org3a95b43">
+<p>
+最简单的方式是，使用互斥量来保护初始化过程，实现方式如下。但是，该方法导致初始化后的后续调用也会加锁解锁。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;some_resource&gt; <span style="color: #7590db;">resource_ptr</span>;
+<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span> <span style="color: #7590db;">resource_mutex</span>;
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">foo</span>()
+{
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">unique_lock</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span>&gt; <span style="color: #7590db;">lk</span>(resource_mutex);
+    <span style="color: #4f97d7; font-weight: bold;">if</span>(<span style="color: #a45bad;">!</span>resource_ptr)
+    {
+        resource_ptr.reset(<span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">some_resource</span>);
+    }
+    lk.unlock();
+    resource_ptr-&gt;do_something();
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org33a464a" class="outline-6">
+<h6 id="org33a464a">double-checked locking 方式，尝试优化性能，但引入了 data race</h6>
+<div class="outline-text-6" id="text-org33a464a">
+<p>
+很多人使用 double-checked locking 模式来优化该问题，但是，该方法是错误的，其会导致更严重的未定义行为：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">undefined_behaviour_with_double_checked_locking</span>()
+{
+    <span style="color: #4f97d7; font-weight: bold;">if</span>(<span style="color: #a45bad;">!</span>resource_ptr) <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">mark 1</span>
+    {
+        <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">lock_guard</span>&lt;<span style="color: #a45bad;">std</span>::mutex&gt; <span style="color: #7590db;">lk</span>(resource_mutex);  
+        <span style="color: #4f97d7; font-weight: bold;">if</span>(<span style="color: #a45bad;">!</span>resource_ptr)  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">mark 2</span>
+        {
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19979;&#38754;&#20195;&#30721;&#25191;&#34892;&#20102;3&#27493;&#25805;&#20316;&#65306;</span>
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">1. &#20026; some_resource &#23545;&#35937;&#20998;&#37197;&#20869;&#23384;</span>
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">2. &#22312;&#20998;&#37197;&#30340;&#20869;&#23384;&#19978;&#35843;&#29992; some_resource&#30340;&#26500;&#36896;&#20989;&#25968;&#65292;&#26500;&#36896;&#19968;&#20010;some_resource&#23545;&#35937;</span>
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">3. &#36820;&#22238;&#35813;&#20869;&#23384;&#30340;&#25351;&#38024;&#65292;&#35753;resource_ptr&#25351;&#21521;&#35813;&#20869;&#23384;</span>
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#32534;&#35793;&#22120;&#19981;&#19968;&#23450;&#25353;23&#39034;&#24207;&#25191;&#34892;&#65292;&#21487;&#33021;32</span>
+            resource_ptr.reset(<span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">some_resource</span>); <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">mark 3</span>
+        }
+    }
+    resource_ptr-&gt;do_something(); <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">mark 4</span>
+}
+</pre>
+</div>
+<p>
+这个方案也存在潜在的 race condition，第一次的检查没上锁，可能与其他线程中被保护的 reset 操作产生竞争。如果当前线程看见其他线程写入了指针，但没看到新创建的对象实例，调用 do_something 就会出错。这个例子就是 c++中定义的 data race 问题。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org1e82069" class="outline-6">
+<h6 id="org1e82069">std::call_once std::once_flag 方案</h6>
+<div class="outline-text-6" id="text-org1e82069">
+<p>
+std::once_flag 中存储了同步数据。使用 std::call_once std::once_flag 要比上面第一个最简单方案性能要好很多。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;some_resource&gt; <span style="color: #7590db;">resource_ptr</span>;
+<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">once_flag</span> <span style="color: #7590db;">resource_flag</span>;
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">init_resource</span>()
+{
+    resource_ptr.reset(<span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">some_resource</span>);
+}
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">foo</span>() {
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span>
+    <span style="color: #a45bad;">std</span>::call_once(resource_flag,init_resource);
+    resource_ptr-&gt;do_something();
+}
+</pre>
+</div>
+<p>
+下面是使用 std::call_once std::once_flag 实现类成员的 lazy initialization<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">X</span>
+{
+<span style="color: #4f97d7; font-weight: bold;">private</span>:
+    <span style="color: #ce537a; font-weight: bold;">connection_info</span> <span style="color: #7590db;">connection_details</span>;
+    <span style="color: #ce537a; font-weight: bold;">connection_handle</span> <span style="color: #7590db;">connection</span>;
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">once_flag</span> <span style="color: #7590db;">connection_init_flag</span>;
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">open_connection</span>()
+    {
+        connection=connection_manager.open(connection_details);
+    }
+<span style="color: #4f97d7; font-weight: bold;">public</span>:
+    <span style="color: #bc6ec5; font-weight: bold;">X</span>(<span style="color: #ce537a; font-weight: bold;">connection_info</span> <span style="color: #4f97d7; font-weight: bold;">const</span>&amp; <span style="color: #7590db;">connection_details_</span>): <span style="color: #bc6ec5; font-weight: bold;">connection_details</span>(connection_details_) {}
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">send_data</span>(<span style="color: #ce537a; font-weight: bold;">data_packet</span> <span style="color: #4f97d7; font-weight: bold;">const</span>&amp; <span style="color: #7590db;">data</span>)
+    {
+        <span style="color: #a45bad;">std</span>::call_once(connection_init_flag,&amp;<span style="color: #a45bad;">X</span>::open_connection,<span style="color: #4f97d7; font-weight: bold;">this</span>);
+        connection.send_data(data);
+    }
+    <span style="color: #ce537a; font-weight: bold;">data_packet</span> <span style="color: #bc6ec5; font-weight: bold;">receive_data</span>()
+    {
+        <span style="color: #a45bad;">std</span>::call_once(connection_init_flag,&amp;<span style="color: #a45bad;">X</span>::open_connection,<span style="color: #4f97d7; font-weight: bold;">this</span>);
+        <span style="color: #4f97d7; font-weight: bold;">return</span> connection.receive_data();
+    }
+};
+</pre>
+</div>
+
+<p>
+TIPS： std::once_flag 和 std::mutex 类似，他们的实例都不可以被 copy 和 move。因此，当你使用这些实例作为成员变量，并且你还需要 copy 构造函数或移动构造函数等时，你需要自己显示实现这些成员函数，编译器不会生成。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org111a314" class="outline-6">
+<h6 id="org111a314">static 方案</h6>
+<div class="outline-text-6" id="text-org111a314">
+<p>
+当一个局部变量被声明为 static 时，第一次执行到定义该变量的时候，对该变量执行初始化。当多个线程调用该函数时，可能会对该变量初始化多次，每个线程可能都会认为自己是第一次执行到定义该变量的线程，或者一个线程开始初始化该变量但还没初始化完成，而另一个线程已经在使用该对象。c++11 之前的很多编译器都会有该问题，c++11 之后规定 static 变量的初始化只完全发生在一个线程内，直到初始化完成前其他线程都不会做处理，从而避免了 race condition。只有一个全局实例时可以不使用 std::call_once 而直接用 static。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">my_class</span>;
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22810;&#20010;&#32447;&#31243;&#21487;&#20197;&#35843;&#29992; get_my_class_instance() &#65292;&#32780;&#19981;&#29992;&#25285;&#24515; instance&#21021;&#22987;&#21270;&#26102;&#26377;race condition&#38382;&#39064;&#12290;</span>
+<span style="color: #ce537a; font-weight: bold;">my_class</span>&amp; <span style="color: #bc6ec5; font-weight: bold;">get_my_class_instance</span>()
+{
+    <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">my_class</span> <span style="color: #7590db;">instance</span>;
+    <span style="color: #4f97d7; font-weight: bold;">return</span> instance;
+}
+</pre>
+</div>
+</div>
+</div>
 </div>
 <div id="outline-container-orgae5765d" class="outline-5">
 <h5 id="orgae5765d">Protecting rarely updated data structures</h5>
+<div class="outline-text-5" id="text-orgae5765d">
+<p>
+DNS 表就属于很少需要更新的数据结构。DNS 表中存储了很多条数据项，每条数据项存储一条域名和其对应的 IP 地址。尽管，当用户访问新的不同的网站时，会增加新的数据项目，通常一条数据项会保持一段时间都不变。系统会定期检查每条数据项的有效性，只有域名对应的 IP 地址变更或者域名不可用时，才需要对数据项进行更新。尽管更新很少发生，但是当多个线程访问 DNS 表时，依然需要在更新数据期间对 DNS 表进行适当保护，避免其他线程看到破坏了的数据（更新只完成一部分，没有完全完成）。<br />
+使用 std::mutex 来保护 DNS 表，有些过度悲观了，这使得多个线程对 DNS 表的读取操作也无法并行执行。此处，我们需要一种通常被称为 reader-writer mutex 的互斥量，其允许单个写者互斥访问，多个读者同步访问。<br />
+</p>
+
+<p>
+C++11 中没有提供这样的互斥量。C++14 中提供了 std::shared_timed_mutex。C++17 中提供了 std::shared_mutex。std::shared_timed_mutex 比 std::shared_mutex 提供了额外的操作，当不需要该额外操作时，某些平台上 std::shared_mutex 的效率会更高。<br />
+</p>
+
+<p>
+对于更新操作，使用 std::lock_guard &lt;std::shared_mutex&gt; 和 std::unique_lock&lt;std::shared_mutex&gt; 来进行保护，保证互斥访问。对于读取操作，使用 std::shared_lock&lt;std::shared_mutex&gt;来进行保护，保证共享访问。std::shared_lock&lt;std::shared_mutex&gt; 是 C++14 中加入的。<br />
+</p>
+
+<p>
+当任何一个线程对 reader-writer 互斥量上了共享锁，请求对该 reader-writer 互斥量上互斥锁的线程会一直被阻塞，直到所有拥有共享锁的线程释放了共享锁。当任何一个线程对 reader-writer 互斥量上了互斥锁，请求对该 reader-writer 互斥量上共享锁或互斥锁的其他线程会一直被阻塞，直到拥有互斥锁的线程释放了互斥锁。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;map&gt;</span>
+<span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;string&gt;</span>
+<span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;mutex&gt;</span>
+<span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;shared_mutex&gt;</span>
+<span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">dns_entry</span>;
+<span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">dns_cache</span>
+{
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">map</span>&lt;<span style="color: #a45bad;">std</span>::string,<span style="color: #ce537a; font-weight: bold;">dns_entry</span>&gt; <span style="color: #7590db;">entries</span>;
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">reader-writer &#20114;&#26021;&#37327;</span>
+    <span style="color: #4f97d7; font-weight: bold;">mutable</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">shared_mutex</span> <span style="color: #7590db;">entry_mutex</span>;
+<span style="color: #4f97d7; font-weight: bold;">public</span>:
+    <span style="color: #ce537a; font-weight: bold;">dns_entry</span> <span style="color: #bc6ec5; font-weight: bold;">find_entry</span>(<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #4f97d7; font-weight: bold;">const</span>&amp; <span style="color: #7590db;">domain</span>) <span style="color: #4f97d7; font-weight: bold;">const</span>
+    {
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#33719;&#21462;&#20849;&#20139;&#38145;&#65292;&#22810;&#20010;&#32447;&#31243;&#21487;&#20197;&#24182;&#34892;&#25191;&#34892;find_entry&#65292;&#20294;&#20250;&#38459;&#22622;&#35843;&#29992;update_or_add_entry&#30340;&#32447;&#31243;</span>
+        <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">shared_lock</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">shared_mutex</span>&gt; <span style="color: #7590db;">lk</span>(entry_mutex);
+        <span style="color: #a45bad;">std</span>::<span style="color: #a45bad;">map</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span>,<span style="color: #ce537a; font-weight: bold;">dns_entry</span>&gt;::<span style="color: #ce537a; font-weight: bold;">const_iterator</span> <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #7590db;">it</span>= entries.find(domain);
+        <span style="color: #4f97d7; font-weight: bold;">return</span> (it==entries.end())?dns_entry():it-&gt;second;
+    }
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">update_or_add_entry</span>(<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #4f97d7; font-weight: bold;">const</span>&amp; <span style="color: #7590db;">domain</span>, <span style="color: #ce537a; font-weight: bold;">dns_entry</span> <span style="color: #4f97d7; font-weight: bold;">const</span>&amp; <span style="color: #7590db;">dns_details</span>)
+    {
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#33719;&#21462;&#20114;&#26021;&#38145;&#65292;&#21482;&#26377;&#19968;&#20010;&#32447;&#31243;&#21487;&#20197;&#25191;&#34892; update_or_add_entry&#12290;&#20250;&#38459;&#22622;&#20854;&#20182;&#35843;&#29992; update_or_add_entry &#25110; find_entry &#30340;&#32447;&#31243;</span>
+        <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">lock_guard</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">shared_mutex</span>&gt; <span style="color: #7590db;">lk</span>(entry_mutex);
+        entries[domain]=dns_details;
+    }
+};
+</pre>
+</div>
+</div>
 </div>
 <div id="outline-container-orgdc2e24a" class="outline-5">
 <h5 id="orgdc2e24a">Recursive locking</h5>
+<div class="outline-text-5" id="text-orgdc2e24a">
+<p>
+当已经对一个 std::mutex 上锁后，再对该互斥量上锁会导致未定义行为。C++标准库提供了 std::recursive_mutex 互斥量，可以对其多次上锁，但是 lock 次数必须和 unlock 次数相匹配。正确使用 std::lock_guard&lt;std::recursive_mutex&gt; 和 std::unique_lock&lt;std::recursive_mutex&gt; 就可以保证 lock 和 unlock 次数的匹配。<br />
+</p>
+
+<p>
+大多数情况下，当你想使用 std::recursive_mutex 时，你可能真正需要的是换一种设计。下面这种情况可以使用 std::recursive_mutex ：一个类被设计为可以有多个线程并发访问，该类有一个互斥量用于保护数据成员，每个成员函数都会先对互斥量上锁，然后执行操作，之后再对互斥量解锁，当一个成员函数需要调用另一个成员函数时，那么就需要对一个互斥量多次上锁了。但是，通常不推荐这种使用方式，这种方式会导致不好的设计。当上锁后，类的不变性通常会被破坏，这意味着第二个成员函数是在不变性被破坏之后的基础上工作的。更好的方式是，从第二个成员函数分离出来一个 private 的成员函数，让上锁的这两个成员函数分别调用这个私有的成员函数。<br />
+</p>
+</div>
 </div>
 </div>
 </div>
 <div id="outline-container-orga726318" class="outline-3">
 <h3 id="orga726318">04 synchronizing concurrent operations on atomic types</h3>
+<div class="outline-text-3" id="text-orga726318">
+<p>
+有时候不止需要保护多个线程之间共享数据，还需要同步多个线程的不同行为。一个线程等待特定事件发生或某个条件为真的情况很常见。尽管可以定期去检查时间是否发生或条件是否为真，但是这种实现性能太差了。C++标准库提供了 condition variables 和 futures , C++ Technical Specification 中提供了对 condition variables 和 futures 的扩展，还提供了 latches 和 barriers，这些都是用于处理多线程行为同步的工具。<br />
+</p>
+</div>
+
+<div id="outline-container-org58ab91b" class="outline-4">
+<h4 id="org58ab91b">Waiting for an event or other condition</h4>
+<div class="outline-text-4" id="text-org58ab91b">
+<p>
+假设你正在乘坐夜间火车进行旅行。为了保证你可以在正确站台下车，有如下几个方案：<br />
+方案 1：一晚上不睡觉，并注意每次停车是在哪个站台。一晚无法睡觉，会很累。<br />
+方案 2：查看列车到站时刻表，定一个在到站时刻之前的闹钟。如果列车延迟，则你会提早醒来。如果闹钟电池不足，则你可能会坐过站。<br />
+方案 3：最理想的方式是，列车到你下车的站后，有人可以通知你。<br />
+对于线程也一样，如果一个线程 A 在等待另一个线程 B 完成一个任务。为了保证线程 B 完成任务后，线程 A 可以马上执行，有如下几个方案：<br />
+方案 1：线程 A 不停去检查一个共享变量标记(使用 mutex 保护该共享变量)，线程 B 完成任务后会写入该共享变量标记。线程 A 浪费了珍贵的执行时间去检查标记；线程 A 对共享变量上锁，导致其他线程阻塞。<br />
+方案 2：线程 A 每次检查之间使用 sleep_for，让自己 sleep 一段时间。该方案一定程度上改善了执行时间的浪费，但是 sleep 的时间很难是恰到好处的。sleep 时间过短，会导致执行时间浪费；sleep 时间过长，会导致线程 A 无法及时处理后续工作。<br />
+方案 3：使用 c++标准库提供的 condition variable 来实现。概念上讲，一个条件变量和一个事件或其他条件相关联，一个线程或多个线程可以等待该条件被满足，此时，其可以通知一个或多个等待该条件的线程，将他们唤醒从而让他们继续执行。<br />
+</p>
+</div>
+
+<div id="outline-container-org3cc4ad0" class="outline-5">
+<h5 id="org3cc4ad0">Waiting for a condition with condition variables</h5>
+<div class="outline-text-5" id="text-org3cc4ad0">
+<p>
+C++标准库提供了两种条件变量：std::condition_variable 和 std::condition_variable_any。他们都需要和互斥量配合来实现适当的同步，std::condition_variable 只能和 std::mutex 一起使用；std::condition_variable_any 可以和任意满足最小条件的类 mutex 一起工作。std::condition_variable_any 在内存占用、性能以及 OS 资源消耗上都比 std::condition_variable 要多。因此，应该优先使用 std::condition_variable，除非需要 std::condition_variable_any 提供的额外灵活性。<br />
+</p>
+
+<p>
+下面实例使用 std::condition_variable 和 std::mutex 配合实现了 data_preparation_thread 和 data_processing_thread 两个线程的同步：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span> <span style="color: #7590db;">mut</span>;
+<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">queue</span>&lt;data_chunk&gt; <span style="color: #7590db;">data_queue</span>;
+<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">condition_variable</span> <span style="color: #7590db;">data_cond</span>;
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">data_preparation_thread</span>()
+{
+    <span style="color: #4f97d7; font-weight: bold;">while</span>(more_data_to_prepare())
+    {
+        <span style="color: #ce537a; font-weight: bold;">data_chunk</span> <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #7590db;">data</span>=prepare_data();
+        {
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23545;&#20114;&#26021;&#37327;&#36827;&#34892;&#19978;&#38145;</span>
+            <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">lock_guard</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span>&gt; <span style="color: #7590db;">lk</span>(mut);
+            data_queue.push(data);
+        }
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#35843;&#29992;condition_variable&#30340;notify_one&#20989;&#25968;&#36890;&#30693;&#31561;&#24453;&#32447;&#31243;</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#31561;&#24453;&#35299;&#38145;&#21518;&#20877;&#35843;&#29992;notify_one&#65292;&#36991;&#20813;&#31561;&#24453;&#32447;&#31243;&#31435;&#21363;wake&#21518;&#65292;&#30001;&#20110;&#31561;&#24453;&#20114;&#26021;&#37327;&#34987;&#35299;&#38145;&#32780;&#21448;&#34987;&#38459;&#22622;&#12290;</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#35299;&#38145;&#19968;&#20010;&#31561;&#24453;&#35813;&#26465;&#20214;&#21464;&#37327;&#30340;&#32447;&#31243;&#12290;&#22914;&#26524;&#19981;&#23384;&#22312;&#31561;&#24453;&#32447;&#31243;&#65292;&#21017;&#20160;&#20040;&#20063;&#19981;&#21457;&#29983;&#65307;&#22914;&#26524;&#23384;&#22312;&#22810;&#20010;&#31561;&#24453;&#32447;&#31243;&#65292;&#21017;&#26080;&#27861;&#30830;&#23450;&#21796;&#37266;&#21738;&#20010;&#31561;&#24453;&#32447;&#31243;</span>
+        data_cond.notify_one();
+    }
+}
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">data_processing_thread</span>()
+{
+    <span style="color: #4f97d7; font-weight: bold;">while</span>(<span style="color: #a45bad;">true</span>)
+    {
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23545;&#20114;&#26021;&#37327;&#36827;&#34892;&#19978;&#38145;</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Tips: &#27492;&#22788;&#20351;&#29992;&#30340;&#26159; std::unique_lock&lt;std::mutex&gt;&#65292;&#19981;&#33021;&#20351;&#29992; std::lock_guard&lt;std::mutex&gt;(&#35813;&#20989;&#25968;&#27809;&#26377;&#25552;&#20379;unlock&#20989;&#25968;)</span>
+        <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">unique_lock</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span>&gt; <span style="color: #7590db;">lk</span>(mut);
+        
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#31532;&#19968;&#20010;&#21442;&#25968;&#65306;std::unique_lock&lt;std::mutex&gt;</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#31532;&#20108;&#20010;&#21442;&#25968;&#65306;lambda &#20989;&#25968;&#29992;&#20110;&#34920;&#31034;&#31561;&#24453;&#30340;&#26465;&#20214;</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">wait &#20989;&#25968;&#30340;&#23454;&#29616;&#65306;&#20808;&#35843;&#29992;lambda&#20989;&#25968;&#26816;&#26597;&#26465;&#20214;&#26159;&#21542;&#28385;&#36275;&#65292;&#22914;&#26524;&#28385;&#36275;&#65292;&#21017;&#36820;&#22238;&#65307;&#22914;&#26524;&#19981;&#28385;&#36275;&#65292;&#21017;&#35843;&#29992; lk.unlock &#37322;&#25918;&#38145;&#65292;&#24182;&#19988;&#23558;&#32447;&#31243;&#29366;&#24577;&#36716;&#25442;&#20026;&#38459;&#22622;&#25110;&#31561;&#24453;&#29366;&#24577;&#12290;&#24403; data_preparation_thread &#32447;&#31243;&#35843;&#29992;&#26465;&#20214;&#21464;&#37327; data_cond &#30340; notify_one &#20989;&#25968;&#26102;&#65292;data_processing_thread &#20174;&#30561;&#30496;&#29366;&#24577;&#37266;&#26469;&#65292;&#35843;&#29992; lk.lock &#19978;&#38145;&#65292;&#28982;&#21518;&#20877;&#27425;&#35843;&#29992; lambda &#20989;&#25968;&#26816;&#26597;&#26465;&#20214;&#26159;&#21542;&#28385;&#36275;&#12290;</span>
+        data_cond.wait(lk,[]{<span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #a45bad;">!</span>data_queue.empty();});
+        <span style="color: #ce537a; font-weight: bold;">data_chunk</span> <span style="color: #7590db;">data</span>=data_queue.front();
+        data_queue.pop();
+        
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#24403;&#21069;&#38754; wait &#27809;&#26377;&#38459;&#22622;&#36807;&#26102;&#65292;&#27492;&#22788; unlock &#23545;&#24212;&#19982;&#24320;&#22987;&#30340; lock</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#24403;&#21069;&#38754; wait &#38459;&#22622;&#36807;&#26102;&#65292;&#22788;&#30340; unlock &#23545;&#20110;&#19982; wait &#20013;&#30340; lock</span>
+        lk.unlock();
+        process(data);
+        <span style="color: #4f97d7; font-weight: bold;">if</span>(is_last_chunk(data))
+            <span style="color: #4f97d7; font-weight: bold;">break</span>;
+    }
+}
+</pre>
+</div>
+
+<p>
+当等待线程重新获取互斥量并检查条件变量时，并非直接响应另一个线程的通知，将这种情况称为 spurious wake（伪唤醒）。伪唤醒的数量和频率都是不确定的，所以不建议使用有副作用的函数做条件检查（如果条件检查很耗时，由于对性能影响会很大）。<br />
+</p>
+
+<p>
+本质上来说 std::condition_variable::wait 是对忙等的优化。下面代码是使用忙等实现的 wait，你的代码既应该能适用于 minimal_wait ，也应该能适用于杜绝了伪唤醒的 wait。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">template</span>&lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">Predicate</span>&gt;
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">minimal_wait</span>(<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">unique_lock</span>&lt;<span style="color: #a45bad;">std</span>::mutex&gt;&amp; <span style="color: #7590db;">lk</span>,<span style="color: #ce537a; font-weight: bold;">Predicate</span> <span style="color: #7590db;">pred</span>)
+{
+    <span style="color: #4f97d7; font-weight: bold;">while</span>(<span style="color: #a45bad;">!</span>pred())
+    {
+        lk.unlock();
+        lk.lock();
+    }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf1d470a" class="outline-5">
+<h5 id="orgf1d470a">Building a thread-safe queue with condition variables</h5>
+<div class="outline-text-5" id="text-orgf1d470a">
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;queue&gt;</span>
+<span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;memory&gt;</span> <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20026;&#20102;&#20351;&#29992;std::shared_ptr</span>
+<span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;mutex&gt;</span>
+<span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;condition_variable&gt;</span>
+
+<span style="color: #4f97d7; font-weight: bold;">template</span>&lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">T</span>&gt;
+<span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">threadsafe_queue</span>
+{
+<span style="color: #4f97d7; font-weight: bold;">private</span>:
+    <span style="color: #4f97d7; font-weight: bold;">mutable</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span> <span style="color: #7590db;">mut</span>;  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">bool empty() const&#25104;&#21592;&#20989;&#25968;&#20013;&#20351;&#29992;&#20102;&#35813;&#21464;&#37327;</span>
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">queue</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt; <span style="color: #7590db;">data_queue</span>;
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">condition_variable</span> <span style="color: #7590db;">data_cond</span>;
+<span style="color: #4f97d7; font-weight: bold;">public</span>:
+    <span style="color: #bc6ec5; font-weight: bold;">threadsafe_queue</span>() {}
+    <span style="color: #bc6ec5; font-weight: bold;">threadsafe_queue</span>(<span style="color: #ce537a; font-weight: bold;">threadsafe_queue</span> <span style="color: #4f97d7; font-weight: bold;">const</span>&amp; <span style="color: #7590db;">other</span>)
+    {
+        <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">lock_guard</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span>&gt; <span style="color: #7590db;">lk</span>(other.mut);
+        data_queue=other.data_queue;
+    }
+    <span style="color: #ce537a; font-weight: bold;">threadsafe_queue</span>&amp; <span style="color: #4f97d7; font-weight: bold;">operator</span><span style="color: #bc6ec5; font-weight: bold;">=</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">threadsafe_queue</span>&amp;) = <span style="color: #4f97d7; font-weight: bold;">delete</span>;  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20026;&#20102;&#31616;&#21333;&#36215;&#35265;&#65292;&#19981;&#20801;&#35768;&#36171;&#20540;&#25805;&#20316;&#31526;</span>
+
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">push</span>(<span style="color: #ce537a; font-weight: bold;">T</span> <span style="color: #7590db;">new_value</span>)
+    {
+        {
+            <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">lock_guard</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span>&gt; <span style="color: #7590db;">lk</span>(mut);
+            data_queue.push(new_value);
+        }
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#36890;&#30693;&#31561;&#24453;&#32447;&#31243; &#38431;&#21015;&#20013;&#26377;&#25968;&#25454;&#20102;</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">notify_one &#26080;&#27861;&#20445;&#35777;&#20250;&#36890;&#30693;&#21738;&#20010;&#31561;&#24453;&#32447;&#31243;</span>
+        data_cond.notify_one();
+    }
+
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">wait_and_pop</span>(<span style="color: #ce537a; font-weight: bold;">T</span>&amp; <span style="color: #7590db;">value</span>)
+    {
+        <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">unique_lock</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span>&gt; <span style="color: #7590db;">lk</span>(mut);
+        data_cond.wait(lk,[<span style="color: #4f97d7; font-weight: bold;">this</span>]{<span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #a45bad;">!</span>data_queue.empty();});
+        value=data_queue.front();
+        data_queue.pop();
+    }
+
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt; <span style="color: #bc6ec5; font-weight: bold;">wait_and_pop</span>()
+    {
+        <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">unique_lock</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span>&gt; <span style="color: #7590db;">lk</span>(mut);
+        data_cond.wait(lk,[<span style="color: #4f97d7; font-weight: bold;">this</span>]{<span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #a45bad;">!</span>data_queue.empty();});
+        <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt; <span style="color: #7590db;">res</span>(<span style="color: #a45bad;">std</span>::make_shared&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt;(data_queue.front()));
+        data_queue.pop();
+        <span style="color: #4f97d7; font-weight: bold;">return</span> res;
+    }
+
+    <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #bc6ec5; font-weight: bold;">try_pop</span>(<span style="color: #ce537a; font-weight: bold;">T</span>&amp; <span style="color: #7590db;">value</span>)
+    {
+        <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">lock_guard</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span>&gt; <span style="color: #7590db;">lk</span>(mut);
+        <span style="color: #4f97d7; font-weight: bold;">if</span>(data_queue.empty())
+            <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #a45bad;">false</span>;
+        value=data_queue.front();
+        data_queue.pop();
+        <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #a45bad;">true</span>;
+    }
+
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt; <span style="color: #bc6ec5; font-weight: bold;">try_pop</span>()
+    {
+        <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">lock_guard</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span>&gt; <span style="color: #7590db;">lk</span>(mut);
+        <span style="color: #4f97d7; font-weight: bold;">if</span>(data_queue.empty())
+            <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #a45bad;">std</span>::shared_ptr&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt;();
+        <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">shared_ptr</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt; <span style="color: #7590db;">res</span>(<span style="color: #a45bad;">std</span>::make_shared&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt;(data_queue.front()));
+        data_queue.pop();
+        <span style="color: #4f97d7; font-weight: bold;">return</span> res;
+    }
+
+    <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #bc6ec5; font-weight: bold;">empty</span>() <span style="color: #4f97d7; font-weight: bold;">const</span>
+    {
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span>
+        <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">lock_guard</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span>&gt; <span style="color: #7590db;">lk</span>(mut);
+        <span style="color: #4f97d7; font-weight: bold;">return</span> data_queue.empty();
+    }
+};
+
+<span style="color: #ce537a; font-weight: bold;">threadsafe_queue</span>&lt;data_chunk&gt; <span style="color: #7590db;">data_queue</span>;
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">data_preparation_thread</span>()
+{
+    <span style="color: #4f97d7; font-weight: bold;">while</span>(more_data_to_prepare())
+    {
+        <span style="color: #ce537a; font-weight: bold;">data_chunk</span> <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #7590db;">data</span>=prepare_data();
+        data_queue.push(data);
+    }
+}
+
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">data_processing_thread</span>()
+{
+    <span style="color: #4f97d7; font-weight: bold;">while</span>(<span style="color: #a45bad;">true</span>)
+    {
+        <span style="color: #ce537a; font-weight: bold;">data_chunk</span> <span style="color: #7590db;">data</span>;
+        data_queue.wait_and_pop(data);
+        process(data);
+        <span style="color: #4f97d7; font-weight: bold;">if</span>(is_last_chunk(data))
+            <span style="color: #4f97d7; font-weight: bold;">break</span>;
+    }
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgd5650f1" class="outline-4">
+<h4 id="orgd5650f1">Waiting for one-off events with futures</h4>
+<div class="outline-text-4" id="text-orgd5650f1">
+<p>
+假设你要乘飞机去国外度假，当到达机场办理完各种登机手续后，还需要等待机场广播通知登机。这段时间内，你可能会在候机室里面找一些事情来打发时间，比如：读书，上网，或者来一杯咖啡。但本质上讲，你只是在等待一件事情：机场广播通知登机。另外，指定的航班只会出发一次，下次你再乘飞机去度假时，乘坐的可能就是其他航班了。<br />
+</p>
+
+<p>
+C++标准库使用 future 来表示这种一次性事件。当线程需要等待特定事件时，其会以某种方式获得代表该事件的 future。之后，线程可以周期性地(以很短的周期)在 future 上进行等待，来检查事件是否触发(检查信息板)，检查期间也会执行其他任务(品尝机场昂贵的咖啡)。或者，线程可以先执行其他任务，直到该任务需要此事件需要发生，再等待此事件对应的 future 的状态会变为就绪状态。future 可能是和数据相关(比如，登机口编号)，也可能不是。一旦事件发生后(future 状态变为就绪)，这个 future 将不能被重置。<br />
+</p>
+
+<p>
+C++标准库提供了两类 future：unique futures (std::future&lt;&gt;) 和 shared futures (std::shared_future&lt;&gt;)。这两个类和 std::unique_ptr&lt;&gt;、std::shared_ptr&lt;&gt;这两个类很类似。对于指定事件，只能有一个 std::future&lt;&gt; 实例与该事件关联；但是，可以有多个 std::shared_future&lt;&gt;实例关联同一个事件，多个 std::shared_future&lt;&gt;实例会同时变为 ready 状态。<br />
+</p>
+
+<p>
+std::future&lt;T&gt;和 std::shared_future&lt;T&gt;的模版参数类型为他们所关联的数据的类型。std::future&lt;void&gt;和 std::shared_future&lt;void&gt;表示 future 不关联任何数据。尽管，future 对象可用于不同线程之间交流信息，但是，future 对象本身并没有提供同步访问保护，需要使用 mutex 或其他同步机制来保护多个线程对同一个 future 对象的访问。但是，每个线程可以拥有自己的 std::shared_future&lt;&gt;实例，这样就不需要同步机制保护了。<br />
+</p>
+
+<p>
+Concurrency Technical Specification 提供了 std::future&lt;T&gt;和 std::shared_future&lt;T&gt; 的扩展版本 std::experimental::future&lt;&gt; 和 std::experimental::shared_future&lt;&gt;。它们的行为与 std 命名空间中的对应项相同，但它们具有额外的成员函数以提供额外的功能。重要的是要注意 std::experimental 名称并不意味着代码质量有任何问题（我希望实现将与您的库供应商提供的其他所有东西的质量相同）。强调这些是非标准的类和函数，因为，它们可能和最终未来被 C++ 标准采用的版本，在语法和语义上有差别。包含头文件 &lt;experimental/future&gt; 就可以使用这两个类了。<br />
+</p>
+</div>
+<div id="outline-container-orgb7f02fb" class="outline-5">
+<h5 id="orgb7f02fb">Returning values from background tasks</h5>
+<div class="outline-text-5" id="text-orgb7f02fb">
+<p>
+假设你有一个耗时的计算，其最终会返回一个有用的结果，你当前还不需要这个结果值。你可以开启一个线程来执行计算，但是，其没有提供直接返回结果的机制。你可以使用 std::async 来实现该功能。你可以使用 std::async 开启一个异步任务，其会返回一个 std::future 对象，该 std::future 对象最终会持有异步任务计算的结果。当你需要计算结果的时候，可以在该 std::future 对象上执行 get() 方法，这会导致当前线程阻塞，直到 std::future 对象变为 ready 状态，然后返回结果值。<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;future&gt;</span>
+<span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;iostream&gt;</span>
+
+<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #bc6ec5; font-weight: bold;">find_the_answer_to_ltuae</span>();
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">do_other_stuff</span>();
+<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #bc6ec5; font-weight: bold;">main</span>()
+{
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">future</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt; <span style="color: #7590db;">the_answer</span>=<span style="color: #a45bad;">std</span>::async(find_the_answer_to_ltuae);
+    do_other_stuff();
+    <span style="color: #a45bad;">std</span>::cout&lt;&lt;<span style="color: #2d9574;">"The answer is "</span>&lt;&lt;the_answer.get()&lt;&lt;<span style="color: #a45bad;">std</span>::endl;
+}
+</pre>
+</div>
+
+<p>
+std::async 和 std::thread 一样，也允许传递额外的参数，如果参数为 rvalue，会使用移动构造函数。<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;string&gt;</span>
+<span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;future&gt;</span>
+<span style="color: #4f97d7; font-weight: bold;">struct</span> <span style="color: #ce537a; font-weight: bold;">X</span>
+{
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">foo</span>(<span style="color: #ce537a; font-weight: bold;">int</span>,<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #4f97d7; font-weight: bold;">const</span>&amp;);
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #bc6ec5; font-weight: bold;">bar</span>(<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #4f97d7; font-weight: bold;">const</span>&amp;);
+};
+<span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #7590db;">x</span>;
+<span style="color: #4f97d7; font-weight: bold;">auto</span> <span style="color: #7590db;">f1</span>=<span style="color: #a45bad;">std</span>::async(&amp;<span style="color: #a45bad;">X</span>::foo,&amp;x,42,<span style="color: #2d9574;">"hello"</span>);  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#35843;&#29992;p-&gt;foo(42, "hello")&#65292;p&#26159;&#25351;&#21521;x&#30340;&#25351;&#38024;</span>
+<span style="color: #4f97d7; font-weight: bold;">auto</span> <span style="color: #7590db;">f2</span>=<span style="color: #a45bad;">std</span>::async(&amp;<span style="color: #a45bad;">X</span>::bar,x,<span style="color: #2d9574;">"goodbye"</span>);    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#35843;&#29992;tmpx.bar("goodbye")&#65292; tmpx&#26159;x&#30340;&#25335;&#36125;&#21103;&#26412;</span>
+<span style="color: #4f97d7; font-weight: bold;">struct</span> <span style="color: #ce537a; font-weight: bold;">Y</span>
+{
+    <span style="color: #ce537a; font-weight: bold;">double</span> <span style="color: #4f97d7; font-weight: bold;">operator</span><span style="color: #bc6ec5; font-weight: bold;">()</span>(<span style="color: #ce537a; font-weight: bold;">double</span>);
+};
+<span style="color: #ce537a; font-weight: bold;">Y</span> <span style="color: #7590db;">y</span>;
+<span style="color: #4f97d7; font-weight: bold;">auto</span> <span style="color: #7590db;">f3</span>=<span style="color: #a45bad;">std</span>::async(Y(),3.141);          <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#35843;&#29992;tmpy(3.141)&#65292;tmpy&#36890;&#36807;Y&#30340;&#31227;&#21160;&#26500;&#36896;&#20989;&#25968;&#24471;&#21040;</span>
+<span style="color: #4f97d7; font-weight: bold;">auto</span> <span style="color: #7590db;">f4</span>=<span style="color: #a45bad;">std</span>::async(<span style="color: #a45bad;">std</span>::ref(y),2.718);  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#35843;&#29992;y(2.718)</span>
+<span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #bc6ec5; font-weight: bold;">baz</span>(<span style="color: #ce537a; font-weight: bold;">X</span>&amp;);
+<span style="color: #a45bad;">std</span>::async(baz,<span style="color: #a45bad;">std</span>::ref(x));  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#35843;&#29992;baz(x)</span>
+<span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">move_only</span>
+{
+<span style="color: #4f97d7; font-weight: bold;">public</span>:
+    <span style="color: #bc6ec5; font-weight: bold;">move_only</span>();
+    <span style="color: #bc6ec5; font-weight: bold;">move_only</span>(<span style="color: #ce537a; font-weight: bold;">move_only</span>&amp;&amp;)
+        <span style="color: #bc6ec5; font-weight: bold;">move_only</span>(<span style="color: #ce537a; font-weight: bold;">move_only</span> <span style="color: #4f97d7; font-weight: bold;">const</span>&amp;) = <span style="color: #4f97d7; font-weight: bold;">delete</span>;
+    <span style="color: #ce537a; font-weight: bold;">move_only</span>&amp; <span style="color: #4f97d7; font-weight: bold;">operator</span><span style="color: #bc6ec5; font-weight: bold;">=</span>(<span style="color: #ce537a; font-weight: bold;">move_only</span>&amp;&amp;);
+    <span style="color: #ce537a; font-weight: bold;">move_only</span>&amp; <span style="color: #4f97d7; font-weight: bold;">operator</span><span style="color: #bc6ec5; font-weight: bold;">=</span>(<span style="color: #ce537a; font-weight: bold;">move_only</span> <span style="color: #4f97d7; font-weight: bold;">const</span>&amp;) = <span style="color: #4f97d7; font-weight: bold;">delete</span>;
+  
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #4f97d7; font-weight: bold;">operator</span><span style="color: #bc6ec5; font-weight: bold;">()</span>();
+};
+<span style="color: #4f97d7; font-weight: bold;">auto</span> <span style="color: #7590db;">f5</span>=<span style="color: #a45bad;">std</span>::async(move_only());  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#35843;&#29992;tmp()&#65292;tmp&#26159;&#36890;&#36807;std::move(move_only())&#26500;&#36896;&#24471;&#21040;</span>
+</pre>
+</div>
+
+<p>
+默认情况下，std::async 是否会开启一个新的线程，future 所等待的任务是否是异步执行的，取决于实现。你可以通过为 std::async 指定额外的参数来控制。参数的类型为 std::launch。参数 std::launch::deferred 表示延迟调用，其指定在 future 对象上执行 get 或 wait 时才调用任务。std::launch::async 表示异步调用，其指定任务必须是异步执行的。std::launch::deferred | std::launch::async 参数表示异步延迟调用，该参数是默认参数。<br />
+Tips: 延迟调用的函数，可能永远都不会被调用（因为，没有执行 future 的 wait 或 get 方法）。<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">auto</span> <span style="color: #7590db;">f6</span>=<span style="color: #a45bad;">std</span>::async(<span style="color: #a45bad;">std</span>::<span style="color: #a45bad;">launch</span>::async, Y(), 1.2);  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22312;&#26032;&#32447;&#31243;&#19978;&#25191;&#34892;</span>
+<span style="color: #4f97d7; font-weight: bold;">auto</span> <span style="color: #7590db;">f7</span>=<span style="color: #a45bad;">std</span>::async(<span style="color: #a45bad;">std</span>::<span style="color: #a45bad;">launch</span>::deferred, baz, <span style="color: #a45bad;">std</span>::ref(x));  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22312;wait()&#25110;get()&#35843;&#29992;&#26102;&#25191;&#34892;</span>
+<span style="color: #4f97d7; font-weight: bold;">auto</span> <span style="color: #7590db;">f8</span>=<span style="color: #a45bad;">std</span>::async(<span style="color: #a45bad;">std</span>::<span style="color: #a45bad;">launch</span>::deferred | <span style="color: #a45bad;">std</span>::<span style="color: #a45bad;">launch</span>::async, baz, <span style="color: #a45bad;">std</span>::ref(x));  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23454;&#29616;&#36873;&#25321;&#25191;&#34892;&#26041;&#24335;</span>
+<span style="color: #4f97d7; font-weight: bold;">auto</span> <span style="color: #7590db;">f9</span>=<span style="color: #a45bad;">std</span>::async(baz, <span style="color: #a45bad;">std</span>::ref(x));
+f7.wait();  <span style="color: #2aa1ae; background-color: #292e34;">//  </span><span style="color: #2aa1ae; background-color: #292e34;">&#35843;&#29992;&#24310;&#36831;&#20989;&#25968;</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org39aaff9" class="outline-5">
+<h5 id="org39aaff9">Associating a task with a future</h5>
+<div class="outline-text-5" id="text-org39aaff9">
+<p>
+std::packaged_task&lt;&gt; 可以将 std::future 和一个函数或可调用对象绑在一起。当 std::packaged_task&lt;&gt;被调用调用后，其会调用关联的函数或可调用对象，并将 std::future 的状态变为 ready，返回值被存储为 future 所关联的数据。这可用于实现线程池 (thread pool) 或其他的任务管理机制。如果一个大任务可以被分解为多个字包含的子任务，可以将每个子任务封装为一个 std::packaged_task&lt;&gt; 实例，然后将实例传递给任务调度器或线程池。这样的抽象，使得调度器只需要处理 std::packaged_task&lt;&gt; 实例，而不是各个独立的函数，也就不用关心任务的具体细节了。<br />
+std::packaged_task&lt;&gt;的目标参数是函数签名。例如：void()表示不需要参数，没有返回值的函数。int(std::string&amp;,double*)表示需要 string 和 double*参数，返回值为 int 的函数。传递给 std::packaged_task&lt;&gt;的函数的参数必须和 std::packaged_task&lt;&gt;的模板参数匹配，函数返回值只要可以转化为对应模板参数函数签名的返回值即可。模板参数函数签名的返回值对应了 std::future 所关联的数据类型。<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">template</span>&lt;&gt;
+<span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">packaged_task</span>&lt;<span style="color: #a45bad;">std</span>::string(<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">vector</span>&lt;<span style="color: #ce537a; font-weight: bold;">char</span>&gt;*,<span style="color: #ce537a; font-weight: bold;">int</span>)&gt;
+{
+<span style="color: #4f97d7; font-weight: bold;">public</span>:
+    <span style="color: #4f97d7; font-weight: bold;">template</span>&lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">Callable</span>&gt;
+    <span style="color: #4f97d7; font-weight: bold;">explicit</span> <span style="color: #bc6ec5; font-weight: bold;">packaged_task</span>(<span style="color: #ce537a; font-weight: bold;">Callable</span>&amp;&amp; <span style="color: #7590db;">f</span>);
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">future</span>&lt;<span style="color: #a45bad;">std</span>::string&gt; <span style="color: #bc6ec5; font-weight: bold;">get_future</span>();
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #4f97d7; font-weight: bold;">operator</span><span style="color: #bc6ec5; font-weight: bold;">()</span>(<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">vector</span>&lt;<span style="color: #ce537a; font-weight: bold;">char</span>&gt;*,<span style="color: #ce537a; font-weight: bold;">int</span>);
+};
+</pre>
+</div>
+</div>
+<div id="outline-container-org5f9c2ce" class="outline-6">
+<h6 id="org5f9c2ce">Passing Task between thread</h6>
+<div class="outline-text-6" id="text-org5f9c2ce">
+<p>
+很多 GUI frameworks 要求对 GUI 的更新必须在指定线程上执行，当其他线程需要更新 GUI 时，其必须发送消息给指定线程。std::packaged_task&lt;&gt; 提供了一种方式可以实现该需求，而不需要自定义消息。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;deque&gt;</span>
+<span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;mutex&gt;</span>
+<span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;future&gt;</span>
+<span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;thread&gt;</span>
+<span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;utility&gt;</span>
+
+<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span> <span style="color: #7590db;">m</span>;
+<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">deque</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">packaged_task</span>&lt;<span style="color: #ce537a; font-weight: bold;">void</span>()&gt; &gt; <span style="color: #7590db;">tasks</span>;
+
+<span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #bc6ec5; font-weight: bold;">gui_shutdown_message_received</span>();
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">get_and_process_gui_message</span>();
+
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">gui_thread</span>()  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">1</span>
+{
+    <span style="color: #4f97d7; font-weight: bold;">while</span>(<span style="color: #a45bad;">!</span>gui_shutdown_message_received())  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">2</span>
+    {
+        get_and_process_gui_message();  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">3</span>
+        <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">packaged_task</span>&lt;<span style="color: #ce537a; font-weight: bold;">void</span>()&gt; <span style="color: #7590db;">task</span>;
+        {
+            <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">lock_guard</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span>&gt; <span style="color: #7590db;">lk</span>(m);
+            <span style="color: #4f97d7; font-weight: bold;">if</span>(tasks.empty())  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">4</span>
+                <span style="color: #4f97d7; font-weight: bold;">continue</span>;
+            task=<span style="color: #a45bad;">std</span>::move(tasks.front());  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">5</span>
+            tasks.pop_front();
+        }
+        task();  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">6</span>
+    }
+}
+
+<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span> <span style="color: #bc6ec5; font-weight: bold;">gui_bg_thread</span>(gui_thread);
+
+<span style="color: #4f97d7; font-weight: bold;">template</span>&lt;<span style="color: #4f97d7; font-weight: bold;">typename</span> <span style="color: #ce537a; font-weight: bold;">Func</span>&gt;
+<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">future</span>&lt;<span style="color: #ce537a; font-weight: bold;">void</span>&gt; <span style="color: #bc6ec5; font-weight: bold;">post_task_for_gui_thread</span>(<span style="color: #ce537a; font-weight: bold;">Func</span> <span style="color: #7590db;">f</span>)
+{
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">packaged_task</span>&lt;<span style="color: #ce537a; font-weight: bold;">void</span>()&gt; <span style="color: #7590db;">task</span>(f);  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">7</span>
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">future</span>&lt;<span style="color: #ce537a; font-weight: bold;">void</span>&gt; <span style="color: #7590db;">res</span>=task.get_future();  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">8</span>
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">lock_guard</span>&lt;<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">mutex</span>&gt; <span style="color: #7590db;">lk</span>(m);
+    tasks.push_back(<span style="color: #a45bad;">std</span>::move(task));  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">9</span>
+    <span style="color: #4f97d7; font-weight: bold;">return</span> res; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">10</span>
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgdaa7557" class="outline-5">
+<h5 id="orgdaa7557">Making (std::)promises</h5>
+<div class="outline-text-5" id="text-orgdaa7557">
+<p>
+当应用程序需要处理很多网络连接时，为每个连接分配一个线程来处理，这样使得网络交互更容易理解，也容易代码编写。不幸的是，随着连接数量的增长，这种方式变的不再适用。因为大量的线程会消耗大量的系统资源，还有可能造成线程上下文频繁切换(当线程数量超出硬件可接受的并发数时)，这都会对性能有影响。极端情况下，操作系统可能会在其网络连接容量耗尽之前耗尽用于运行新线程的资源。因此只使用少数线程处理网络连接，每个线程同时处理多个连接，对需要处理大量网络连接的应用而言，这是一种比较普遍的做法。<br />
+</p>
+
+<p>
+std::promise&lt;T&gt; 提供了一种方式可以设置一个 T 类型的值，随后可以通过关联的 std::future&lt;T&gt;读取该值。一对 std::promise&lt;T&gt;和 std::future&lt;T&gt; 可以提供一种机制实现如下功能：等待线程可以阻塞在 future 上，提供数据的线程可以使用 promise 来设置关联的数据，使得 future 的状态变为 ready。你可以通过调用 std::promise&lt;T&gt;的成员函数 get_future 来获得其关联的 future。当使用 std::promise&lt;T&gt;的成员函数 set_value()设置 std::promise 的值后，std::future&lt;T&gt;的状态变为 ready，此时就可以通过 future 获得存储的值。<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;future&gt;</span>
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">process_connections</span>(<span style="color: #ce537a; font-weight: bold;">connection_set</span>&amp; <span style="color: #7590db;">connections</span>)
+{
+    <span style="color: #4f97d7; font-weight: bold;">while</span>(<span style="color: #a45bad;">!</span>done(connections))  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">1</span>
+    {
+        <span style="color: #4f97d7; font-weight: bold;">for</span>(<span style="color: #ce537a; font-weight: bold;">connection_iterator</span> <span style="color: #7590db;">connection</span>=connections.begin(),<span style="color: #7590db;">end</span>=connections.end(); <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">2 </span>
+            connection!=end;
+            ++connection)
+        {
+            <span style="color: #4f97d7; font-weight: bold;">if</span>(connection-&gt;has_incoming_data())  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21028;&#26029;&#26159;&#21542;&#25910;&#21040;&#25968;&#25454;</span>
+            {
+                <span style="color: #ce537a; font-weight: bold;">data_packet</span> <span style="color: #7590db;">data</span>=connection-&gt;incoming();
+                <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#27492;&#22788;&#20551;&#35774;&#25910;&#21040;&#30340;&#25968;&#25454;&#21253;&#21547;&#19968;&#20010;id&#21644;&#19968;&#20010;payload&#25968;&#25454; &#27599;&#20010;id&#37117;&#23545;&#24212;&#19968;&#20010;promise&#23545;&#35937;</span>
+                <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">promise</span>&lt;payload_type&gt;&amp; <span style="color: #7590db;">p</span> = connection-&gt;get_promise(data.id);
+                p.set_value(data.payload); <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;payload&#25968;&#25454;&#35774;&#32622;&#20026; promise &#30340;&#20540;</span>
+            }
+            <span style="color: #4f97d7; font-weight: bold;">if</span>(connection-&gt;has_outgoing_data())  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21028;&#26029;&#26159;&#21542;&#21457;&#36865;&#25968;&#25454;</span>
+            {
+                <span style="color: #ce537a; font-weight: bold;">outgoing_packet</span> <span style="color: #7590db;">data</span> = connection-&gt;top_of_outgoing_queue();
+                connection-&gt;send(data.payload);
+                <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21457;&#36865;&#25968;&#25454;&#23436;&#25104;&#21518;&#65292;&#35774;&#32622; promise &#30340;&#20540;&#20026;ture</span>
+                data.promise.set_value(<span style="color: #a45bad;">true</span>);
+            }
+        }
+    }
+}
+</pre>
+</div>
+
+<p>
+Tips: 上面的代码没有处理异常情况。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;vector&gt;</span>
+<span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;thread&gt;</span>
+<span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;future&gt;</span>
+<span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;numeric&gt;</span>
+<span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;iostream&gt;</span>
+<span style="color: #bc6ec5;">#include</span> <span style="color: #2d9574;">&lt;chrono&gt;</span>
+
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">accumulate</span>(<span style="color: #a45bad;">std</span>::<span style="color: #a45bad;">vector</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt;::<span style="color: #ce537a; font-weight: bold;">iterator</span> <span style="color: #7590db;">first</span>,
+                <span style="color: #a45bad;">std</span>::<span style="color: #a45bad;">vector</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt;::<span style="color: #ce537a; font-weight: bold;">iterator</span> <span style="color: #7590db;">last</span>,
+                <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">promise</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt; <span style="color: #7590db;">accumulate_promise</span>)
+{
+    <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">sum</span> = <span style="color: #a45bad;">std</span>::accumulate(first, last, 0);
+    accumulate_promise.set_value(sum);  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Notify future</span>
+}
+
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">do_work</span>(<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">promise</span>&lt;<span style="color: #ce537a; font-weight: bold;">void</span>&gt; <span style="color: #7590db;">barrier</span>)
+{
+    <span style="color: #a45bad;">std</span>::<span style="color: #a45bad;">this_thread</span>::sleep_for(<span style="color: #a45bad;">std</span>::<span style="color: #a45bad;">chrono</span>::seconds(1));
+    barrier.set_value();
+}
+
+<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #bc6ec5; font-weight: bold;">main</span>()
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Demonstrate using promise&lt;int&gt; to transmit a result between threads.</span>
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">vector</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt; <span style="color: #7590db;">numbers</span> = { 1, 2, 3, 4, 5, 6 };
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">promise</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt; <span style="color: #7590db;">accumulate_promise</span>;
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">future</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt; <span style="color: #7590db;">accumulate_future</span> = accumulate_promise.get_future();
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span> <span style="color: #7590db;">work_thread</span>(accumulate, numbers.begin(), numbers.end(),
+                            <span style="color: #a45bad;">std</span>::move(accumulate_promise));
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">future::get() will wait until the future has a valid result and retrieves it.</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Calling wait() before get() is not needed</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">accumulate_future.wait();  // wait for result</span>
+    <span style="color: #a45bad;">std</span>::cout &lt;&lt; <span style="color: #2d9574;">"result="</span> &lt;&lt; accumulate_future.get() &lt;&lt; <span style="color: #2d9574;">'\n'</span>;
+    work_thread.join();  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">wait for thread completion</span>
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Demonstrate using promise&lt;void&gt; to signal state between threads.</span>
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">promise</span>&lt;<span style="color: #ce537a; font-weight: bold;">void</span>&gt; <span style="color: #7590db;">barrier</span>;
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">future</span>&lt;<span style="color: #ce537a; font-weight: bold;">void</span>&gt; <span style="color: #7590db;">barrier_future</span> = barrier.get_future();
+    <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">thread</span> <span style="color: #7590db;">new_work_thread</span>(do_work, <span style="color: #a45bad;">std</span>::move(barrier));
+    barrier_future.wait();
+    new_work_thread.join();
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org5423a38" class="outline-5">
+<h5 id="org5423a38">Saving an exception for the future</h5>
+<div class="outline-text-5" id="text-org5423a38">
+<p>
+如果函数作为 std::async 的一部分被调用时，抛出了异常，异常会被保存到关联的 std::future 中，并且 future 状态会变为 ready，当调用 future 的 get()成员函数时，会再次抛出存储的异常（注意：标准没有指明，再次抛出的异常为原始异常对象还是原始异常对象的克隆体，不同编译器或库可能会有不同选择）。类似地，如果使用 std::packaged_take&lt;&gt;封装一个函数，调用任务时，如果抛出异常，异常也会被保存到关联的 std::future 中。std::promise 也提供了类似的机制。如果你希望保存一个异常而不是值，你可以调用 std::promise 的 set_exception() 成员函数<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">extern</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">promise</span>&lt;<span style="color: #ce537a; font-weight: bold;">double</span>&gt; <span style="color: #7590db;">some_promise</span>;
+<span style="color: #4f97d7; font-weight: bold;">try</span>
+{
+    some_promise.set_value(calculate_value());
+}
+<span style="color: #4f97d7; font-weight: bold;">catch</span>(...)
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#27492;&#22788;&#20351;&#29992;&#20102;std::current_exception() &#26469;&#33719;&#24471;&#24403;&#21069;&#25243;&#20986;&#30340;&#24322;&#24120;</span>
+    some_promise.set_exception(<span style="color: #a45bad;">std</span>::current_exception());
+}
+</pre>
+</div>
+<p>
+如果异常是可知的，则应该使用 std::make_exception_ptr(&#x2026;)，这样可以允许编译器有更多机会来优化代码。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">extern</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">promise</span>&lt;<span style="color: #ce537a; font-weight: bold;">double</span>&gt; <span style="color: #7590db;">some_promise</span>;
+
+<span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #7590db;">result</span> = process_data();
+<span style="color: #4f97d7; font-weight: bold;">if</span> (result)
+{
+    some_promise.set_value(<span style="color: #a45bad;">true</span>);
+}
+<span style="color: #4f97d7; font-weight: bold;">else</span>
+{
+    some_promise.set_exception(<span style="color: #a45bad;">std</span>::make_exception_ptr(<span style="color: #a45bad;">std</span>::logic_error(<span style="color: #2d9574;">"process data error"</span>)));
+}
+</pre>
+</div>
+
+<p>
+另一种存储异常到 future 对象的方法是，在调用 std::promise 的 set_value 方法之前或者在调用 std::packaged_task 封装的任务之前销毁 std::promise 或 std::packaged_task 对象。此时 std::promise 或 std::packaged_task 的析构函数会将 std::future_error 异常存入 future，该异常会携带一个 std::future_errc::broken_promise 的错误码。如果编译器没有写入任何异常，等待线程会一直等待。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org61202e0" class="outline-5">
+<h5 id="org61202e0">Waiting from multiple threads</h5>
+</div>
+</div>
+
+<div id="outline-container-org2bd913c" class="outline-4">
+<h4 id="org2bd913c">Waiting with a time limit</h4>
+</div>
+<div id="outline-container-org0295227" class="outline-4">
+<h4 id="org0295227">Using synchronization of operations to simplify code</h4>
+</div>
 </div>
 <div id="outline-container-orgc6650c1" class="outline-3">
 <h3 id="orgc6650c1">05 designing lock-based concurrent data structures</h3>
@@ -1947,158 +2714,158 @@ std::unique_lock 还允许在对象销毁之前释放锁，只要调用其成员
 <h4 id="org4ced0a6">多线程下载文件</h4>
 <div class="outline-text-4" id="text-org4ced0a6">
 <div class="org-src-container">
-<pre class="src src-c">  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">dw hh_HttpClient.h</span>
-  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Send &#30340;&#26102;&#20505;&#65292;&#23558; HttpRequest &#25918;&#20837; s_requestQueue &#20013;,&#28982;&#21518;&#65292;&#36890;&#36807;&#20449;&#21495;&#37327;&#36890;&#30693;&#24037;&#20316;&#32447;&#31243;&#24037;&#20316;</span>
-  <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">HttpClient</span>::Send( <span style="color: #ce537a; font-weight: bold;">HttpRequest</span>* <span style="color: #7590db;">pRequest</span> )
-  {
-      <span style="color: #4f97d7; font-weight: bold;">if</span>(s_pSem == <span style="color: #a45bad;">NULL</span>) <span style="color: #4f97d7; font-weight: bold;">return</span> ;
-      <span style="color: #4f97d7; font-weight: bold;">if</span> ( pRequest == <span style="color: #a45bad;">NULL</span> ) <span style="color: #4f97d7; font-weight: bold;">return</span>;
+<pre class="src src-c"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">dw hh_HttpClient.h</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Send &#30340;&#26102;&#20505;&#65292;&#23558; HttpRequest &#25918;&#20837; s_requestQueue &#20013;,&#28982;&#21518;&#65292;&#36890;&#36807;&#20449;&#21495;&#37327;&#36890;&#30693;&#24037;&#20316;&#32447;&#31243;&#24037;&#20316;</span>
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">HttpClient</span>::Send( <span style="color: #ce537a; font-weight: bold;">HttpRequest</span>* <span style="color: #7590db;">pRequest</span> )
+{
+    <span style="color: #4f97d7; font-weight: bold;">if</span>(s_pSem == <span style="color: #a45bad;">NULL</span>) <span style="color: #4f97d7; font-weight: bold;">return</span> ;
+    <span style="color: #4f97d7; font-weight: bold;">if</span> ( pRequest == <span style="color: #a45bad;">NULL</span> ) <span style="color: #4f97d7; font-weight: bold;">return</span>;
 
-      s_requestQueueMutex.lock();
-      s_requestQueue.push_back( pRequest );
-      s_requestQueueMutex.unlock();
+    s_requestQueueMutex.lock();
+    s_requestQueue.push_back( pRequest );
+    s_requestQueueMutex.unlock();
 
-      s_pSem-&gt;signal();
-  }
+    s_pSem-&gt;signal();
+}
 
-  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21021;&#22987;&#21270;&#30340;&#26102;&#20505;&#65292;&#24037;&#20316;&#32447;&#31243;&#35843;&#29992; s_pSem-&gt;wait()&#20808;&#30452;&#25509;&#38459;&#22622;</span>
-  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#34987;&#20027;&#32447;&#31243;&#21796;&#37266;&#21518;&#65292;&#24037;&#20316;&#32447;&#31243;&#20174; s_requestQueue &#20013;&#21462;&#20986;&#19968;&#20010; Http &#35831;&#27714;&#36827;&#34892;&#22788;&#29702;,&#22788;&#29702;&#23436;&#25104;&#21518;&#65292;&#23558;&#23545;&#24212;&#30340; response &#25918;&#20837; s_responseQueue &#20013;</span>
-  <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">HttpClient</span>::NetworkThread(  )
-  {
-      <span style="color: #ce537a; font-weight: bold;">char</span> <span style="color: #7590db;">bufferError</span>[128] = {0};
-      <span style="color: #ce537a; font-weight: bold;">HttpRequest</span>* <span style="color: #7590db;">request</span> = <span style="color: #a45bad;">NULL</span>;
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21021;&#22987;&#21270;&#30340;&#26102;&#20505;&#65292;&#24037;&#20316;&#32447;&#31243;&#35843;&#29992; s_pSem-&gt;wait()&#20808;&#30452;&#25509;&#38459;&#22622;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#34987;&#20027;&#32447;&#31243;&#21796;&#37266;&#21518;&#65292;&#24037;&#20316;&#32447;&#31243;&#20174; s_requestQueue &#20013;&#21462;&#20986;&#19968;&#20010; Http &#35831;&#27714;&#36827;&#34892;&#22788;&#29702;,&#22788;&#29702;&#23436;&#25104;&#21518;&#65292;&#23558;&#23545;&#24212;&#30340; response &#25918;&#20837; s_responseQueue &#20013;</span>
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">HttpClient</span>::NetworkThread(  )
+{
+    <span style="color: #ce537a; font-weight: bold;">char</span> <span style="color: #7590db;">bufferError</span>[128] = {0};
+    <span style="color: #ce537a; font-weight: bold;">HttpRequest</span>* <span style="color: #7590db;">request</span> = <span style="color: #a45bad;">NULL</span>;
 
-      <span style="color: #4f97d7; font-weight: bold;">while</span> (<span style="color: #a45bad;">true</span>)
-      {
-          s_pSem-&gt;wait();
-          <span style="color: #4f97d7; font-weight: bold;">if</span> ( need_quit ) <span style="color: #4f97d7; font-weight: bold;">break</span>;
+    <span style="color: #4f97d7; font-weight: bold;">while</span> (<span style="color: #a45bad;">true</span>)
+    {
+        s_pSem-&gt;wait();
+        <span style="color: #4f97d7; font-weight: bold;">if</span> ( need_quit ) <span style="color: #4f97d7; font-weight: bold;">break</span>;
 
-          request = <span style="color: #a45bad;">NULL</span>;
-          s_requestQueueMutex.lock();
-          <span style="color: #4f97d7; font-weight: bold;">if</span> ( s_requestQueue.size() &gt; 0 )
-          {
-              request = s_requestQueue.front();
-              s_requestQueue.pop_front();
-          }
-          s_requestQueueMutex.unlock();
+        request = <span style="color: #a45bad;">NULL</span>;
+        s_requestQueueMutex.lock();
+        <span style="color: #4f97d7; font-weight: bold;">if</span> ( s_requestQueue.size() &gt; 0 )
+        {
+            request = s_requestQueue.front();
+            s_requestQueue.pop_front();
+        }
+        s_requestQueueMutex.unlock();
 
-          <span style="color: #4f97d7; font-weight: bold;">if</span>( request == <span style="color: #a45bad;">NULL</span> ) <span style="color: #4f97d7; font-weight: bold;">continue</span>;
-          <span style="color: #ce537a; font-weight: bold;">HttpResponse</span>* <span style="color: #7590db;">response</span> = new HttpResponse( request );
+        <span style="color: #4f97d7; font-weight: bold;">if</span>( request == <span style="color: #a45bad;">NULL</span> ) <span style="color: #4f97d7; font-weight: bold;">continue</span>;
+        <span style="color: #ce537a; font-weight: bold;">HttpResponse</span>* <span style="color: #7590db;">response</span> = new HttpResponse( request );
 
-          <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">responseCode</span> = -1, <span style="color: #7590db;">retValue</span> = 0;
-          memset( s_errorBuffer, 0, <span style="color: #4f97d7; font-weight: bold;">sizeof</span>( s_errorBuffer ) );
+        <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">responseCode</span> = -1, <span style="color: #7590db;">retValue</span> = 0;
+        memset( s_errorBuffer, 0, <span style="color: #4f97d7; font-weight: bold;">sizeof</span>( s_errorBuffer ) );
 
-          <span style="color: #4f97d7; font-weight: bold;">switch</span> ( request-&gt;GetType() )
-          {
-              <span style="color: #4f97d7; font-weight: bold;">case</span> HttpRequest::E_HTTP_GET:
+        <span style="color: #4f97d7; font-weight: bold;">switch</span> ( request-&gt;GetType() )
+        {
+        <span style="color: #4f97d7; font-weight: bold;">case</span> HttpRequest::E_HTTP_GET:
 
-                  retValue = processGetTask(
-                          request,
-                          WriteData,
-                          (<span style="color: #ce537a; font-weight: bold;">void</span> *)response-&gt;GetResponseData(),
-                          &amp;responseCode );
-                  <span style="color: #4f97d7; font-weight: bold;">break</span>;
+            retValue = processGetTask(
+                request,
+                WriteData,
+                (<span style="color: #ce537a; font-weight: bold;">void</span> *)response-&gt;GetResponseData(),
+                &amp;responseCode );
+            <span style="color: #4f97d7; font-weight: bold;">break</span>;
 
-              <span style="color: #4f97d7; font-weight: bold;">case</span> HttpRequest::E_HTTP_POST:
+        <span style="color: #4f97d7; font-weight: bold;">case</span> HttpRequest::E_HTTP_POST:
 
-                  retValue = processPostTask(
-                          request,
-                          WriteData,
-                          (<span style="color: #ce537a; font-weight: bold;">void</span> *)response-&gt;GetResponseData(),
-                          &amp;responseCode );
+            retValue = processPostTask(
+                request,
+                WriteData,
+                (<span style="color: #ce537a; font-weight: bold;">void</span> *)response-&gt;GetResponseData(),
+                &amp;responseCode );
 
-                  <span style="color: #4f97d7; font-weight: bold;">break</span>;
+            <span style="color: #4f97d7; font-weight: bold;">break</span>;
 
-              <span style="color: #4f97d7; font-weight: bold;">default</span>:
-                  snprintf( bufferError , 128 ,<span style="color: #2d9574;">"HttpClient: Unknown request type[%d]"</span>, request-&gt;GetType() );
-                  DOWNLOAD_ERROR(  bufferError);
-                  IME_ERROR( bufferError);
-                  <span style="color: #4f97d7; font-weight: bold;">break</span>;
-          }
-          response-&gt;SetResponseCode( responseCode );
+        <span style="color: #4f97d7; font-weight: bold;">default</span>:
+            snprintf( bufferError , 128 ,<span style="color: #2d9574;">"HttpClient: Unknown request type[%d]"</span>, request-&gt;GetType() );
+            DOWNLOAD_ERROR(  bufferError);
+            IME_ERROR( bufferError);
+            <span style="color: #4f97d7; font-weight: bold;">break</span>;
+        }
+        response-&gt;SetResponseCode( responseCode );
 
-          <span style="color: #4f97d7; font-weight: bold;">if</span> ( retValue != 0 )
-          {
-              response-&gt;SetSucceed( <span style="color: #a45bad;">false</span> );
-              response-&gt;SetErrorMsg( s_errorBuffer );
-          }
-          <span style="color: #4f97d7; font-weight: bold;">else</span>
-          {
-              response-&gt;SetSucceed( <span style="color: #a45bad;">true</span> );
-          }
-
-
-          s_responseQueueMutex.lock();
-          s_responseQueue.push_back( response );
-          s_responseQueueMutex.unlock();
-      }
-
-      <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">quit. cleanup here</span>
-
-      s_responseQueueMutex.lock();
-      <span style="color: #4f97d7; font-weight: bold;">for</span> ( std::list&lt; HttpResponse* &gt;::iterator it = s_responseQueue.begin();
-              it != s_responseQueue.end(); ++it )
-      {
-          <span style="color: #ce537a; font-weight: bold;">delete</span> *<span style="color: #7590db;">it</span>;
-      }
-      s_responseQueue.clear();
-      s_responseQueueMutex.unlock();
+        <span style="color: #4f97d7; font-weight: bold;">if</span> ( retValue != 0 )
+        {
+            response-&gt;SetSucceed( <span style="color: #a45bad;">false</span> );
+            response-&gt;SetErrorMsg( s_errorBuffer );
+        }
+        <span style="color: #4f97d7; font-weight: bold;">else</span>
+        {
+            response-&gt;SetSucceed( <span style="color: #a45bad;">true</span> );
+        }
 
 
-      s_requestQueueMutex.lock();
-      <span style="color: #4f97d7; font-weight: bold;">for</span> ( std::list&lt; HttpRequest* &gt;::iterator it = s_requestQueue.begin();
-              it != s_requestQueue.end(); ++it )
-      {
-          <span style="color: #ce537a; font-weight: bold;">delete</span> *<span style="color: #7590db;">it</span>;
-      }
-      s_requestQueue.clear();
-      s_requestQueueMutex.unlock();
+        s_responseQueueMutex.lock();
+        s_responseQueue.push_back( response );
+        s_responseQueueMutex.unlock();
+    }
 
-  }
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">quit. cleanup here</span>
 
-  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22312;&#20027;&#32447;&#31243;&#20013;&#65292;&#36890;&#36807; update &#26469;&#35843;&#29992;&#19979;&#38754;&#30340;&#26041;&#27861;</span>
-  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#27599;&#27425;&#25191;&#34892;&#65292;&#20174; s_responseQueue &#20013;&#21462;&#20986;&#19968;&#20010; response&#65292;&#28982;&#21518;&#35843;&#29992;&#23545;&#24212;&#30340;&#22238;&#35843;&#20989;&#25968;&#36827;&#34892;&#22788;&#29702;</span>
-  <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">HttpClient</span>::DispatchResponse()
-  {
-      <span style="color: #ce537a; font-weight: bold;">HttpResponse</span>* <span style="color: #7590db;">response</span> = <span style="color: #a45bad;">NULL</span>;
+    s_responseQueueMutex.lock();
+    <span style="color: #4f97d7; font-weight: bold;">for</span> ( std::list&lt; HttpResponse* &gt;::iterator it = s_responseQueue.begin();
+          it != s_responseQueue.end(); ++it )
+    {
+        <span style="color: #ce537a; font-weight: bold;">delete</span> *<span style="color: #7590db;">it</span>;
+    }
+    s_responseQueue.clear();
+    s_responseQueueMutex.unlock();
 
-      <span style="color: #4f97d7; font-weight: bold;">if</span>( need_quit <span style="color: #2aa1ae; background-color: #292e34;">/*</span><span style="color: #2aa1ae; background-color: #292e34;">|| s_responseQueueMutex == NULL</span><span style="color: #2aa1ae; background-color: #292e34;">*/</span>){
-          <span style="color: #4f97d7; font-weight: bold;">return</span>;
-      }
 
-      <span style="color: #4f97d7; font-weight: bold;">while</span> ( <span style="color: #a45bad;">true</span> )
-      {
-          response = <span style="color: #a45bad;">NULL</span>;
+    s_requestQueueMutex.lock();
+    <span style="color: #4f97d7; font-weight: bold;">for</span> ( std::list&lt; HttpRequest* &gt;::iterator it = s_requestQueue.begin();
+          it != s_requestQueue.end(); ++it )
+    {
+        <span style="color: #ce537a; font-weight: bold;">delete</span> *<span style="color: #7590db;">it</span>;
+    }
+    s_requestQueue.clear();
+    s_requestQueueMutex.unlock();
 
-          s_responseQueueMutex.lock();
-          <span style="color: #4f97d7; font-weight: bold;">if</span> ( s_responseQueue.size() )
-              {
-                  response = s_responseQueue.front();
-                  s_responseQueue.pop_front();
-              }
-          s_responseQueueMutex.unlock();
+}
 
-          <span style="color: #4f97d7; font-weight: bold;">if</span> ( response )
-              {
-                  <span style="color: #ce537a; font-weight: bold;">HttpRequest</span>* <span style="color: #7590db;">request</span> = response-&gt;GetRequest();
-                  HttpRequest::ResponseCallback fctCallback = request-&gt;GetCallback();
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22312;&#20027;&#32447;&#31243;&#20013;&#65292;&#36890;&#36807; update &#26469;&#35843;&#29992;&#19979;&#38754;&#30340;&#26041;&#27861;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#27599;&#27425;&#25191;&#34892;&#65292;&#20174; s_responseQueue &#20013;&#21462;&#20986;&#19968;&#20010; response&#65292;&#28982;&#21518;&#35843;&#29992;&#23545;&#24212;&#30340;&#22238;&#35843;&#20989;&#25968;&#36827;&#34892;&#22788;&#29702;</span>
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">HttpClient</span>::DispatchResponse()
+{
+    <span style="color: #ce537a; font-weight: bold;">HttpResponse</span>* <span style="color: #7590db;">response</span> = <span style="color: #a45bad;">NULL</span>;
 
-                  (*fctCallback)( request-&gt;GetTarget(), response );
+    <span style="color: #4f97d7; font-weight: bold;">if</span>( need_quit <span style="color: #2aa1ae; background-color: #292e34;">/*</span><span style="color: #2aa1ae; background-color: #292e34;">|| s_responseQueueMutex == NULL</span><span style="color: #2aa1ae; background-color: #292e34;">*/</span>){
+        <span style="color: #4f97d7; font-weight: bold;">return</span>;
+    }
 
-                  <span style="color: #ce537a; font-weight: bold;">delete</span> <span style="color: #7590db;">request</span>;
-                  <span style="color: #ce537a; font-weight: bold;">delete</span> <span style="color: #7590db;">response</span>;
-              }
-          <span style="color: #4f97d7; font-weight: bold;">else</span>
-              {
-                  <span style="color: #4f97d7; font-weight: bold;">break</span>;
-              }
+    <span style="color: #4f97d7; font-weight: bold;">while</span> ( <span style="color: #a45bad;">true</span> )
+    {
+        response = <span style="color: #a45bad;">NULL</span>;
 
-          <span style="color: #4f97d7; font-weight: bold;">if</span>( need_quit <span style="color: #2aa1ae; background-color: #292e34;">/*</span><span style="color: #2aa1ae; background-color: #292e34;">|| s_responseQueueMutex == NULL</span><span style="color: #2aa1ae; background-color: #292e34;">*/</span>){
-              <span style="color: #4f97d7; font-weight: bold;">return</span>;
-          }
+        s_responseQueueMutex.lock();
+        <span style="color: #4f97d7; font-weight: bold;">if</span> ( s_responseQueue.size() )
+        {
+            response = s_responseQueue.front();
+            s_responseQueue.pop_front();
+        }
+        s_responseQueueMutex.unlock();
 
-      }
-  }
+        <span style="color: #4f97d7; font-weight: bold;">if</span> ( response )
+        {
+            <span style="color: #ce537a; font-weight: bold;">HttpRequest</span>* <span style="color: #7590db;">request</span> = response-&gt;GetRequest();
+            HttpRequest::ResponseCallback fctCallback = request-&gt;GetCallback();
+
+            (*fctCallback)( request-&gt;GetTarget(), response );
+
+            <span style="color: #ce537a; font-weight: bold;">delete</span> <span style="color: #7590db;">request</span>;
+            <span style="color: #ce537a; font-weight: bold;">delete</span> <span style="color: #7590db;">response</span>;
+        }
+        <span style="color: #4f97d7; font-weight: bold;">else</span>
+        {
+            <span style="color: #4f97d7; font-weight: bold;">break</span>;
+        }
+
+        <span style="color: #4f97d7; font-weight: bold;">if</span>( need_quit <span style="color: #2aa1ae; background-color: #292e34;">/*</span><span style="color: #2aa1ae; background-color: #292e34;">|| s_responseQueueMutex == NULL</span><span style="color: #2aa1ae; background-color: #292e34;">*/</span>){
+            <span style="color: #4f97d7; font-weight: bold;">return</span>;
+        }
+
+    }
+}
 </pre>
 </div>
 </div>
@@ -2115,6 +2882,8 @@ std::unique_lock 还允许在对象销毁之前释放锁，只要调用其成员
 <li><a href="https://taskflow.github.io/taskflow/index.html">https://taskflow.github.io/taskflow/index.html</a><br /></li>
 <li>TaskFlow DAG 部分源码阅读 <a href="https://www.jianshu.com/p/12d416d37dd8">https://www.jianshu.com/p/12d416d37dd8</a><br /></li>
 <li>cpp-taskflow 源码分析 <a href="https://blog.csdn.net/yockie/article/details/104190147">https://blog.csdn.net/yockie/article/details/104190147</a><br /></li>
+<li>并发吹剑录（一）：CPU 缓存一致性协议 MESI <a href="https://zhuanlan.zhihu.com/p/351550104">https://zhuanlan.zhihu.com/p/351550104</a><br /></li>
+<li>并发吹剑录（二）：指令重排序与内存屏障 <a href="https://zhuanlan.zhihu.com/p/359093580">https://zhuanlan.zhihu.com/p/359093580</a><br /></li>
 </ul>
 </div>
 </div>

@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-08-24 周二 10:28 -->
+<!-- 2021-08-29 周日 17:28 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>AsynchronousProgramming</title>
@@ -188,7 +188,14 @@
 <li><a href="#org61202e0">Waiting from multiple threads</a></li>
 </ul>
 </li>
-<li><a href="#org2bd913c">Waiting with a time limit</a></li>
+<li><a href="#org2bd913c">Waiting with a time limit</a>
+<ul>
+<li><a href="#orgf9923d6">Clocks</a></li>
+<li><a href="#org9f1abbf">Durations</a></li>
+<li><a href="#org95fea1a">Time points</a></li>
+<li><a href="#org4f7fd62">Functions that accept timeouts</a></li>
+</ul>
+</li>
 <li><a href="#org0295227">Using synchronization of operations to simplify code</a></li>
 </ul>
 </li>
@@ -483,7 +490,7 @@ C++ Thread Library 为多线程和并发提供了全面的工具，而总会有�
 <p>
 创建线程后，主线程将局部变量的引用或指针传递给线程，执行 detach，主线程离开局部变量作用域，局部变量会被释放掉，之后线程引用的数据将是错误的。<br />
 </p>
-<pre class="example" id="org3008c6b">
+<pre class="example" id="org86a5a3c">
 id: 100504 print ival = 10              // 子线程启动后打印引用变量的值10
 id: 89912 main-thread sleep 1 second    // 主线程sleep 1s
 id: 100504 print ival = 10              // 此时主线程还在sleep局部变量还未被释放，子线程此时打印的值依然正确
@@ -502,7 +509,7 @@ id: 89912 main-thread sleep 5 second
 <p>
 创建线程后，主线程将局部变量的引用或指针传递给线程，执行 join，主线程会等待子线程执行完毕后，才会继续执行，离开局部变量作用域。<br />
 </p>
-<pre class="example" id="orga95edb4">
+<pre class="example" id="org54bfb54">
 id: 97172 print ival = 10               // 子线程启动后打印引用变量的值10，主线程等待子线程执行完毕后，才会继续执行
 id: 97172 print ival = 10
 id: 97172 print ival = 10
@@ -2390,16 +2397,75 @@ Tips: 上面的代码没有处理异常情况。<br />
 </div>
 <div id="outline-container-org61202e0" class="outline-5">
 <h5 id="org61202e0">Waiting from multiple threads</h5>
-</div>
+<div class="outline-text-5" id="text-org61202e0">
+<p>
+尽管从一个线程传递数据到另一个线程时，必须使用 future，但是，future 对象本身并不是多线程安全的，多个线程访问同一个 future 实例的成员函数会导致 data race。设计上 future 对象就是不可以由多个线程访问的，future 的 get 成员函数只能调用一次，只有一个线程可以调用 future 对象的 get 成员函数来获得计算结果，第一次调用 get 成员函数后，内部的共享状态会被释放，再次调用 get 成员函数将导致未定义行为。<br />
+如果你需要多个线程等待同一事件，可以使用 std::shared_future。std::future 是只 movable 的，所有权可以再多个实例之间转移，但是，同一时间只有一个实例引用到特定的异步结果；std::shared_future 是 copyable 的，多个实例可以引用到同一个异步结果。<br />
+多个线程同时访问单个 std::shared_future 时，依然是存在 data race 的。使用锁进行保护可以避免 data race。但是，更好的方式是为每个线程传入 copy 的 std::shared_future 实例，这样每个线程可以安全地访问其局部的 std::shared_future 实例，而不需要锁的保护。<br />
+<img src="./AsynchronousProgramming/04_02_05_shared_future_usage.png" alt="04_02_05_shared_future_usage.png" /><br />
+</p>
+
+<p>
+使用 std::shared_future 的一个例子是 Excel。Excel 中多个 cell 最终的值可能是通过公式计算得到的，而这些 cell 可能都会引用某一个 cell 的值，我们可以使用 std::shared_future 表示每个 cell，这样每个 cell 的计算可以并行执行，当 cell A 引用另一个 cell B 时，cell A 调用 cellBFuture.get() 时会阻塞，直到 cell A 的计算完成。<br />
+</p>
+
+<p>
+引用某个异步状态的 std::shared_future 实例是从引用该状态的 std::future 实例构造的。 由于 std::future 对象不与任何其他对象共享异步状态的所有权，因此必须使用 std::move 将所有权转移到 std::shared_future 中，使 std::future 处于空状态:<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">promise</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt; <span style="color: #7590db;">p</span>;
+<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">future</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt; <span style="color: #bc6ec5; font-weight: bold;">f</span>(p.get_future());
+assert(f.valid());   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">f &#26159;&#21512;&#27861;&#30340;</span>
+<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">shared_future</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt; <span style="color: #bc6ec5; font-weight: bold;">sf</span>(<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">move</span>(<span style="color: #7590db;">f</span>));
+assert(<span style="color: #a45bad;">!</span>f.valid());  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">f &#29616;&#22312;&#26159;&#19981;&#21512;&#27861;&#30340;</span>
+assert(sf.valid());  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">sf &#29616;&#22312;&#26159;&#21512;&#27861;&#30340;</span>
+</pre>
 </div>
 
+<p>
+如其他可移动对象一样，转移所有权对右值来说是隐式操作（调用移动构造函数），所以可以使用 std::promise 对象的成员函数 get_future()的返回值，直接构造一个 std::shared_future 对象:<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">promise</span>&lt;<span style="color: #a45bad;">std</span>::string&gt; <span style="color: #7590db;">p</span>;
+<span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">shared_future</span>&lt;<span style="color: #a45bad;">std</span>::string&gt; <span style="color: #bc6ec5; font-weight: bold;">sf</span>(p.get_future());  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#38544;&#24335;&#36716;&#31227;&#25152;&#26377;&#26435; &#20351;&#29992;std::future&#21491;&#20540;&#23545;&#35937;&#26500;&#36896;&#19968;&#20010;std::shared_future &#23545;&#35937;</span>
+</pre>
+</div>
+
+<p>
+std::future 有一个额外的特性，其可以方便 std::shared_future 的使用。该特性可以从初始化器自动推断变量的类型。share() 成员函数就利用了该特性，其创建一个新的 std::shared_future 对象，直接将自己的所有权传递给新对象。这有效简化了代码：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">promise</span>&lt; <span style="color: #a45bad;">std</span>::<span style="color: #a45bad;">map</span>&lt; SomeIndexType, SomeDataType, SomeComparator, SomeAllocator&gt;::iterator&gt; <span style="color: #7590db;">p</span>;
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25512;&#26029; sf &#30340;&#31867;&#22411;&#20026; std::shared_future&lt; std::map&lt;SomeIndexType, SomeDataType, SomeComparator, SomeAllocator&gt;::iterator &gt;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22914;&#26524; Comparator &#25110;Allocator&#25913;&#21464;&#20102;&#65292;&#21482;&#38656;&#35201;&#20462;&#25913;promise&#30340;&#31867;&#22411;&#65292;std::shared_future&#30340;&#31867;&#22411;&#20250;&#33258;&#21160;&#26356;&#26032;</span>
+<span style="color: #4f97d7; font-weight: bold;">auto</span> <span style="color: #7590db;">sf</span>=p.get_future().share();
+</pre>
+</div>
+</div>
+</div>
+</div>
 <div id="outline-container-org2bd913c" class="outline-4">
 <h4 id="org2bd913c">Waiting with a time limit</h4>
+<div class="outline-text-4" id="text-org2bd913c">
+</div>
+<div id="outline-container-orgf9923d6" class="outline-5">
+<h5 id="orgf9923d6">Clocks</h5>
+</div>
+<div id="outline-container-org9f1abbf" class="outline-5">
+<h5 id="org9f1abbf">Durations</h5>
+</div>
+<div id="outline-container-org95fea1a" class="outline-5">
+<h5 id="org95fea1a">Time points</h5>
+</div>
+<div id="outline-container-org4f7fd62" class="outline-5">
+<h5 id="org4f7fd62">Functions that accept timeouts</h5>
+</div>
 </div>
 <div id="outline-container-org0295227" class="outline-4">
 <h4 id="org0295227">Using synchronization of operations to simplify code</h4>
 </div>
 </div>
+
 <div id="outline-container-orgc6650c1" class="outline-3">
 <h3 id="orgc6650c1">05 designing lock-based concurrent data structures</h3>
 </div>

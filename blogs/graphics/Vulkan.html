@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-11-19 周五 09:57 -->
+<!-- 2021-11-22 周一 14:08 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Vulkan</title>
@@ -298,7 +298,34 @@
 <li><a href="#org5c20580">Quality improvements (279)</a></li>
 </ul>
 </li>
-<li><a href="#orga55a734">Sumary</a></li>
+<li><a href="#org0e45ba9">Summary</a></li>
+</ul>
+</li>
+<li><a href="#orga67ac8f">Vulkan Guide</a>
+<ul>
+<li><a href="#org448b10f">Vulkan Introduction</a>
+<ul>
+<li><a href="#org99a6813">Initial Setup</a>
+<ul>
+<li><a href="#orgc4acf6e">ERROR: Error C3646 'm_Lock': unknown override specifier</a></li>
+</ul>
+</li>
+<li><a href="#org6716aa0">Vulkan main objects and their use</a></li>
+<li><a href="#orgf2405d3">High level vulkan application flow</a></li>
+<li><a href="#orgc12faea">Libraries</a></li>
+</ul>
+</li>
+<li><a href="#org8bf9b9d">GPU Driven Rendering</a>
+<ul>
+<li><a href="#org25a4528">GPU Driven Rendering Overview</a></li>
+<li><a href="#orgd758e57">Engine architecture overview</a></li>
+<li><a href="#org72fb077">Draw Indirect</a></li>
+<li><a href="#orge1677f6">Compute Shaders</a></li>
+<li><a href="#orgc4d96cc">Material System</a></li>
+<li><a href="#orgd6336d2">Mesh Rendering</a></li>
+<li><a href="#orgdb47331">Compute based Culling</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#orgf5418ed">参考资料</a></li>
@@ -308,7 +335,7 @@
 <p>
 Vulkan note.<br />
 </p>
-<div class="HTML" id="orgec204e1">
+<div class="HTML" id="org38edf29">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -1772,7 +1799,7 @@ Vulkan 中有 4 种展示模式：<br />
 </ul>
 
 <p>
-我个人认为，如果不考虑能耗的话，VK_PRESENT_MODE_MAILBOX_KHR 是一个很好的折中方案。它允许我们避免撕裂，有维持了适当的低延迟。在手机设备上，能耗更加重要，我建议还是使用 VK_PRESENT_MODE_FIFO_KHR。<br />
+我个人认为，如果不考虑能耗的话，VK_PRESENT_MODE_MAILBOX_KHR 是一个很好的折中方案。它允许我们避免撕裂，又维持了适当的低延迟。在手机设备上，能耗更加重要，我建议还是使用 VK_PRESENT_MODE_FIFO_KHR。<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-cpp"><span style="color: #ce537a; font-weight: bold;">VkPresentModeKHR</span> <span style="color: #bc6ec5; font-weight: bold;">chooseSwapPresentMode</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #a45bad;">std</span>::<span style="color: #ce537a; font-weight: bold;">vector</span>&lt;<span style="color: #ce537a; font-weight: bold;">VkPresentModeKHR</span>&gt;&amp; <span style="color: #7590db;">availablePresentModes</span>) 
@@ -1792,8 +1819,8 @@ Vulkan 中有 4 种展示模式：<br />
 </div>
 
 <p>
-swap extent 是 swap chain 中 images 的分辨率，它几乎总是完全等于我们要绘制的窗口的分辨率（以像素为单位）。 可能的分辨率范围在 VkSurfaceCapabilitiesKHR 结构中定义。 Vulkan 通过在 currentExtent 成员中设置宽度和高度来告诉我们匹配窗口的分辨率大小。 然而，一些窗口管理器将 currentExtent 中的宽度和高度设置为一个特殊值来表示：uint32_t 的最大值，以此来表示允许 images 的分辨率可以和窗口分辨率不同。在这种情况下，我们将在 minImageExtent 和 maxImageExtent 范围内选择最匹配窗口的分辨率。 但是我们必须以正确的单位指定分辨率。<br />
-当度量尺寸时，GLFW 使用两种单位：像素和屏幕坐标。例如，之前我们创建窗口时，指定的分辨率 {WIDTH,HEIGHT} 使用的是屏幕坐标。但是，Vulkan 使用的是像素，因此 swap chain extent 必须以像素为单位。当你使用高 DPI 显示器时(如苹果的 Retina 显示屏)，屏幕坐标和像素并不对应。由于像素密度高，窗口的像素分辨率比屏幕坐标要高。因此，如果 Vulkan 没有为我们修正 swap extent，我们将无法使用原来的{WIDTH,HEIGHT}。我们可以使用 glfwGetFramebufferSize 来获取窗口的像素分辨率。<br />
+swap extent 是 swap chain 中 images 的分辨率，它几乎总是完全等于我们要绘制的窗口的分辨率（以像素为单位）。 可能的分辨率范围在 VkSurfaceCapabilitiesKHR 结构中定义。 Vulkan 通过在 currentExtent 成员中设置宽度和高度来告诉我们匹配窗口的分辨率大小。 然而，一些窗口管理器将 currentExtent 中的宽度和高度设置为一个特殊值（uint32_t 的最大值）以此来表示允许 images 的分辨率可以和窗口分辨率不同。在这种情况下，我们将在 minImageExtent 和 maxImageExtent 范围内选择最匹配窗口的分辨率。 但是我们必须以正确的单位指定分辨率。<br />
+度量尺寸时，GLFW 使用两种单位：像素和屏幕坐标。例如，之前我们创建窗口时，指定的分辨率 {WIDTH,HEIGHT} 使用的是屏幕坐标。但是，Vulkan 使用的是像素，因此 swap chain extent 必须以像素为单位。当你使用高 DPI 显示器时(如苹果的 Retina 显示屏)，屏幕坐标和像素并不对应。由于像素密度高，窗口的像素分辨率比屏幕坐标要高。因此，如果 Vulkan 没有为我们修正 swap extent，我们将无法使用原来的{WIDTH,HEIGHT}。我们可以使用 glfwGetFramebufferSize 来获取窗口的像素分辨率。<br />
 </p>
 
 <div class="org-src-container">
@@ -2300,7 +2327,7 @@ viewport 定义了从 image 到 framebuffer 的变换。scissor 矩形定义了�
 </p>
 
 
-<div id="org24d059c" class="figure">
+<div id="orgc9db7ff" class="figure">
 <p><img src="./Vulkan/viewports_scissors.png" alt="viewports_scissors.png" /><br />
 </p>
 </div>
@@ -3050,11 +3077,11 @@ vkCmdBeginRenderPass(commandBuffers[i], &amp;renderPassInfo, VK_SUBPASS_CONTENTS
 </pre>
 </div>
 <p>
-vkCmdBeginRenderPass 的第三个参数控制 render pass 中的绘制命令被放到哪儿，其可以有如下两个选项：<br />
+vkCmdBeginRenderPass 的第三个参数控制 render pass 命令会在哪儿执行，其可以有如下两个选项：<br />
 </p>
 <ul class="org-ul">
 <li>VK_SUBPASS_CONTENTS_INLINE： render pass 的命令将被嵌入到 primary command buffer 中，没有 secondary command buffers 被执行。<br /></li>
-<li>VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS： render pass 的命令将被提交到 secondary command buffers 中。<br /></li>
+<li>VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS： render pass 的命令将在 secondary command buffers 上执行。<br /></li>
 </ul>
 </div>
 </div>
@@ -3947,7 +3974,7 @@ vkCmdBindDescriptorSets(<span style="color: #ce537a; font-weight: bold;">command
 </div>
 
 <p>
-desciptors 有很多种类型，本章我们使用的时 uniform buffer objects.<br />
+desciptors 有很多种类型，本章我们使用的是 uniform buffer objects.<br />
 </p>
 </div>
 
@@ -5665,15 +5692,144 @@ MSAA 只会平滑几何边缘，几何内部的填充不受影响。开启样本
 </div>
 </div>
 </div>
-<div id="outline-container-orga55a734" class="outline-3">
-<h3 id="orga55a734">Sumary</h3>
-<div class="outline-text-3" id="text-orga55a734">
+<div id="outline-container-org0e45ba9" class="outline-3">
+<h3 id="org0e45ba9">Summary</h3>
+<div class="outline-text-3" id="text-org0e45ba9">
 <p>
-创建 instance<br />
-查询可用的 physical device，选择合适的 physical device<br />
-创建 logical device<br />
-surface 将 vulkan 和窗口系统关联起来，其将渲染得到的图片展示到窗口上。<br />
+下面是对整个流程的梳理：<br />
 </p>
+<ul class="org-ul">
+<li>创建 instance, 作为 app 和 vulkan 交互的接口<br />
+<ul class="org-ul">
+<li>instance 有自己所支持的 layers,如：VK_LAYER_KHRONOS_validation,VK_LAYER_RENDERDOC_Capture 等<br /></li>
+<li>instance 有自己所支持的 extensions,如：VK_EXT_debug_utils,VK_KHR_surface 等<br /></li>
+<li>创建 instance 时需要检测所需的 layers、extensions 是否支持<br /></li>
+</ul></li>
+<li>查询可用的 physical device，选择合适的 physical device<br />
+<ul class="org-ul">
+<li>physical device 有自己支持的属性(properties),如： 是否是独显、支持的最大贴图尺寸等<br />
+<ul class="org-ul">
+<li>选择 physical device 时会考虑 physical device properties<br /></li>
+</ul></li>
+<li>physical device 有自己支持的特性(features),如：是否支持 geomeryShader,tessellationShader,sampleRateShading 等等<br /></li>
+<li>physical device 有自己支持的 queue families,如：VK_QUEUE_GRAPHICS_BIT、VK_QUEUE_COMPUTE_BIT 等<br />
+<ul class="org-ul">
+<li>使用 Vulkan 执行的大多数操作，如绘制命令、内存操作等，都被提交到一个 VkQueue 来异步执行。Queues 是从 Queue families 分配的，每个 queue family 在其 queues 上提供一组特定的操作集合(该集合只是所有命令集合的一个子集)<br /></li>
+</ul></li>
+</ul></li>
+<li>创建 logical device，作为 vulkan 和 physical device 交互的接口<br />
+<ul class="org-ul">
+<li>创建 logical device,需要指定所需的 physical device features、queue families 以及对应的 queue 的数量、layers、extensions<br /></li>
+<li>创建 logical device 的同时会创建 queue<br /></li>
+</ul></li>
+<li>surface 将 vulkan 和窗口系统关联起来，其将渲染得到的图片展示到窗口上<br />
+<ul class="org-ul">
+<li>surface 是对用于渲染的窗口的跨平台抽象，通常通过提供一个指向本地窗口句柄的引用来实例化 surface，对于 Windows 平台本地窗口的句柄为 HWND。<br /></li>
+<li>选择 physical device 时，需要检查 physical device 是否支持 surface<br /></li>
+</ul></li>
+<li>Vulkan 中不存在默认的 framebuffer，swap chain 是构建 framebuffer 的基础设施。swap chain 管理着一个 image 队列，渲染结果就放置在其中的一个 image 中。<br />
+<ul class="org-ul">
+<li>创建 swap chain 时会同时创建 images。其基本目的是用于保证我们当前正在渲染到的 render target 和当前显示在屏幕上的 render target 不是同一个 render target。确保渲染完成的图片才被显示是非常重要的。每次我们想要绘制一帧时，都需要让 swap chain 为我们提供一个 image，让我们渲染到其中。当我们结束绘制一帧时，该 image 被返回给 swap chain，用于在某个时间点将其展示在屏幕上。<br /></li>
+<li>不能直接使用 image，image view 是和 image 交互的接口。<br /></li>
+</ul></li>
+<li>graphics pipeline 表示显卡处理输入的整个流程<br />
+<ul class="org-ul">
+<li>和老式的 APIs 不同，Vulkan 中，graphics pipeline 几乎是完全不可以改变的（只有少数状态可以被动态修改）, 修改大部分状态需要重新创建 graphics pipeline, 切换整个 graphics pipeline。<br /></li>
+<li>graphics pipeline 包含如下阶段： 输入装配器(Input assembler) 顶点着色器(vertex shader) 细分着色器(tessellation shader) 几何着色器(geometry shader) 光栅化阶段(rasterization stage) 片段着色器(fragment shader) 颜色混合(color blending stage)<br /></li>
+<li>创建 pipeline 时，我们还需要告诉 Vulkan，我们在渲染时使用的 framebuffer attachments，需要使用多少个 color buffers 和 depth buffers，每个 buffer 使用多少个样本，buffer 中的内容被如何处理。所有这些信息都被封装在 render pass 对象中。<br />
+<ul class="org-ul">
+<li>一个 render pass 可以由多个 subpasses 组成。Subpasses 是渲染操作子序列，这些操作会依赖之前 passes 的 framebuffers 内容。<br /></li>
+</ul></li>
+</ul></li>
+<li>创建 CommandPool，从中创建 CommandBuffer，将渲染命令记录到 CommandBuffer 中，然后再提交到 queue 中执行<br />
+<ul class="org-ul">
+<li>创建 command buffers 之前需要先创建 command pool。command pools 管理用于存储 buffers 的内存，command buffers 就是从 command pools 中分配的。<br /></li>
+<li>调用 vkBeginCommandBuffer 函数开始将命令记录到 CommandBuffer<br /></li>
+<li>调用 vkCmdBeginRenderPass 函数开始一个 render pass<br /></li>
+<li>调用 vkCmdBindPipeline 函数绑定 graphics pipeline 和 command buffer<br /></li>
+<li>调用 vkCmdBindVertexBuffers 函数绑定 vertex buffer<br /></li>
+<li>调用 vkCmdBindIndexBuffers 函数绑定 vertex buffer<br /></li>
+<li>调用 vkCmdBindDescriptorSets 函数绑定 descriptor sets<br /></li>
+<li>调用 vkCmdDraw 或 vkCmdDrawIndexed 执行绘制<br /></li>
+<li>调用 vkCmdEndRenderPass 结束 render pass<br /></li>
+<li>调用 vkEndCommandBuffer 停止向 command buffer 中记录命令<br /></li>
+<li>调用 vkQueueSubmit 将 command buffer 提交到 graphics queue 中执行<br /></li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orga67ac8f" class="outline-2">
+<h2 id="orga67ac8f">Vulkan Guide</h2>
+<div class="outline-text-2" id="text-orga67ac8f">
+</div>
+<div id="outline-container-org448b10f" class="outline-3">
+<h3 id="org448b10f">Vulkan Introduction</h3>
+<div class="outline-text-3" id="text-org448b10f">
+</div>
+<div id="outline-container-org99a6813" class="outline-4">
+<h4 id="org99a6813">Initial Setup</h4>
+<div class="outline-text-4" id="text-org99a6813">
+<ol class="org-ol">
+<li>获取源代码 git clone -b all-chapters <a href="https://github.com/vblanco20-1/vulkan-guide.git">https://github.com/vblanco20-1/vulkan-guide.git</a><br /></li>
+<li>下载 SDL <a href="https://www.libsdl.org/download-2.0.php">https://www.libsdl.org/download-2.0.php</a> （Tips: 选择 Development Libraries SDL2-devel-2.0.16-VC.zip 版本）放置到 MySDK 目录下<br /></li>
+<li>按照下图方式配置 CMake<br />
+<img src="./Vulkan/vulkan-guide-init.jpg" alt="vulkan-guide-init.jpg" /><br /></li>
+<li>点击 Configure 再点击 Generate 生成 VS 工程<br /></li>
+<li>在 vulkan-guide/build 目录下 打开 vulkan_guide.sln solution<br /></li>
+<li>将 chapter 5 设置为 Startup Project, 进行编译<br /></li>
+</ol>
+</div>
+
+<div id="outline-container-orgc4acf6e" class="outline-5">
+<h5 id="orgc4acf6e">ERROR: Error C3646 'm_Lock': unknown override specifier</h5>
+<div class="outline-text-5" id="text-orgc4acf6e">
+<p>
+设置 c++版本为 c++17 可以解决该问题<br />
+</p>
+<ul class="org-ul">
+<li><a href="https://stackoverflow.com/questions/67512442/vulkan-memory-allocator-implementation-errors-after-define-vma-implementation">https://stackoverflow.com/questions/67512442/vulkan-memory-allocator-implementation-errors-after-define-vma-implementation</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org6716aa0" class="outline-4">
+<h4 id="org6716aa0">Vulkan main objects and their use</h4>
+</div>
+
+<div id="outline-container-orgf2405d3" class="outline-4">
+<h4 id="orgf2405d3">High level vulkan application flow</h4>
+</div>
+
+<div id="outline-container-orgc12faea" class="outline-4">
+<h4 id="orgc12faea">Libraries</h4>
+</div>
+</div>
+
+<div id="outline-container-org8bf9b9d" class="outline-3">
+<h3 id="org8bf9b9d">GPU Driven Rendering</h3>
+<div class="outline-text-3" id="text-org8bf9b9d">
+</div>
+<div id="outline-container-org25a4528" class="outline-4">
+<h4 id="org25a4528">GPU Driven Rendering Overview</h4>
+</div>
+<div id="outline-container-orgd758e57" class="outline-4">
+<h4 id="orgd758e57">Engine architecture overview</h4>
+</div>
+<div id="outline-container-org72fb077" class="outline-4">
+<h4 id="org72fb077">Draw Indirect</h4>
+</div>
+<div id="outline-container-orge1677f6" class="outline-4">
+<h4 id="orge1677f6">Compute Shaders</h4>
+</div>
+<div id="outline-container-orgc4d96cc" class="outline-4">
+<h4 id="orgc4d96cc">Material System</h4>
+</div>
+<div id="outline-container-orgd6336d2" class="outline-4">
+<h4 id="orgd6336d2">Mesh Rendering</h4>
+</div>
+<div id="outline-container-orgdb47331" class="outline-4">
+<h4 id="orgdb47331">Compute based Culling</h4>
 </div>
 </div>
 </div>

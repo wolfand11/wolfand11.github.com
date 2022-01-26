@@ -3,17 +3,18 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-05-24 周一 17:59 -->
+<!-- 2022-01-26 周三 09:57 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Programing in Elisp</title>
 <meta name="generator" content="Org mode" />
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-           <meta name="viewport" content="width=device-width, initial-scale=1" />
-           <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/css/worg.css" type="text/css" />
-           <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/css/worg-zenburn.css" type="text/css" />
-           <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
-           <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
+         <meta name="viewport" content="width=device-width, initial-scale=1" />
+         <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/css/worg.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/css/worg-zenburn.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
+         <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/blog-tools.js"></script>
 <script type="text/javascript">
 // @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
 <!--/*--><![CDATA[/*><!--*/
@@ -54,9 +55,10 @@
 <li><a href="#org6e1b274">Base Special List</a>
 <ul>
 <li><a href="#org5743f09">quote</a></li>
-<li><a href="#orgbda4b01">Backquote</a></li>
+<li><a href="#orgd62a159">Backquote and Comma and @</a></li>
 <li><a href="#orgf28de0a">defun</a></li>
 <li><a href="#orgdefe651">let</a></li>
+<li><a href="#org14d6693">car cdr cons</a></li>
 <li><a href="#org03d1076">set setq setf</a></li>
 <li><a href="#org3af99ba">if</a></li>
 <li><a href="#org1dc852c">interactive</a></li>
@@ -86,7 +88,7 @@
 <p>
 lisp note.<br />
 </p>
-<div class="HTML" id="org4a484a1">
+<div class="HTML" id="orgba47515">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -99,7 +101,7 @@ lisp note.<br />
 <div id="outline-container-orge20d729" class="outline-3">
 <h3 id="orge20d729">List</h3>
 <div class="outline-text-3" id="text-orge20d729">
-<pre class="example" id="org4d99b0a">
+<pre class="example" id="org1502b44">
 原子        可以是数字、单字符符号、多字符符号、字符串
 List        由括号括起来的原子，或括号括起来的 list，或括号括起来的原子和 list,或者一个空括号。元素之间通过空格分隔。
 符号表达式  原子和列表的书面或计算机表示被称作符号表达式。
@@ -136,37 +138,41 @@ Tips:
 </div>
 </div>
 </div>
-<div id="outline-container-orgbda4b01" class="outline-4">
-<h4 id="orgbda4b01">Backquote</h4>
-<div class="outline-text-4" id="text-orgbda4b01">
+<div id="outline-container-orgd62a159" class="outline-4">
+<h4 id="orgd62a159">Backquote and Comma and @</h4>
+<div class="outline-text-4" id="text-orgd62a159">
+<p>
+backquote 和 quote 一样，其允许你引用一个 list, 但是 backquote 允许你使用 Comma 来选择性地对列表中元素进行求解<br />
+</p>
 <div class="org-src-container">
-<pre class="src src-elisp">`(a list of (+ 2 3) elements)
-<span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">&#8658; (a list of (+ 2 3) elements)</span>
+<pre class="src src-elisp">  `(a list of (+ 2 3) elements)
+  <span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">&#8658; (a list of (+ 2 3) elements)</span>
 
-'(a list of (+ 2 3) elements)
-<span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">&#8658; (a list of (+ 2 3) elements)</span>
+  '(a list of (+ 2 3) elements)
+  <span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">&#8658; (a list of (+ 2 3) elements)</span>
 
-`(a list of ,(+ 2 3) elements)
-<span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">&#8658; (a list of 5 elements)</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">Use , evaluate (+ 2 3)</span>
+  `(a list of ,(+ 2 3) elements)
+  <span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">&#8658; (a list of 5 elements)</span>
 
-(<span style="color: #4f97d7; font-weight: bold;">setq</span> some-list '(2 3))
-<span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">&#8658; (2 3)</span>
+  (<span style="color: #4f97d7; font-weight: bold;">setq</span> some-list '(2 3))
+  <span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">&#8658; (2 3)</span>
 
-(cons 1 (append some-list '(4) some-list))
-<span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">&#8658; (1 2 3 4 2 3)</span>
+  (cons 1 (append some-list '(4) some-list))
+  <span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">&#8658; (1 2 3 4 2 3)</span>
 
-`(1 ,@some-list 4 ,@some-list)
-<span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">&#8658; (1 2 3 4 2 3)</span>
+  `(1 ,@some-list 4 ,@some-list)
+  <span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">&#8658; (1 2 3 4 2 3)</span>
 
-(<span style="color: #4f97d7; font-weight: bold;">setq</span> list '(hack foo bar))
-<span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">&#8658; (hack foo bar)</span>
-(cons 'use
-      (cons 'the
-            (cons 'words (append (cdr list) '(as elements)))))
-<span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">&#8658; (use the words foo bar as elements)</span>
+  (<span style="color: #4f97d7; font-weight: bold;">setq</span> list '(hack foo bar))
+  <span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">&#8658; (hack foo bar)</span>
+  (cons 'use
+        (cons 'the
+              (cons 'words (append (cdr list) '(as elements)))))
+  <span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">&#8658; (use the words foo bar as elements)</span>
 
-`(use the words ,@(cdr list) as elements)
-<span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">&#8658; (use the words foo bar as elements)</span>
+  `(use the words ,@(cdr list) as elements)
+  <span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">&#8658; (use the words foo bar as elements)</span>
 </pre>
 </div>
 
@@ -191,6 +197,42 @@ Tips:
 </p>
 </div>
 </div>
+<div id="outline-container-org14d6693" class="outline-4">
+<h4 id="org14d6693">car cdr cons</h4>
+<div class="outline-text-4" id="text-org14d6693">
+<p>
+cons 是 construct 的缩写。构造一个 list<br />
+car  是 Contents of the Address part of the Register 的缩写。获得 list 首部的元素<br />
+cdr  是 Contents of the Decrement part of the Register 的缩写。获得 list 除去首部的部分<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-elisp">(car '(rose violet daisy buttercup))
+<span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">=&gt; rose</span>
+(cdr '(rose violet daisy buttercup))
+<span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">=&gt; (violet daisy buttercup)</span>
+
+(car '((lion tiger cheetah)
+       (gazelle antelope zebra)
+       (whale dolphin seal)))
+<span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">=&gt; (lion tiger cheetah)</span>
+(cdr '((lion tiger cheetah)
+       (gazelle antelope zebra)
+       (whale dolphin seal)))
+<span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">=&gt; ((gazelle antelope zebra) (whale dolphin seal))</span>
+</pre>
+</div>
+
+<p>
+cons 是 car 操作和 cdr 操作的反操作<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-elisp">(cons 'pine '(fir oak maple))
+<span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">=&gt; (pine fir oak maple)</span>
+</pre>
+</div>
+</div>
+</div>
 <div id="outline-container-org03d1076" class="outline-4">
 <h4 id="org03d1076">set setq setf</h4>
 <div class="outline-text-4" id="text-org03d1076">
@@ -207,13 +249,14 @@ Tips:
 </div>
 </div>
 </div>
+
 <div id="outline-container-org3af99ba" class="outline-4">
 <h4 id="org3af99ba">if</h4>
 <div class="outline-text-4" id="text-org3af99ba">
 <p>
 分支语句。 (if do-someing do-other-thing)<br />
 </p>
-<pre class="example" id="orgd1ab654">
+<pre class="example" id="org1a1c597">
 Tips:
 elisp 中除去()和 nil 外都为 true
 (if () "() is true" "() is false")
@@ -232,13 +275,13 @@ elisp 中除去()和 nil 外都为 true
 使函数变为交互函数。 (interactive arg)<br />
 </p>
 <div class="org-src-container">
-<pre class="src src-elisp"><span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">Example:</span>
-(<span style="color: #4f97d7; font-weight: bold;">defun</span> <span style="color: #bc6ec5; font-weight: bold;">AddTwo</span> (var1)
-  <span style="color: #9f8766;">"add two with argument"</span>
-  (<span style="color: #4f97d7; font-weight: bold;">interactive</span> <span style="color: #2d9574;">"p"</span>)
-  (<span style="color: #4f97d7; font-weight: bold;">let</span> ((two_value 2) result (info <span style="color: #2d9574;">"result is %d"</span>))
-    (<span style="color: #4f97d7; font-weight: bold;">setq</span> result (+ var1 two_value))
-    (message info (+ var1 two_value))))
+<pre class="src src-elisp">  <span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">Example:</span>
+  (<span style="color: #4f97d7; font-weight: bold;">defun</span> <span style="color: #bc6ec5; font-weight: bold;">AddTwo</span> (var1)
+    <span style="color: #9f8766;">"add two with argument"</span>
+    (<span style="color: #4f97d7; font-weight: bold;">interactive</span> <span style="color: #2d9574;">"p"</span>)
+    (<span style="color: #4f97d7; font-weight: bold;">let</span> ((two_value 2) result (info <span style="color: #2d9574;">"result is %d"</span>))
+      (<span style="color: #4f97d7; font-weight: bold;">setq</span> result (+ var1 two_value))
+      (message info (+ var1 two_value))))
 </pre>
 </div>
 
@@ -271,7 +314,7 @@ elisp 中除去()和 nil 外都为 true
 <div id="outline-container-orga92f6f7" class="outline-3">
 <h3 id="orga92f6f7">Evaluation 表达式求值</h3>
 <div class="outline-text-3" id="text-orga92f6f7">
-<pre class="example" id="orga4bf60b">
+<pre class="example" id="org730e966">
 Number 求值
 直接返回数值
 
@@ -302,7 +345,7 @@ Tips:
 <h4 id="org0cfc28c">concat</h4>
 <div class="outline-text-4" id="text-org0cfc28c">
 <div class="org-src-container">
-<pre class="src src-elisp">(message (concat <span style="color: #2d9574;">"a"</span> <span style="color: #2d9574;">"b"</span> <span style="color: #2d9574;">"c"</span>))
+<pre class="src src-elisp">  (message (concat <span style="color: #2d9574;">"a"</span> <span style="color: #2d9574;">"b"</span> <span style="color: #2d9574;">"c"</span>))
 </pre>
 </div>
 </div>
@@ -317,14 +360,14 @@ Tips:
 <h3 id="org498eb4c">自定义启动参数</h3>
 <div class="outline-text-3" id="text-org498eb4c">
 <div class="org-src-container">
-<pre class="src src-emacs-lisp"><span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">define handler</span>
-(<span style="color: #4f97d7; font-weight: bold;">defun</span> <span style="color: #bc6ec5; font-weight: bold;">wolf-args-fn</span> (switch)
-  (<span style="color: #4f97d7; font-weight: bold;">let</span> (arg0 (pop command-line-args-left))
-    (<span style="color: #4f97d7; font-weight: bold;">progn</span>
-      (message (concat <span style="color: #2d9574;">"wolf-args "</span> arg0)))))
+<pre class="src src-emacs-lisp">     <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">define handler</span>
+     (<span style="color: #4f97d7; font-weight: bold;">defun</span> <span style="color: #bc6ec5; font-weight: bold;">wolf-args-fn</span> (switch)
+       (<span style="color: #4f97d7; font-weight: bold;">let</span> (arg0 (pop command-line-args-left))
+         (<span style="color: #4f97d7; font-weight: bold;">progn</span>
+           (message (concat <span style="color: #2d9574;">"wolf-args "</span> arg0)))))
 
-<span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">register handler</span>
-(add-to-list 'command-switch-alist '(<span style="color: #2d9574;">"-wolf-args"</span> . wolf-args-fn))
+     <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">register handler</span>
+     (add-to-list 'command-switch-alist '(<span style="color: #2d9574;">"-wolf-args"</span> . wolf-args-fn))
 </pre>
 </div>
 </div>
@@ -333,7 +376,7 @@ Tips:
 <div id="outline-container-org9d6f419" class="outline-2">
 <h2 id="org9d6f419">Emacs 相关命令</h2>
 <div class="outline-text-2" id="text-org9d6f419">
-<pre class="example" id="orga0b2b59">
+<pre class="example" id="org8760893">
 1、lisp 代码缩排：
 M-C-\ 一个区域内正确缩排命令
 TAB   光标所在行缩排

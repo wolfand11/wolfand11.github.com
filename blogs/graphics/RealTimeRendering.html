@@ -3,17 +3,18 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-05-24 周一 17:58 -->
+<!-- 2022-02-14 周一 10:14 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Real Time Rendering</title>
 <meta name="generator" content="Org mode" />
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-           <meta name="viewport" content="width=device-width, initial-scale=1" />
-           <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/css/worg.css" type="text/css" />
-           <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/css/worg-zenburn.css" type="text/css" />
-           <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
-           <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
+         <meta name="viewport" content="width=device-width, initial-scale=1" />
+         <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/css/worg.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/css/worg-zenburn.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
+         <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/blog-tools.js"></script>
 <script type="text/javascript">
 // @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
 <!--/*--><![CDATA[/*><!--*/
@@ -55,7 +56,7 @@
 <li><a href="#orge2ad30d">Architecture</a></li>
 <li><a href="#org9fb2947">The Application Stage</a></li>
 <li><a href="#orgc9249be">Geometry Processing</a></li>
-<li><a href="#org3789ae1">Rasterization</a></li>
+<li><a href="#org481cb1f">Rasterization</a></li>
 <li><a href="#orge7dfff7">Pixel Processing</a></li>
 </ul>
 </li>
@@ -67,7 +68,7 @@
 </li>
 <li><a href="#orgb26bd55">23 Graphics Hardware</a>
 <ul>
-<li><a href="#org481cb1f">Rasterization</a></li>
+<li><a href="#orge9fe809">Rasterization</a></li>
 </ul>
 </li>
 </ul>
@@ -78,7 +79,7 @@
 <p>
 Real Time Rendering 第 4 版翻译.<br />
 </p>
-<div class="HTML" id="orgfc9991b">
+<div class="HTML" id="org96f7aae">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -108,34 +109,79 @@ pipeline 的各个阶段是并行执行的，每个阶段只依赖前一阶段�
 </p>
 
 <p>
-下图为实时渲染管线示意图，整个管线被分为 4 个主要阶段，而每个阶段内部通常也是一个又被分成多个阶段的子管线。<br />
+下图为实时渲染管线示意图，整个管线被分为 4 个主要阶段，而每个阶段内部通常也是一个又被分成多个阶段的子管线。这里我们需要区分开功能阶段和该功能阶段的实现。一个功能阶段有一个特定的任务需要执行，但是并不指定该任务在管线中以何种方式执行。一个给定的实现可能会将两个功能阶段合并到一个单元，也可能使用可编程核心执行其中一个功能阶段，同时将另一个更耗时的功能阶段划分为几个硬件单元。<br />
+</p>
+
+
+<div id="org96c4132" class="figure">
+<p><img src="./RealTimeRendering/02_01_architecture.jpg" alt="02_01_architecture.jpg" /><br />
+</p>
+</div>
+
+<p>
+下图为实时渲染管线各个阶段的进一步划分：<br />
+</p>
+
+
+<div id="org9cdaa4a" class="figure">
+<p><img src="./RealTimeRendering/02_01_architecture01.jpg" alt="02_01_architecture01.jpg" /><br />
+</p>
+</div>
+
+<p>
 渲染的速度可以通过 frames per second 来表达，其表示每秒渲染的帧的数量。也可以通过赫兹（Hz）表达，其表示更新的频率。还可以直接使用时间来表达，其表示渲染一帧花费的时间。FPS 可用于描述特定的帧，也可用于描述一段时间内平均的性能。赫兹通常用于硬件，例如，显示器，其通常被设置为一个特定的比率。<br />
-<img src="./RealTimeRendering/02_01_architecture.jpg" alt="02_01_architecture.jpg" /><br />
 </p>
 </div>
 </div>
 
 <div id="outline-container-org9fb2947" class="outline-4">
 <h4 id="org9fb2947">The Application Stage</h4>
+<div class="outline-text-4" id="text-org9fb2947">
+<p>
+Application Stage 由应用程序驱动，由开发者完全控制在该阶段执行哪些任务，通常在软件上实现，并在通用的 CPUs 上执行。依赖于应用程序的类型，Applicaton Stage 需要完成的任务可能有 collision detection, global acceleration algorithms, animation, physics simulation 等等。<br />
+使用 computer shader，一些 Application Stage 的工作也可以由 GPU 来执行，此时将 GPU 视为高度并行的通用处理器，忽略其专门用于渲染图形的特殊功能。<br />
+</p>
+
+<p>
+由于 Application Stage 的实现是基于软件的，因此该阶段没有像 Geometry Processing Stage, Rasterization Stage, Pixel Processing Stage 那样被划分为多个子阶段。但是，为了提升性能，Applicaton Stage 通常在多个处理器 Cores 上并行运行。<br />
+</p>
+
+<p>
+Application Stage 通常还会处理其他输入，如键盘、鼠标等等。在 Application Stage 的末尾，被渲染的几何会被传递给 Geometry Processing Stage。<br />
+</p>
+</div>
 </div>
 <div id="outline-container-orgc9249be" class="outline-4">
 <h4 id="orgc9249be">Geometry Processing</h4>
+<div class="outline-text-4" id="text-orgc9249be">
+<p>
+vertex shader 的输出为执行了 MVP 变换后得到的齐次空间的坐标。<br />
+<img src="./RealTimeRendering/02_01_architecture02.jpg" alt="02_01_architecture02.jpg" /><br />
+</p>
 </div>
-<div id="outline-container-org3789ae1" class="outline-4">
-<h4 id="org3789ae1">Rasterization</h4>
-<div class="outline-text-4" id="text-org3789ae1">
+</div>
+<div id="outline-container-org481cb1f" class="outline-4">
+<h4 id="org481cb1f">Rasterization</h4>
+<div class="outline-text-4" id="text-org481cb1f">
 <p>
 Rasterization 阶段的目标是找到所有被图元覆盖的像素，其被分为两个子阶段：triangle setup(primitive assembly)和 triangle traversal。Rasterization 也被称为 Scan Conversion(扫描转化)，因为其将屏幕空间上多个二维的顶点转换为了屏幕上的像素。<br />
 </p>
 
 <p>
-Triangle Setup(Primitive Assembly)阶段：<br />
+Triangle Setup(Primitive Assembly)阶段：在这个阶段，计算三角形的微分、边方程和其他数据。 这些数据可用于三角形遍历，以及几何阶段产生的各种着色数据的插值。用于执行此任务的硬件是固定功能的硬件(不可编程)。<br />
 Triangle Traversal 阶段：判断哪些像素或样本被三角形覆盖，对应生成片段(fragment)，通过插值生成片段属性（如果使用了透视摄像机，插值透视矫正也会执行）.<br />
 </p>
 </div>
 </div>
 <div id="outline-container-orge7dfff7" class="outline-4">
 <h4 id="orge7dfff7">Pixel Processing</h4>
+<div class="outline-text-4" id="text-orge7dfff7">
+
+<div id="org6378e0c" class="figure">
+<p><img src="./RealTimeRendering/02_01_architecture03.jpg" alt="02_01_architecture03.jpg" /><br />
+</p>
+</div>
+</div>
 </div>
 </div>
 <div id="outline-container-org5df4516" class="outline-3">
@@ -149,7 +195,7 @@ Triangle Traversal 阶段：判断哪些像素或样本被三角形覆盖，对�
 <h4 id="orgfcca506">The BRDF</h4>
 <div class="outline-text-4" id="text-orgfcca506">
 
-<div id="org2f3d1dc" class="figure">
+<div id="org782f5a6" class="figure">
 <p><img src="./RealTimeRendering/09_03_brdf.jpg" alt="09_03_brdf.jpg" /><br />
 </p>
 </div>
@@ -198,9 +244,9 @@ hemispherical-directional reflectance R(v)是一个类似的函数。其测量�
 <h3 id="orgb26bd55">23 Graphics Hardware</h3>
 <div class="outline-text-3" id="text-orgb26bd55">
 </div>
-<div id="outline-container-org481cb1f" class="outline-4">
-<h4 id="org481cb1f">Rasterization</h4>
-<div class="outline-text-4" id="text-org481cb1f">
+<div id="outline-container-orge9fe809" class="outline-4">
+<h4 id="orge9fe809">Rasterization</h4>
+<div class="outline-text-4" id="text-orge9fe809">
 <p>
 所有的像素被按照 2x2 的方式组合，这样就可以实现 ddx ddy 了。<br />
 </p>

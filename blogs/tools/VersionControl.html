@@ -1,0 +1,1204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2022-03-14 周一 17:01 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Version Control</title>
+<meta name="generator" content="Org mode" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+         <meta name="viewport" content="width=device-width, initial-scale=1" />
+         <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/css/worg.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/css/worg-zenburn.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
+         <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/blog-tools.js"></script>
+<script type="text/javascript">
+// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
+<!--/*--><![CDATA[/*><!--*/
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.add("code-highlighted");
+         target.classList.add("code-highlighted");
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.remove("code-highlighted");
+         target.classList.remove("code-highlighted");
+       }
+     }
+    /*]]>*///-->
+// @license-end
+</script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href=""> UP </a>
+ |
+ <a accesskey="H" href="https://wolfand11.gitee.io"> HOME </a>
+</div><div id="content">
+<h1 class="title">Version Control</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org1f9e6de">Git</a>
+<ul>
+<li><a href="#org90cf541">Git Github SourceTree</a>
+<ul>
+<li><a href="#org27dd50d">常用命令</a>
+<ul>
+<li><a href="#orged29135">git</a>
+<ul>
+<li><a href="#org59dc92b">base</a></li>
+<li><a href="#orgdb80e3a">config manager</a></li>
+<li><a href="#orga9f51c4">project manager</a></li>
+<li><a href="#org3cf8090">content manager</a></li>
+</ul>
+</li>
+<li><a href="#org1f28777">git svn</a></li>
+<li><a href="#org519fcdb">参考资料</a></li>
+</ul>
+</li>
+<li><a href="#org753e6d0">Usage Case</a>
+<ul>
+<li><a href="#orgdcfca0d">project manager</a>
+<ul>
+<li><a href="#orgf6e32a4">从 My_v3_1 创建 My_v4_0 分支</a></li>
+<li><a href="#orgf5a95d1">更新自己 fork 出来的源代码</a></li>
+<li><a href="#org013e2bc">在自己 fork 出来的源代码中，以最新源码为基础创建新分支</a></li>
+</ul>
+</li>
+<li><a href="#org8500147">content manager</a>
+<ul>
+<li><a href="#orgdd2a43d">将指定文件回滚到之前某个版本</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org4ce55b3">库管理方案</a>
+<ul>
+<li><a href="#org0ef4922">库管理流程</a></li>
+<li><a href="#org47d1364">项目命名 分支命名规则 CommitLog 规则</a></li>
+</ul>
+</li>
+<li><a href="#orgd8724fc">LFS</a>
+<ul>
+<li><a href="#orge430930">lfs 使用</a></li>
+<li><a href="#orgfcecda0">github LFS</a></li>
+<li><a href="#orgc0ed854">gitlab LFS</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgaa0e9c4">Usage</a>
+<ul>
+<li><a href="#org6abe8b2">submodule</a></li>
+<li><a href="#org80cc17e">unity scene prefab merge</a></li>
+</ul>
+</li>
+<li><a href="#org2646e3d">Error Solution</a>
+<ul>
+<li><a href="#orgfb26ad3">git -c diff.mnemonicprefix=false -c core.quotepath=false fetch master error: RPC failed; result=18, HTTP code = 200 fatal: The remote end hung up unexpectedly</a></li>
+<li><a href="#org2d8a1ed">error cannot fork to run external filter git-lfs clean &#x2013;%f</a></li>
+<li><a href="#orgc12033f">git push 提示如下错误</a>
+<ul>
+<li><a href="#org1bec20e">Error 1</a></li>
+</ul>
+</li>
+<li><a href="#orgbef8d62">显示 HEAD detached 后执行 git checkout master，发现之前提交的数据丢失</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgdcf8918">Perforce</a>
+<ul>
+<li><a href="#org4a0c309">Base</a></li>
+<li><a href="#org0c3ab0c">FAQ</a>
+<ul>
+<li><a href="#orgddfc7b8">p4 查看本地 workspace 版本号和仓库版本号</a></li>
+<li><a href="#org048a98a">p4 获取指定版本的工程</a></li>
+<li><a href="#org3462a06">清理本地修改内容</a></li>
+</ul>
+</li>
+<li><a href="#orgef0dfe8">Error Solution</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<p>
+该文档主要纪录 Git Github SourceTree 相关工具的使用。<br />
+</p>
+<div class="HTML" id="org509a115">
+<p>
+&lt;!&#x2013; more &#x2013;&gt;<br />
+</p>
+
+</div>
+
+<div id="outline-container-org1f9e6de" class="outline-2">
+<h2 id="org1f9e6de">Git</h2>
+<div class="outline-text-2" id="text-org1f9e6de">
+</div>
+<div id="outline-container-org90cf541" class="outline-3">
+<h3 id="org90cf541">Git Github SourceTree</h3>
+<div class="outline-text-3" id="text-org90cf541">
+</div>
+<div id="outline-container-org27dd50d" class="outline-4">
+<h4 id="org27dd50d">常用命令</h4>
+<div class="outline-text-4" id="text-org27dd50d">
+</div>
+<div id="outline-container-orged29135" class="outline-5">
+<h5 id="orged29135">git</h5>
+<div class="outline-text-5" id="text-orged29135">
+</div>
+<div id="outline-container-org59dc92b" class="outline-6">
+<h6 id="org59dc92b">base</h6>
+<div class="outline-text-6" id="text-org59dc92b">
+
+<div id="org9f3f458" class="figure">
+<p><img src="./GitAndGithub/git_rriw.png" alt="git_rriw.png" /><br />
+</p>
+</div>
+
+<ul class="org-ul">
+<li><a href="https://segmentfault.com/a/1190000039189058">https://segmentfault.com/a/1190000039189058</a><br /></li>
+</ul>
+<div class="org-src-container">
+<pre class="src src-shell"><span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">git &#24110;&#21161;&#21629;&#20196;</span>
+git xxx -h    <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">git branch -h</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgdb80e3a" class="outline-6">
+<h6 id="orgdb80e3a">config manager</h6>
+<div class="outline-text-6" id="text-orgdb80e3a">
+</div>
+<ul class="org-ul">
+<li><a id="orge53ca13"></a>gitconfig<br />
+<div class="outline-text-7" id="text-orge53ca13">
+<div class="org-src-container">
+<pre class="src src-shell">  <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#26597;&#30475;&#24403;&#21069;&#20179;&#24211;&#30340;git config&#35774;&#32622;</span>
+  git config --list <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#26597;&#30475;&#25152;&#26377;&#37197;&#32622;</span>
+  
+  <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">config &#37197;&#32622;&#25991;&#20214;</span>
+  <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">System .gitconfig &#36335;&#24452;</span>
+  <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">Windows    --&gt; TODO</span>
+  <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">OSX/Linux  --&gt; /etc/gitconfig</span>
+  git config --system user.name <span style="color: #2d9574;">"wolfand11"</span>
+  git config --system -l <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#26597;&#30475;&#31995;&#32479;&#37197;&#32622;</span>
+  
+  <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">Global .gitconfig &#36335;&#24452;</span>
+  <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">Windows    --&gt; ~/.gitconfig</span>
+  <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">OSX/Linux  --&gt; TODO</span>
+  git config --global user.name <span style="color: #2d9574;">"wolfand11"</span>
+  git config --global -l <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#26597;&#30475;&#29992;&#25143;&#37197;&#32622;</span>
+  git config --global --unset user.name
+  
+  <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#24403;&#21069;&#20179;&#24211; gitconfig &#36335;&#24452;&#20026; ./.git/conifg</span>
+  git config user.name <span style="color: #2d9574;">"guodong"</span>
+  git config --local -l <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#26597;&#30475;&#24403;&#21069; git &#20179;&#24211;&#30340;&#37197;&#32622;</span>
+  git config --local -e <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#25171;&#24320;&#37197;&#32622;&#25991;&#20214;</span>
+</pre>
+</div>
+</div>
+</li>
+<li><a id="org1a45b89"></a>gitignore<br />
+<ul class="org-ul">
+<li><a id="org974dcf1"></a>忽略 StudyProjects 中 Qt Build 目录<br />
+<div class="outline-text-8" id="text-org974dcf1">
+<pre class="example" id="org6e5bf0e">
+## Qt Project
+build-**-Debug/
+</pre>
+</div>
+</li>
+<li><a id="orge020431"></a>参考资料<br />
+<div class="outline-text-8" id="text-orge020431">
+<ul class="org-ul">
+<li><a href="https://git-scm.com/docs/gitignore">https://git-scm.com/docs/gitignore</a><br /></li>
+<li><a href="https://www.toptal.com/developers/gitignore">https://www.toptal.com/developers/gitignore</a><br /></li>
+</ul>
+</div>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div id="outline-container-orga9f51c4" class="outline-6">
+<h6 id="orga9f51c4">project manager</h6>
+<div class="outline-text-6" id="text-orga9f51c4">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">command</th>
+<th scope="col" class="org-left">说明</th>
+<th scope="col" class="org-left">example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">help</td>
+<td class="org-left">查看 git 帮助</td>
+<td class="org-left">git help</td>
+</tr>
+
+<tr>
+<td class="org-left">help</td>
+<td class="org-left">查看 git branch 帮助</td>
+<td class="org-left">git help branch</td>
+</tr>
+
+<tr>
+<td class="org-left">clone</td>
+<td class="org-left">克隆默认分支的代码</td>
+<td class="org-left">git clone git://github.com/cocos2d/CocosBuilder.git ./CocosBuilder_origin_default</td>
+</tr>
+
+<tr>
+<td class="org-left">clone</td>
+<td class="org-left">克隆指定分支的代码</td>
+<td class="org-left">git clone -b develop git://github.com/cocos2d/CocosBuilder.git ./CocosBuilder_origin_develop</td>
+</tr>
+
+<tr>
+<td class="org-left">clone</td>
+<td class="org-left">克隆指定 tag 的代码</td>
+<td class="org-left">git clone -b v10.2.2 git@github.com:Unity-Technologies/Graphics.git ./v10.2.2</td>
+</tr>
+
+<tr>
+<td class="org-left">init</td>
+<td class="org-left">在本地初始化一个空仓库</td>
+<td class="org-left">git init</td>
+</tr>
+
+<tr>
+<td class="org-left">branch</td>
+<td class="org-left">获得本地分支信息</td>
+<td class="org-left">git branch                        // Tips 前面带*号的是当前分支</td>
+</tr>
+
+<tr>
+<td class="org-left">branch</td>
+<td class="org-left">获得所有分支信息（包括本地和远程）</td>
+<td class="org-left">git branch -a</td>
+</tr>
+
+<tr>
+<td class="org-left">branch</td>
+<td class="org-left">查看当前的本地分支与远程分支的关联关系</td>
+<td class="org-left">git branch -vv</td>
+</tr>
+
+<tr>
+<td class="org-left">branch</td>
+<td class="org-left">关联本地分支和远程分支</td>
+<td class="org-left">git branch &#x2013;set-upstream-to &lt;remote_name&gt;/&lt;remote_branch_name&gt;</td>
+</tr>
+
+<tr>
+<td class="org-left">branch</td>
+<td class="org-left">取消本地分支和远程分支的关联</td>
+<td class="org-left">git branch &#x2013;unset-upstream</td>
+</tr>
+
+<tr>
+<td class="org-left">branch</td>
+<td class="org-left">创建新的本地分支</td>
+<td class="org-left">git branch new_branch_name        // 以当前分支为基础创建新分支 new_branch_name</td>
+</tr>
+
+<tr>
+<td class="org-left">branch</td>
+<td class="org-left">重命名分支</td>
+<td class="org-left">git branch -m   / -M old_name new_name</td>
+</tr>
+
+<tr>
+<td class="org-left">branch</td>
+<td class="org-left">删除本地分支</td>
+<td class="org-left">git branch -d   / -D branch_name</td>
+</tr>
+
+<tr>
+<td class="org-left">checkout</td>
+<td class="org-left">切换分支</td>
+<td class="org-left">git checkout des_branch_name      // 如果 des_branch_name 不存在，且远端存在同名分支则切换到 des_branch_name 并 track &lt;remote&gt;/&lt;des_branch_name&gt;(等同于下一条命令)</td>
+</tr>
+
+<tr>
+<td class="org-left">checkout</td>
+<td class="org-left">切换分支</td>
+<td class="org-left">git checkout -b &lt;branch&gt; &#x2013;track &lt;remote&gt;/&lt;branch&gt;</td>
+</tr>
+
+<tr>
+<td class="org-left">checkout</td>
+<td class="org-left">创建并切换分支</td>
+<td class="org-left">git checkout -b new_branch_name   // 以当前分支为基础创建新分支 new_branch_name，并且切换到新分支 new_branch_name</td>
+</tr>
+
+<tr>
+<td class="org-left">remote</td>
+<td class="org-left">获得 romote 信息</td>
+<td class="org-left">git remote (git remote -v)</td>
+</tr>
+
+<tr>
+<td class="org-left">remote</td>
+<td class="org-left">刷新分支列表</td>
+<td class="org-left">git remote update origin &#x2013;prune</td>
+</tr>
+
+<tr>
+<td class="org-left">remote</td>
+<td class="org-left">添加新的 remote</td>
+<td class="org-left">git remote add &lt;remote_name&gt; &lt;remote_url&gt;</td>
+</tr>
+
+<tr>
+<td class="org-left">remote</td>
+<td class="org-left">删除一个 remote</td>
+<td class="org-left">git remote rm &lt;remote_name&gt;</td>
+</tr>
+
+<tr>
+<td class="org-left">remote</td>
+<td class="org-left">重命名一个 remote</td>
+<td class="org-left">git remote rename &lt;remote_old_name&gt; &lt;remote_new_name&gt;</td>
+</tr>
+
+<tr>
+<td class="org-left">remote</td>
+<td class="org-left">修改 remote 链接地址</td>
+<td class="org-left">git remote set-url origin git@github.com:USERNAME/REPOSITORY.git</td>
+</tr>
+
+<tr>
+<td class="org-left">push</td>
+<td class="org-left">将本地代码 push 到远程分支（远程分支不存在则创建）</td>
+<td class="org-left">git push &lt;remote_name&gt; &lt;local_branch&gt;:&lt;remote_branch&gt;</td>
+</tr>
+
+<tr>
+<td class="org-left">push</td>
+<td class="org-left">关联本地分支和远程分支并 push（远程分支不存在则创建）</td>
+<td class="org-left">git push &#x2013;set-upstream &lt;remote_name&gt; &lt;remote_branch&gt;</td>
+</tr>
+
+<tr>
+<td class="org-left">push</td>
+<td class="org-left">删除 remote 的一个分支</td>
+<td class="org-left">git push &lt;remote_name&gt; :&lt;remote_branch&gt;</td>
+</tr>
+
+<tr>
+<td class="org-left">submodule</td>
+<td class="org-left">添加子工程</td>
+<td class="org-left">git submodule add 仓库地址 路径</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">删除子工程</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-org3cf8090" class="outline-6">
+<h6 id="org3cf8090">content manager</h6>
+<div class="outline-text-6" id="text-org3cf8090">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">功能</th>
+<th scope="col" class="org-left">命令</th>
+<th scope="col" class="org-left">示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">更新代码并自动合并</td>
+<td class="org-left">git pull</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">更新代码不自动合并</td>
+<td class="org-left">git fetch</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">更新代码并强制覆盖本地</td>
+<td class="org-left">git fetch &amp;&amp; git reset &#x2013;hard origin/main</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">将本地修改加入 commit 列表</td>
+<td class="org-left">git add</td>
+<td class="org-left">git add \*.org 将所有 .org 文件的修改加入到 commit 列表</td>
+</tr>
+
+<tr>
+<td class="org-left">取消本地内容修改</td>
+<td class="org-left">git reset</td>
+<td class="org-left">git reset &#x2013;hard HEAD</td>
+</tr>
+
+<tr>
+<td class="org-left">回退到某个版本</td>
+<td class="org-left">git reset &#x2013;hard &lt;commit id&gt;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">提交本地修改到分支</td>
+<td class="org-left">git commit -m "commit msg"</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">取消前一次版本的修改内容</td>
+<td class="org-left">git revert HEAD</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">取消某个版本的修改内容</td>
+<td class="org-left">git revert &lt;commit id&gt;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">重命名文件和文件夹</td>
+<td class="org-left">git mv -f oldName newName</td>
+<td class="org-left"><a href="https://blog.csdn.net/shenwanjiang111/article/details/78776191/">https://blog.csdn.net/shenwanjiang111/article/details/78776191/</a></td>
+</tr>
+
+<tr>
+<td class="org-left">查看提交记录</td>
+<td class="org-left">git log</td>
+<td class="org-left">git log &#x2013;pretty=format:"%h - %an, %ar : %s"</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<ul class="org-ul">
+<li><a id="org51bb58d"></a>取消修改<br />
+<ul class="org-ul">
+<li><a id="org22a1611"></a>总结<br />
+<ul class="org-ul">
+<li><a id="org9e36431"></a>工作区<br />
+<div class="outline-text-9" id="text-org9e36431">
+<p>
+git clean -f            取消工作区所有新增文件<br />
+git checkout .          取消工作区所有修改<br />
+</p>
+</div>
+</li>
+<li><a id="orgfd1ebd3"></a>暂存区<br />
+<div class="outline-text-9" id="text-orgfd1ebd3">
+<p>
+git restore &#x2013;staged .  将暂存区文件全部放会工作区<br />
+</p>
+</div>
+</li>
+<li><a id="org02a131f"></a>本地仓库<br />
+<div class="outline-text-9" id="text-org02a131f">
+<p>
+git reset &#x2013;hard HEAD   取消工作区 暂存区 本地仓库的修改<br />
+</p>
+</div>
+</li>
+</ul>
+</li>
+
+<li><a id="org5fe5297"></a>clean<br />
+<div class="outline-text-8" id="text-org5fe5297">
+<p>
+git clean 的对象为 untracked files，也就是在工作区新建，但还未执行 git add 命令提交到暂存区的文件或目录<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shell">git clean -n                   <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#24178;&#36305;&#27169;&#24335;&#65292;&#21487;&#20197;&#21015;&#20986;&#21738;&#20123;&#25991;&#20214;&#20250;&#34987;&#28165;&#38500;&#65292;&#20294;&#19981;&#20250;&#21015;&#20986;&#21738;&#20123;&#30446;&#24405;&#20250;&#34987;&#28165;&#38500;&#12290;</span>
+git clean -f &lt;files&gt;           <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#33509;&#25351;&#23450;&#25991;&#20214;&#65292;&#21017;&#35813;&#25991;&#20214;&#34987;&#28165;&#38500;&#65292;&#33509;&#19981;&#25351;&#23450;&#25991;&#20214;&#65292;&#21017;&#25152;&#26377;&#26410;&#34987;&#25552;&#20132;&#21040;&#26242;&#23384;&#21306;&#30340;&#25991;&#20214;&#37117;&#34987;&#28165;&#38500;&#12290;</span>
+git clean -df &lt;files&gt; &lt;dirs&gt;   <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#33509;&#25351;&#23450;&#30446;&#24405;&#65292;&#21017;&#35813;&#30446;&#24405;&#34987;&#28165;&#38500;&#65292;&#33509;&#19981;&#25351;&#23450;&#30446;&#24405;&#65292;&#21017;&#25152;&#26377;&#26410;&#34987;&#25552;&#20132;&#21040;&#26242;&#23384;&#21306;&#30340;&#30446;&#24405;&#37117;&#34987;&#28165;&#38500;</span>
+
+git clean -ndf &lt;files or dirs&gt; <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#24178;&#36305;&#27169;&#24335;&#65292;&#21015;&#20986;&#21738;&#20123;&#30446;&#24405; &#25991;&#20214;&#20250;&#34987;&#28165;&#38500;</span>
+</pre>
+</div>
+</div>
+</li>
+<li><a id="org0d8585b"></a>restore<br />
+<div class="outline-text-8" id="text-org0d8585b">
+<p>
+该命令有如下两种形式：<br />
+git restore &#x2013;stage &lt;file&gt;<br />
+git restore &lt;file&gt;<br />
+</p>
+
+<ol class="org-ol">
+<li>文件在暂存区且未作修改的情况<br />
+使用 git restore &#x2013;staged &lt;file&gt; 把文件从暂存区移动到工作区，即文件不被追踪；<br /></li>
+
+<li>文件在暂存区且已经修改的情况<br />
+使用 git restore &#x2013;staged &lt;file&gt; 把文件从暂存区移动到工作区，且不会撤销修改的内容；<br />
+使用 git restore &lt;file&gt; 文件仍在暂存区且会撤销文件修改的内容；<br /></li>
+
+<li>文件在本地代码库已经修改的情况<br />
+使用 git add &lt;file&gt; 把文件重新放到暂存区，且保留文件的修改；<br />
+使用 git restore &lt;file&gt; 文件仍在本地代码库且会撤销文件的修改；<br /></li>
+</ol>
+
+<p>
+总结：<br />
+对于 git restore &lt;file&gt;命令，会撤销文件的修改，使文件恢复到暂存区或本地代码库（取决于文件在修改前的状态）<br />
+对于 git restore &#x2013;staged &lt;file&gt;命令，把文件从暂存区撤回到工作区，保留文件最后一次修改的内容<br />
+</p>
+</div>
+</li>
+<li><a id="orgb62f284"></a>checkout<br />
+<div class="outline-text-8" id="text-orgb62f284">
+<p>
+git checkout 的作用：同时恢复工作区和暂存区, 参数是否带有文件名时表现不一致, 不带文件名时间<br />
+</p>
+
+<ol class="org-ol">
+<li>git checkout [xxx branch]<br />
+<ul class="org-ul">
+<li>改变 HEAD 的指向到指定 branch<br /></li>
+<li>更新工作区的内容<br /></li>
+</ul></li>
+<li>git checkout [xxx file]<br />
+<ul class="org-ul">
+<li>将当前 暂存区 的文件覆盖到工作区<br /></li>
+</ul></li>
+<li>git checkout [xxx branch] [file]<br /></li>
+</ol>
+</div>
+</li>
+<li><a id="org623692a"></a>rm<br />
+<div class="outline-text-8" id="text-org623692a">
+<p>
+git rm 的作用： 删除工作区文件，并且将这次删除放入暂存区。git rm 等价于 rm xxx &amp;&amp; git add .<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">  git rm xxx              <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#20316;&#29992;: &#21024;&#38500;&#24037;&#20316;&#21306;&#25991;&#20214;&#65292;&#24182;&#19988;&#23558;&#36825;&#27425;&#21024;&#38500;&#25918;&#20837;&#26242;&#23384;&#21306;</span>
+                          <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#27880;&#24847;: &#35201;&#21024;&#38500;&#30340;&#25991;&#20214;&#26159;&#27809;&#26377;&#20462;&#25913;&#36807;&#30340;&#65292;&#23601;&#26159;&#35828;&#21644;&#24403;&#21069;&#29256;&#26412;&#24211;&#25991;&#20214;&#30340;&#20869;&#23481;&#30456;&#21516;&#12290;</span>
+  git rm -f xxx           <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#20316;&#29992;: &#21024;&#38500;&#24037;&#20316;&#21306;&#21644;&#26242;&#23384;&#21306;&#25991;&#20214;&#65292;&#24182;&#19988;&#23558;&#36825;&#27425;&#21024;&#38500;&#25918;&#20837;&#26242;&#23384;&#21306;&#12290;</span>
+                          <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#27880;&#24847;: &#35201;&#21024;&#38500;&#30340;&#25991;&#20214;&#24050;&#32463;&#20462;&#25913;&#36807;&#65292;&#23601;&#26159;&#35828;&#21644;&#24403;&#21069;&#29256;&#26412;&#24211;&#25991;&#20214;&#30340;&#20869;&#23481;&#19981;&#21516;&#12290;</span>
+  git rm --cached xxx     <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#20316;&#29992;: &#21024;&#38500;&#26242;&#23384;&#21306;&#25991;&#20214;&#65292;&#20294;&#20445;&#30041;&#24037;&#20316;&#21306;&#30340;&#25991;&#20214;&#65292;&#24182;&#19988;&#23558;&#36825;&#27425;&#21024;&#38500;&#25918;&#20837;&#26242;&#23384;&#21306;</span>
+</pre>
+</div>
+</div>
+</li>
+<li><a id="org3cdb838"></a>reset<br />
+<div class="outline-text-8" id="text-org3cdb838">
+<p>
+git reset 的命令：（&#x2013;hard、&#x2013;soft 与&#x2013;mixed；主要用于工作区、暂存区、本地仓库三个区域的文件提交撤回。Tips: &#x2013;mixed 为默认方式。<br />
+git reset 的作用：是修改 HEAD 的位置，即将 HEAD 指向的位置改变为之前存在的某个版本。<br />
+git reset 的场景：如果想恢复到之前某个提交的版本，且那个版本之后提交的版本我们都不要了，就可以用这种方法。<br />
+</p>
+
+<p>
+git reset &#x2013;soft xxx(commit 操作的哈希 ID)  用于将本地仓库的文件撤回暂存区的操作<br />
+git reset &#x2013;mixed xxx(commit 操作的哈希 ID) 用于将本地仓库文件撤回至工作区的操作<br />
+git reset &#x2013;hard xxx(commit 操作的哈希 ID)  用于将工作区、暂存区、本地仓库的所有提交的文件全都撤销（包括工作区文件，会删除）（回收站也没有哦）<br />
+</p>
+
+
+<div id="org409908e" class="figure">
+<p><img src="./GitAndGithub/git_reset.png" alt="git_reset.png" /><br />
+</p>
+</div>
+</div>
+</li>
+<li><a id="orgde1a811"></a>revert<br />
+<div class="outline-text-8" id="text-orgde1a811">
+<p>
+git revert 的命令：-n、-m。<br />
+git revert 的作用：是一种反做命令,是用于“反做”某一个版本，以达到撤销该版本的修改的目的。<br />
+git revert 的场景：如果我们想撤销之前的某一版本，但是又想保留该目标版本后面的版本，记录下这整个版本变动流程，就可以用这种方法。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">  git show bd86846                                    <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#26174;&#31034;commit&#20449;&#24687;</span>
+  <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">commit bd868465569400a6b9408050643e5949e8f2b8f5</span>
+  <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">Merge: ba25a9d 1c7036f</span>
+
+  git revert -n xxx(commit &#25805;&#20316;&#30340;&#21704;&#24076; ID)           <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">-n &#34920;&#31034;&#19981;&#33258;&#21160;commit</span>
+  git revert xxx(commit &#25805;&#20316;&#30340;&#21704;&#24076; ID) -m [1|2]     <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">-m &#34920;&#31034;revert&#30340;&#26159;&#19968;&#20010; merge commit&#65292;-m &#36873;&#39033;&#25509;&#25910;&#30340;&#21442;&#25968;&#26159;&#19968;&#20010;&#25968;&#23383;&#65292;&#25968;&#23383;&#21462;&#20540;&#20026; 1 &#21644; 2&#65292;&#20063;&#23601;&#26159; commit&#20449;&#24687;&#20013;Merge&#20449;&#24687;&#34892;&#37324;&#38754;&#21015;&#20986;&#26469;&#30340;&#31532;&#19968;&#20010;commit&#36824;&#26159;&#31532;&#20108;&#20010;commit</span>
+</pre>
+</div>
+
+
+<div id="org4e5c968" class="figure">
+<p><img src="./GitAndGithub/git_revert.jpg" alt="git_revert.jpg" /><br />
+</p>
+</div>
+
+<ul class="org-ul">
+<li><a href="https://segmentfault.com/a/1190000012897697">https://segmentfault.com/a/1190000012897697</a><br /></li>
+</ul>
+</div>
+</li>
+<li><a id="org9a9bd1a"></a>参考资料<br />
+<div class="outline-text-8" id="text-org9a9bd1a">
+<ul class="org-ul">
+<li><a href="https://www.atlassian.com/git/tutorials/resetting-checking-out-and-reverting">https://www.atlassian.com/git/tutorials/resetting-checking-out-and-reverting</a><br /></li>
+<li><a href="https://sohslx.cn/git/4.html">https://sohslx.cn/git/4.html</a><br /></li>
+<li><a href="https://kirakirazone.com/2018/12/22/git-clean-rm-reset-revert-checkout%E7%94%A8%E6%B3%95%E5%92%8C%E5%8C%BA%E5%88%AB/">https://kirakirazone.com/2018/12/22/git-clean-rm-reset-revert-checkout%E7%94%A8%E6%B3%95%E5%92%8C%E5%8C%BA%E5%88%AB/</a><br /></li>
+</ul>
+</div>
+</li>
+</ul>
+</li>
+<li><a id="org9127d5c"></a>merge<br />
+<ul class="org-ul">
+<li><a id="org4da0ec1"></a>dev 合并到 master 上<br />
+<div class="outline-text-8" id="text-org4da0ec1">
+<div class="org-src-container">
+<pre class="src src-shell">git checkout dev
+git pull
+git checkout master
+git merge dev
+git push -u origin master
+</pre>
+</div>
+</div>
+</li>
+<li><a id="org7819014"></a>将 XD merge 到 PP_URP<br />
+<div class="outline-text-8" id="text-org7819014">
+<div class="org-src-container">
+<pre class="src src-shell"><span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#22914;&#26524;&#26412;&#22320;&#27809;&#26377;xd&#20998;&#25903;&#65292;&#21017;checkout xd&#20998;&#25903;&#21040;&#26412;&#22320;</span>
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#22914;&#26524;&#26412;&#22320;&#24050;&#32463;&#26377; xd &#20998;&#25903;&#65292;&#21017;&#20999;&#25442;&#21040;&#26412;&#22320;xd&#20998;&#25903;</span>
+git checkout xd
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#26356;&#26032;xd&#20998;&#25903;</span>
+git pull
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#20999;&#25442;&#21040; XD_URP_PP&#20998;&#25903;</span>
+git checkout XD_URP_PP
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#26356;&#26032; XD_URP_PP &#20998;&#25903;</span>
+git pull
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;xd&#20998;&#25903;merge&#21040;XD_URP_PP</span>
+git merge xd
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#26597;&#30475;&#26159;&#21542;&#26377;&#20914;&#31361; merge&#20914;&#31361;</span>
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#22914;&#26524; .unity .asset .prefab .mat&#31561;&#36164;&#28304;&#25991;&#20214;&#20914;&#31361;&#65292;&#20351;&#29992;&#19979;&#38754;&#21629;&#20196;&#20462;&#22797;&#20914;&#31361;</span>
+git mergetool
+
+<span style="color: #2aa1ae; background-color: #292e34;">################################################################</span>
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#27979;&#35797;&#20462;&#25913;&#30340;&#21151;&#33021;&#26159;&#21542;&#27491;&#24120;</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;">################################################################</span>
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#25552;&#20132;merge</span>
+git push
+
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">create merge request</span>
+</pre>
+</div>
+</div>
+</li>
+</ul>
+</li>
+<li><a id="org3e8b8df"></a>log<br />
+<ul class="org-ul">
+<li><a id="org1fe92e1"></a>查看某个人提交的日志<br />
+<div class="outline-text-8" id="text-org1fe92e1">
+<div class="org-src-container">
+<pre class="src src-shell">  git log --author=<span style="color: #2d9574;">"guodong"</span>                 <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#26597;&#30475;guodong&#30340;&#25552;&#20132;&#26085;&#24535;</span>
+  git log --author=<span style="color: #2d9574;">"guodong"</span> --oneline       <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#26597;&#30475;guodong&#30340;&#25552;&#20132;&#26085;&#24535;&#65292;&#26085;&#24535;&#20869;&#23481;&#21482;&#26174;&#31034;&#19968;&#34892;</span>
+</pre>
+</div>
+</div>
+</li>
+<li><a id="orge4ccad9"></a>查看某文件的修改日志<br />
+<div class="outline-text-8" id="text-orge4ccad9">
+<div class="org-src-container">
+<pre class="src src-shell">  <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#26597;&#30475;&#25152;&#26377;&#20462;&#25913;&#26085;&#24535;</span>
+  git log filename
+  <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#26597;&#30475;&#26368;&#36817;2&#26465;&#20462;&#25913;&#26085;&#24535;</span>
+  git log -n 2 filename
+</pre>
+</div>
+<ul class="org-ul">
+<li><a href="https://blog.csdn.net/sea_snow/article/details/91430247">https://blog.csdn.net/sea_snow/article/details/91430247</a><br /></li>
+</ul>
+</div>
+</li>
+<li><a id="orgdf161b8"></a>查看某个 revision 日志<br />
+<div class="outline-text-8" id="text-orgdf161b8">
+<div class="org-src-container">
+<pre class="src src-shell">git show ad08ad960b1d42d13c66b66b2c2e02a6d960e2bd
+</pre>
+</div>
+<ul class="org-ul">
+<li><a href="https://stackoverflow.com/questions/4082126/git-log-of-a-single-revision/4082188#4082188">https://stackoverflow.com/questions/4082126/git-log-of-a-single-revision/4082188#4082188</a><br /></li>
+</ul>
+</div>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org1f28777" class="outline-5">
+<h5 id="org1f28777">git svn</h5>
+<div class="outline-text-5" id="text-org1f28777">
+<pre class="example" id="org7431434">
+克隆 svn 仓库到本地仓库   git svn clone http://your.svn.url/svn/Demo
+同步 svn 仓库到本地仓库   git svn rebase
+将修改添加到本地仓库    git add/commit
+将本地仓库同步到 svn 仓库 git svn dcommit (git svn dcommit 不会将本地的多个版本按时间顺序提交给 svn 服务器，而是将这些合为一个进行提交)
+处理代码冲突的步骤：
+（1）git svn dcommit 时提示需要更新,执行 git svn rebase
+（2）解决冲突，执行 git add confilict.files 告知 git 已经解决冲突
+（3）执行 git rebase --continue 自己对 confilict.files 的修改进入到本地仓库
+（4）执行 git svn dcommit 将改动同步到 svn 仓库
+
+为本地代码添加 git 仓库
+git remote add my_origin https://github.com/wolfand11/XXX_SVN
+将本地代码同步到 git 仓库
+git push my_origin master:master
+</pre>
+</div>
+</div>
+<div id="outline-container-org519fcdb" class="outline-5">
+<h5 id="org519fcdb">参考资料</h5>
+<div class="outline-text-5" id="text-org519fcdb">
+<p>
+<a href="https://git-scm.com/">https://git-scm.com/</a><br />
+<a href="https://git-scm.com/book/en/v2">https://git-scm.com/book/en/v2</a><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org753e6d0" class="outline-4">
+<h4 id="org753e6d0">Usage Case</h4>
+<div class="outline-text-4" id="text-org753e6d0">
+</div>
+<div id="outline-container-orgdcfca0d" class="outline-5">
+<h5 id="orgdcfca0d">project manager</h5>
+<div class="outline-text-5" id="text-orgdcfca0d">
+</div>
+<div id="outline-container-orgf6e32a4" class="outline-6">
+<h6 id="orgf6e32a4">从 My_v3_1 创建 My_v4_0 分支</h6>
+<div class="outline-text-6" id="text-orgf6e32a4">
+<div class="org-src-container">
+<pre class="src src-shell">  <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#33719;&#24471; My_v3_1 &#20998;&#25903;</span>
+  git clone -b My_v3_1 https://github.com/wolfand11/MyCocosBuilder ./My_v4_0_MyCocosBuilder
+
+  <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#20197; My_v3_1&#20026;&#22522;&#30784;&#21019;&#24314; My_v4_0&#20998;&#25903; &#24182;&#20999;&#25442;&#21040;My_v4_0</span>
+  git checkout -b My_v4_0
+  <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">or &#21019;&#24314; My_v4_0 &#28982;&#21518;&#20877;&#20999;&#25442;&#21040;My_v4_0</span>
+  git branch My_v4_0
+  git checkout My_v4_0
+
+  <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#26597;&#30475;&#36828;&#31243; remote name</span>
+  git remote -v
+
+  <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;&#26412;&#22320; My_v4_0&#20998;&#25903;push&#21040;&#36828;&#31243;</span>
+  git push remote_name My_v4_0:My_v4_0
+
+  <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#21024;&#38500;&#26412;&#22320;My_v3_1 &#20998;&#25903;</span>
+  git branch -d My_v3_1
+
+  <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">Tips: &#25552;&#20132;&#26102;&#21457;&#29616; &#26412;&#22320;&#21644;&#36828;&#31243;&#20998;&#25903;&#27809;&#26377;&#20851;&#32852;&#65292;&#21487;&#20197;&#20351;&#29992;&#22914;&#19979;&#21629;&#20196;&#23558;&#20004;&#32773;&#20851;&#32852;</span>
+  git push --set-upstream origin My_v4_0
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf5a95d1" class="outline-6">
+<h6 id="orgf5a95d1">更新自己 fork 出来的源代码</h6>
+<div class="outline-text-6" id="text-orgf5a95d1">
+<pre class="example" id="org2166bdf">
+问题说明：
+从 https://github.com/cocos2d/CocosBuilder fork 出来一份 CocosBuilder 的源代码 MyCocosBuilder，
+过一段时间以后，原来的 CocosBuilder 的 develop 分支有更新，需要将 CocosBuilder/develop 的更新添加到 MyCocosBuilder/develop 中。
+操作方法：
+(1)获得最新 MyCocosBuilder/develop 源代码
+git clone -b develop https://github.com/wolfand11/MyCocosBuilder ./MyCocosBuilder_develop
+cd MyCocosBuilder
+git submodule update --init --recursive
+(2)添加新的远程库
+执行命令 git remote add real_origin https://github.com/cocos2d/CocosBuilder
+(3)获得 real_origin/develop
+git fetch real_origin develop
+(4)Merge 修改到本地代码
+git merge real_origin/develop
+(5)更新 origin/develop 分支
+push 本地的 develop 分支到 origin/develop 分支。即 https://github.com/wolfand11/MyCocosBuilder.git 的 develop 分支
+</pre>
+</div>
+</div>
+<div id="outline-container-org013e2bc" class="outline-6">
+<h6 id="org013e2bc">在自己 fork 出来的源代码中，以最新源码为基础创建新分支</h6>
+<div class="outline-text-6" id="text-org013e2bc">
+<pre class="example" id="org49932ba">
+问题说明：
+从 https://github.com/cocos2d/CocosBuilder fork 出来一份 CocosBuilder 的源代码 MyCocosBuilder，
+并且在 MyCocosBuilder/develop 分支的基础上添加自己的分支 v2_0，.过一段时间以后，需要添加分支 MyCocosBuilder/My_v3_0，
+并且要求 My_v3_0 以最新的 CocosBuilder/develop(或者 CocosBuilder/master)为基础。
+操作方法：
+(1)获得最新 CocosBuilder/develop 源代码
+git clone -b develop git://github.com/cocos2d/CocosBuilder.git ./MyCocosBuilder/CocosBuilder_v3_0
+cd MyCocosBuilder/CocosBuilder_v3_0
+git submodule update --init --recursive
+(2)添加新的远程库
+执行命令 git remote add My_v3_0 https://github.com/wolfand11/MyCocosBuilder
+(3)将本地 develop 分支 push 到 my_resource
+git push My_v3_0 develop:My_v3_0
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org8500147" class="outline-5">
+<h5 id="org8500147">content manager</h5>
+<div class="outline-text-5" id="text-org8500147">
+</div>
+<div id="outline-container-orgdd2a43d" class="outline-6">
+<h6 id="orgdd2a43d">将指定文件回滚到之前某个版本</h6>
+<div class="outline-text-6" id="text-orgdd2a43d">
+<div class="org-src-container">
+<pre class="src src-shell">  <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#26597;&#30475; index.php&#25991;&#20214;&#30340;&#25552;&#20132;&#35760;&#24405;&#65292;&#33719;&#24471;&#29256;&#26412;hash</span>
+  git log &lt;filename1&gt;
+
+  <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">checkout &#20986;&#25351;&#23450;&#29256;&#26412;&#30340;filename1 filename2 &#25991;&#20214;</span>
+  git checkout &lt;hash&gt; &lt;filename1&gt; &lt;filename2&gt;
+
+  <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">commit &#23545;filename1 filename2&#30340;&#20462;&#25913;</span>
+  git commit -m <span style="color: #2d9574;">"revert filename1 filename2 to xxxxxx version"</span>
+
+  <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">push</span>
+  git push
+</pre>
+</div>
+<ul class="org-ul">
+<li><a href="https://blog.csdn.net/I_lost/article/details/103902244">https://blog.csdn.net/I_lost/article/details/103902244</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org4ce55b3" class="outline-4">
+<h4 id="org4ce55b3">库管理方案</h4>
+<div class="outline-text-4" id="text-org4ce55b3">
+</div>
+<div id="outline-container-org0ef4922" class="outline-5">
+<h5 id="org0ef4922">库管理流程</h5>
+<div class="outline-text-5" id="text-org0ef4922">
+<pre class="example" id="orgec91c39">
+1 初始化
+（1）fork lib source
+（2）以自己依赖的分支为基础，创建自己的分支
+2 维护
+方案 1：简单粗暴法
+使用最新库源代码，覆盖当前自己的分支，然后 merge 变化
+方案 2：
+参考上面的文档：更新自己 fork 出来的源代码
+</pre>
+</div>
+</div>
+<div id="outline-container-org47d1364" class="outline-5">
+<h5 id="org47d1364">项目命名 分支命名规则 CommitLog 规则</h5>
+<div class="outline-text-5" id="text-org47d1364">
+<pre class="example" id="orgb203a12">
+自己的代码
+1、项目名称以及分支名称可以参照其他开源项目命名方案。
+
+Fork 出来的代码
+1、项目名称前面加 My。例如：MyCocosBuilder Mycocos2d-x
+2、加分支时，分支的命名前加 My_。例如：My_v2_1 My_v3_0
+3、commit 时，如果修改了原来源代码的，日志前加[ChangeOrigin]
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgd8724fc" class="outline-4">
+<h4 id="orgd8724fc">LFS</h4>
+<div class="outline-text-4" id="text-orgd8724fc">
+</div>
+<div id="outline-container-orge430930" class="outline-5">
+<h5 id="orge430930">lfs 使用</h5>
+<div class="outline-text-5" id="text-orge430930">
+<div class="org-src-container">
+<pre class="src src-shell"><span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#21021;&#22987;&#21270;&#65292;&#21152;&#20837; lfs</span>
+git lfs install               <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">initialize the git lfs project</span>
+git lfs track <span style="color: #2d9574;">"*.png"</span>         <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">track png file with lfs</span>
+git add .gitattributes        <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">record lfs track file types</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#24050;&#26377;&#39033;&#30446;</span>
+git lfs fetch origin master
+git lfs pull
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgfcecda0" class="outline-5">
+<h5 id="orgfcecda0">github LFS</h5>
+<div class="outline-text-5" id="text-orgfcecda0">
+<p>
+目前 Github 大文件空间只有 1G，所以，还是不要使用 LFS。<br />
+</p>
+
+<p>
+<a href="https://docs.gitlab.com/ee/workflow/lfs/manage_large_binaries_with_git_lfs.html#git-lfs">https://docs.gitlab.com/ee/workflow/lfs/manage_large_binaries_with_git_lfs.html#git-lfs</a><br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgc0ed854" class="outline-5">
+<h5 id="orgc0ed854">gitlab LFS</h5>
+<div class="outline-text-5" id="text-orgc0ed854">
+<p>
+<a href="https://git-lfs.github.com">https://git-lfs.github.com</a><br />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgaa0e9c4" class="outline-3">
+<h3 id="orgaa0e9c4">Usage</h3>
+<div class="outline-text-3" id="text-orgaa0e9c4">
+</div>
+<div id="outline-container-org6abe8b2" class="outline-4">
+<h4 id="org6abe8b2">submodule</h4>
+<div class="outline-text-4" id="text-org6abe8b2">
+<div class="org-src-container">
+<pre class="src src-shell"><span style="color: #2aa1ae; background-color: #292e34;">## </span><span style="color: #2aa1ae; background-color: #292e34;">&#28155;&#21152;submodule</span>
+<span style="color: #4f97d7;">cd</span> Assets/Common/
+git submodule add git@github.com:wolfand11/UnityCommonUtils.git
+
+<span style="color: #2aa1ae; background-color: #292e34;">## </span><span style="color: #2aa1ae; background-color: #292e34;">&#23376;&#27169;&#22359;&#26356;&#26032;</span>
+<span style="color: #4f97d7;">cd</span> Assets/Common/
+git pull
+git add .
+git commit -m <span style="color: #2d9574;">"update submodule"</span>
+git push
+
+<span style="color: #2aa1ae; background-color: #292e34;">## </span><span style="color: #2aa1ae; background-color: #292e34;">clone &#24102;&#23376;&#27169;&#22359;&#30340;&#39033;&#30446;</span>
+git clone git@github.com:wolfand11/ShadowRendering.git
+git submodule update --init --recursive
+<span style="color: #2aa1ae; background-color: #292e34;">### </span><span style="color: #2aa1ae; background-color: #292e34;">&#25110;&#32773;</span>
+git clone project.git project3 --recursive
+
+<span style="color: #2aa1ae; background-color: #292e34;">## </span><span style="color: #2aa1ae; background-color: #292e34;">&#20462;&#25913;&#25552;&#20132;&#23376;&#27169;&#22359;</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;">## </span><span style="color: #2aa1ae; background-color: #292e34;">&#21024;&#38500;submodule</span>
+rm -rf submodule_path          <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#21024;&#38500;&#23376;&#27169;&#22359;&#30446;&#24405;&#21450;&#28304;&#30721;</span>
+vi .gitmodules                 <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#21024;&#38500;&#39033;&#30446;&#30446;&#24405;&#19979;.gitmodules&#25991;&#20214;&#20013;&#23376;&#27169;&#22359;&#30456;&#20851;&#26465;&#30446;</span>
+vi .git/config                 <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#21024;&#38500;&#37197;&#32622;&#39033;&#20013;&#23376;&#27169;&#22359;&#30456;&#20851;&#26465;&#30446;</span>
+rm .git/module/*               <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#21024;&#38500;&#27169;&#22359;&#19979;&#30340;&#23376;&#27169;&#22359;&#30446;&#24405;&#65292;&#27599;&#20010;&#23376;&#27169;&#22359;&#23545;&#24212;&#19968;&#20010;&#30446;&#24405;&#65292;&#27880;&#24847;&#21482;&#21024;&#38500;&#23545;&#24212;&#30340;&#23376;&#27169;&#22359;&#30446;&#24405;&#21363;&#21487;</span>
+
+git rm --cached &#23376;&#27169;&#22359;&#21517;&#31216;      <span style="color: #2aa1ae; background-color: #292e34;">#</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org80cc17e" class="outline-4">
+<h4 id="org80cc17e">unity scene prefab merge</h4>
+<div class="outline-text-4" id="text-org80cc17e">
+<p>
+修改 ~/.gitconfig 文件，在其中添加如下内容：<br />
+</p>
+
+<pre class="example" id="org52d1c1a">
+[merge]
+tool = unityyamlmerge
+
+[mergetool "unityyamlmerge"]
+trustExitCode = false
+cmd = 'C:/Program Files/Unity/Hub/Editor/2020.3.8f1c1/Editor/Data/Tools/UnityYAMLMerge.exe' merge -p "$BASE" "$REMOTE" "$LOCAL" "$MERGED"
+</pre>
+
+<p>
+执行了 git merge 操作后，如果有场景或 prefab 有冲突，命令行直接运行 git mergetool 命令可以对冲突文件进行合并<br />
+</p>
+
+<ul class="org-ul">
+<li><a href="https://warl.top/posts/Unity-UnityYAMLMerge/">https://warl.top/posts/Unity-UnityYAMLMerge/</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org2646e3d" class="outline-3">
+<h3 id="org2646e3d">Error Solution</h3>
+<div class="outline-text-3" id="text-org2646e3d">
+</div>
+<div id="outline-container-orgfb26ad3" class="outline-4">
+<h4 id="orgfb26ad3">git -c diff.mnemonicprefix=false -c core.quotepath=false fetch master error: RPC failed; result=18, HTTP code = 200 fatal: The remote end hung up unexpectedly</h4>
+<div class="outline-text-4" id="text-orgfb26ad3">
+<div class="org-src-container">
+<pre class="src src-shell"><span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#20808;&#25191;&#34892;&#19979;&#38754;&#21629;&#20196;</span>
+git clone --depth 1 &lt;url&gt;
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#20877;&#25191;&#34892;&#19979;&#38754;&#21629;&#20196;</span>
+git fetch --depth=1000000
+<span style="color: #2aa1ae; background-color: #292e34;">## </span><span style="color: #2aa1ae; background-color: #292e34;">&#23545;&#20110; git version &gt;= 1.8.3 &#30340;&#29992;&#25143;&#65292;&#21487;&#20197;&#20351;&#29992;&#19979;&#38754;&#21629;&#20196;&#20195;&#26367;&#19978;&#19968;&#26465;&#21629;&#20196;</span>
+git fetch --unshallow
+</pre>
+</div>
+
+<ul class="org-ul">
+<li>参考资料<br />
+<a href="https://stackoverflow.com/questions/18548637/git-clone-fatal-error-rpc-failed-the-remote-end-hung-up-unexpectedly-early">https://stackoverflow.com/questions/18548637/git-clone-fatal-error-rpc-failed-the-remote-end-hung-up-unexpectedly-early</a><br /></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org2d8a1ed" class="outline-4">
+<h4 id="org2d8a1ed">error cannot fork to run external filter git-lfs clean &#x2013;%f</h4>
+</div>
+<div id="outline-container-orgc12033f" class="outline-4">
+<h4 id="orgc12033f">git push 提示如下错误</h4>
+<div class="outline-text-4" id="text-orgc12033f">
+</div>
+<div id="outline-container-org1bec20e" class="outline-5">
+<h5 id="org1bec20e">Error 1</h5>
+<div class="outline-text-5" id="text-org1bec20e">
+<pre class="example" id="org2fff75d">
+ssh: connect to host github.com port 22: Connection timed out
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+</pre>
+<p>
+使用 git push &#x2013;force 强制提交<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgbef8d62" class="outline-4">
+<h4 id="orgbef8d62">显示 HEAD detached 后执行 git checkout master，发现之前提交的数据丢失</h4>
+<div class="outline-text-4" id="text-orgbef8d62">
+<div class="org-src-container">
+<pre class="src src-shell">  git commit -m <span style="color: #2d9574;">"Support Shader Variant Stripping"</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">## </span><span style="color: #2aa1ae; background-color: #292e34;">&#25191;&#34892;commit&#21518;&#65292;&#25552;&#31034;&#19979;&#38754;&#20449;&#24687;</span>
+  [detached HEAD 4bf13fd] Support Shader Variant Stripping
+  
+  git branch -vv
+  <span style="color: #2aa1ae; background-color: #292e34;">## </span><span style="color: #2aa1ae; background-color: #292e34;">&#25191;&#34892;git branch -vv &#21518;&#25552;&#31034;&#19979;&#38754;&#20449;&#24687;</span>
+  <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">* (HEAD detached from 1c5052b) 4bf13fd Support Shader Variant Stripping</span>
+  <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">master                       1c5052b [origin/master] add Simple Camera Controller</span>
+  
+  <span style="color: #2aa1ae; background-color: #292e34;">## </span><span style="color: #2aa1ae; background-color: #292e34;">&#25191;&#34892; git checkout master&#21518;&#65292;&#20877;&#25191;&#34892;git branch -vv &#21457;&#29616;detached HEAD 4bf13fd &#20449;&#24687;&#28040;&#22833;</span>
+  git checkout master
+  git branch -vv
+  <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">* master 1c5052b [origin/master] add Simple Camera Controller</span>
+  
+  <span style="color: #2aa1ae; background-color: #292e34;">####  </span><span style="color: #2aa1ae; background-color: #292e34;">&#24908;&#20081;&#65292;&#38590;&#36947;&#20043;&#21069;&#25552;&#20132;&#30340;&#20449;&#24687;&#20002;&#22833;&#20102;&#65311;</span>
+  
+  <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#25191;&#34892;&#19979;&#38754;&#21629;&#20196;&#65292;&#25214;&#22238;&#20102;&#20043;&#21069;&#30340;&#25552;&#20132;&#20449;&#24687;</span>
+  git checkout 4bf13fd
+  
+  <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#20197; 4bf13fd (HEAD detached from 1c5052b) &#21019;&#24314;tmp&#20998;&#25903;</span>
+  git branch tmp
+  
+  <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#20999;&#25442;&#21040; master</span>
+  git checkout master
+  
+  <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#26356;&#26032; master</span>
+  git pull
+  
+  <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;tmp merge&#21040;master</span>
+  git merge tmp
+  
+  <span style="color: #2aa1ae; background-color: #292e34;">### </span><span style="color: #2aa1ae; background-color: #292e34;">&#20002;&#22833;&#25481;&#30340;&#25552;&#20132;&#20449;&#24687;&#22238;&#26469;&#20102;!</span>
+</pre>
+</div>
+<ul class="org-ul">
+<li><a href="https://blog.csdn.net/u011240877/article/details/76273335">https://blog.csdn.net/u011240877/article/details/76273335</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgdcf8918" class="outline-2">
+<h2 id="orgdcf8918">Perforce</h2>
+<div class="outline-text-2" id="text-orgdcf8918">
+</div>
+<div id="outline-container-org4a0c309" class="outline-3">
+<h3 id="org4a0c309">Base</h3>
+</div>
+<div id="outline-container-org0c3ab0c" class="outline-3">
+<h3 id="org0c3ab0c">FAQ</h3>
+<div class="outline-text-3" id="text-org0c3ab0c">
+</div>
+<div id="outline-container-orgddfc7b8" class="outline-4">
+<h4 id="orgddfc7b8">p4 查看本地 workspace 版本号和仓库版本号</h4>
+<div class="outline-text-4" id="text-orgddfc7b8">
+<div class="org-src-container">
+<pre class="src src-shell">vim echo_p4_version.sh
+<span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">&#36755;&#20837;&#19979;&#38754;&#30340;&#20869;&#23481;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">!/bin/bash</span>
+
+<span style="color: #7590db;">Has</span>=<span style="color: #bc6ec5;">`p4 cstat ...#have |grep change | awk '$3 &gt; x { x = $3 };  END {print x} ' `</span>
+<span style="color: #7590db;">Depot</span>=<span style="color: #bc6ec5;">`p4 changes -m1 |head -n 1`</span>
+
+<span style="color: #4f97d7;">echo</span> <span style="color: #2d9574;">"current dir has version: "</span>$<span style="color: #7590db;">Has</span>
+<span style="color: #4f97d7;">echo</span> <span style="color: #2d9574;">"p4 depot version : "</span>$<span style="color: #7590db;">Depot</span>
+<span style="color: #4f97d7;">echo</span> <span style="color: #2d9574;">""</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org048a98a" class="outline-4">
+<h4 id="org048a98a">p4 获取指定版本的工程</h4>
+<div class="outline-text-4" id="text-org048a98a">
+<ol class="org-ol">
+<li>右键点击 Workspace 中指定目录，选择GetRevison菜单<br /></li>
+<li>Specify revision using： Changelist ： revision_number<br /></li>
+<li>取消选中 Only get revisions for files listed in changelist<br /></li>
+</ol>
+</div>
+</div>
+<div id="outline-container-org3462a06" class="outline-4">
+<h4 id="org3462a06">清理本地修改内容</h4>
+<div class="outline-text-4" id="text-org3462a06">
+<p>
+右键点击 Workspace 中指定目录，选择Clean 菜单<br />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgef0dfe8" class="outline-3">
+<h3 id="orgef0dfe8">Error Solution</h3>
+</div>
+</div>
+</div>
+</body>
+</html>

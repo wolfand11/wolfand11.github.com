@@ -3,17 +3,18 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-05-24 周一 17:58 -->
+<!-- 2022-03-14 周一 16:59 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Move Sync</title>
 <meta name="generator" content="Org mode" />
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-           <meta name="viewport" content="width=device-width, initial-scale=1" />
-           <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/css/worg.css" type="text/css" />
-           <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/css/worg-zenburn.css" type="text/css" />
-           <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
-           <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
+         <meta name="viewport" content="width=device-width, initial-scale=1" />
+         <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/css/worg.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/css/worg-zenburn.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
+         <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/blog-tools.js"></script>
 <script type="text/javascript">
 // @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
 <!--/*--><![CDATA[/*><!--*/
@@ -47,7 +48,7 @@
 <p>
 最近在看移动同步相关的东西，发现网上已经有人写了很好的文章。这里就只做一些简单思考和学习笔记吧。文章结尾处有原文章地址。<br />
 </p>
-<div class="HTML" id="org51fc589">
+<div class="HTML" id="org27758c5">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -177,16 +178,16 @@ sobj1 在 t1=t0+10ms+120ms 时，速度变为 4m/s，方向为（0,1）<br />
 线性插值代码：<br />
 </p>
 <div class="org-src-container">
-<pre class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">smoothTime</span> = smoothTimer = curTime - svrData.sendTime;
-<span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">targetPos</span> = svrData.position + svrData.velocity * smoothTime;
-<span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">smoothLength</span> = targetPos - startPos;
+<pre class="src src-csharp">  <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">smoothTime</span> = smoothTimer = curTime - svrData.sendTime;
+  <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">targetPos</span> = svrData.position + svrData.velocity * smoothTime;
+  <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">smoothLength</span> = targetPos - startPos;
 
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22312;&#27599;&#19968;&#24103;</span>
-<span style="color: #4f97d7; font-weight: bold;">if</span> (smoothTimer&gt;0)
- {
-     smoothTimer -= deltaTime;
-     curPos = curPos + deltaTime / smoothTime * smoothLength;
- }
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22312;&#27599;&#19968;&#24103;</span>
+  <span style="color: #4f97d7; font-weight: bold;">if</span> (smoothTimer&gt;0)
+   {
+       smoothTimer -= deltaTime;
+       curPos = curPos + deltaTime / smoothTime * smoothLength;
+   }
 </pre>
 </div>
 </div>
@@ -243,90 +244,90 @@ slowdownFactor 为缓动因子，slowdownFactor 越大，平滑速度越慢。<b
 帧锁定同步算法代码：<br />
 </p>
 <div class="org-src-container">
-<pre class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">svrKeyframe</span> = 0;
-<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">syncInterval</span> = 5;
-<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">sendCurFrame</span> = 0;
-<span style="color: #ce537a; font-weight: bold;">List</span>&lt;<span style="color: #ce537a; font-weight: bold;">MoveInfo</span>&gt; <span style="color: #7590db;">infoList</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">List</span>&lt;<span style="color: #ce537a; font-weight: bold;">MoveInfo</span>&gt;();
-<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">ProcessClientMoveControl</span>()
-{
-    <span style="color: #4f97d7; font-weight: bold;">if</span> (sendCurFrame &lt;= svrKeyframe + syncInterval)
-    {
-        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">curMoveInfo &#20026;&#24403;&#21069;&#24103; &#25910;&#38598;&#21040;&#30340;&#31227;&#21160;&#20449;&#24687;</span>
-        infoList.<span style="color: #bc6ec5; font-weight: bold;">Add</span>(curMoveInfo);
+<pre class="src src-csharp">  <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">svrKeyframe</span> = 0;
+  <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">syncInterval</span> = 5;
+  <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">sendCurFrame</span> = 0;
+  <span style="color: #ce537a; font-weight: bold;">List</span>&lt;<span style="color: #ce537a; font-weight: bold;">MoveInfo</span>&gt; <span style="color: #7590db;">infoList</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">List</span>&lt;<span style="color: #ce537a; font-weight: bold;">MoveInfo</span>&gt;();
+  <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">ProcessClientMoveControl</span>()
+  {
+      <span style="color: #4f97d7; font-weight: bold;">if</span> (sendCurFrame &lt;= svrKeyframe + syncInterval)
+      {
+          <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">curMoveInfo &#20026;&#24403;&#21069;&#24103; &#25910;&#38598;&#21040;&#30340;&#31227;&#21160;&#20449;&#24687;</span>
+          infoList.<span style="color: #bc6ec5; font-weight: bold;">Add</span>(curMoveInfo);
 
-        <span style="color: #4f97d7; font-weight: bold;">if</span> (sendCurFrame == svrKeyframe + syncInterval)
-        {
-            <span style="color: #ce537a; font-weight: bold;">SyncData</span> <span style="color: #7590db;">syncData</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">SyncData</span>();
-            syncData.infoList = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">List</span>&lt;<span style="color: #ce537a; font-weight: bold;">MoveInfo</span>&gt;(infoList.<span style="color: #bc6ec5; font-weight: bold;">ToArray</span>());
-            syncData.keyframe = sendCurFrame;
-            <span style="color: #bc6ec5; font-weight: bold;">Send</span>(syncData);
+          <span style="color: #4f97d7; font-weight: bold;">if</span> (sendCurFrame == svrKeyframe + syncInterval)
+          {
+              <span style="color: #ce537a; font-weight: bold;">SyncData</span> <span style="color: #7590db;">syncData</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">SyncData</span>();
+              syncData.infoList = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">List</span>&lt;<span style="color: #ce537a; font-weight: bold;">MoveInfo</span>&gt;(infoList.<span style="color: #bc6ec5; font-weight: bold;">ToArray</span>());
+              syncData.keyframe = sendCurFrame;
+              <span style="color: #bc6ec5; font-weight: bold;">Send</span>(syncData);
 
-            infoList.<span style="color: #bc6ec5; font-weight: bold;">Clear</span>();
-        }
-        sendCurFrame++;
-    }
-    <span style="color: #4f97d7; font-weight: bold;">else</span>
-    {
-        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">block game. wait for other player</span>
-    }
-}
+              infoList.<span style="color: #bc6ec5; font-weight: bold;">Clear</span>();
+          }
+          sendCurFrame++;
+      }
+      <span style="color: #4f97d7; font-weight: bold;">else</span>
+      {
+          <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">block game. wait for other player</span>
+      }
+  }
 
-<span style="color: #ce537a; font-weight: bold;">List</span>&lt;<span style="color: #ce537a; font-weight: bold;">SyncData</span>&gt; <span style="color: #7590db;">syncDataList</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">List</span>&lt;<span style="color: #ce537a; font-weight: bold;">SyncData</span>&gt;();
-<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">receiveCurFrame</span> = 0;
-<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">UpdateClientMove</span>()
-{
-    <span style="color: #ce537a; font-weight: bold;">SyncData</span> <span style="color: #7590db;">syncData</span> = <span style="color: #bc6ec5; font-weight: bold;">Receive</span>();
-    <span style="color: #4f97d7; font-weight: bold;">if</span> (syncData!=<span style="color: #a45bad;">null</span>)
-    {
-        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#26356;&#26032; &#20851;&#38190;&#24103;&#32534;&#21495;</span>
-        svrKeyframe = syncData.keyframe;
-        syncDataList.<span style="color: #bc6ec5; font-weight: bold;">Add</span>(syncData);
-    }
+  <span style="color: #ce537a; font-weight: bold;">List</span>&lt;<span style="color: #ce537a; font-weight: bold;">SyncData</span>&gt; <span style="color: #7590db;">syncDataList</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">List</span>&lt;<span style="color: #ce537a; font-weight: bold;">SyncData</span>&gt;();
+  <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">receiveCurFrame</span> = 0;
+  <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">UpdateClientMove</span>()
+  {
+      <span style="color: #ce537a; font-weight: bold;">SyncData</span> <span style="color: #7590db;">syncData</span> = <span style="color: #bc6ec5; font-weight: bold;">Receive</span>();
+      <span style="color: #4f97d7; font-weight: bold;">if</span> (syncData!=<span style="color: #a45bad;">null</span>)
+      {
+          <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#26356;&#26032; &#20851;&#38190;&#24103;&#32534;&#21495;</span>
+          svrKeyframe = syncData.keyframe;
+          syncDataList.<span style="color: #bc6ec5; font-weight: bold;">Add</span>(syncData);
+      }
 
-    <span style="color: #4f97d7; font-weight: bold;">if</span> (syncDataList.Count&gt;0)
-    {
-        <span style="color: #ce537a; font-weight: bold;">SyncData</span> <span style="color: #7590db;">tmp</span> = syncDataList[0];
-        <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">idx</span> = receiveCurFrame - (tmp.keyframe - syncInterval);
-        <span style="color: #4f97d7; font-weight: bold;">if</span> (idx&lt;0)
-        {
-            Debug.<span style="color: #bc6ec5; font-weight: bold;">Log</span>(<span style="color: #2d9574;">"Error : client frame smaller than keyframe begin!"</span>);
-            <span style="color: #bc6ec5; font-weight: bold;">quitGame</span>();
-        }
-        <span style="color: #4f97d7; font-weight: bold;">else</span> <span style="color: #4f97d7; font-weight: bold;">if</span> (idx&lt;tmp.infoList.Count)
-        {
-            <span style="color: #ce537a; font-weight: bold;">MoveInfo</span> <span style="color: #7590db;">info</span> = tmp.infoList[deltaFrame];
-            <span style="color: #4f97d7; font-weight: bold;">if</span> (info!=<span style="color: #a45bad;">null</span>)
-            {
-                preMoveInfo = info;
-            }
-            <span style="color: #4f97d7; font-weight: bold;">else</span>
-            {
-                info = preMoveInfo;
-            }
+      <span style="color: #4f97d7; font-weight: bold;">if</span> (syncDataList.Count&gt;0)
+      {
+          <span style="color: #ce537a; font-weight: bold;">SyncData</span> <span style="color: #7590db;">tmp</span> = syncDataList[0];
+          <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">idx</span> = receiveCurFrame - (tmp.keyframe - syncInterval);
+          <span style="color: #4f97d7; font-weight: bold;">if</span> (idx&lt;0)
+          {
+              Debug.<span style="color: #bc6ec5; font-weight: bold;">Log</span>(<span style="color: #2d9574;">"Error : client frame smaller than keyframe begin!"</span>);
+              <span style="color: #bc6ec5; font-weight: bold;">quitGame</span>();
+          }
+          <span style="color: #4f97d7; font-weight: bold;">else</span> <span style="color: #4f97d7; font-weight: bold;">if</span> (idx&lt;tmp.infoList.Count)
+          {
+              <span style="color: #ce537a; font-weight: bold;">MoveInfo</span> <span style="color: #7590db;">info</span> = tmp.infoList[deltaFrame];
+              <span style="color: #4f97d7; font-weight: bold;">if</span> (info!=<span style="color: #a45bad;">null</span>)
+              {
+                  preMoveInfo = info;
+              }
+              <span style="color: #4f97d7; font-weight: bold;">else</span>
+              {
+                  info = preMoveInfo;
+              }
 
-            <span style="color: #4f97d7; font-weight: bold;">if</span>(info!=<span style="color: #a45bad;">null</span>)
-            {
-                <span style="color: #bc6ec5; font-weight: bold;">UpdateGameObjectMove</span>(info);
-            }
-            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22788;&#29702;&#23436;&#19968;&#20010;&#20851;&#38190;&#24103;&#20869;&#30340;&#25968;&#25454;&#21518;&#65292;&#23558;&#36825;&#20010;&#20851;&#38190;&#24103;&#25968;&#25454;&#21024;&#38500;</span>
-            <span style="color: #4f97d7; font-weight: bold;">if</span> (idx == tmp.infoList.Count-1)
-            {
-                syncDataList.<span style="color: #bc6ec5; font-weight: bold;">Remove</span>(tmp);
-            }
+              <span style="color: #4f97d7; font-weight: bold;">if</span>(info!=<span style="color: #a45bad;">null</span>)
+              {
+                  <span style="color: #bc6ec5; font-weight: bold;">UpdateGameObjectMove</span>(info);
+              }
+              <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22788;&#29702;&#23436;&#19968;&#20010;&#20851;&#38190;&#24103;&#20869;&#30340;&#25968;&#25454;&#21518;&#65292;&#23558;&#36825;&#20010;&#20851;&#38190;&#24103;&#25968;&#25454;&#21024;&#38500;</span>
+              <span style="color: #4f97d7; font-weight: bold;">if</span> (idx == tmp.infoList.Count-1)
+              {
+                  syncDataList.<span style="color: #bc6ec5; font-weight: bold;">Remove</span>(tmp);
+              }
 
-            receiveCurFrame++;
-        }
-        <span style="color: #4f97d7; font-weight: bold;">else</span>
-        {
-            Debug.<span style="color: #bc6ec5; font-weight: bold;">Log</span>(<span style="color: #2d9574;">"Error : client frame bigger than keyframe end!"</span>);
-            <span style="color: #bc6ec5; font-weight: bold;">quitGame</span>();
-        }
-    }
-    <span style="color: #4f97d7; font-weight: bold;">else</span>
-    {
-        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">block game. wait for other player.</span>
-    }
-}
+              receiveCurFrame++;
+          }
+          <span style="color: #4f97d7; font-weight: bold;">else</span>
+          {
+              Debug.<span style="color: #bc6ec5; font-weight: bold;">Log</span>(<span style="color: #2d9574;">"Error : client frame bigger than keyframe end!"</span>);
+              <span style="color: #bc6ec5; font-weight: bold;">quitGame</span>();
+          }
+      }
+      <span style="color: #4f97d7; font-weight: bold;">else</span>
+      {
+          <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">block game. wait for other player.</span>
+      }
+  }
 </pre>
 </div>
 </div>

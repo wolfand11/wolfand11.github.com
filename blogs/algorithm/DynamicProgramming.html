@@ -3,17 +3,18 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-05-24 周一 17:58 -->
+<!-- 2022-03-14 周一 16:58 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Dynamic Programming</title>
 <meta name="generator" content="Org mode" />
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-           <meta name="viewport" content="width=device-width, initial-scale=1" />
-           <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/css/worg.css" type="text/css" />
-           <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/css/worg-zenburn.css" type="text/css" />
-           <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
-           <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
+         <meta name="viewport" content="width=device-width, initial-scale=1" />
+         <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/css/worg.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/css/worg-zenburn.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
+         <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/blog-tools.js"></script>
 <script type="text/javascript">
 // @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
 <!--/*--><![CDATA[/*><!--*/
@@ -70,7 +71,7 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orgee8a4ec">动态规划法</a>
+<li><a href="#orgdbe6145">动态规划法</a>
 <ul>
 <li><a href="#org15a0e37">动态规划的特征</a></li>
 <li><a href="#org80e6948">找寻最优子结构的模式</a></li>
@@ -87,14 +88,14 @@
 <li><a href="#org6a8ee06">最长公共子序列</a>
 <ul>
 <li><a href="#orga504c93">穷举法</a></li>
-<li><a href="#orgdbe6145">动态规划法</a>
+<li><a href="#orgaeb4533">动态规划法</a>
 <ul>
 <li><a href="#orgc5c1b65">教科书方式</a></li>
 <li><a href="#orgce47a52">另一种方式</a>
 <ul>
-<li><a href="#orgcb71634">所有涉及到的变量</a></li>
-<li><a href="#org08a9b67">定义问题的状态</a></li>
-<li><a href="#orgc7efefe">定义状态转移方程</a></li>
+<li><a href="#org750c12c">所有涉及到的变量</a></li>
+<li><a href="#org351e4d9">定义问题的状态</a></li>
+<li><a href="#org557359d">定义状态转移方程</a></li>
 <li><a href="#org77a9bd7">求解问题</a></li>
 </ul>
 </li>
@@ -106,13 +107,13 @@
 <ul>
 <li><a href="#org232a571">求解过程</a>
 <ul>
-<li><a href="#org750c12c">所有涉及到的变量</a></li>
-<li><a href="#org351e4d9">定义问题的状态</a></li>
-<li><a href="#org557359d">定义状态转移方程</a>
+<li><a href="#org90d7ea4">所有涉及到的变量</a></li>
+<li><a href="#orgb6bb8be">定义问题的状态</a></li>
+<li><a href="#orgeb144a3">定义状态转移方程</a>
 <ul>
-<li><a href="#orgcf39223">方案 1</a></li>
-<li><a href="#org6379f91">方案 2</a></li>
-<li><a href="#orgb0663f1">方案 3</a></li>
+<li><a href="#org269ea6a">方案 1</a></li>
+<li><a href="#org8f025f1">方案 2</a></li>
+<li><a href="#orgce7ed68">方案 3</a></li>
 </ul>
 </li>
 </ul>
@@ -129,22 +130,22 @@
 <p>
 这篇主要是动态规划算法设计相关的笔记。关于算法其他方面的笔记，可以参考本博客 AlgorithmIntroduce 这篇文章。<br />
 </p>
-<div class="HTML" id="org1187d76">
+<div class="HTML" id="orgf45c8b6">
 <p>
 &lt;!&#x2013;more&#x2013;&gt;<br />
 </p>
 
 </div>
-<div id="outline-container-orgee8a4ec" class="outline-2">
-<h2 id="orgee8a4ec">动态规划法</h2>
-<div class="outline-text-2" id="text-orgee8a4ec">
+<div id="outline-container-orgdbe6145" class="outline-2">
+<h2 id="orgdbe6145">动态规划法</h2>
+<div class="outline-text-2" id="text-orgdbe6145">
 </div>
 <div id="outline-container-org15a0e37" class="outline-3">
 <h3 id="org15a0e37">动态规划的特征</h3>
 <div class="outline-text-3" id="text-org15a0e37">
 <ul class="org-ul">
 <li>最优子结构<br />
-如果问题的一个最优解包含子问题的最优解，就称该问题具有最优子结构。<br />
+  如果问题的一个最优解包含子问题的最优解，就称该问题具有最优子结构。<br />
 例如： 如果 z = LCS(x,y)，那么任何 z 序列的前缀也是 x 序列前缀和 y 序列前缀的最长公共子序列<br /></li>
 <li>重叠子问题，一个递归的过程包含少数独立的子问题被反复计算多次。<br /></li>
 <li>在动态规划法中，每一步都要做出选择，但是这些选择依赖于子问题的解。因此，解动态规划问题一般是自底向上，从小子问题处理至大子问题。这样可以避免子问题被反复计算。<br /></li>
@@ -159,7 +160,7 @@
 <li>假设对一个给定的问题，已知的是一个可以导致最优解的选择。不必关心如何确定这个选择，尽管假定它是已知的。<br /></li>
 <li>在已知这个选择后，要确定哪些子问题会随之发生，以及如何最好地描述所得到的子问题空间。<br />
 描述子问题空间的一个有效经验是，尽量保持这个空间简单，然后在需要时再扩充它。<br />
-在装配线调度问题中，我们所考虑的子问题空间就是从工厂入口通过装配站 \(S_{1,j}和 S_{2,j}\) 的最快路线。这个子问题空间很合适，因而没必要再去尝试一个更具一般性的子问题空间了。<br />
+  在装配线调度问题中，我们所考虑的子问题空间就是从工厂入口通过装配站 \(S_{1,j}和 S_{2,j}\) 的最快路线。这个子问题空间很合适，因而没必要再去尝试一个更具一般性的子问题空间了。<br />
 在矩阵链乘积问题中，考虑的子问题空间是从第 1 个矩阵到第 j 个矩阵相乘时，最优化的加括号方法。<br /></li>
 <li>利用 cut-and-paste 技术，来证明在问题的一个最优解中，使用的子问题的解本身也必须是最优的。<br /></li>
 </ol>
@@ -234,9 +235,9 @@
 </ul>
 </div>
 </div>
-<div id="outline-container-orgdbe6145" class="outline-4">
-<h4 id="orgdbe6145">动态规划法</h4>
-<div class="outline-text-4" id="text-orgdbe6145">
+<div id="outline-container-orgaeb4533" class="outline-4">
+<h4 id="orgaeb4533">动态规划法</h4>
+<div class="outline-text-4" id="text-orgaeb4533">
 </div>
 <div id="outline-container-orgc5c1b65" class="outline-5">
 <h5 id="orgc5c1b65">教科书方式</h5>
@@ -267,21 +268,21 @@ LCS 问题的子问题空间包含 \(m*n\) 个独立的子问题(c[i,j]一共有
 <h5 id="orgce47a52">另一种方式</h5>
 <div class="outline-text-5" id="text-orgce47a52">
 </div>
-<div id="outline-container-orgcb71634" class="outline-6">
-<h6 id="orgcb71634">所有涉及到的变量</h6>
-<div class="outline-text-6" id="text-orgcb71634">
+<div id="outline-container-org750c12c" class="outline-6">
+<h6 id="org750c12c">所有涉及到的变量</h6>
+<div class="outline-text-6" id="text-org750c12c">
 <p>
 \(序列 S1、序列 S2、最长公共子序列 S、最长公共子序列长度 LCS\)<br />
 \(隐含的变量 S1 第 i 个元素 S1_i、S2 第 j 个元素 S2_j\)<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org08a9b67" class="outline-6">
-<h6 id="org08a9b67">定义问题的状态</h6>
-<div class="outline-text-6" id="text-org08a9b67">
+<div id="outline-container-org351e4d9" class="outline-6">
+<h6 id="org351e4d9">定义问题的状态</h6>
+<div class="outline-text-6" id="text-org351e4d9">
 <ul class="org-ul">
 <li>方案 1<br />
-LCS(S1,S2) 表示序列 S1 和序列 S2 的最长公共子序列的长度<br />
+  LCS(S1,S2) 表示序列 S1 和序列 S2 的最长公共子序列的长度<br />
 更一般的描述是，LCS(s1,s2) 表示序列 s1 和序列 s2 的最长公共子序列的长度<br />
 使用序列最后一个值的索引值来表示也是等价的。即，LCS(i,j)<br /></li>
 <li>方案 2<br />
@@ -295,13 +296,13 @@ LCS(S) 表示序列 S1 和序列 S2 的最长公共子序列 S 的长度<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-orgc7efefe" class="outline-6">
-<h6 id="orgc7efefe">定义状态转移方程</h6>
-<div class="outline-text-6" id="text-orgc7efefe">
+<div id="outline-container-org557359d" class="outline-6">
+<h6 id="org557359d">定义状态转移方程</h6>
+<div class="outline-text-6" id="text-org557359d">
 </div>
 <ul class="org-ul">
-<li><a id="orgb24427d"></a>方案 1<br />
-<div class="outline-text-7" id="text-orgb24427d">
+<li><a id="orgcf39223"></a>方案 1<br />
+<div class="outline-text-7" id="text-orgcf39223">
 <ul class="org-ul">
 <li><p>
 将问题划分为多个子问题<br />
@@ -324,17 +325,17 @@ LCS(i-1,j)+1      & 不包含 s1_i    \\
 </ul>
 </div>
 </li>
-<li><a id="org57d377c"></a>方案 2<br />
-<div class="outline-text-7" id="text-org57d377c">
+<li><a id="org6379f91"></a>方案 2<br />
+<div class="outline-text-7" id="text-org6379f91">
 <ul class="org-ul">
 <li><p>
 将问题划分为多个子问题<br />
 以最长公共子序列中是否包含当前 s1 序列中最后一个值来划分问题<br />
 </p>
 \begin{align}
-  &LCS(i-1)      如果不包含 s1 的最后一个值        \nonumber \\
-  &LCS(i-1)+1    如果包含 s1 的最后一个值         \nonumber \\
-  \end{align}</li>
+&LCS(i-1)      如果不包含 s1 的最后一个值        \nonumber \\
+&LCS(i-1)+1    如果包含 s1 的最后一个值         \nonumber \\
+\end{align}</li>
 <li><p>
 通过子问题来定义原问题<br />
 </p>
@@ -351,8 +352,8 @@ LCS(i-1)+1      & 不包含 s1_i    \\
 </p>
 </div>
 </li>
-<li><a id="orgb7d1239"></a>方案 3<br />
-<div class="outline-text-7" id="text-orgb7d1239">
+<li><a id="orgb0663f1"></a>方案 3<br />
+<div class="outline-text-7" id="text-orgb0663f1">
 <ul class="org-ul">
 <li><p>
 将问题划分为多个子问题<br />
@@ -394,17 +395,17 @@ LCS(k-1)+1      & 不包含 s1_i    \\
 <h4 id="org232a571">求解过程</h4>
 <div class="outline-text-4" id="text-org232a571">
 </div>
-<div id="outline-container-org750c12c" class="outline-5">
-<h5 id="org750c12c">所有涉及到的变量</h5>
-<div class="outline-text-5" id="text-org750c12c">
+<div id="outline-container-org90d7ea4" class="outline-5">
+<h5 id="org90d7ea4">所有涉及到的变量</h5>
+<div class="outline-text-5" id="text-org90d7ea4">
 <p>
 \(物品总数量 N；物品编号 i（物品 i 的价值 W_i 物品 i 的体积 C_i）；背包容量 V；装完背包后获得的最大总价值 F\)<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org351e4d9" class="outline-5">
-<h5 id="org351e4d9">定义问题的状态</h5>
-<div class="outline-text-5" id="text-org351e4d9">
+<div id="outline-container-orgb6bb8be" class="outline-5">
+<h5 id="orgb6bb8be">定义问题的状态</h5>
+<div class="outline-text-5" id="text-orgb6bb8be">
 <ul class="org-ul">
 <li>方案 1<br />
 通过两个自变量来描述问题，即 F(N,V) 表示从 N 个物体中进行选取放入 V 空间中所获得的最大总价值<br />
@@ -418,13 +419,13 @@ LCS(k-1)+1      & 不包含 s1_i    \\
 </ul>
 </div>
 </div>
-<div id="outline-container-org557359d" class="outline-5">
-<h5 id="org557359d">定义状态转移方程</h5>
-<div class="outline-text-5" id="text-org557359d">
+<div id="outline-container-orgeb144a3" class="outline-5">
+<h5 id="orgeb144a3">定义状态转移方程</h5>
+<div class="outline-text-5" id="text-orgeb144a3">
 </div>
-<div id="outline-container-orgcf39223" class="outline-6">
-<h6 id="orgcf39223">方案 1</h6>
-<div class="outline-text-6" id="text-orgcf39223">
+<div id="outline-container-org269ea6a" class="outline-6">
+<h6 id="org269ea6a">方案 1</h6>
+<div class="outline-text-6" id="text-org269ea6a">
 <ul class="org-ul">
 <li><p>
 将问题划分为多个子问题<br />
@@ -447,9 +448,9 @@ F(i-1,v-C_i)+W_i   & 选择物品 i    \\
 </ul>
 </div>
 </div>
-<div id="outline-container-org6379f91" class="outline-6">
-<h6 id="org6379f91">方案 2</h6>
-<div class="outline-text-6" id="text-org6379f91">
+<div id="outline-container-org8f025f1" class="outline-6">
+<h6 id="org8f025f1">方案 2</h6>
+<div class="outline-text-6" id="text-org8f025f1">
 <ul class="org-ul">
 <li><p>
 将问题划分为多个子问题<br />
@@ -475,9 +476,9 @@ F(i-1)+W_i   & 选择物品 i    \\
 </ul>
 </div>
 </div>
-<div id="outline-container-orgb0663f1" class="outline-6">
-<h6 id="orgb0663f1">方案 3</h6>
-<div class="outline-text-6" id="text-orgb0663f1">
+<div id="outline-container-orgce7ed68" class="outline-6">
+<h6 id="orgce7ed68">方案 3</h6>
+<div class="outline-text-6" id="text-orgce7ed68">
 <ul class="org-ul">
 <li><p>
 将问题划分为多个子问题<br />

@@ -3,17 +3,18 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-05-24 周一 17:58 -->
+<!-- 2022-03-14 周一 16:59 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Skin Rendering</title>
 <meta name="generator" content="Org mode" />
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-           <meta name="viewport" content="width=device-width, initial-scale=1" />
-           <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/css/worg.css" type="text/css" />
-           <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/css/worg-zenburn.css" type="text/css" />
-           <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
-           <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
+         <meta name="viewport" content="width=device-width, initial-scale=1" />
+         <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/css/worg.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/css/worg-zenburn.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
+         <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/blog-tools.js"></script>
 <script type="text/javascript">
 // @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
 <!--/*--><![CDATA[/*><!--*/
@@ -107,7 +108,7 @@
 </li>
 </ul>
 </li>
-<li><a href="#org7b299dc">参考资料</a>
+<li><a href="#org93074fe">参考资料</a>
 <ul>
 <li><a href="#org8240749">高斯卷积核求解</a></li>
 </ul>
@@ -143,14 +144,14 @@
 </li>
 <li><a href="#orgd1dc5b8">ScreenSpace Perceptual Rendering of Human Skin</a>
 <ul>
-<li><a href="#orgfa70106">实现细节</a>
+<li><a href="#org432f847">实现细节</a>
 <ul>
 <li><a href="#org51def1e">Blur Kernel width</a></li>
 <li><a href="#org1840484">渲染流程和贴图空间 SSS 的对比</a></li>
 <li><a href="#orgb39869d">缺陷</a></li>
 </ul>
 </li>
-<li><a href="#org075d71d">参考链接</a></li>
+<li><a href="#orgdb6115c">参考链接</a></li>
 </ul>
 </li>
 <li><a href="#orgafffbc4">Real-Time Realistic Skin Translucency</a>
@@ -160,15 +161,15 @@
 <li><a href="#org00adcb1">算法基于下面 4 点观察</a></li>
 <li><a href="#orgefd1ae6">基于上面 4 点观察，算法做出如下 3 点假设</a></li>
 <li><a href="#org153bc11">公式推导</a></li>
-<li><a href="#org432f847">实现细节</a></li>
+<li><a href="#orge83776c">实现细节</a></li>
 </ul>
 </li>
-<li><a href="#orgb85a6c6">参考链接</a></li>
+<li><a href="#org2650981">参考链接</a></li>
 </ul>
 </li>
 <li><a href="#orgc6251ca"><span class="todo TODO">TODO</span> Separable-SSS</a>
 <ul>
-<li><a href="#orgdb6115c">参考链接</a></li>
+<li><a href="#org293a415">参考链接</a></li>
 </ul>
 </li>
 <li><a href="#orgd5de6e1">Misc</a>
@@ -177,14 +178,14 @@
 <li><a href="#org33677b5">NoLWrap</a></li>
 </ul>
 </li>
-<li><a href="#org93074fe">参考资料</a></li>
+<li><a href="#org4127878">参考资料</a></li>
 </ul>
 </div>
 </div>
 <p>
 Skin Rendering note.<br />
 </p>
-<div class="HTML" id="orge0ee18f">
+<div class="HTML" id="orge9bdaef">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -312,19 +313,19 @@ uv.v 为 roughness<br />
 在贴图空间，计算被散射的能量。渲染模型，结果按照模型 UV 输出（这就是所谓的贴图空间渲染）。<br />
 </p>
 <div class="org-src-container">
-<pre class="src src-shader">v2f <span style="color: #bc6ec5; font-weight: bold;">vert</span> (appdata v)
-{
-    v2f o;
-<span style="color: #bc6ec5;">    #if</span> UNITY_UV_STARTS_AT_TOP
-    o.pos = <span style="color: #ce537a; font-weight: bold;">float4</span>((v.uv0 * 2 - 1)*<span style="color: #ce537a; font-weight: bold;">float2</span>(1,-1), 0, 1);
-<span style="color: #bc6ec5;">    #else</span>
-    o.pos = <span style="color: #ce537a; font-weight: bold;">float4</span>(v.uv0 * 2 - 1, 0, 1);
-<span style="color: #bc6ec5;">    #endif</span>
-    o.tex = v.uv0;
-    o.posWorld = <span style="color: #4f97d7;">mul</span>(unity_ObjectToWorld, v.vertex);
-    o.eyeVec.xyz = <span style="color: #7590db;">_WorldSpaceCameraPos</span> - o.posWorld.xyz;
-    <span style="color: #4f97d7; font-weight: bold;">return</span> o;
-}
+<pre class="src src-shader">    v2f <span style="color: #bc6ec5; font-weight: bold;">vert</span> (appdata v)
+    {
+        v2f o;
+<span style="color: #bc6ec5;">        #if</span> UNITY_UV_STARTS_AT_TOP
+        o.pos = <span style="color: #ce537a; font-weight: bold;">float4</span>((v.uv0 * 2 - 1)*<span style="color: #ce537a; font-weight: bold;">float2</span>(1,-1), 0, 1);
+<span style="color: #bc6ec5;">        #else</span>
+        o.pos = <span style="color: #ce537a; font-weight: bold;">float4</span>(v.uv0 * 2 - 1, 0, 1);
+<span style="color: #bc6ec5;">        #endif</span>
+        o.tex = v.uv0;
+        o.posWorld = <span style="color: #4f97d7;">mul</span>(unity_ObjectToWorld, v.vertex);
+        o.eyeVec.xyz = <span style="color: #7590db;">_WorldSpaceCameraPos</span> - o.posWorld.xyz;
+        <span style="color: #4f97d7; font-weight: bold;">return</span> o;
+    }
 </pre>
 </div>
 </div>
@@ -337,16 +338,16 @@ uv.v 为 roughness<br />
 在贴图空间，矫正贴图空间的模糊(曲率比较大的地方，相邻点的空间距离比其贴图上的距离要小)<br />
 </p>
 <div class="org-src-container">
-<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// &#21516;&#26679;&#26159;&#22312;&#36148;&#22270;&#31354;&#38388;&#36827;&#34892;&#35745;&#31639;&#65292;&#24471;&#21040;&#36148;&#22270;&#34987;&#25289;&#20280;&#30340;&#31243;&#24230;(&#20854;&#23454;&#20063;&#26159;&#27169;&#22411;&#26412;&#36523;&#30340;&#26354;&#29575;)</span>
-<span style="color: #ce537a; font-weight: bold;">fixed4</span> <span style="color: #bc6ec5; font-weight: bold;">frag</span> (v2f i) : <span style="color: #a45bad;">SV_Target</span>
-{
-    <span style="color: #ce537a; font-weight: bold;">float3</span> posWorld = i.posWorld;
-    <span style="color: #ce537a; font-weight: bold;">float3</span> derivU = <span style="color: #4f97d7;">ddx</span>(posWorld);
-    <span style="color: #ce537a; font-weight: bold;">float3</span> derivV = <span style="color: #4f97d7;">ddy</span>(posWorld);
-    <span style="color: #ce537a; font-weight: bold;">float</span> stretchU = 1 / <span style="color: #4f97d7;">length</span>(derivU) * <span style="color: #7590db;">_StretchScale</span>;
-    <span style="color: #ce537a; font-weight: bold;">float</span> stretchV = 1 / <span style="color: #4f97d7;">length</span>(derivV) * <span style="color: #7590db;">_StretchScale</span>;
-    <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #bc6ec5; font-weight: bold;">float4</span>(stretchU, stretchV, 0, 1);
-}
+<pre class="src src-shader">    <span style="color: #2aa1ae; background-color: #292e34;">// &#21516;&#26679;&#26159;&#22312;&#36148;&#22270;&#31354;&#38388;&#36827;&#34892;&#35745;&#31639;&#65292;&#24471;&#21040;&#36148;&#22270;&#34987;&#25289;&#20280;&#30340;&#31243;&#24230;(&#20854;&#23454;&#20063;&#26159;&#27169;&#22411;&#26412;&#36523;&#30340;&#26354;&#29575;)</span>
+    <span style="color: #ce537a; font-weight: bold;">fixed4</span> <span style="color: #bc6ec5; font-weight: bold;">frag</span> (v2f i) : <span style="color: #a45bad;">SV_Target</span>
+    {
+        <span style="color: #ce537a; font-weight: bold;">float3</span> posWorld = i.posWorld;
+        <span style="color: #ce537a; font-weight: bold;">float3</span> derivU = <span style="color: #4f97d7;">ddx</span>(posWorld);
+        <span style="color: #ce537a; font-weight: bold;">float3</span> derivV = <span style="color: #4f97d7;">ddy</span>(posWorld);
+        <span style="color: #ce537a; font-weight: bold;">float</span> stretchU = 1 / <span style="color: #4f97d7;">length</span>(derivU) * <span style="color: #7590db;">_StretchScale</span>;
+        <span style="color: #ce537a; font-weight: bold;">float</span> stretchV = 1 / <span style="color: #4f97d7;">length</span>(derivV) * <span style="color: #7590db;">_StretchScale</span>;
+        <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #bc6ec5; font-weight: bold;">float4</span>(stretchU, stretchV, 0, 1);
+    }
 </pre>
 </div>
 </div>
@@ -371,7 +372,7 @@ uv.v 为 roughness<br />
 <h6 id="org1afd684">2D Blur to 1D Blur</h6>
 <div class="outline-text-6" id="text-org1afd684">
 
-<div id="org26a91a2" class="figure">
+<div id="org91bc671" class="figure">
 <p><img src="./SkinRendering/2d_gaussian_blur_to_1d_gaussian_blur.jpg" alt="2d_gaussian_blur_to_1d_gaussian_blur.jpg" /><br />
 </p>
 </div>
@@ -393,33 +394,33 @@ R(d)<sub>r</sub> = 0.078*G(sqrt(7.41), d) + 0.358*G(sqrt(1.99), d) + 0.113*G(sqr
 <h6 id="org9f552d8">代码实现</h6>
 <div class="outline-text-6" id="text-org9f552d8">
 <div class="org-src-container">
-<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// &#22312;&#36148;&#22270;&#31354;&#38388;&#65292;&#20808;&#23545;StretchTexture&#36827;&#34892;&#27169;&#31946;&#65292;&#28982;&#21518;&#20877;&#23545;IrradianceTexture&#36827;&#34892;&#27169;&#31946;</span>
-<span style="color: #ce537a; font-weight: bold;">fixed4</span> <span style="color: #bc6ec5; font-weight: bold;">frag</span> (v2f i) : <span style="color: #a45bad;">SV_Target</span>
-{
-    <span style="color: #ce537a; font-weight: bold;">float</span> scale = <span style="color: #7590db;">_MainTex_TexelSize</span>.x * <span style="color: #7590db;">_GaussianWidth</span> / <span style="color: #7590db;">_BlurStepScale</span>;
-    <span style="color: #ce537a; font-weight: bold;">float2</span> uvDelta = <span style="color: #ce537a; font-weight: bold;">float2</span>(scale, 0.0);
-<span style="color: #bc6ec5;">    #if</span> defined(CONV_V)
-        uvDelta.xy = uvDelta.yx;
-<span style="color: #bc6ec5;">        #if</span> defined(ENABLE_STRETCH_CORRECTION)
-            uvDelta.y *= <span style="color: #4f97d7;">tex2D</span>(<span style="color: #7590db;">_StretchTex</span>, i.uv).y;
-<span style="color: #bc6ec5;">        #endif</span>
-<span style="color: #bc6ec5;">    #else</span>
-<span style="color: #bc6ec5;">        #if</span> defined(ENABLE_STRETCH_CORRECTION)
-            uvDelta.x *= <span style="color: #4f97d7;">tex2D</span>(<span style="color: #7590db;">_StretchTex</span>, i.uv).x;
-<span style="color: #bc6ec5;">        #endif</span>
-<span style="color: #bc6ec5;">    #endif</span>
-    <span style="color: #ce537a; font-weight: bold;">float2</span> coords = i.uv - uvDelta*3.0;
-    <span style="color: #ce537a; font-weight: bold;">float4</span> sum = 0.0;
-    <span style="color: #2aa1ae; background-color: #292e34;">// &#26399;&#26395;&#20026;0&#65292;&#26631;&#20934;&#24046;&#20026;1 &#30340;&#39640;&#26031;&#20989;&#25968;&#31163;&#25955;&#30340;&#20989;&#25968;&#20540;</span>
-    <span style="color: #ce537a; font-weight: bold;">float</span> curve[7] = { 0.006, 0.061, 0.242, 0.383, 0.242, 0.061, 0.006 };
-    <span style="color: #4f97d7; font-weight: bold;">for</span> (<span style="color: #ce537a; font-weight: bold;">int</span> j = 0; j &lt; 7; j++)
+<pre class="src src-shader">    <span style="color: #2aa1ae; background-color: #292e34;">// &#22312;&#36148;&#22270;&#31354;&#38388;&#65292;&#20808;&#23545;StretchTexture&#36827;&#34892;&#27169;&#31946;&#65292;&#28982;&#21518;&#20877;&#23545;IrradianceTexture&#36827;&#34892;&#27169;&#31946;</span>
+    <span style="color: #ce537a; font-weight: bold;">fixed4</span> <span style="color: #bc6ec5; font-weight: bold;">frag</span> (v2f i) : <span style="color: #a45bad;">SV_Target</span>
     {
-        <span style="color: #ce537a; font-weight: bold;">float4</span> tap = <span style="color: #4f97d7;">tex2D</span>(<span style="color: #7590db;">_MainTex</span>, coords);
-        sum += curve[j] * tap;
-        coords += uvDelta;
+        <span style="color: #ce537a; font-weight: bold;">float</span> scale = <span style="color: #7590db;">_MainTex_TexelSize</span>.x * <span style="color: #7590db;">_GaussianWidth</span> / <span style="color: #7590db;">_BlurStepScale</span>;
+        <span style="color: #ce537a; font-weight: bold;">float2</span> uvDelta = <span style="color: #ce537a; font-weight: bold;">float2</span>(scale, 0.0);
+<span style="color: #bc6ec5;">        #if</span> defined(CONV_V)
+            uvDelta.xy = uvDelta.yx;
+<span style="color: #bc6ec5;">            #if</span> defined(ENABLE_STRETCH_CORRECTION)
+                uvDelta.y *= <span style="color: #4f97d7;">tex2D</span>(<span style="color: #7590db;">_StretchTex</span>, i.uv).y;
+<span style="color: #bc6ec5;">            #endif</span>
+<span style="color: #bc6ec5;">        #else</span>
+<span style="color: #bc6ec5;">            #if</span> defined(ENABLE_STRETCH_CORRECTION)
+                uvDelta.x *= <span style="color: #4f97d7;">tex2D</span>(<span style="color: #7590db;">_StretchTex</span>, i.uv).x;
+<span style="color: #bc6ec5;">            #endif</span>
+<span style="color: #bc6ec5;">        #endif</span>
+        <span style="color: #ce537a; font-weight: bold;">float2</span> coords = i.uv - uvDelta*3.0;
+        <span style="color: #ce537a; font-weight: bold;">float4</span> sum = 0.0;
+            <span style="color: #2aa1ae; background-color: #292e34;">// &#26399;&#26395;&#20026;0&#65292;&#26631;&#20934;&#24046;&#20026;1 &#30340;&#39640;&#26031;&#20989;&#25968;&#31163;&#25955;&#30340;&#20989;&#25968;&#20540;</span>
+        <span style="color: #ce537a; font-weight: bold;">float</span> curve[7] = { 0.006, 0.061, 0.242, 0.383, 0.242, 0.061, 0.006 };
+        <span style="color: #4f97d7; font-weight: bold;">for</span> (<span style="color: #ce537a; font-weight: bold;">int</span> j = 0; j &lt; 7; j++)
+        {
+            <span style="color: #ce537a; font-weight: bold;">float4</span> tap = <span style="color: #4f97d7;">tex2D</span>(<span style="color: #7590db;">_MainTex</span>, coords);
+            sum += curve[j] * tap;
+            coords += uvDelta;
+        }
+        <span style="color: #4f97d7; font-weight: bold;">return</span> sum;
     }
-    <span style="color: #4f97d7; font-weight: bold;">return</span> sum;
-}
 </pre>
 </div>
 </div>
@@ -441,9 +442,9 @@ R(d)<sub>r</sub> = 0.078*G(sqrt(7.41), d) + 0.358*G(sqrt(1.99), d) + 0.113*G(sqr
 </div>
 </div>
 </div>
-<div id="outline-container-org7b299dc" class="outline-3">
-<h3 id="org7b299dc">参考资料</h3>
-<div class="outline-text-3" id="text-org7b299dc">
+<div id="outline-container-org93074fe" class="outline-3">
+<h3 id="org93074fe">参考资料</h3>
+<div class="outline-text-3" id="text-org93074fe">
 <ul class="org-ul">
 <li>Advanced Techniques for Realistic Real-Time Skin Rendering <a href="https://developer.nvidia.com/gpugems/GPUGems3/gpugems3_ch14.html">https://developer.nvidia.com/gpugems/GPUGems3/gpugems3_ch14.html</a><br /></li>
 <li>角色渲染技术——皮肤 <a href="https://zhuanlan.zhihu.com/p/27014447">https://zhuanlan.zhihu.com/p/27014447</a><br /></li>
@@ -682,7 +683,7 @@ SSS_Lut2 *= SSS_Lut2;
 </div>
 
 
-<div id="org7905462" class="figure">
+<div id="orgc16b15c" class="figure">
 <p><img src="./SkinRendering/clx_shadow_scatter.jpg" alt="clx_shadow_scatter.jpg" /><br />
 </p>
 </div>
@@ -694,9 +695,9 @@ SSS_Lut2 *= SSS_Lut2;
 <h2 id="orgd1dc5b8">ScreenSpace Perceptual Rendering of Human Skin</h2>
 <div class="outline-text-2" id="text-orgd1dc5b8">
 </div>
-<div id="outline-container-orgfa70106" class="outline-3">
-<h3 id="orgfa70106">实现细节</h3>
-<div class="outline-text-3" id="text-orgfa70106">
+<div id="outline-container-org432f847" class="outline-3">
+<h3 id="org432f847">实现细节</h3>
+<div class="outline-text-3" id="text-org432f847">
 </div>
 <div id="outline-container-org51def1e" class="outline-4">
 <h4 id="org51def1e">Blur Kernel width</h4>
@@ -729,47 +730,47 @@ Blur Kernel width 需要考虑下面两个情况<br />
 </p>
 
 <div class="org-src-container">
-<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #bc6ec5; font-weight: bold;">BlurPS</span>(PassV2P input, <span style="color: #4f97d7; font-weight: bold;">uniform</span> <span style="color: #ce537a; font-weight: bold;">float2</span> <span style="color: #4f97d7;">step</span>) : SV_TARGET {
-    <span style="color: #2aa1ae; background-color: #292e34;">// Gaussian weights for the six samples around the current pixel:</span>
-    <span style="color: #2aa1ae; background-color: #292e34;">//   -3 -2 -1 +1 +2 +3</span>
-    <span style="color: #ce537a; font-weight: bold;">float</span> w[6] = { 0.006,   0.061,   0.242,  0.242,  0.061, 0.006 };
-    <span style="color: #ce537a; font-weight: bold;">float</span> o[6] = {  -1.0, -0.6667, -0.3333, 0.3333, 0.6667,   1.0 };
+<pre class="src src-shader">  <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #bc6ec5; font-weight: bold;">BlurPS</span>(PassV2P input, <span style="color: #4f97d7; font-weight: bold;">uniform</span> <span style="color: #ce537a; font-weight: bold;">float2</span> <span style="color: #4f97d7;">step</span>) : SV_TARGET {
+      <span style="color: #2aa1ae; background-color: #292e34;">// Gaussian weights for the six samples around the current pixel:</span>
+      <span style="color: #2aa1ae; background-color: #292e34;">//   -3 -2 -1 +1 +2 +3</span>
+      <span style="color: #ce537a; font-weight: bold;">float</span> w[6] = { 0.006,   0.061,   0.242,  0.242,  0.061, 0.006 };
+      <span style="color: #ce537a; font-weight: bold;">float</span> o[6] = {  -1.0, -0.6667, -0.3333, 0.3333, 0.6667,   1.0 };
 
-    <span style="color: #2aa1ae; background-color: #292e34;">// Fetch color and linear depth for current pixel:</span>
-    <span style="color: #ce537a; font-weight: bold;">float4</span> colorM = colorTex.Sample(PointSampler, input.texcoord);
-    <span style="color: #ce537a; font-weight: bold;">float</span> depthM = depthTex.Sample(PointSampler, input.texcoord);
+      <span style="color: #2aa1ae; background-color: #292e34;">// Fetch color and linear depth for current pixel:</span>
+      <span style="color: #ce537a; font-weight: bold;">float4</span> colorM = colorTex.Sample(PointSampler, input.texcoord);
+      <span style="color: #ce537a; font-weight: bold;">float</span> depthM = depthTex.Sample(PointSampler, input.texcoord);
 
-    <span style="color: #2aa1ae; background-color: #292e34;">// Accumulate center sample, multiplying it with its gaussian weight:</span>
-    <span style="color: #ce537a; font-weight: bold;">float4</span> colorBlurred = colorM;
-    colorBlurred.rgb *= 0.382;
+      <span style="color: #2aa1ae; background-color: #292e34;">// Accumulate center sample, multiplying it with its gaussian weight:</span>
+      <span style="color: #ce537a; font-weight: bold;">float4</span> colorBlurred = colorM;
+      colorBlurred.rgb *= 0.382;
 
-    <span style="color: #2aa1ae; background-color: #292e34;">// Calculate the step that we will use to fetch the surrounding pixels,</span>
-    <span style="color: #2aa1ae; background-color: #292e34;">// where "step" is:</span>
-    <span style="color: #2aa1ae; background-color: #292e34;">//     step = sssStrength * gaussianWidth * pixelSize * dir</span>
-    <span style="color: #2aa1ae; background-color: #292e34;">// The closer the pixel, the stronger the effect needs to be, hence</span>
-    <span style="color: #2aa1ae; background-color: #292e34;">// the factor 1.0 / depthM.</span>
-    <span style="color: #ce537a; font-weight: bold;">float2</span> finalStep = colorM.a * <span style="color: #4f97d7;">step</span> / depthM;
+      <span style="color: #2aa1ae; background-color: #292e34;">// Calculate the step that we will use to fetch the surrounding pixels,</span>
+      <span style="color: #2aa1ae; background-color: #292e34;">// where "step" is:</span>
+      <span style="color: #2aa1ae; background-color: #292e34;">//     step = sssStrength * gaussianWidth * pixelSize * dir</span>
+      <span style="color: #2aa1ae; background-color: #292e34;">// The closer the pixel, the stronger the effect needs to be, hence</span>
+      <span style="color: #2aa1ae; background-color: #292e34;">// the factor 1.0 / depthM.</span>
+      <span style="color: #ce537a; font-weight: bold;">float2</span> finalStep = colorM.a * <span style="color: #4f97d7;">step</span> / depthM;
 
-    <span style="color: #2aa1ae; background-color: #292e34;">// Accumulate the other samples:</span>
-    [unroll]
-    <span style="color: #4f97d7; font-weight: bold;">for</span> (<span style="color: #ce537a; font-weight: bold;">int</span> i = 0; i &lt; 6; i++) {
-        <span style="color: #2aa1ae; background-color: #292e34;">// Fetch color and depth for current sample:</span>
-        <span style="color: #ce537a; font-weight: bold;">float2</span> offset = input.texcoord + o[i] * finalStep;
-        <span style="color: #ce537a; font-weight: bold;">float3</span> color = colorTex.SampleLevel(LinearSampler, offset, 0).rgb;
-        <span style="color: #ce537a; font-weight: bold;">float</span> depth = depthTex.SampleLevel(PointSampler, offset, 0);
+      <span style="color: #2aa1ae; background-color: #292e34;">// Accumulate the other samples:</span>
+      [unroll]
+      <span style="color: #4f97d7; font-weight: bold;">for</span> (<span style="color: #ce537a; font-weight: bold;">int</span> i = 0; i &lt; 6; i++) {
+          <span style="color: #2aa1ae; background-color: #292e34;">// Fetch color and depth for current sample:</span>
+          <span style="color: #ce537a; font-weight: bold;">float2</span> offset = input.texcoord + o[i] * finalStep;
+          <span style="color: #ce537a; font-weight: bold;">float3</span> color = colorTex.SampleLevel(LinearSampler, offset, 0).rgb;
+          <span style="color: #ce537a; font-weight: bold;">float</span> depth = depthTex.SampleLevel(PointSampler, offset, 0);
 
-        <span style="color: #2aa1ae; background-color: #292e34;">// If the difference in depth is huge, we lerp color back to "colorM":</span>
-        <span style="color: #ce537a; font-weight: bold;">float</span> s = <span style="color: #4f97d7;">min</span>(0.0125 * correction * <span style="color: #4f97d7;">abs</span>(depthM - depth), 1.0);
-        color = <span style="color: #4f97d7;">lerp</span>(color, colorM.rgb, s);
+          <span style="color: #2aa1ae; background-color: #292e34;">// If the difference in depth is huge, we lerp color back to "colorM":</span>
+          <span style="color: #ce537a; font-weight: bold;">float</span> s = <span style="color: #4f97d7;">min</span>(0.0125 * correction * <span style="color: #4f97d7;">abs</span>(depthM - depth), 1.0);
+          color = <span style="color: #4f97d7;">lerp</span>(color, colorM.rgb, s);
 
-        <span style="color: #2aa1ae; background-color: #292e34;">// Accumulate:</span>
-        colorBlurred.rgb += w[i] * color;
-    }
+          <span style="color: #2aa1ae; background-color: #292e34;">// Accumulate:</span>
+          colorBlurred.rgb += w[i] * color;
+      }
 
-    <span style="color: #2aa1ae; background-color: #292e34;">// The result will be alpha blended with current buffer by using specific</span>
-    <span style="color: #2aa1ae; background-color: #292e34;">// RGB weights. For more details, I refer you to the GPU Pro chapter :)</span>
-    <span style="color: #4f97d7; font-weight: bold;">return</span> colorBlurred;
-}
+      <span style="color: #2aa1ae; background-color: #292e34;">// The result will be alpha blended with current buffer by using specific</span>
+      <span style="color: #2aa1ae; background-color: #292e34;">// RGB weights. For more details, I refer you to the GPU Pro chapter :)</span>
+      <span style="color: #4f97d7; font-weight: bold;">return</span> colorBlurred;
+  }
 </pre>
 </div>
 </div>
@@ -778,19 +779,19 @@ Blur Kernel width 需要考虑下面两个情况<br />
 <h4 id="org1840484">渲染流程和贴图空间 SSS 的对比</h4>
 <div class="outline-text-4" id="text-org1840484">
 
-<div id="orgc4f5330" class="figure">
+<div id="org7449779" class="figure">
 <p><img src="./SkinRendering/007_screenspace_sss_pipeline.jpg" alt="007_screenspace_sss_pipeline.jpg" /><br />
 </p>
 </div>
 
 
-<div id="orgfc89e78" class="figure">
+<div id="org5a114ac" class="figure">
 <p><img src="./SkinRendering/007_sssss_vs_tssss_pipeline.jpg" alt="007_sssss_vs_tssss_pipeline.jpg" /><br />
 </p>
 </div>
 
 
-<div id="org6a5745b" class="figure">
+<div id="orge486faf" class="figure">
 <p><img src="./SkinRendering/007_sssss_vs_tssss_pipeline_02.jpg" alt="007_sssss_vs_tssss_pipeline_02.jpg" /><br />
 </p>
 </div>
@@ -800,7 +801,7 @@ Blur Kernel width 需要考虑下面两个情况<br />
 <h4 id="orgb39869d">缺陷</h4>
 <div class="outline-text-4" id="text-orgb39869d">
 
-<div id="orgc9ff53a" class="figure">
+<div id="org7b74fbc" class="figure">
 <p><img src="./SkinRendering/007_sssss_limits.jpg" alt="007_sssss_limits.jpg" /><br />
 </p>
 </div>
@@ -812,9 +813,9 @@ Blur Kernel width 需要考虑下面两个情况<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org075d71d" class="outline-3">
-<h3 id="org075d71d">参考链接</h3>
-<div class="outline-text-3" id="text-org075d71d">
+<div id="outline-container-orgdb6115c" class="outline-3">
+<h3 id="orgdb6115c">参考链接</h3>
+<div class="outline-text-3" id="text-orgdb6115c">
 <ul class="org-ul">
 <li>2009 <a href="http://www.iryoku.com/sssss/">http://www.iryoku.com/sssss/</a><br /></li>
 <li>2010 <a href="http://iryoku.com/translucency/">http://iryoku.com/translucency/</a><br /></li>
@@ -853,42 +854,42 @@ Blur Kernel width 需要考虑下面两个情况<br />
 <h4 id="org153bc11">公式推导</h4>
 <div class="outline-text-4" id="text-org153bc11">
 
-<div id="org753ec01" class="figure">
+<div id="org7dbd43b" class="figure">
 <p><img src="./SkinRendering/008_translucent_equation.jpg" alt="008_translucent_equation.jpg" /><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-org432f847" class="outline-4">
-<h4 id="org432f847">实现细节</h4>
-<div class="outline-text-4" id="text-org432f847">
+<div id="outline-container-orge83776c" class="outline-4">
+<h4 id="orge83776c">实现细节</h4>
+<div class="outline-text-4" id="text-orge83776c">
 <p>
 尽管使用取反的 Normal 来计算透射率避免了双重贡献（相对于两次都使用不取反 Normal 进行计算）。但是，使用取反 Normal 导致反射照亮区域和只受透射照亮的区域之间的过度不平滑。在过度区域，N.L 和 -N.L 都为 0。为了避免突然的照明变化，我们通过下面方式扩大透射照亮的区域：<br />
 <img src="./SkinRendering/008_enlarge_translucent_range.jpg" alt="008_enlarge_translucent_range.jpg" /><br />
 </p>
 
 <div class="org-src-container">
-<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">float3</span> <span style="color: #bc6ec5; font-weight: bold;">T</span>(<span style="color: #ce537a; font-weight: bold;">float</span> s) 
-{
-    <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #bc6ec5; font-weight: bold;">float3</span>(0.233, 0.455, 0.649) * <span style="color: #4f97d7;">exp</span>(-s*s/0.0064) +
-    <span style="color: #ce537a; font-weight: bold;">float3</span>(0.1, 0.336, 0.344) * <span style="color: #4f97d7;">exp</span>(-s*s/0.0484) +
-    <span style="color: #ce537a; font-weight: bold;">float3</span>(0.118, 0.198, 0.0) * <span style="color: #4f97d7;">exp</span>(-s*s/0.187) +
-    <span style="color: #ce537a; font-weight: bold;">float3</span>(0.113, 0.007, 0.007) * <span style="color: #4f97d7;">exp</span>(-s*s/0.567) +
-    <span style="color: #ce537a; font-weight: bold;">float3</span>(0.358, 0.004, 0.0) * <span style="color: #4f97d7;">exp</span>(-s*s/1.99) +
-    <span style="color: #ce537a; font-weight: bold;">float3</span>(0.078, 0.0, 0.0) * <span style="color: #4f97d7;">exp</span>(-s*s/7.41);
-}
-<span style="color: #ce537a; font-weight: bold;">float</span> s = scale * <span style="color: #4f97d7;">distance</span>(pos, Nvertex, i);
-<span style="color: #ce537a; font-weight: bold;">float</span> E = <span style="color: #4f97d7;">max</span>(0.3 + <span style="color: #4f97d7;">dot</span>(-Nvertex, L), 0.0);
-<span style="color: #ce537a; font-weight: bold;">float3</span> transmittance = T(s) * lights[i].color * attenuation * albedo.rgb * E;
-<span style="color: #2aa1ae; background-color: #292e34;">// We add the contribution of this light</span>
-M += transmittance + reflectance;
+<pre class="src src-shader">  <span style="color: #ce537a; font-weight: bold;">float3</span> <span style="color: #bc6ec5; font-weight: bold;">T</span>(<span style="color: #ce537a; font-weight: bold;">float</span> s) 
+  {
+      <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #bc6ec5; font-weight: bold;">float3</span>(0.233, 0.455, 0.649) * <span style="color: #4f97d7;">exp</span>(-s*s/0.0064) +
+      <span style="color: #ce537a; font-weight: bold;">float3</span>(0.1, 0.336, 0.344) * <span style="color: #4f97d7;">exp</span>(-s*s/0.0484) +
+      <span style="color: #ce537a; font-weight: bold;">float3</span>(0.118, 0.198, 0.0) * <span style="color: #4f97d7;">exp</span>(-s*s/0.187) +
+      <span style="color: #ce537a; font-weight: bold;">float3</span>(0.113, 0.007, 0.007) * <span style="color: #4f97d7;">exp</span>(-s*s/0.567) +
+      <span style="color: #ce537a; font-weight: bold;">float3</span>(0.358, 0.004, 0.0) * <span style="color: #4f97d7;">exp</span>(-s*s/1.99) +
+      <span style="color: #ce537a; font-weight: bold;">float3</span>(0.078, 0.0, 0.0) * <span style="color: #4f97d7;">exp</span>(-s*s/7.41);
+  }
+  <span style="color: #ce537a; font-weight: bold;">float</span> s = scale * <span style="color: #4f97d7;">distance</span>(pos, Nvertex, i);
+  <span style="color: #ce537a; font-weight: bold;">float</span> E = <span style="color: #4f97d7;">max</span>(0.3 + <span style="color: #4f97d7;">dot</span>(-Nvertex, L), 0.0);
+  <span style="color: #ce537a; font-weight: bold;">float3</span> transmittance = T(s) * lights[i].color * attenuation * albedo.rgb * E;
+  <span style="color: #2aa1ae; background-color: #292e34;">// We add the contribution of this light</span>
+  M += transmittance + reflectance;
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-orgb85a6c6" class="outline-3">
-<h3 id="orgb85a6c6">参考链接</h3>
-<div class="outline-text-3" id="text-orgb85a6c6">
+<div id="outline-container-org2650981" class="outline-3">
+<h3 id="org2650981">参考链接</h3>
+<div class="outline-text-3" id="text-org2650981">
 <ul class="org-ul">
 <li>2009 <a href="http://www.iryoku.com/sssss/">http://www.iryoku.com/sssss/</a><br /></li>
 <li>2010 <a href="http://iryoku.com/translucency/">http://iryoku.com/translucency/</a><br /></li>
@@ -901,9 +902,9 @@ M += transmittance + reflectance;
 <h2 id="orgc6251ca"><span class="todo TODO">TODO</span> Separable-SSS</h2>
 <div class="outline-text-2" id="text-orgc6251ca">
 </div>
-<div id="outline-container-orgdb6115c" class="outline-3">
-<h3 id="orgdb6115c">参考链接</h3>
-<div class="outline-text-3" id="text-orgdb6115c">
+<div id="outline-container-org293a415" class="outline-3">
+<h3 id="org293a415">参考链接</h3>
+<div class="outline-text-3" id="text-org293a415">
 <ul class="org-ul">
 <li>2009 <a href="http://www.iryoku.com/sssss/">http://www.iryoku.com/sssss/</a><br /></li>
 <li>2010 <a href="http://iryoku.com/translucency/">http://iryoku.com/translucency/</a><br /></li>
@@ -943,9 +944,9 @@ M += transmittance + reflectance;
 </div>
 </div>
 
-<div id="outline-container-org93074fe" class="outline-2">
-<h2 id="org93074fe">参考资料</h2>
-<div class="outline-text-2" id="text-org93074fe">
+<div id="outline-container-org4127878" class="outline-2">
+<h2 id="org4127878">参考资料</h2>
+<div class="outline-text-2" id="text-org4127878">
 <ul class="org-ul">
 <li>《GPU Gems 3》：真实感皮肤渲染技术总结 <a href="https://zhuanlan.zhihu.com/p/42433792">https://zhuanlan.zhihu.com/p/42433792</a><br /></li>
 <li>低成本皮肤渲染 Pre-integrated Skin <a href="https://zhuanlan.zhihu.com/p/35628106">https://zhuanlan.zhihu.com/p/35628106</a><br /></li>

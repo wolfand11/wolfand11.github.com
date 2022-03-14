@@ -3,17 +3,18 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-05-24 周一 17:59 -->
+<!-- 2022-03-14 周一 16:59 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>ASM</title>
 <meta name="generator" content="Org mode" />
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-           <meta name="viewport" content="width=device-width, initial-scale=1" />
-           <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/css/worg.css" type="text/css" />
-           <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/css/worg-zenburn.css" type="text/css" />
-           <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
-           <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
+         <meta name="viewport" content="width=device-width, initial-scale=1" />
+         <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/css/worg.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/css/worg-zenburn.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
+         <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/blog-tools.js"></script>
 <script type="text/javascript">
 // @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
 <!--/*--><![CDATA[/*><!--*/
@@ -108,7 +109,7 @@
 <li><a href="#org8d63ada">5 [BX]和loop指令</a>
 <ul>
 <li><a href="#org3c8b22e">[bx]</a></li>
-<li><a href="#orgbf7f46c">loop</a></li>
+<li><a href="#orgdcfb96f">loop</a></li>
 <li><a href="#org52664a6">如何将ffff:0-ffff:b中的8位数据，累加到16位寄存器dx中？</a></li>
 <li><a href="#org7b0825f">段前缀</a></li>
 </ul>
@@ -143,7 +144,7 @@
 </ul>
 </li>
 <li><a href="#orgcd5377a">jcxz</a></li>
-<li><a href="#orgdcfb96f">loop</a></li>
+<li><a href="#orga096b16">loop</a></li>
 <li><a href="#org143c7ae">根据位移进行转移的意义</a></li>
 </ul>
 </li>
@@ -225,7 +226,7 @@
 <p>
 ASM note.<br />
 </p>
-<div class="HTML" id="org436a9d1">
+<div class="HTML" id="org3972998">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -356,7 +357,7 @@ CPU通过总线和其他芯片进行数据传输。总线从逻辑上分为3类�
 </ol>
 
 
-<div id="orge88ad5d" class="figure">
+<div id="org58203a1" class="figure">
 <p><img src="./ASM/memory-chip.jpg" alt="memory-chip.jpg" /><br />
 </p>
 </div>
@@ -440,7 +441,7 @@ CPU通过地址总线送入存储器的必须是一个内存单元的物理地�
 </ol>
 
 
-<div id="orgfa18451" class="figure">
+<div id="org04acd7c" class="figure">
 <p><img src="./ASM/gen-memory-addr.jpg" alt="gen-memory-addr.jpg" /><br />
 </p>
 </div>
@@ -485,15 +486,15 @@ CPU通过地址总线送入存储器的必须是一个内存单元的物理地�
 <h5 id="org9a2120e">修改 CS, IP的指令</h5>
 <div class="outline-text-5" id="text-org9a2120e">
 <div class="org-src-container">
-<pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21516;&#26102;&#20462;&#25913;cs ip&#23492;&#23384;&#22120;</span>
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">jmp &#27573;&#22320;&#22336;:&#20559;&#31227;&#22320;&#22336;</span>
-<span style="color: #bc6ec5; font-weight: bold;">jmp</span> <span style="color: #4f97d7; font-weight: bold;">2AE3</span>:3 <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25191;&#34892;&#21518;cs=2AE3 ip=0003</span>
+<pre class="src src-asm">  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21516;&#26102;&#20462;&#25913;cs ip&#23492;&#23384;&#22120;</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">jmp &#27573;&#22320;&#22336;:&#20559;&#31227;&#22320;&#22336;</span>
+  <span style="color: #4f97d7; font-weight: bold;">jmp</span> 2AE3:3 <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25191;&#34892;&#21518;cs=2AE3 ip=0003</span>
 
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21482;&#20462;&#25913;ip&#23492;&#23384;&#22120;</span>
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">jmp &#26576;&#23492;&#23384;&#22120;,</span>
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25191;&#34892;&#21069; cs=2000 ip=0003 ax=1000</span>
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25191;&#34892;&#21518; cs=2000 ip=1000 ax=1000</span>
-<span style="color: #bc6ec5; font-weight: bold;">jmp</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21482;&#20462;&#25913;ip&#23492;&#23384;&#22120;</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">jmp &#26576;&#23492;&#23384;&#22120;,</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25191;&#34892;&#21069; cs=2000 ip=0003 ax=1000</span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25191;&#34892;&#21518; cs=2000 ip=1000 ax=1000</span>
+  <span style="color: #4f97d7; font-weight: bold;">jmp</span> ax
 </pre>
 </div>
 </div>
@@ -582,7 +583,7 @@ mov 段寄存器,内存单元<br />
 <div class="org-src-container">
 <pre class="src src-asm"><span style="color: #4f97d7; font-weight: bold;">.386</span>
 <span style="color: #4f97d7; font-weight: bold;">.model</span>  flat,c
-<span style="color: #4f97d7; font-weight: bold;">.code</span> 
+<span style="color: #4f97d7; font-weight: bold;">.code</span>   
 <span style="color: #bc6ec5; font-weight: bold;">start</span>:            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#30456;&#24403;&#20110;c&#35821;&#35328;&#30340;main&#20989;&#25968;&#65292;&#27719;&#32534;&#31243;&#24207;&#30340;&#20837;&#21475;&#28857;</span>
     <span style="color: #4f97d7; font-weight: bold;">mov</span> eax,1h
     <span style="color: #4f97d7; font-weight: bold;">mov</span> ebx,2h
@@ -629,9 +630,9 @@ mov 段寄存器,内存单元<br />
 </div>
 </div>
 </div>
-<div id="outline-container-orgbf7f46c" class="outline-4">
-<h4 id="orgbf7f46c">loop</h4>
-<div class="outline-text-4" id="text-orgbf7f46c">
+<div id="outline-container-orgdcfb96f" class="outline-4">
+<h4 id="orgdcfb96f">loop</h4>
+<div class="outline-text-4" id="text-orgdcfb96f">
 <p>
 loop 标号<br />
 CPU执行loop指令时，首先会执行(cx)=(cx)-1，然后判断cx中的值，不为0则转至标号处执行程序，为0则继续向下执行。<br />
@@ -763,7 +764,7 @@ Windows 2000，Unix是运行于CPU保护模式下的操作系统，不理会操�
     <span style="color: #4f97d7; font-weight: bold;">push</span> cs:[bx]
     <span style="color: #4f97d7; font-weight: bold;">add</span> bx,2
     <span style="color: #4f97d7; font-weight: bold;">loop</span> s
-
+    
     <span style="color: #4f97d7; font-weight: bold;">mov</span> bx,0
     <span style="color: #4f97d7; font-weight: bold;">mov</span> cx,8
 <span style="color: #bc6ec5; font-weight: bold;">s0</span>: 
@@ -801,7 +802,7 @@ Windows 2000，Unix是运行于CPU保护模式下的操作系统，不理会操�
     <span style="color: #4f97d7; font-weight: bold;">push</span> [bx]
     <span style="color: #4f97d7; font-weight: bold;">add</span> bx,2
     <span style="color: #4f97d7; font-weight: bold;">loop</span> s
-
+    
     <span style="color: #4f97d7; font-weight: bold;">mov</span> bx,0
     <span style="color: #4f97d7; font-weight: bold;">mov</span> cx,8
 <span style="color: #bc6ec5; font-weight: bold;">s0</span>: 
@@ -969,7 +970,7 @@ si和di与bx的功能相近，但是si和di不能被分成两个8位寄存器使
 <h4 id="org82b2728">机器指令处理的数据在什么地方？</h4>
 <div class="outline-text-4" id="text-org82b2728">
 
-<div id="orge1ce5d5" class="figure">
+<div id="org3e43bd3" class="figure">
 <p><img src="./ASM/data-pos.jpg" alt="data-pos.jpg" /><br />
 </p>
 </div>
@@ -979,7 +980,7 @@ si和di与bx的功能相近，但是si和di不能被分成两个8位寄存器使
 <h4 id="orga3154dd">寻址方式总结</h4>
 <div class="outline-text-4" id="text-orga3154dd">
 
-<div id="org294bbe6" class="figure">
+<div id="org3582efd" class="figure">
 <p><img src="./ASM/addressing.jpg" alt="addressing.jpg" /><br />
 </p>
 </div>
@@ -996,25 +997,25 @@ si和di与bx的功能相近，但是si和di不能被分成两个8位寄存器使
 通过寄存器名指明要处理的数据尺寸<br />
 </p>
 <div class="org-src-container">
-<pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,1  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22788;&#29702;&#30340;&#25968;&#25454;&#20026;word</span>
-<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">al</span>,1  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22788;&#29702;&#30340;&#25968;&#25454;&#20026; byte</span>
+<pre class="src src-asm">   <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,1  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22788;&#29702;&#30340;&#25968;&#25454;&#20026;word</span>
+   <span style="color: #4f97d7; font-weight: bold;">mov</span> al,1  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22788;&#29702;&#30340;&#25968;&#25454;&#20026; byte</span>
 </pre>
 </div></li>
 <li><p>
 用操作符X ptr指明内存单元的长度。X在汇编指令中可以为word或byte<br />
 </p>
 <div class="org-src-container">
-<pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22788;&#29702;&#30340;&#25968;&#25454;&#20026;word</span>
-<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">word</span> ptr ds:[0], 1  
-<span style="color: #bc6ec5; font-weight: bold;">inc</span> <span style="color: #4f97d7; font-weight: bold;">word</span> ptr [bx]
-<span style="color: #bc6ec5; font-weight: bold;">inc</span> <span style="color: #4f97d7; font-weight: bold;">word</span> ptr ds:[0]
-<span style="color: #bc6ec5; font-weight: bold;">add</span> <span style="color: #4f97d7; font-weight: bold;">word</span> ptr [bx]:2
+<pre class="src src-asm">   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22788;&#29702;&#30340;&#25968;&#25454;&#20026;word</span>
+   <span style="color: #4f97d7; font-weight: bold;">mov</span> word ptr ds:[0], 1  
+   <span style="color: #4f97d7; font-weight: bold;">inc</span> word ptr [bx]
+   <span style="color: #4f97d7; font-weight: bold;">inc</span> word ptr ds:[0]
+   <span style="color: #4f97d7; font-weight: bold;">add</span> word ptr [bx]:2
 
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22788;&#29702;&#30340;&#25968;&#25454;&#20026; byte</span>
-<span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">byte</span> ptr ds:[0], 1
-<span style="color: #bc6ec5; font-weight: bold;">inc</span> <span style="color: #4f97d7; font-weight: bold;">byte</span> ptr [bx]
-<span style="color: #bc6ec5; font-weight: bold;">inc</span> <span style="color: #4f97d7; font-weight: bold;">byte</span> ptr ds:[0]
-<span style="color: #bc6ec5; font-weight: bold;">add</span> <span style="color: #4f97d7; font-weight: bold;">byte</span> ptr [bx]:2
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22788;&#29702;&#30340;&#25968;&#25454;&#20026; byte</span>
+   <span style="color: #4f97d7; font-weight: bold;">mov</span> byte ptr ds:[0], 1
+   <span style="color: #4f97d7; font-weight: bold;">inc</span> byte ptr [bx]
+   <span style="color: #4f97d7; font-weight: bold;">inc</span> byte ptr ds:[0]
+   <span style="color: #4f97d7; font-weight: bold;">add</span> byte ptr [bx]:2
 </pre>
 </div></li>
 <li>有些指令默认了访问的是字还是字节单元<br />
@@ -1113,7 +1114,7 @@ jmp short 标号 /</i> 指令对应的机器码中，并不包含转移的目的
 </pre>
 </div>
 
-<div id="org0f9e90f" class="figure">
+<div id="org6d88bd2" class="figure">
 <p><img src="./ASM/jmp-with-offset.jpg" alt="jmp-with-offset.jpg" /><br />
 </p>
 </div>
@@ -1182,9 +1183,9 @@ jcxz 表示 jump when CX is zero<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgdcfb96f" class="outline-4">
-<h4 id="orgdcfb96f">loop</h4>
-<div class="outline-text-4" id="text-orgdcfb96f">
+<div id="outline-container-orga096b16" class="outline-4">
+<h4 id="orga096b16">loop</h4>
+<div class="outline-text-4" id="text-orga096b16">
 <p>
 loop 标号  // 如果(cx)!=0, 转移到标号处执行<br />
 所有循环指令都为短转移，对ip的修改范围都为：-128~127。<br />
@@ -1368,7 +1369,7 @@ call dword ptr 内存单元地址<br />
     <span style="color: #4f97d7; font-weight: bold;">add</span> si,2
     <span style="color: #4f97d7; font-weight: bold;">add</span> di,4
     <span style="color: #4f97d7; font-weight: bold;">loop</span> s
-
+    
     <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,4c00H
     <span style="color: #4f97d7; font-weight: bold;">int</span> 21H
 
@@ -1585,7 +1586,7 @@ sf=0实际结果为正<br /></li>
 <h4 id="org9a41fec">检测比较结果的条件转移指令</h4>
 <div class="outline-text-4" id="text-org9a41fec">
 
-<div id="org8d5d508" class="figure">
+<div id="orgbef9065" class="figure">
 <p><img src="./ASM/condition-jmp.jpg" alt="condition-jmp.jpg" /><br />
 </p>
 </div>
@@ -1959,7 +1960,7 @@ shl 逻辑左移指令，其执行流程如下：<br />
     <span style="color: #4f97d7; font-weight: bold;">mov</span> es,bx
     <span style="color: #4f97d7; font-weight: bold;">mov</span> byte ptr es:[160*12+40*2],ah          <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#26174;&#31034;&#26376;&#20221;&#30340;&#21313;&#20301;&#25968;&#30721;</span>
     <span style="color: #4f97d7; font-weight: bold;">mov</span> byte ptr es:[160*12+40*2+2],al        <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#26174;&#31034;&#26376;&#20221;&#30340;&#20010;&#20301;&#25968;&#30721;</span>
-
+    
     <span style="color: #4f97d7; font-weight: bold;">mov</span> ax,4c00H
     <span style="color: #4f97d7; font-weight: bold;">int</span> 21H
 <span style="color: #bc6ec5; font-weight: bold;">code</span> <span style="color: #4f97d7; font-weight: bold;">ends</span>

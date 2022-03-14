@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2022-02-10 周四 11:17 -->
+<!-- 2022-03-14 周一 16:59 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Vulkan</title>
@@ -70,7 +70,7 @@
 <li><a href="#org7f08594">Step 6 - Graphics pipeline</a></li>
 <li><a href="#org7f1a7bb">Step 7 - Command pools and command buffers</a></li>
 <li><a href="#orgd5f2dfc">Step 8 - Main loop</a></li>
-<li><a href="#orga56e538">Summary</a></li>
+<li><a href="#orgdee472a">Summary</a></li>
 </ul>
 </li>
 <li><a href="#org712bdd7">API concepts</a>
@@ -299,12 +299,30 @@
 <li><a href="#org5c20580">Quality improvements (279)</a></li>
 </ul>
 </li>
-<li><a href="#org5d01d0a">Summary</a></li>
+<li><a href="#org8190e40">Summary</a></li>
 <li><a href="#org5cf4da1">Q&amp;A</a>
 <ul>
 <li><a href="#org7c0a5b6">VkAllocationCallbacks 的使用示例</a></li>
 <li><a href="#org49adbaf">为什么 depthImageView 可以被多个 command buffer 复用，而 swapChainImageView 不能？</a></li>
 <li><a href="#org9b20411">secondary command buffer 的使用示例</a></li>
+<li><a href="#orge646152">EGL DX11 对比</a>
+<ul>
+<li><a href="#orgd7269b7">EGL and DXGI</a></li>
+<li><a href="#org7f4d607">buffer, uniforms, vertices, texture</a></li>
+<li><a href="#org7adc847">pipeline</a></li>
+</ul>
+</li>
+<li><a href="#org1223578">Vulkan DX12 概念对比</a>
+<ul>
+<li><a href="#orge935ca1">基本的 API 方面</a></li>
+<li><a href="#org973bf50">Command Buffer and Pool</a></li>
+<li><a href="#orgbb3c429">Descriptors</a></li>
+<li><a href="#org21ae32d">Pipeline</a></li>
+<li><a href="#orga548ef7">Images and Buffers</a></li>
+<li><a href="#org3595ac8">RenderPasses/RenderTargets</a></li>
+</ul>
+</li>
+<li><a href="#orge4a77a6">使用惯例</a></li>
 </ul>
 </li>
 </ul>
@@ -316,7 +334,7 @@
 <li><a href="#org99a6813">Initial Setup</a></li>
 <li><a href="#org3ad98c4">Push Constants</a></li>
 <li><a href="#org2b5f15e">Dynamic Descriptor sets</a></li>
-<li><a href="#orgff146d0">Storage buffers</a></li>
+<li><a href="#org5dbc64e">Storage buffers (shader storage buffer object)</a></li>
 <li><a href="#org2b37244">ERROR</a>
 <ul>
 <li><a href="#org5e515b4">ERROR CMake Error: The source "VulkanGuide/base/CMakeLists.txt" does not match the source "VulkanGuide/CMakeLists.txt" used to generate cache.  Re-run cmake with a different source directory.</a></li>
@@ -341,7 +359,7 @@
 <li><a href="#org25a4528">GPU Driven Rendering Overview</a>
 <ul>
 <li><a href="#org6a1042d">Introduction</a></li>
-<li><a href="#org693d1f7">Draw Indirect</a></li>
+<li><a href="#orgd84d589">Draw Indirect</a></li>
 <li><a href="#orga7ba985">Bindless Design</a></li>
 <li><a href="#org1bbbd95">Overview of Vkguide engine architecture for compute rendering.</a></li>
 </ul>
@@ -370,7 +388,7 @@
 <li><a href="#orgbf3ece7">Render Flow</a></li>
 </ul>
 </li>
-<li><a href="#org61a2d45">Draw Indirect</a></li>
+<li><a href="#org2656c89">Draw Indirect</a></li>
 <li><a href="#orge1677f6">Compute Shaders</a></li>
 <li><a href="#orgc4d96cc">Material System</a></li>
 <li><a href="#orgd6336d2">Mesh Rendering</a></li>
@@ -386,7 +404,7 @@
 <p>
 Vulkan note.<br />
 </p>
-<div class="HTML" id="org63c4bf6">
+<div class="HTML" id="org57f6686">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -556,9 +574,9 @@ Vulkan 与现有的其它 API 之间最明显的区别就是，几乎所有 grap
 </p>
 </div>
 </div>
-<div id="outline-container-orga56e538" class="outline-5">
-<h5 id="orga56e538">Summary</h5>
-<div class="outline-text-5" id="text-orga56e538">
+<div id="outline-container-orgdee472a" class="outline-5">
+<h5 id="orgdee472a">Summary</h5>
+<div class="outline-text-5" id="text-orgdee472a">
 <p>
 请注意，我们采用了作弊的方式，将顶点坐标嵌入顶点着色器，而没有使用 vertex buffer。这是因为管理 vertex buffer 需要先熟悉 command buffers。<br />
 简单来说，绘制我们的第一个三角形需要以下步骤：<br />
@@ -2391,7 +2409,7 @@ viewport 定义了从 image 到 framebuffer 的变换。scissor 矩形定义了�
 </p>
 
 
-<div id="org901808d" class="figure">
+<div id="org803c439" class="figure">
 <p><img src="./Vulkan/viewports_scissors.png" alt="viewports_scissors.png" /><br />
 </p>
 </div>
@@ -3696,8 +3714,9 @@ vkGetBufferMemoryRequirements(device, vertexBuffer, &amp;memRequirements);
 </p>
 <div class="org-src-container">
 <pre class="src src-cpp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">memRequirements.memoryTypeBits       &#25351;&#23450; buffer &#25152;&#38656;&#30340;&#20869;&#23384;&#31867;&#22411;</span>
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT  &#25351;&#23450;&#20869;&#23384;&#22312;CPU&#31471;&#21487;&#35265;</span>
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">VK_MEMORY_PROPERTY_HOST_COHERENT_BIT &#25351;&#23450;&#23545;&#20869;&#23384;&#30340;&#20462;&#25913;&#19981;&#38656;&#35201;Flush</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">VkMemoryPropertyFlags:</span>
+<span style="color: #2aa1ae; background-color: #292e34;">//   </span><span style="color: #2aa1ae; background-color: #292e34;">VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT  &#25351;&#23450;&#20869;&#23384;&#22312;CPU&#31471;&#21487;&#35265;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">//   </span><span style="color: #2aa1ae; background-color: #292e34;">VK_MEMORY_PROPERTY_HOST_COHERENT_BIT &#25351;&#23450;&#23545;&#20869;&#23384;&#30340;&#20462;&#25913;&#19981;&#38656;&#35201;Flush</span>
 allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
 <span style="color: #ce537a; font-weight: bold;">uint32_t</span> <span style="color: #bc6ec5; font-weight: bold;">findMemoryType</span>(<span style="color: #ce537a; font-weight: bold;">uint32_t</span> <span style="color: #7590db;">typeFilter</span>, <span style="color: #ce537a; font-weight: bold;">VkMemoryPropertyFlags</span> <span style="color: #7590db;">properties</span>)
@@ -5756,9 +5775,9 @@ MSAA 只会平滑几何边缘，几何内部的填充不受影响。开启样本
 </div>
 </div>
 </div>
-<div id="outline-container-org5d01d0a" class="outline-3">
-<h3 id="org5d01d0a">Summary</h3>
-<div class="outline-text-3" id="text-org5d01d0a">
+<div id="outline-container-org8190e40" class="outline-3">
+<h3 id="org8190e40">Summary</h3>
+<div class="outline-text-3" id="text-org8190e40">
 <p>
 下面是对整个流程的梳理：<br />
 </p>
@@ -5970,6 +5989,624 @@ Tips: 开启多重采样后，需要创建 colorImageView，colorImageView 也�
 </ul>
 </div>
 </div>
+
+<div id="outline-container-orge646152" class="outline-4">
+<h4 id="orge646152">EGL DX11 对比</h4>
+<div class="outline-text-4" id="text-orge646152">
+<ul class="org-ul">
+<li><a href="https://docs.microsoft.com/en-us/windows/uwp/gaming/moving-from-egl-to-dxgi">https://docs.microsoft.com/en-us/windows/uwp/gaming/moving-from-egl-to-dxgi</a><br /></li>
+</ul>
+</div>
+
+<div id="outline-container-orgd7269b7" class="outline-5">
+<h5 id="orgd7269b7">EGL and DXGI</h5>
+<div class="outline-text-5" id="text-orgd7269b7">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">EGL</td>
+<td class="org-left">DX11</td>
+</tr>
+
+<tr>
+<td class="org-left">eglBindAPI</td>
+<td class="org-left">N/A</td>
+</tr>
+
+<tr>
+<td class="org-left">eglBindTexImage</td>
+<td class="org-left">ID3D11Device::CreateTexture2D</td>
+</tr>
+
+<tr>
+<td class="org-left">eglReleaseTexImage</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">eglChooseConfig</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">eglCopyBuffers</td>
+<td class="org-left">ID3D11DeviceContext::CopyStructureCount / ID3DDeviceContext::CopyResource</td>
+</tr>
+
+<tr>
+<td class="org-left">eglCreateContext</td>
+<td class="org-left">D3D11CreateDevice 返回 ID3D11DeviceContext1  / ID3D11Device2::CreateDeferredContext</td>
+</tr>
+
+<tr>
+<td class="org-left">eglGetCurrentDisplay</td>
+<td class="org-left">CoreWindow::GetForCurrentThread</td>
+</tr>
+
+<tr>
+<td class="org-left">eglGetError</td>
+<td class="org-left">API return error code / GetLastError</td>
+</tr>
+
+<tr>
+<td class="org-left">eglSwapBuffers</td>
+<td class="org-left">IDXGISwapChain1::Present1</td>
+</tr>
+
+<tr>
+<td class="org-left">eglSwapInterval</td>
+<td class="org-left">IDXGISwapChain1::Present1 的 SyncInterval 参数</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div id="outline-container-org7f4d607" class="outline-5">
+<h5 id="org7f4d607">buffer, uniforms, vertices, texture</h5>
+<div class="outline-text-5" id="text-org7f4d607">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">EGL</td>
+<td class="org-left">DX11</td>
+</tr>
+
+<tr>
+<td class="org-left">uniform</td>
+<td class="org-left">constant buffer</td>
+</tr>
+
+<tr>
+<td class="org-left">attribute</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">buffer object</td>
+<td class="org-left">buffer</td>
+</tr>
+
+<tr>
+<td class="org-left">frame buffer object</td>
+<td class="org-left">render target(s)</td>
+</tr>
+
+<tr>
+<td class="org-left">back buffer</td>
+<td class="org-left">swap chain with "back buffer"</td>
+</tr>
+</tbody>
+</table>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">EGL</td>
+<td class="org-left">DX11</td>
+</tr>
+
+<tr>
+<td class="org-left">glGenBuffer/glBindBuffer/glBufferData</td>
+<td class="org-left">CreateBuffer</td>
+</tr>
+
+<tr>
+<td class="org-left">glGetAttribLocation/glVertexAttribPointer/glEnableVertexAttribArray</td>
+<td class="org-left">CreateInputLayout/IASetInputLayout</td>
+</tr>
+
+<tr>
+<td class="org-left">glActiveTexture() / glBindTexture() / glUniform1i()</td>
+<td class="org-left">PSSetShaderResources / PSSetSamplers</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+d3d11 和 OpenGL 使用 Texture 比较：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #2aa1ae; background-color: #292e34;">/////////////////////////</span>
+<span style="color: #2aa1ae; background-color: #292e34;">//// </span><span style="color: #2aa1ae; background-color: #292e34;">D3D</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">C++ code</span>
+context-&gt;PSSetShaderResources (0, 1, &amp;texture);
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">HLSL code</span>
+<span style="color: #ce537a; font-weight: bold;">SamplerState</span> <span style="color: #bc6ec5; font-weight: bold;">sampler0</span> : <span style="color: #4f97d7; font-weight: bold;">register</span>(s0);
+<span style="color: #ce537a; font-weight: bold;">SamplerState</span> <span style="color: #bc6ec5; font-weight: bold;">sampler1</span> : <span style="color: #4f97d7; font-weight: bold;">register</span>(s1);
+
+<span style="color: #ce537a; font-weight: bold;">Texture2D</span> <span style="color: #bc6ec5; font-weight: bold;">tex0</span> : <span style="color: #4f97d7; font-weight: bold;">register</span>(t0);
+
+tex0.Sample (sampler0, ...);
+tex0.Sample (sampler1, ...);
+
+<span style="color: #2aa1ae; background-color: #292e34;">/////////////////////////</span>
+<span style="color: #2aa1ae; background-color: #292e34;">//// </span><span style="color: #2aa1ae; background-color: #292e34;">OpenGL</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">C++ code</span>
+<span style="color: #ce537a; font-weight: bold;">GLint</span> <span style="color: #7590db;">tex1_uniform_loc</span> = glGetUniformLocation(prog, <span style="color: #2d9574;">"tex1"</span>);
+glUniform1i(tex1_uniform_loc, 0);
+glActiveTexture(GL_TEXTURE0);
+glBindTexture(GL_TEXTURE_2D, tex1);
+
+<span style="color: #ce537a; font-weight: bold;">GLint</span> <span style="color: #7590db;">tex2_uniform_loc</span> = glGetUniformLocation(prog, <span style="color: #2d9574;">"tex2"</span>);
+glUniform1i(tex2_uniform_loc, 1);
+glActiveTexture(GL_TEXTURE1);
+glBindTexture(GL_TEXTURE_2D, tex2);
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">GLSL code</span>
+uniform <span style="color: #ce537a; font-weight: bold;">sampler2D</span> <span style="color: #7590db;">tex1</span>;
+uniform <span style="color: #ce537a; font-weight: bold;">sampler2D</span> <span style="color: #7590db;">tex2</span>;
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org7adc847" class="outline-5">
+<h5 id="org7adc847">pipeline</h5>
+<div class="outline-text-5" id="text-org7adc847">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">EGL</td>
+<td class="org-left">DX11</td>
+</tr>
+
+<tr>
+<td class="org-left">glCreateShader</td>
+<td class="org-left">ID3D11Device1::CreateVertexShader / ID3D11Device1::CreatePixelShader</td>
+</tr>
+
+<tr>
+<td class="org-left">glViewport</td>
+<td class="org-left">ID3D11DeviceContext::RSSetViewports</td>
+</tr>
+
+<tr>
+<td class="org-left">glAttachShader</td>
+<td class="org-left">ID3D11Device1::CreateVertexShader / ID3D11Device1::CreatePixelShader</td>
+</tr>
+
+<tr>
+<td class="org-left">glGetShaderiv, glGetShaderSource</td>
+<td class="org-left">ID3D11DeviceContext1::VSGetShader</td>
+</tr>
+
+<tr>
+<td class="org-left">glGetUniformfv, glGetUniformiv</td>
+<td class="org-left">ID3D11DeviceContext1::VSGetConstantBuffers1.</td>
+</tr>
+
+<tr>
+<td class="org-left">glUseProgram</td>
+<td class="org-left">N/A. Direct3D 11 does not use the shader program object abstraction. VSSetShader PSSetShader</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org1223578" class="outline-4">
+<h4 id="org1223578">Vulkan DX12 概念对比</h4>
+<div class="outline-text-4" id="text-org1223578">
+</div>
+<div id="outline-container-orge935ca1" class="outline-5">
+<h5 id="orge935ca1">基本的 API 方面</h5>
+<div class="outline-text-5" id="text-orge935ca1">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">Vulkan</td>
+<td class="org-left">DirectX 12</td>
+</tr>
+
+<tr>
+<td class="org-left">N/A</td>
+<td class="org-left">IDXGIFactory4</td>
+</tr>
+
+<tr>
+<td class="org-left">VkInstance</td>
+<td class="org-left">N/A</td>
+</tr>
+
+<tr>
+<td class="org-left">VkPhysicalDevice</td>
+<td class="org-left">IDXGIAdapter1</td>
+</tr>
+
+<tr>
+<td class="org-left">VkDevice</td>
+<td class="org-left">ID3D12Device</td>
+</tr>
+
+<tr>
+<td class="org-left">VkQueue</td>
+<td class="org-left">ID3D12CommandQueue</td>
+</tr>
+
+<tr>
+<td class="org-left">VkSwapchain</td>
+<td class="org-left">IDXGISwapChain3</td>
+</tr>
+
+<tr>
+<td class="org-left">VkFormat</td>
+<td class="org-left">DXGI_FORMAT</td>
+</tr>
+
+<tr>
+<td class="org-left">SPIR-V</td>
+<td class="org-left">D3D12_SHADER_BYTECODE</td>
+</tr>
+
+<tr>
+<td class="org-left">VkFence</td>
+<td class="org-left">fences</td>
+</tr>
+
+<tr>
+<td class="org-left">VkSemaphore</td>
+<td class="org-left">N/A</td>
+</tr>
+
+<tr>
+<td class="org-left">VkEvent</td>
+<td class="org-left">N/A</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div id="outline-container-org973bf50" class="outline-5">
+<h5 id="org973bf50">Command Buffer and Pool</h5>
+<div class="outline-text-5" id="text-org973bf50">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">Vulkan</td>
+<td class="org-left">DirectX 12</td>
+</tr>
+
+<tr>
+<td class="org-left">VkCommandPool</td>
+<td class="org-left">ID3D12CommandAllocator</td>
+</tr>
+
+<tr>
+<td class="org-left">VkCommandBuffer</td>
+<td class="org-left">ID3D12CommandList/ID3D12GraphicsCommandList</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div id="outline-container-orgbb3c429" class="outline-5">
+<h5 id="orgbb3c429">Descriptors</h5>
+<div class="outline-text-5" id="text-orgbb3c429">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">Vulkan</td>
+<td class="org-left">DirectX 12</td>
+</tr>
+
+<tr>
+<td class="org-left">VkDescriptorPool</td>
+<td class="org-left">N/A</td>
+</tr>
+
+<tr>
+<td class="org-left">VkDescriptorSet</td>
+<td class="org-left">N/A</td>
+</tr>
+
+<tr>
+<td class="org-left">VkDescriptorSetLayout</td>
+<td class="org-left">N/A</td>
+</tr>
+
+<tr>
+<td class="org-left">VkDescriptorSetLayoutBinding</td>
+<td class="org-left">RootParameter**</td>
+</tr>
+
+<tr>
+<td class="org-left">N/A</td>
+<td class="org-left">ID3D12DescriptorHeap</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div id="outline-container-org21ae32d" class="outline-5">
+<h5 id="org21ae32d">Pipeline</h5>
+<div class="outline-text-5" id="text-org21ae32d">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">Vulkan</td>
+<td class="org-left">DirectX 12</td>
+</tr>
+
+<tr>
+<td class="org-left">VkPipelineLayout</td>
+<td class="org-left">RootSignature**</td>
+</tr>
+
+<tr>
+<td class="org-left">VkPipeline</td>
+<td class="org-left">ID3D12PipelineState</td>
+</tr>
+
+<tr>
+<td class="org-left">VkVertexInputAttributeDescription</td>
+<td class="org-left">D3D12_INPUT_ELEMENT_DESC</td>
+</tr>
+
+<tr>
+<td class="org-left">VkVertexInputBindingDescription</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div id="outline-container-orga548ef7" class="outline-5">
+<h5 id="orga548ef7">Images and Buffers</h5>
+<div class="outline-text-5" id="text-orga548ef7">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">Vulkan</td>
+<td class="org-left">DirectX 12</td>
+</tr>
+
+<tr>
+<td class="org-left">VkImage</td>
+<td class="org-left">ID3D12Resource</td>
+</tr>
+
+<tr>
+<td class="org-left">VkImageView</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">VkSampler</td>
+<td class="org-left">sampler</td>
+</tr>
+
+<tr>
+<td class="org-left">VkBuffer</td>
+<td class="org-left">ID3D12Resource</td>
+</tr>
+
+<tr>
+<td class="org-left">uniform Buffer</td>
+<td class="org-left">constant buffer</td>
+</tr>
+
+<tr>
+<td class="org-left">index buffer</td>
+<td class="org-left">index buffer</td>
+</tr>
+
+<tr>
+<td class="org-left">vertex buffer</td>
+<td class="org-left">vertex buffer</td>
+</tr>
+
+<tr>
+<td class="org-left">storage buffer</td>
+<td class="org-left">structured buffer</td>
+</tr>
+
+<tr>
+<td class="org-left">barriers/transitions</td>
+<td class="org-left">barriers/transitions</td>
+</tr>
+</tbody>
+</table>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">OpenGL</td>
+<td class="org-left">Vulkan</td>
+<td class="org-left">DirectX 12</td>
+</tr>
+
+<tr>
+<td class="org-left">glBindBuffer</td>
+<td class="org-left">vkCmdBindVertexBuffers</td>
+<td class="org-left">IASetVertexBuffers</td>
+</tr>
+
+<tr>
+<td class="org-left">glBindBuffer</td>
+<td class="org-left">vkCmdBindIndexBuffers</td>
+<td class="org-left">IASetIndexBuffer</td>
+</tr>
+
+<tr>
+<td class="org-left">glMapBuffer</td>
+<td class="org-left">vkMapMemory</td>
+<td class="org-left">Map</td>
+</tr>
+
+<tr>
+<td class="org-left">glUnmapBuffer</td>
+<td class="org-left">vkUnmapMemory</td>
+<td class="org-left">Unmap</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">vkCmdCopyBufferToImage</td>
+<td class="org-left">CopyTextureRegion</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div id="outline-container-org3595ac8" class="outline-5">
+<h5 id="org3595ac8">RenderPasses/RenderTargets</h5>
+<div class="outline-text-5" id="text-org3595ac8">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">Vulkan</td>
+<td class="org-left">DirectX 12</td>
+</tr>
+
+<tr>
+<td class="org-left">VkRenderPass</td>
+<td class="org-left">render pass</td>
+</tr>
+
+<tr>
+<td class="org-left">VkFramebuffer</td>
+<td class="org-left">collection of ID3D12Resource</td>
+</tr>
+
+<tr>
+<td class="org-left">subpass</td>
+<td class="org-left">N/A</td>
+</tr>
+
+<tr>
+<td class="org-left">N/A</td>
+<td class="org-left">render target</td>
+</tr>
+</tbody>
+</table>
+
+<ul class="org-ul">
+<li><a href="https://zhuanlan.zhihu.com/p/347268165">https://zhuanlan.zhihu.com/p/347268165</a><br /></li>
+<li><a href="https://stackoverflow.com/questions/48439539/how-to-create-and-use-buffer-of-structs">https://stackoverflow.com/questions/48439539/how-to-create-and-use-buffer-of-structs</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orge4a77a6" class="outline-4">
+<h4 id="orge4a77a6">使用惯例</h4>
+<div class="outline-text-4" id="text-orge4a77a6">
+<p>
+view proj Matrix 通常会放到 uniform buffer<br />
+unity srp batch 中，将<br />
+</p>
+</div>
+</div>
 </div>
 </div>
 <div id="outline-container-orga67ac8f" class="outline-2">
@@ -6069,11 +6706,19 @@ layout(set = 0, binding = 1) <span style="color: #4f97d7; font-weight: bold;">un
 </div>
 </div>
 </div>
-<div id="outline-container-orgff146d0" class="outline-4">
-<h4 id="orgff146d0">Storage buffers</h4>
-<div class="outline-text-4" id="text-orgff146d0">
+<div id="outline-container-org5dbc64e" class="outline-4">
+<h4 id="org5dbc64e">Storage buffers (shader storage buffer object)</h4>
+<div class="outline-text-4" id="text-org5dbc64e">
 <p>
-Uniform Buffer 适用于数据量小，只读的数据。Storage Buffer 适用于数据量大，可修改的数据。<br />
+Uniform Buffer 适用于数据量小，只读的数据。Storage Buffer 适用于数据量大，可修改的数据(shader 可以修改其中数据)。<br />
+</p>
+
+<p>
+Buffer 的创建、内存分配、填充等可以参考上面内容： <a href="#orgc678d52">VkBuffer 使用</a><br />
+</p>
+
+<p>
+利用 Staging buffer 填充 Buffer 数据： <a href="#org2f88988">Staging buffer (173)</a><br />
 </p>
 
 <ul class="org-ul">
@@ -6407,9 +7052,9 @@ glsl es version、OpenGL ES version、WebGL version<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org693d1f7" class="outline-5">
-<h5 id="org693d1f7">Draw Indirect</h5>
-<div class="outline-text-5" id="text-org693d1f7">
+<div id="outline-container-orgd84d589" class="outline-5">
+<h5 id="orgd84d589">Draw Indirect</h5>
+<div class="outline-text-5" id="text-orgd84d589">
 <p>
 这个想法的核心围绕着在图形 API 中使用 Draw Indirect 支持。 这些技术适用于所有图形 API，但它们在 Vulkan 或 DX12 上效果最佳，因为它们可以更好地控制低级内存管理和 compute barriers。它们在 PS4 和 Xbox One 游戏机上也能很好地工作，并且下一代游戏机所具备的特性对这种技术的依赖更大，例如 mesh shaders 和 raytracing。<br />
 </p>
@@ -6530,7 +7175,7 @@ Push Constants 和 Dynamic Descriptors 可以被使用，但是他们必须是�
 </p>
 
 
-<div id="orga8e69a7" class="figure">
+<div id="orgd4660a0" class="figure">
 <p><img src="./Vulkan/vg-gpu-driven-rendering-overview.jpg" alt="vg-gpu-driven-rendering-overview.jpg" /><br />
 </p>
 </div>
@@ -6550,7 +7195,7 @@ Push Constants 和 Dynamic Descriptors 可以被使用，但是他们必须是�
 </p>
 
 
-<div id="org50944ca" class="figure">
+<div id="org62ac62c" class="figure">
 <p><img src="./Vulkan/vg-assetsystem01.jpg" alt="vg-assetsystem01.jpg" /><br />
 </p>
 </div>
@@ -7098,8 +7743,8 @@ vkEndCommandBuffer(primaryBuffer);
 </div>
 </div>
 
-<div id="outline-container-org61a2d45" class="outline-4">
-<h4 id="org61a2d45">Draw Indirect</h4>
+<div id="outline-container-org2656c89" class="outline-4">
+<h4 id="org2656c89">Draw Indirect</h4>
 </div>
 <div id="outline-container-orge1677f6" class="outline-4">
 <h4 id="orge1677f6">Compute Shaders</h4>

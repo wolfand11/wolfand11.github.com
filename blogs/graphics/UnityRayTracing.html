@@ -1,0 +1,466 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2022-05-13 Fri 00:30 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Unity Raytracing</title>
+<meta name="generator" content="Org mode" />
+<link rel="stylesheet" type="text/css" href="http://gongzhitaao.org/orgcss/org.css"/>
+<script type="text/javascript">
+// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
+<!--/*--><![CDATA[/*><!--*/
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.add("code-highlighted");
+         target.classList.add("code-highlighted");
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.remove("code-highlighted");
+         target.classList.remove("code-highlighted");
+       }
+     }
+    /*]]>*///-->
+// @license-end
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href=""> UP </a>
+ |
+ <a accesskey="H" href="https://wolfand11.gitee.io"> HOME </a>
+</div><div id="content">
+<h1 class="title">Unity Raytracing</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org2e1f15a">HDRP</a>
+<ul>
+<li><a href="#orgd22a76f">setup</a>
+<ul>
+<li><a href="#org7faee71">requirements</a></li>
+<li><a href="#org7d26b97">auto setup</a></li>
+<li><a href="#org1ac3dfe">manual setup</a>
+<ul>
+<li><a href="#orgb1f5c30">enable ray tracing for unity</a></li>
+<li><a href="#org7ece653">enable ray tracing for hdrp</a></li>
+<li><a href="#orgd63249b">check</a></li>
+</ul>
+</li>
+<li><a href="#orgb898cd2">Ray tracing and Meshes</a></li>
+<li><a href="#orga6038ea">Ray tracing light culling</a></li>
+<li><a href="#org3d37e5b">Ray tracing mode</a></li>
+<li><a href="#orge4ef5ea">Limitations</a></li>
+<li><a href="#org4e5d660">参考资料</a></li>
+</ul>
+</li>
+<li><a href="#org2f8829b">implementation</a>
+<ul>
+<li><a href="#orgd8a0138">初始化</a></li>
+<li><a href="#orgfb06478">Render</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org73ff3f2">URP</a>
+<ul>
+<li><a href="#orgf31e86d">setup</a></li>
+<li><a href="#orgb641dab">implementation</a></li>
+</ul>
+</li>
+<li><a href="#orgae2f805">Terminology</a></li>
+<li><a href="#orgdad01c5">参考资料</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org2e1f15a" class="outline-2">
+<h2 id="org2e1f15a">HDRP</h2>
+<div class="outline-text-2" id="text-org2e1f15a">
+</div>
+<div id="outline-container-orgd22a76f" class="outline-3">
+<h3 id="orgd22a76f">setup</h3>
+<div class="outline-text-3" id="text-orgd22a76f">
+</div>
+<div id="outline-container-org7faee71" class="outline-4">
+<h4 id="org7faee71">requirements</h4>
+<div class="outline-text-4" id="text-org7faee71">
+<p>
+硬件需要支持 Ray Tracing。使用 API SystemInfo.supportsRayTracing 可以查询当前系统是否支持。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org7d26b97" class="outline-4">
+<h4 id="org7d26b97">auto setup</h4>
+<div class="outline-text-4" id="text-org7d26b97">
+<ol class="org-ol">
+<li>安装 HDRP package<br /></li>
+<li>打开 HDRP 设置向导 Window/Rendering/HDRP Wizard, 如果有设置错误，直接点击 FixAll<br /></li>
+</ol>
+</div>
+</div>
+<div id="outline-container-org1ac3dfe" class="outline-4">
+<h4 id="org1ac3dfe">manual setup</h4>
+<div class="outline-text-4" id="text-org1ac3dfe">
+</div>
+<div id="outline-container-orgb1f5c30" class="outline-5">
+<h5 id="orgb1f5c30">enable ray tracing for unity</h5>
+<div class="outline-text-5" id="text-orgb1f5c30">
+<p>
+颜色空间切换到 Linear<br />
+Auto GraphicsAPI 取消勾选<br />
+切换到 D3D12<br />
+</p>
+<p width="512px">
+<img src="./UnityRayTracing/hdrp-dxr-setup00.png" alt="hdrp-dxr-setup00.png" width="512px" /><br />
+禁用 Static Batching<br />
+</p>
+
+<div id="org1e99b48" class="figure">
+<p><img src="./UnityRayTracing/hdrp-dxr-setup01.png" alt="hdrp-dxr-setup01.png" width="512px" /><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org7ece653" class="outline-5">
+<h5 id="org7ece653">enable ray tracing for hdrp</h5>
+<div class="outline-text-5" id="text-org7ece653">
+<p>
+创建 HDRP HDRenderPipelineGlobalSettings 和 HDRP Render Pipeline Resources Asset<br />
+</p>
+<p width="512px">
+<img src="./UnityRayTracing/hdrp-dxr-setup02.png" alt="hdrp-dxr-setup02.png" width="512px" /><br />
+配置 HDRP Render Pipeline Resources Asset 和 HDRP Render Pipeline Resources Asset<br />
+</p>
+
+<div id="org031e840" class="figure">
+<p><img src="./UnityRayTracing/hdrp-dxr-setup03.png" alt="hdrp-dxr-setup03.png" width="512px" /><br />
+</p>
+</div>
+
+<div id="org96b7fb6" class="figure">
+<p><img src="./UnityRayTracing/hdrp-dxr-setup04.png" alt="hdrp-dxr-setup04.png" width="512px" /><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgd63249b" class="outline-5">
+<h5 id="orgd63249b">check</h5>
+<div class="outline-text-5" id="text-orgd63249b">
+<p>
+Edit/Rendering/Check Scene Content for HDRP Ray Tracing 执行该命令, 若日志信息中没有报错，则说明 RayTracing 配置正确。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgb898cd2" class="outline-4">
+<h4 id="orgb898cd2">Ray tracing and Meshes</h4>
+<div class="outline-text-4" id="text-orgb898cd2">
+<p>
+开启 Ray tracing 后， HDRP 会自动为 ray tracing 创建 acceleration structrue. 该结构允许 Unity 实时为场景中 Meshes 计算 ray tracing。<br />
+</p>
+
+<p>
+ray tracing 可以以如下几种方式改变场景中 Meshes 的外观：<br />
+</p>
+<ul class="org-ul">
+<li>如果 Mesh 的材质没有 HDRenderPipeline tag, HDRP 不会将其加入到 acceleration structrue，也不会为该 mesh 使用任何 ray traced 效果。<br /></li>
+<li>如果 Mesh 被赋予了一个 Decal Material, HDRP 不会将其加入到 acceleration structrue，该 mesh 将不会出现在场景中。<br /></li>
+<li>如果 Mesh 包含一组材质，其中有的材质为单面，有的为双面，HDRP 会将所有这些材质标记为双面。<br /></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orga6038ea" class="outline-4">
+<h4 id="orga6038ea">Ray tracing light culling</h4>
+<div class="outline-text-4" id="text-orga6038ea">
+<p>
+Ray tracing 要求 HDRP 以不同的于光栅化的方式对 lights 进行 cull。对于光栅化，只有影响当前 frustum 的光源是有用的。然而，ray tracing 会使用屏幕外的数据来实现各种效果(如 反射)，HDRP 需要考虑影响屏幕外几何体的光源。因此，HDRP 定义了一个围绕 camera 的范围，在该范围内收集光源，可以使用 LightClusterVolume override 来控制该范围。精确设置该范围非常重要，范围过大会使 HDRP 包含更远的光源，会导致 ray tracing 的 light culling 性能问题。<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org3d37e5b" class="outline-4">
+<h4 id="org3d37e5b">Ray tracing mode</h4>
+<div class="outline-text-4" id="text-org3d37e5b">
+<p>
+HDRP 包含了两种 ray trcing 模式，其定义了如何计算特定的 ray-traced 效果：<br />
+</p>
+<ul class="org-ul">
+<li>Performance 该模式用于实时应用程序。如果你选择该模式，ray-traced effects 会包含预设，你可以改变预设来平衡性能和质量。<br /></li>
+<li>Quality     该模式用于技术 demo 和那些希望获得最佳质量的应用程序。<br /></li>
+</ul>
+
+<p>
+根据当前使用的不同的 ray tracing 模式，HDRP 会为一些 ray-traced effects 暴露不同的属性。你可以在 project level 也可以在 effect level 上来改变 ray tracing 模式。<br />
+</p>
+
+<p>
+在 HDRP Asset 中可以在 Project Level 上，改变 ray tracing 模式，如下：<br />
+</p>
+<p width="512px">
+<img src="./UnityRayTracing/hdrp-raytracingMode.png" alt="hdrp-raytracingMode.png" width="512px" /><br />
+如果选择 Both 选项，你可以为每种 ray-traced effect 改变 ray tracing mode.<br />
+</p>
+
+<p>
+在场景中，找到包含 Volume 组件的物体，Volume 若包含了 ray-traced effect, 你可以修改该 effect 的 mode 属性来修改 ray tracing mode, 如下：<br />
+</p>
+
+<div id="org8b810a9" class="figure">
+<p><img src="./UnityRayTracing/hdrp-raytracingMode1.png" alt="hdrp-raytracingMode1.png" width="512px" /><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orge4ef5ea" class="outline-4">
+<h4 id="orge4ef5ea">Limitations</h4>
+<div class="outline-text-4" id="text-orge4ef5ea">
+<p>
+HDRP ray tracing 有如下限制：<br />
+</p>
+<ul class="org-ul">
+<li>不支持顶点动画(vertex animation)<br /></li>
+<li>不支持贴花(decals)<br /></li>
+<li>不支持体积雾(volumetric fog)<br /></li>
+<li>不支持细分着色器(tessellation)<br /></li>
+<li>不支持 per pixel displacement (parallax occlusion mapping, height map, depth offset).<br /></li>
+<li>不支持 VFX 和 Terrain<br /></li>
+<li>不支持对 shadows 进行精确的 culling，ray tracing 实现的效果可能会丢失阴影<br /></li>
+<li>不支持 MSAA<br /></li>
+<li>不支持 Graphics.DrawMesh.<br /></li>
+<li>渲染 Reflection Probes 时，不支持 Ray tracing。<br /></li>
+<li>不支持正交投影。开启正交投影，半透明材质渲染、体积渲染、平面反射渲染可能会有问题。<br /></li>
+<li>Ray Traced 效果 和 屏幕空间效果不会递归地出现。例如，在 ray-traced 反射中无法看到屏幕空间的全局光照。<br /></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org4e5d660" class="outline-4">
+<h4 id="org4e5d660">参考资料</h4>
+<div class="outline-text-4" id="text-org4e5d660">
+<ul class="org-ul">
+<li><a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@12.1/manual/Ray-Tracing-Getting-Started.html">https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@12.1/manual/Ray-Tracing-Getting-Started.html</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org2f8829b" class="outline-3">
+<h3 id="org2f8829b">implementation</h3>
+<div class="outline-text-3" id="text-org2f8829b">
+</div>
+<div id="outline-container-orgd8a0138" class="outline-4">
+<h4 id="orgd8a0138">初始化</h4>
+<div class="outline-text-4" id="text-orgd8a0138">
+<p>
+com.unity.render-pipelines.high-definition@12.1.6\Runtime\RenderPipeline\HDRenderPipeline.cs<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #bc6ec5; font-weight: bold;">HDRenderPipeline</span>(<span style="color: #ce537a; font-weight: bold;">HDRenderPipelineAsset</span> <span style="color: #7590db;">asset</span>)
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">.......</span>
+    <span style="color: #4f97d7; font-weight: bold;">if</span> (m_RayTracingSupported)
+    {
+        <span style="color: #bc6ec5; font-weight: bold;">InitRayTracingManager</span>();
+        <span style="color: #bc6ec5; font-weight: bold;">InitRayTracedReflections</span>();
+        <span style="color: #bc6ec5; font-weight: bold;">InitRayTracedIndirectDiffuse</span>();
+        <span style="color: #bc6ec5; font-weight: bold;">InitRaytracingDeferred</span>();
+        <span style="color: #bc6ec5; font-weight: bold;">InitRecursiveRenderer</span>();
+        <span style="color: #bc6ec5; font-weight: bold;">InitPathTracing</span>(m_RenderGraph);
+        <span style="color: #bc6ec5; font-weight: bold;">InitRayTracingAmbientOcclusion</span>();
+    }
+}
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">internal</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">InitRayTracingManager</span>()
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">RayCountManager &#29992;&#20110;&#31649;&#29702;&#23556;&#32447;&#30340;&#25968;&#37327;&#12290;&#19981;&#21516;&#30340;&#25928;&#26524;&#65292;&#21487;&#20197;&#20351;&#29992;&#19981;&#21516;&#25968;&#37327;&#30340;&#23556;&#32447;&#65292;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Tips: &#35813;&#21151;&#33021;&#30446;&#21069;&#36824;&#27809;&#26377;&#29983;&#25928;</span>
+    m_RayCountManager = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">RayCountManager</span>();
+    m_RayCountManager.<span style="color: #bc6ec5; font-weight: bold;">Init</span>(m_GlobalSettings.renderPipelineRayTracingResources);
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Ray Tracing Light Cluster </span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">TODO</span>
+    m_RayTracingLightCluster = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">HDRaytracingLightCluster</span>();
+    m_RayTracingLightCluster.<span style="color: #bc6ec5; font-weight: bold;">Initialize</span>(<span style="color: #4f97d7; font-weight: bold;">this</span>);
+}
+</pre>
+</div>
+
+<p>
+com.unity.render-pipelines.high-definition@12.1.6\Runtime\RenderPipeline\Raytracing\HDRenderPipeline.RaytracingReflection.cs<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">&#22312; RayTracedReflection &#30340;&#21021;&#22987;&#21270;&#20013;&#65292;&#23450;&#20041;&#22909; RayTracing &#38656;&#35201;&#20351;&#29992;&#30340; shader &#21464;&#37327;</span>
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">InitRayTracedReflections</span>()
+{
+    <span style="color: #ce537a; font-weight: bold;">ComputeShader</span> <span style="color: #7590db;">reflectionShaderCS</span> = m_GlobalSettings.renderPipelineRayTracingResources.reflectionRaytracingCS;
+    <span style="color: #ce537a; font-weight: bold;">ComputeShader</span> <span style="color: #7590db;">reflectionBilateralFilterCS</span> = m_GlobalSettings.renderPipelineRayTracingResources.reflectionBilateralFilterCS;
+
+    m_RaytracingReflectionsFullResKernel = reflectionShaderCS.<span style="color: #bc6ec5; font-weight: bold;">FindKernel</span>(<span style="color: #2d9574;">"RaytracingReflectionsFullRes"</span>);
+    m_RaytracingReflectionsHalfResKernel = reflectionShaderCS.<span style="color: #bc6ec5; font-weight: bold;">FindKernel</span>(<span style="color: #2d9574;">"RaytracingReflectionsHalfRes"</span>);
+    m_RaytracingReflectionsTransparentFullResKernel = reflectionShaderCS.<span style="color: #bc6ec5; font-weight: bold;">FindKernel</span>(<span style="color: #2d9574;">"RaytracingReflectionsTransparentFullRes"</span>);
+    m_RaytracingReflectionsTransparentHalfResKernel = reflectionShaderCS.<span style="color: #bc6ec5; font-weight: bold;">FindKernel</span>(<span style="color: #2d9574;">"RaytracingReflectionsTransparentHalfRes"</span>);
+    m_ReflectionAdjustWeightKernel = reflectionBilateralFilterCS.<span style="color: #bc6ec5; font-weight: bold;">FindKernel</span>(<span style="color: #2d9574;">"ReflectionAdjustWeight"</span>);
+    m_ReflectionUpscaleKernel = reflectionBilateralFilterCS.<span style="color: #bc6ec5; font-weight: bold;">FindKernel</span>(<span style="color: #2d9574;">"ReflectionUpscale"</span>);
+}
+</pre>
+</div>
+<p>
+renderPipelineRayTracingResources 数据存储在如下路径文件中：<br />
+</p>
+
+<div id="orgdabb628" class="figure">
+<p><img src="./UnityRayTracing/hdrp-raytracingRes.png" alt="hdrp-raytracingRes.png" width="512px" /><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgfb06478" class="outline-4">
+<h4 id="orgfb06478">Render</h4>
+<div class="outline-text-4" id="text-orgfb06478">
+<p>
+com.unity.render-pipelines.high-definition@12.1.6\Runtime\RenderPipeline\HDRenderPipeline.cs<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">protected</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Render</span>(<span style="color: #ce537a; font-weight: bold;">ScriptableRenderContext</span> <span style="color: #7590db;">renderContext</span>, <span style="color: #ce537a; font-weight: bold;">List</span>&lt;<span style="color: #ce537a; font-weight: bold;">Camera</span>&gt; <span style="color: #7590db;">cameras</span>)
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">culling loop</span>
+    <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #bc6ec5; font-weight: bold;">TryCull</span>(<span style="color: #ce537a; font-weight: bold;">Camera</span> <span style="color: #7590db;">camera</span>, <span style="color: #ce537a; font-weight: bold;">HDCamera</span> <span style="color: #7590db;">hdCamera</span>, <span style="color: #ce537a; font-weight: bold;">ScriptableRenderContext</span> <span style="color: #7590db;">renderContext</span>, <span style="color: #ce537a; font-weight: bold;">SkyManager</span> <span style="color: #7590db;">skyManager</span>, <span style="color: #ce537a; font-weight: bold;">ScriptableCullingParameters</span> <span style="color: #7590db;">cullingParams</span>, <span style="color: #ce537a; font-weight: bold;">HDRenderPipelineAsset</span> <span style="color: #7590db;">hdrp</span>, <span style="color: #4f97d7; font-weight: bold;">ref</span> <span style="color: #ce537a; font-weight: bold;">HDCullingResults</span> <span style="color: #7590db;">cullingResults</span>)
+    {
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#24320;&#21551; ray tracing &#21518;&#20250;&#23545;Culling&#21442;&#25968;&#36827;&#34892;&#37325;&#20889;</span>
+        <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">OverrideCullingForRayTracing</span>(<span style="color: #ce537a; font-weight: bold;">HDCamera</span> <span style="color: #7590db;">hdCamera</span>, <span style="color: #ce537a; font-weight: bold;">Camera</span> <span style="color: #7590db;">camera</span>, <span style="color: #4f97d7; font-weight: bold;">ref</span> <span style="color: #ce537a; font-weight: bold;">ScriptableCullingParameters</span> <span style="color: #7590db;">cullingParams</span>)
+    }
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">add render request</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">add HDProbeRenderRequests</span>
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">execute render request</span>
+    <span style="color: #bc6ec5; font-weight: bold;">ExecuteRenderRequest</span>(renderRequest, renderContext, cmd, AOVRequestData.defaultAOVRequestDataNonAlloc);
+    {
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20026; ray tracing &#26500;&#24314;&#21152;&#36895;&#32467;&#26500;</span>
+        <span style="color: #bc6ec5; font-weight: bold;">BuildRayTracingAccelerationStructure</span>(hdCamera);
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20026; ray tracing &#25191;&#34892;culling TODO</span>
+        <span style="color: #bc6ec5; font-weight: bold;">CullForRayTracing</span>(cmd, hdCamera);
+
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25191;&#34892; RenderGraph</span>
+        <span style="color: #bc6ec5; font-weight: bold;">ExecuteWithRenderGraph</span>(renderRequest, aovRequest, aovBuffers, aovCustomPassBuffers, renderContext, cmd);
+        {
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">TODO</span>
+            <span style="color: #bc6ec5; font-weight: bold;">RenderPrepass</span>(m_RenderGraph, colorBuffer, lightingBuffers.sssBuffer, vtFeedbackBuffer, cullingResults, customPassCullingResults, hdCamera, aovRequest, aovBuffers);
+        }
+    }
+}
+</pre>
+</div>
+
+<p>
+com.unity.render-pipelines.high-definition@12.1.6\Runtime\RenderPipeline\Raytracing\HDRaytracingManager.cs<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">internal</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">BuildRayTracingAccelerationStructure</span>(<span style="color: #ce537a; font-weight: bold;">HDCamera</span> <span style="color: #7590db;">hdCamera</span>)
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#33719;&#21462;&#22330;&#26223;&#20013;&#25152;&#26377;&#30340;&#28783;&#20809; fetch all the lights in the scene</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">1. &#21028;&#26029;&#28783;&#20809;&#26159;&#21542;&#24320;&#21551;ray tracing shadow&#65292;&#24182;&#19988;&#26159;&#21542;&#24320;&#21551;&#20102;&#23631;&#24149;&#31354;&#38388;&#38452;&#24433;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">m_RayTracedShadowsRequired |= (hdLight.useRayTracedShadows &amp;&amp; screenSpaceShadowsSupported);</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">m_RayTracedContactShadowsRequired |= (hdLight.useContactShadow.@override &amp;&amp; hdLight.rayTraceContactShadow);</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">2. &#21028;&#26029;&#28783;&#20809;&#26159;&#21542;&#26377;&#20301;&#32622;&#21464;&#21270;&#12290;TODO</span>
+    
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Tips: ReflectionProbe &#20063;&#34987;&#24403;&#20316;RayTracing &#30340;&#20809;&#28304;</span>
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21028;&#26029;&#19979;&#21015;&#21508;&#31181;&#25928;&#26524;&#30340;&#35774;&#32622;&#20013;&#26159;&#21542;&#24320;&#21551;&#20102;RayTracing</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">AmbientOcclusion       &#24320;&#21551;&#20102; rayTracing&#65292;&#24182;&#19988;camera&#24320;&#21551;&#20102;ScreenSpaceAO</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">ScreenSpaceReflection  &#33258;&#36523;&#24320;&#21551;&#20102;&#25110;&#24320;&#20102;&#21322;&#36879;&#26126;&#29289;&#20307;&#30340;&#21453;&#23556;&#65292;&#24182;&#19988;&#24320;&#21551;&#20102; rayTracing&#65292;&#24182;&#19988;camera&#24320;&#21551;&#20102; ssr</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">GlobalIllumination     &#33258;&#36523;&#24320;&#21551;&#20102;&#65292;&#24182;&#19988;&#24320;&#21551;&#20102; rayTracing, &#24182;&#19988; camera &#24320;&#21551;&#20102;SSGI</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">RecursiveRendering     &#33258;&#36523;&#24320;&#21551;&#20102;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">SubSurfaceScattering   &#24320;&#21551;&#20102; rayTracing&#65292;&#24182;&#19988;camera&#24320;&#21551;&#20102; SubsurfaceScattering </span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">PathTracing            &#33258;&#36523;&#24320;&#21551;&#20102;</span>
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20197;&#19978;&#20219;&#20309;&#19968;&#20010;&#25928;&#26524;&#24320;&#21551;&#65292;&#23601;&#34920;&#31034;&#38656;&#35201;&#36827;&#34892; Ray Tracing&#20102;</span>
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#36941;&#21382;&#22330;&#26223;&#20013;&#25152;&#26377;&#21306;&#22495;&#20809;&#28304;, &#20026;&#20854;&#29983;&#25104;Acceleration Structure</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#36941;&#21382;&#22330;&#26223;&#20013;&#25152;&#26377;LODGroup&#65292;&#26681;&#25454;&#25668;&#20687;&#26426;&#36317;&#31163;&#33719;&#24471;&#24403;&#21069;&#20351;&#29992;&#30340;Lod&#65292;&#20026;&#23545;&#24212;&#30340;MeshRenderer &#29983;&#25104;Acceleration Structure</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#36941;&#21382;&#22330;&#26223;&#20013;&#25152;&#26377; Renderer, &#33509;&#36824;&#27809;&#26377;&#20026;&#20854;&#29983;&#25104; Acceleration Structure &#21017;&#20026;&#20854;&#29983;&#25104;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">RayTracingAccelerationStructure m_CurrentRAS; // &#35813;&#21464;&#37327;&#29992;&#20110;&#23384;&#20648; Acceleration Structure</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">AddInstanceToRAS() &#20989;&#25968;&#29992;&#20110;&#25191;&#34892;&#20855;&#20307;&#29983;&#25104;Acceleration Structure &#30340;&#36923;&#36753; TODO</span>
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#26500;&#24314;GPU &#31471;&#30340;&#21152;&#36895;&#32467;&#26500;&#25968;&#25454;</span>
+    m_CurrentRAS.<span style="color: #bc6ec5; font-weight: bold;">Build</span>(hdCamera.mainViewConstants.worldSpaceCameraPos);
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org73ff3f2" class="outline-2">
+<h2 id="org73ff3f2">URP</h2>
+<div class="outline-text-2" id="text-org73ff3f2">
+</div>
+<div id="outline-container-orgf31e86d" class="outline-3">
+<h3 id="orgf31e86d">setup</h3>
+</div>
+<div id="outline-container-orgb641dab" class="outline-3">
+<h3 id="orgb641dab">implementation</h3>
+</div>
+</div>
+<div id="outline-container-orgae2f805" class="outline-2">
+<h2 id="orgae2f805">Terminology</h2>
+<div class="outline-text-2" id="text-orgae2f805">
+<ul class="org-ul">
+<li>RTHandle <a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.core@12.1/manual/rthandle-system-fundamentals.html">https://docs.unity3d.com/Packages/com.unity.render-pipelines.core@12.1/manual/rthandle-system-fundamentals.html</a><br /></li>
+<li>Light Cluster <a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@12.1/manual/Ray-Tracing-Light-Cluster.html">https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@12.1/manual/Ray-Tracing-Light-Cluster.html</a><br /></li>
+<li>Render Graph <a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.core@12.1/manual/render-graph-system.html">https://docs.unity3d.com/Packages/com.unity.render-pipelines.core@12.1/manual/render-graph-system.html</a><br /></li>
+<li>AOV <a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@10.0/manual/AOVs.html">https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@10.0/manual/AOVs.html</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgdad01c5" class="outline-2">
+<h2 id="orgdad01c5">参考资料</h2>
+<div class="outline-text-2" id="text-orgdad01c5">
+<ul class="org-ul">
+<li>GPU Ray Tracing in Unity – Part 1 <a href="http://blog.three-eyed-games.com/2018/05/03/gpu-ray-tracing-in-unity-part-1/">http://blog.three-eyed-games.com/2018/05/03/gpu-ray-tracing-in-unity-part-1/</a><br /></li>
+<li>GPU Ray Tracing in Unity – Part 2 <a href="http://three-eyed-games.com/2018/05/12/gpu-path-tracing-in-unity-part-2/">http://three-eyed-games.com/2018/05/12/gpu-path-tracing-in-unity-part-2/</a><br /></li>
+<li>GPU Ray Tracing in Unity - Part 3 <a href="http://three-eyed-games.com/2019/03/18/gpu-path-tracing-in-unity-part-3/">http://three-eyed-games.com/2019/03/18/gpu-path-tracing-in-unity-part-3/</a><br /></li>
+<li>探究光线追踪技术及 UE4 的实现 <a href="https://www.cnblogs.com/timlly/p/11366199.html">https://www.cnblogs.com/timlly/p/11366199.html</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+</body>
+</html>

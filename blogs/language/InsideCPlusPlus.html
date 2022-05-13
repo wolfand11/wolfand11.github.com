@@ -3,16 +3,19 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2022-03-14 周一 17:00 -->
+<!-- 2022-05-13 Fri 18:08 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Inside The C++ Object Model</title>
 <meta name="generator" content="Org mode" />
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
          <meta name="viewport" content="width=device-width, initial-scale=1" />
-         <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/css/worg.css" type="text/css" />
-         <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/css/worg-zenburn.css" type="text/css" />
-         <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
+         <link rel="stylesheet" type="text/css" href="https://wolfand11.gitee.io/res/readtheorg_theme/css/htmlize.css"/>
+         <link rel="stylesheet" type="text/css" href="https://wolfand11.gitee.io/res/readtheorg_theme/css/readtheorg.css"/>
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/jquery.min.js"></script>
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/bootstrap.min.js"></script>
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/jquery.stickytableheaders.min.js"></script>
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/readtheorg_theme/js/readtheorg.js"></script>
          <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
          <script type="text/javascript" src="https://wolfand11.gitee.io/res/blog-tools.js"></script>
 <script type="text/javascript">
@@ -49,262 +52,262 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orge84a81b">1 Object Lessons</a>
+<li><a href="#org0bbe985">1 Object Lessons</a>
 <ul>
-<li><a href="#orgbac7713">C++对象模型</a>
+<li><a href="#org61de62a">C++对象模型</a>
 <ul>
-<li><a href="#orgd360ca6">简单对象模型</a></li>
-<li><a href="#org7c42e96">表格对象驱动模型</a></li>
-<li><a href="#orgba89f79">C++对象模型</a>
+<li><a href="#org6829dee">简单对象模型</a></li>
+<li><a href="#org7a305be">表格对象驱动模型</a></li>
+<li><a href="#org675255c">C++对象模型</a>
 <ul>
-<li><a href="#orgb12fcfd">加入继承</a>
+<li><a href="#orgc8231d4">加入继承</a>
 <ul>
-<li><a href="#org5bbe4fe">简单对象模型</a></li>
-<li><a href="#orgda9309b">基类表模型</a></li>
-<li><a href="#org9618b81">C++对象模型</a></li>
+<li><a href="#org08cbf72">简单对象模型</a></li>
+<li><a href="#org5395b0e">基类表模型</a></li>
+<li><a href="#orgcd653e3">C++对象模型</a></li>
 </ul>
 </li>
-<li><a href="#org8259bf8">对象模型如何影响程序</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#orga8bbb95">关键字带来的差异</a></li>
-<li><a href="#orgea4eafd">对象的差异</a>
-<ul>
-<li><a href="#orgb5dc2f3">指针的类型</a></li>
-<li><a href="#org41a784e">OB 与 OO</a></li>
+<li><a href="#org00f14a2">对象模型如何影响程序</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#orgb2e2d96">2 The Semantics of Constructors</a>
+<li><a href="#orga500d46">关键字带来的差异</a></li>
+<li><a href="#org11d69e8">对象的差异</a>
 <ul>
-<li><a href="#orgcbf4fd6">Default Constructor Construction</a>
-<ul>
-<li><a href="#org923d5f1">成员类对象带有默认的构造函数</a></li>
-<li><a href="#orgeed10db">基类带有默认的构造函数</a></li>
-<li><a href="#orgc596f06">类带有一个或多个虚函数</a></li>
-<li><a href="#orgf8e3b44">类带有一个或多个虚基类</a></li>
-</ul>
-</li>
-<li><a href="#orgac23618">Copy Constructor Construction</a>
-<ul>
-<li><a href="#org2c44cac">基于位的 copy 语义(Bitwise copy Semantics)</a></li>
-<li><a href="#orgb78a397">什么时候类不展现基于位的 copy 语义</a>
-<ul>
-<li><a href="#org5ca7691">当类内含一个成员对象，而后者的类定义了一个 copy 构造函数。</a></li>
-<li><a href="#org5844bc3">当类继承自一个基类而后者存在有一个 copy constructor。</a></li>
-<li><a href="#org260dff0">当类声明了一个或多个虚函数。</a></li>
-<li><a href="#org56cdd71">当类派生自一个继承串链，其中有一个或多个虚基类。</a></li>
+<li><a href="#orgd2b80cb">指针的类型</a></li>
+<li><a href="#org5b4b80d">OB 与 OO</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#orgb92cd0f">程序转化语义学</a>
+<li><a href="#orgd0856ba">2 The Semantics of Constructors</a>
 <ul>
-<li><a href="#org0ea7553">明确的初始化操作</a></li>
-<li><a href="#org0447443">参数的初始化</a></li>
-<li><a href="#org09e17fc">返回值的初始化</a>
+<li><a href="#orgf69f457">Default Constructor Construction</a>
 <ul>
-<li><a href="#org8cb5693">返回值优化</a>
+<li><a href="#org5ac2dde">成员类对象带有默认的构造函数</a></li>
+<li><a href="#org93cc5e3">基类带有默认的构造函数</a></li>
+<li><a href="#org0f285a6">类带有一个或多个虚函数</a></li>
+<li><a href="#org84da7f1">类带有一个或多个虚基类</a></li>
+</ul>
+</li>
+<li><a href="#org26eaf71">Copy Constructor Construction</a>
 <ul>
-<li><a href="#org91bfd1e">在使用者层面做优化</a></li>
-<li><a href="#org2a8f1f9">在编译器层面做优化</a></li>
+<li><a href="#org3decc88">基于位的 copy 语义(Bitwise copy Semantics)</a></li>
+<li><a href="#orga4cee4c">什么时候类不展现基于位的 copy 语义</a>
+<ul>
+<li><a href="#org6f9a353">当类内含一个成员对象，而后者的类定义了一个 copy 构造函数。</a></li>
+<li><a href="#org31215bc">当类继承自一个基类而后者存在有一个 copy constructor。</a></li>
+<li><a href="#orgaa2380f">当类声明了一个或多个虚函数。</a></li>
+<li><a href="#org67007ec">当类派生自一个继承串链，其中有一个或多个虚基类。</a></li>
 </ul>
 </li>
 </ul>
 </li>
-</ul>
-</li>
-<li><a href="#org6b32f6d">成员们的初始化列表</a></li>
-</ul>
-</li>
-<li><a href="#org2004177">3 The Semantics of Data</a>
+<li><a href="#org8de887a">程序转化语义学</a>
 <ul>
-<li><a href="#org8f405b3">数据成员的绑定</a></li>
-<li><a href="#org05a6015">数据成员的布局</a></li>
-<li><a href="#org4072541">数据成员的存取</a>
+<li><a href="#org8193795">明确的初始化操作</a></li>
+<li><a href="#org12bf9b9">参数的初始化</a></li>
+<li><a href="#orgaeeaf4d">返回值的初始化</a>
 <ul>
-<li><a href="#org828534f">静态数据成员</a></li>
-<li><a href="#org7718f29">非静态数据成员</a></li>
-</ul>
-</li>
-<li><a href="#org490368b">继承的数据成员</a>
+<li><a href="#org258bf2a">返回值优化</a>
 <ul>
-<li><a href="#org341d248">没有多态的继承</a></li>
-<li><a href="#org26d86a3">加上多态以后</a>
-<ul>
-<li><a href="#org7adae44">虚表指针放在类对象前端还是末尾？</a></li>
-<li><a href="#org84cf68c">如何判断当前编译器虚表指针放置位置？</a>
-<ul>
-<li><a href="#org2a1f484">方法 1</a></li>
-<li><a href="#org2206fd4">方法 2</a></li>
-</ul>
-</li>
-<li><a href="#org4052295">多态导致的内存消耗</a></li>
-</ul>
-</li>
-<li><a href="#org9f2d535">多重继承</a>
-<ul>
-<li><a href="#org7d70aed">多重继承导致的内存消耗</a></li>
-</ul>
-</li>
-<li><a href="#org48444e1">虚拟继承</a>
-<ul>
-<li><a href="#org2d04e55">多重虚拟继承导致的内存消耗</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#orgb2e6bcc">数据成员的效率</a></li>
-<li><a href="#orge2d0ee3">指向数据成员的指针</a>
-<ul>
-<li><a href="#org6d11fd9">如何确定 vptr 是放在类的起始处还是尾端。</a></li>
-<li><a href="#org18d78ec">指向数据成员的指针的效率问题</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#org323124a">4 The Semantics of Function</a>
-<ul>
-<li><a href="#org08f3227">成员函数的各种调用方式</a>
-<ul>
-<li><a href="#org9ef069e">非静态成员函数</a></li>
-<li><a href="#org70150d2">虚成员函数</a></li>
-<li><a href="#org5bfad0a">静态成员函数</a></li>
-</ul>
-</li>
-<li><a href="#org493c1cd">虚拟成员函数</a>
-<ul>
-<li><a href="#orgbbfec3a">无继承或单继承下的虚函数</a></li>
-<li><a href="#org46cc019">多重继承下的虚函数</a></li>
-<li><a href="#orge5ef26c">虚拟继承下的虚函数</a></li>
-</ul>
-</li>
-<li><a href="#orgf0c3aba"><span class="todo TODO">TODO</span> 函数的效能</a></li>
-<li><a href="#orgcbffd43">指向成员函数的指针</a>
-<ul>
-<li><a href="#org1d8047b">支持指向虚成员函数的指针</a></li>
-<li><a href="#org99a37e7">多重继承下，指向成员函数的指针</a></li>
-<li><a href="#org3617ec6">指向成员函数之指针的效率</a></li>
-</ul>
-</li>
-<li><a href="#org72e0e58">Inline Function</a>
-<ul>
-<li><a href="#org8a4e715">形式参数</a></li>
-<li><a href="#orga0e063f">局部变量</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#orga58ea0e">5 Semantics of Construction,Destruction,and Copy</a>
-<ul>
-<li><a href="#orge323d6e">无继承情况下的对象构造</a>
-<ul>
-<li><a href="#org9399333">Plain Ol' Data</a></li>
-<li><a href="#org4331a80">抽象数据类型</a></li>
-<li><a href="#org2537ff1">包含虚函数</a></li>
-</ul>
-</li>
-<li><a href="#org0bd0497">继承体系下的对象构造</a>
-<ul>
-<li><a href="#orgb3dc0a2">vptr 初始化语义</a></li>
-</ul>
-</li>
-<li><a href="#org7eb066b">对象复制语义</a></li>
-<li><a href="#org282877f"><span class="todo TODO">TODO</span> 对象的效能</a></li>
-<li><a href="#org0fc41ed">对象解构语义</a></li>
-</ul>
-</li>
-<li><a href="#org50a6c13">6 Runtime Semantics</a>
-<ul>
-<li><a href="#org5c3e468">对象的构造和解构</a>
-<ul>
-<li><a href="#orgce6ee41">全局对象</a></li>
-<li><a href="#org2801619">局部静态对象</a></li>
-<li><a href="#org9456ee0">对象数组</a></li>
-<li><a href="#org2c9b784">Default Constructors 和数组</a></li>
-</ul>
-</li>
-<li><a href="#org7167ff1">new delete 运算符</a>
-<ul>
-<li><a href="#orga895024">内置类型</a></li>
-<li><a href="#org95330c9">类对象</a></li>
-<li><a href="#orgea3fcea">new</a></li>
-<li><a href="#org144e5d9">delete</a></li>
-<li><a href="#org7563477">new []</a></li>
-<li><a href="#org8e70d44">delete []</a></li>
-<li><a href="#org55a4665">placement operator new 的语意</a></li>
-</ul>
-</li>
-<li><a href="#org2e4c575">临时性对象</a></li>
-</ul>
-</li>
-<li><a href="#orge544966">7 On the Cusp of the Object Model</a>
-<ul>
-<li><a href="#org91dd060"><span class="todo TODO">TODO</span> 模板</a></li>
-<li><a href="#org5bb8edf">异常处理</a></li>
-<li><a href="#org0628cc1">执行期类型识别</a></li>
-</ul>
-</li>
-<li><a href="#org14fe1b6">Q&amp;A:</a>
-<ul>
-<li><a href="#orgcbd03cc">c++中的类型转换有哪些？</a>
-<ul>
-<li><a href="#orgfd00fbc">一、类型转换的意义：</a></li>
-<li><a href="#orga4a48a3">二、什么是类型转换：</a></li>
-<li><a href="#org94c9b23">三、类型转换分类：</a>
-<ul>
-<li><a href="#org9877fb8">从是否需要在类型转换的地方写代码来使用类型转换，可以将类型转换分为：隐式类型转换、显示转换。</a>
-<ul>
-<li><a href="#org918e24f">隐式转换</a></li>
-<li><a href="#orgc91bdd1">显式转换</a></li>
-</ul>
-</li>
-<li><a href="#orgba78478">从是否需要编写代码来实现类型转换的具体实现细节，可以将类型转换分为：标准转换、类类型转换。</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#org12d1338">extern 和 static 的区别？</a>
-<ul>
-<li><a href="#orgd68fd41">static</a>
-<ul>
-<li><a href="#orgd371cf7">改变生命期</a></li>
-<li><a href="#org7213e93">改变作用域/可见性</a></li>
-<li><a href="#org9385c2e">类静态成员</a></li>
-</ul>
-</li>
-<li><a href="#org517fffb">extern</a>
-<ul>
-<li><a href="#org70742e2">声明变量</a></li>
-<li><a href="#orgd67a6a5">声明 c++函数</a></li>
-<li><a href="#org4a0d170">链接指示</a>
-<ul>
-<li><a href="#orgf5e8200">链接指示有两种形式</a></li>
-<li><a href="#org83451a4">链接指示支持的语言</a></li>
-<li><a href="#org563968d">链接指示的运用</a></li>
+<li><a href="#org30b7cc8">在使用者层面做优化</a></li>
+<li><a href="#org2955766">在编译器层面做优化</a></li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#orge97870f">字节对齐是什么？</a></li>
-<li><a href="#orgcee1428">内置类型变量在内存中如何布局？</a></li>
-<li><a href="#org486631d">类在内存中的布局是怎样的？</a></li>
-<li><a href="#orgdbfefd6">对象在内存中的布局是怎样的？</a></li>
-<li><a href="#orge708ad6">什么时候需要在成员函数中显式使用 this?</a></li>
-<li><a href="#orgb30e6ed">关于 inline 的问题</a>
-<ul>
-<li><a href="#orgca7206e">什么时候使用 inline 什么时候不能使用 inline？</a></li>
-<li><a href="#org1d0bf6c">虚函数是否可以指定为 inline？</a></li>
+<li><a href="#org720b6ad">成员们的初始化列表</a></li>
 </ul>
 </li>
-<li><a href="#org3c017d7">memcpy 和 memset 的使用</a></li>
-<li><a href="#org996a4ca">virtual 机制和类对象、类指针、类引用</a></li>
-<li><a href="#org6d20d89">Name Mangling</a></li>
+<li><a href="#orgbac77de">3 The Semantics of Data</a>
+<ul>
+<li><a href="#orgad5e3c9">数据成员的绑定</a></li>
+<li><a href="#org35f965e">数据成员的布局</a></li>
+<li><a href="#orgc5f4d97">数据成员的存取</a>
+<ul>
+<li><a href="#org0d08310">静态数据成员</a></li>
+<li><a href="#org0a94820">非静态数据成员</a></li>
+</ul>
+</li>
+<li><a href="#orgfb6ed60">继承的数据成员</a>
+<ul>
+<li><a href="#org81afd45">没有多态的继承</a></li>
+<li><a href="#org7d39bdf">加上多态以后</a>
+<ul>
+<li><a href="#org9496fbf">虚表指针放在类对象前端还是末尾？</a></li>
+<li><a href="#orgef986ea">如何判断当前编译器虚表指针放置位置？</a>
+<ul>
+<li><a href="#org73e8b57">方法 1</a></li>
+<li><a href="#org164b65a">方法 2</a></li>
+</ul>
+</li>
+<li><a href="#org15f6a71">多态导致的内存消耗</a></li>
+</ul>
+</li>
+<li><a href="#org1b4d40d">多重继承</a>
+<ul>
+<li><a href="#orgb91bba9">多重继承导致的内存消耗</a></li>
+</ul>
+</li>
+<li><a href="#org1c2a1fd">虚拟继承</a>
+<ul>
+<li><a href="#org94d2029">多重虚拟继承导致的内存消耗</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org28cae3e">数据成员的效率</a></li>
+<li><a href="#org0d50add">指向数据成员的指针</a>
+<ul>
+<li><a href="#org70ba003">如何确定 vptr 是放在类的起始处还是尾端。</a></li>
+<li><a href="#org8c3fa5b">指向数据成员的指针的效率问题</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgd0affea">4 The Semantics of Function</a>
+<ul>
+<li><a href="#orgc88b464">成员函数的各种调用方式</a>
+<ul>
+<li><a href="#org9177a69">非静态成员函数</a></li>
+<li><a href="#orgbb2a4ca">虚成员函数</a></li>
+<li><a href="#org80850a5">静态成员函数</a></li>
+</ul>
+</li>
+<li><a href="#org490034e">虚拟成员函数</a>
+<ul>
+<li><a href="#orgba531a6">无继承或单继承下的虚函数</a></li>
+<li><a href="#org73ad0f8">多重继承下的虚函数</a></li>
+<li><a href="#orge15c320">虚拟继承下的虚函数</a></li>
+</ul>
+</li>
+<li><a href="#org422101c"><span class="todo TODO">TODO</span> 函数的效能</a></li>
+<li><a href="#org544e853">指向成员函数的指针</a>
+<ul>
+<li><a href="#org821990a">支持指向虚成员函数的指针</a></li>
+<li><a href="#orgb12c896">多重继承下，指向成员函数的指针</a></li>
+<li><a href="#org6a7dd2a">指向成员函数之指针的效率</a></li>
+</ul>
+</li>
+<li><a href="#org2d3784d">Inline Function</a>
+<ul>
+<li><a href="#orgd4eef46">形式参数</a></li>
+<li><a href="#org3bc536b">局部变量</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgd2599de">5 Semantics of Construction,Destruction,and Copy</a>
+<ul>
+<li><a href="#orgedff7e4">无继承情况下的对象构造</a>
+<ul>
+<li><a href="#org15cbf5e">Plain Ol' Data</a></li>
+<li><a href="#org75923b9">抽象数据类型</a></li>
+<li><a href="#org827a97b">包含虚函数</a></li>
+</ul>
+</li>
+<li><a href="#org310618b">继承体系下的对象构造</a>
+<ul>
+<li><a href="#org2be40c2">vptr 初始化语义</a></li>
+</ul>
+</li>
+<li><a href="#orgcbd34dc">对象复制语义</a></li>
+<li><a href="#org01b21c9"><span class="todo TODO">TODO</span> 对象的效能</a></li>
+<li><a href="#orgab133d5">对象解构语义</a></li>
+</ul>
+</li>
+<li><a href="#org267056c">6 Runtime Semantics</a>
+<ul>
+<li><a href="#orgd98c017">对象的构造和解构</a>
+<ul>
+<li><a href="#orgbc7e9b5">全局对象</a></li>
+<li><a href="#orgdfbb8a6">局部静态对象</a></li>
+<li><a href="#org5e0d965">对象数组</a></li>
+<li><a href="#orge7c611a">Default Constructors 和数组</a></li>
+</ul>
+</li>
+<li><a href="#org29e4e61">new delete 运算符</a>
+<ul>
+<li><a href="#org5574333">内置类型</a></li>
+<li><a href="#org0162608">类对象</a></li>
+<li><a href="#orga4ee28c">new</a></li>
+<li><a href="#orge9c8623">delete</a></li>
+<li><a href="#orgc933180">new []</a></li>
+<li><a href="#orgdf451b6">delete []</a></li>
+<li><a href="#org3ab2263">placement operator new 的语意</a></li>
+</ul>
+</li>
+<li><a href="#orgc936be4">临时性对象</a></li>
+</ul>
+</li>
+<li><a href="#org494b7b5">7 On the Cusp of the Object Model</a>
+<ul>
+<li><a href="#org3deb01d"><span class="todo TODO">TODO</span> 模板</a></li>
+<li><a href="#org049049d">异常处理</a></li>
+<li><a href="#org8b5eaf8">执行期类型识别</a></li>
+</ul>
+</li>
+<li><a href="#org10519d7">Q&amp;A:</a>
+<ul>
+<li><a href="#org61f37cd">c++中的类型转换有哪些？</a>
+<ul>
+<li><a href="#orgeb4c19a">一、类型转换的意义：</a></li>
+<li><a href="#org644f8cf">二、什么是类型转换：</a></li>
+<li><a href="#orgb43d4c1">三、类型转换分类：</a>
+<ul>
+<li><a href="#org6b844e0">从是否需要在类型转换的地方写代码来使用类型转换，可以将类型转换分为：隐式类型转换、显示转换。</a>
+<ul>
+<li><a href="#org56678f2">隐式转换</a></li>
+<li><a href="#org3a0ab70">显式转换</a></li>
+</ul>
+</li>
+<li><a href="#orgd3d6617">从是否需要编写代码来实现类型转换的具体实现细节，可以将类型转换分为：标准转换、类类型转换。</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orga11581b">extern 和 static 的区别？</a>
+<ul>
+<li><a href="#orga11d5e6">static</a>
+<ul>
+<li><a href="#org458685e">改变生命期</a></li>
+<li><a href="#orgc918504">改变作用域/可见性</a></li>
+<li><a href="#org0efb1c7">类静态成员</a></li>
+</ul>
+</li>
+<li><a href="#org7cf3505">extern</a>
+<ul>
+<li><a href="#orgef3cb5c">声明变量</a></li>
+<li><a href="#org2a171cf">声明 c++函数</a></li>
+<li><a href="#org8d38f6d">链接指示</a>
+<ul>
+<li><a href="#orgfee4f8c">链接指示有两种形式</a></li>
+<li><a href="#org8e067b1">链接指示支持的语言</a></li>
+<li><a href="#org6a1a2f0">链接指示的运用</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgfa68da4">字节对齐是什么？</a></li>
+<li><a href="#orgf90acab">内置类型变量在内存中如何布局？</a></li>
+<li><a href="#org260a318">类在内存中的布局是怎样的？</a></li>
+<li><a href="#org2ee540a">对象在内存中的布局是怎样的？</a></li>
+<li><a href="#org8e544cd">什么时候需要在成员函数中显式使用 this?</a></li>
+<li><a href="#org5fbefa7">关于 inline 的问题</a>
+<ul>
+<li><a href="#org5cd7926">什么时候使用 inline 什么时候不能使用 inline？</a></li>
+<li><a href="#orga4caf87">虚函数是否可以指定为 inline？</a></li>
+</ul>
+</li>
+<li><a href="#orgd672a2b">memcpy 和 memset 的使用</a></li>
+<li><a href="#orgcaf3245">virtual 机制和类对象、类指针、类引用</a></li>
+<li><a href="#org9ee5ce4">Name Mangling</a></li>
 </ul>
 </li>
 </ul>
@@ -314,39 +317,39 @@
 总的来说这本书讲了编译器在你的 C++代码上又做了哪些手脚.<br />
 </p>
 
-<div id="outline-container-orge84a81b" class="outline-2">
-<h2 id="orge84a81b">1 Object Lessons</h2>
-<div class="outline-text-2" id="text-orge84a81b">
+<div id="outline-container-org0bbe985" class="outline-2">
+<h2 id="org0bbe985">1 Object Lessons</h2>
+<div class="outline-text-2" id="text-org0bbe985">
 </div>
-<div id="outline-container-orgbac7713" class="outline-3">
-<h3 id="orgbac7713">C++对象模型</h3>
-<div class="outline-text-3" id="text-orgbac7713">
+<div id="outline-container-org61de62a" class="outline-3">
+<h3 id="org61de62a">C++对象模型</h3>
+<div class="outline-text-3" id="text-org61de62a">
 <p>
 c++有两种类数据成员：静态和非静态，以及三种类成员函数：静态，非静态以及虚函数。<br />
 如何模型出各种数据成员和函数成员呢？<br />
 </p>
 </div>
-<div id="outline-container-orgd360ca6" class="outline-4">
-<h4 id="orgd360ca6">简单对象模型</h4>
-<div class="outline-text-4" id="text-orgd360ca6">
+<div id="outline-container-org6829dee" class="outline-4">
+<h4 id="org6829dee">简单对象模型</h4>
+<div class="outline-text-4" id="text-org6829dee">
 <p>
 <img src="./InsideCPlusPlus/lesson1_simple_object_model.png" alt="lesson1_simple_object_model.png" /><br />
 一个对象是一系列的 slots，每个 slot 指向一个成员。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org7c42e96" class="outline-4">
-<h4 id="org7c42e96">表格对象驱动模型</h4>
-<div class="outline-text-4" id="text-org7c42e96">
+<div id="outline-container-org7a305be" class="outline-4">
+<h4 id="org7a305be">表格对象驱动模型</h4>
+<div class="outline-text-4" id="text-org7a305be">
 <p>
 <img src="./InsideCPlusPlus/lesson1_member_table_object_model.png" alt="lesson1_member_table_object_model.png" /><br />
 把所有与成员相关的信息抽出来，放在一个数据成员表和一个成员函数表中。一个对象内含有指向这两个表格的指针。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgba89f79" class="outline-4">
-<h4 id="orgba89f79">C++对象模型</h4>
-<div class="outline-text-4" id="text-orgba89f79">
+<div id="outline-container-org675255c" class="outline-4">
+<h4 id="org675255c">C++对象模型</h4>
+<div class="outline-text-4" id="text-org675255c">
 <p>
 <img src="./InsideCPlusPlus/lesson1_c++_object_model.png" alt="lesson1_c++_object_model.png" /><br />
 在此模型中，非静态数据成员被配置于每一个对象之内，静态数据成员则被放在所有对象之外，静态和非静态函数成员也被放在所有对象之外。虚函数通过下面<br />
@@ -367,21 +370,21 @@ C++对象模型的主要缺点是，如果应用程序代码本身没有改变�
 </p>
 </div>
 
-<div id="outline-container-orgb12fcfd" class="outline-5">
-<h5 id="orgb12fcfd">加入继承</h5>
-<div class="outline-text-5" id="text-orgb12fcfd">
+<div id="outline-container-orgc8231d4" class="outline-5">
+<h5 id="orgc8231d4">加入继承</h5>
+<div class="outline-text-5" id="text-orgc8231d4">
 </div>
-<div id="outline-container-org5bbe4fe" class="outline-6">
-<h6 id="org5bbe4fe">简单对象模型</h6>
-<div class="outline-text-6" id="text-org5bbe4fe">
+<div id="outline-container-org08cbf72" class="outline-6">
+<h6 id="org08cbf72">简单对象模型</h6>
+<div class="outline-text-6" id="text-org08cbf72">
 <p>
 简单对象模型中，每一个基类子对象可以由派生类内的一个 slot 指出。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgda9309b" class="outline-6">
-<h6 id="orgda9309b">基类表模型</h6>
-<div class="outline-text-6" id="text-orgda9309b">
+<div id="outline-container-org5395b0e" class="outline-6">
+<h6 id="org5395b0e">基类表模型</h6>
+<div class="outline-text-6" id="text-org5395b0e">
 <p>
 基表模型中，产生出一个基类表，表格中的每一个 slot 内含一个相关的 base class 地址。<br />
 每一个类对象内含有一个 bptr，它被初始化，指向其基表。<br />
@@ -389,18 +392,18 @@ C++对象模型的主要缺点是，如果应用程序代码本身没有改变�
 </p>
 </div>
 </div>
-<div id="outline-container-org9618b81" class="outline-6">
-<h6 id="org9618b81">C++对象模型</h6>
-<div class="outline-text-6" id="text-org9618b81">
+<div id="outline-container-orgcd653e3" class="outline-6">
+<h6 id="orgcd653e3">C++对象模型</h6>
+<div class="outline-text-6" id="text-orgcd653e3">
 <p>
 C++基类子对象的数据被直接放到派生类对象中。对于虚基类，则在类对象中为每个关联的虚基类对象加上一个指针。<br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-org8259bf8" class="outline-5">
-<h5 id="org8259bf8">对象模型如何影响程序</h5>
-<div class="outline-text-5" id="text-org8259bf8">
+<div id="outline-container-org00f14a2" class="outline-5">
+<h5 id="org00f14a2">对象模型如何影响程序</h5>
+<div class="outline-text-5" id="text-org00f14a2">
 <p>
 不同的对象模型，会导致“现有的程序代码必须修改”以及“必须加入新的程序代码”两个结果。<br />
 </p>
@@ -446,9 +449,9 @@ C++基类子对象的数据被直接放到派生类对象中。对于虚基类�
 </div>
 </div>
 </div>
-<div id="outline-container-orga8bbb95" class="outline-3">
-<h3 id="orga8bbb95">关键字带来的差异</h3>
-<div class="outline-text-3" id="text-orga8bbb95">
+<div id="outline-container-orga500d46" class="outline-3">
+<h3 id="orga500d46">关键字带来的差异</h3>
+<div class="outline-text-3" id="text-orga500d46">
 <p>
 在 C 所支持的 struct 和 C++所支持的 class 之间，有观念上的重要差异，但是，关键词本身并不提供这种差异。<br />
 C struct 在 C++中的一个合理用途，是当你需要传递“一个复杂的类对象的全部或部分”到某个 C 函数中去时，struct 声明可以将数据封装起来，并保证<br />
@@ -457,9 +460,9 @@ C struct 在 C++中的一个合理用途，是当你需要传递“一个复杂�
 </p>
 </div>
 </div>
-<div id="outline-container-orgea4eafd" class="outline-3">
-<h3 id="orgea4eafd">对象的差异</h3>
-<div class="outline-text-3" id="text-orgea4eafd">
+<div id="outline-container-org11d69e8" class="outline-3">
+<h3 id="org11d69e8">对象的差异</h3>
+<div class="outline-text-3" id="text-org11d69e8">
 <p>
 C++以下列方法支持多态：<br />
 </p>
@@ -472,9 +475,9 @@ ps-&gt;rotate();<br /></li>
 if( circle* pc = dynamic_cast&lt;circle*&gt;(ps) ) &#x2026;<br /></li>
 </ol>
 </div>
-<div id="outline-container-orgb5dc2f3" class="outline-4">
-<h4 id="orgb5dc2f3">指针的类型</h4>
-<div class="outline-text-4" id="text-orgb5dc2f3">
+<div id="outline-container-orgd2b80cb" class="outline-4">
+<h4 id="orgd2b80cb">指针的类型</h4>
+<div class="outline-text-4" id="text-orgd2b80cb">
 <p>
 不同类型的指针，以内存需求的观点来说，没有什么不同。它们都需要足够的内存来放置一个机器地址。指向不同类型之各指针间的差异，既不在其指针表示法不同，<br />
 也不再其内容不同，而是在其所寻址出来的 object 类型不同。也就是说，“指针类型”会教导编译器如何解释某个特定地址中的内存内容及其大小。<br />
@@ -483,9 +486,9 @@ if( circle* pc = dynamic_cast&lt;circle*&gt;(ps) ) &#x2026;<br /></li>
 </p>
 </div>
 </div>
-<div id="outline-container-org41a784e" class="outline-4">
-<h4 id="org41a784e">OB 与 OO</h4>
-<div class="outline-text-4" id="text-org41a784e">
+<div id="outline-container-org5b4b80d" class="outline-4">
+<h4 id="org5b4b80d">OB 与 OO</h4>
+<div class="outline-text-4" id="text-org5b4b80d">
 <p>
 一个基于对象(object-based)的设计可能比一个对等的面向对象(OO)的设计速度更快而且空间更紧凑。速度快是因为所有的函数引发操作都在编译时期解析完<br />
 成，对象建构起来时不需要设置 virtual 机制；空间紧凑则是因为每个类对象不需要负担为了支持 virtual 机制而需要的额外负荷。不过，OB 设计比较没<br />
@@ -496,22 +499,22 @@ if( circle* pc = dynamic_cast&lt;circle*&gt;(ps) ) &#x2026;<br /></li>
 </div>
 </div>
 
-<div id="outline-container-orgb2e2d96" class="outline-2">
-<h2 id="orgb2e2d96">2 The Semantics of Constructors</h2>
-<div class="outline-text-2" id="text-orgb2e2d96">
+<div id="outline-container-orgd0856ba" class="outline-2">
+<h2 id="orgd0856ba">2 The Semantics of Constructors</h2>
+<div class="outline-text-2" id="text-orgd0856ba">
 </div>
-<div id="outline-container-orgcbf4fd6" class="outline-3">
-<h3 id="orgcbf4fd6">Default Constructor Construction</h3>
-<div class="outline-text-3" id="text-orgcbf4fd6">
+<div id="outline-container-orgf69f457" class="outline-3">
+<h3 id="orgf69f457">Default Constructor Construction</h3>
+<div class="outline-text-3" id="text-orgf69f457">
 <p>
 什么时候才会合成出一个 Default Constructor? 当编译器需要的时候!而且，被合成出来的 constructor 只执行编译器所需要的行动。<br />
 对于类 X，如果没有任何用户定义的构造函数，会有一个默认的构造函数被声明。编译器不需要的默认构造函数被称为 trivial default constructor(无用的默认构造函数)，由于编译器需要而由编译器合成的默认构造函数被称为 nontrivial default constructor(有用的默认构造函数)。<br />
 下面四种情况下，编译器需要合成默认构造函数：<br />
 </p>
 </div>
-<div id="outline-container-org923d5f1" class="outline-4">
-<h4 id="org923d5f1">成员类对象带有默认的构造函数</h4>
-<div class="outline-text-4" id="text-org923d5f1">
+<div id="outline-container-org5ac2dde" class="outline-4">
+<h4 id="org5ac2dde">成员类对象带有默认的构造函数</h4>
+<div class="outline-text-4" id="text-org5ac2dde">
 <p>
 如果一个类没有任何构造函数，但它内含一个成员对象，而这个成员对象有默认构造函数。那么编译器需要为此类合成出一个默认构造函数。不过这个合成操作只有在默认构造函数被调用时才会发生。<br />
 如果一个类 A 有默认构造函数，它内含一个成员对象 b（类型为 class B），该成员对象也有默认构造函数，但是在类 A 的默认构造函数中，没有调用类 B 的默认构造函数。此时，编译器会扩展类 A 的默认构造函数，将对类 B 的默认构造函数调用插入进去。<br />
@@ -532,26 +535,26 @@ if( circle* pc = dynamic_cast&lt;circle*&gt;(ps) ) &#x2026;<br /></li>
 </div>
 </div>
 </div>
-<div id="outline-container-orgeed10db" class="outline-4">
-<h4 id="orgeed10db">基类带有默认的构造函数</h4>
-<div class="outline-text-4" id="text-orgeed10db">
+<div id="outline-container-org93cc5e3" class="outline-4">
+<h4 id="org93cc5e3">基类带有默认的构造函数</h4>
+<div class="outline-text-4" id="text-org93cc5e3">
 <p>
 如果一个没有任何构造函数的类派生自一个带有默认构造函数的基类。那么编译器需要为此类合成出一个默认构造函数。它将调用上一层基类的默认构造函数。<br />
 如果类包含多个构造函数，但其中没有默认构造函数。那么编译器会扩展现有的每一个构造函数，将调用默认构造函数的程序代码加入进去。编译器不会合成一个新的构造函数，因为有其他用户定义的构造函数存在。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgc596f06" class="outline-4">
-<h4 id="orgc596f06">类带有一个或多个虚函数</h4>
-<div class="outline-text-4" id="text-orgc596f06">
+<div id="outline-container-org0f285a6" class="outline-4">
+<h4 id="org0f285a6">类带有一个或多个虚函数</h4>
+<div class="outline-text-4" id="text-org0f285a6">
 <p>
 为了支持虚函数机制，编译器必须为每个含有虚函数类的对象设置虚指针（vptr）初值,放置适当的虚表地址。对于类所定义的每一个构造函数，编译器会安插一些代码来做这样的事情。对于那些未声明任何构造函数的类，编译器会为它们合成一个默认构造函数，以便正确地初始化每一个类对象的 vptr。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgf8e3b44" class="outline-4">
-<h4 id="orgf8e3b44">类带有一个或多个虚基类</h4>
-<div class="outline-text-4" id="text-orgf8e3b44">
+<div id="outline-container-org84da7f1" class="outline-4">
+<h4 id="org84da7f1">类带有一个或多个虚基类</h4>
+<div class="outline-text-4" id="text-org84da7f1">
 <p>
 对于类所定义的每一个构造函数，编译器会安插那些“允许每一个 virtual base class 的执行期存取操作”的码。如果一个类没有任何构造函数，编译器<br />
 会为它们合成一个默认构造函数。<br />
@@ -577,9 +580,9 @@ if( circle* pc = dynamic_cast&lt;circle*&gt;(ps) ) &#x2026;<br /></li>
 </div>
 </div>
 </div>
-<div id="outline-container-orgac23618" class="outline-3">
-<h3 id="orgac23618">Copy Constructor Construction</h3>
-<div class="outline-text-3" id="text-orgac23618">
+<div id="outline-container-org26eaf71" class="outline-3">
+<h3 id="org26eaf71">Copy Constructor Construction</h3>
+<div class="outline-text-3" id="text-org26eaf71">
 <p>
 有三种情况，会以一个 object 的内容作为另一个类对象的初值：<br />
 </p>
@@ -620,9 +623,9 @@ nontrivial 两种。只有 nontrivial 的实体才会被合成于程序中。<br
 决定一个 copy constructor 是否为 nontrivial 的标准在于 class 是否展现出 bitwise copy semantics。<br />
 </p>
 </div>
-<div id="outline-container-org2c44cac" class="outline-4">
-<h4 id="org2c44cac">基于位的 copy 语义(Bitwise copy Semantics)</h4>
-<div class="outline-text-4" id="text-org2c44cac">
+<div id="outline-container-org3decc88" class="outline-4">
+<h4 id="org3decc88">基于位的 copy 语义(Bitwise copy Semantics)</h4>
+<div class="outline-text-4" id="text-org3decc88">
 <div class="org-src-container">
 <pre class="src src-cpp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19979;&#38754;&#30340;&#22768;&#26126;&#23637;&#29616;&#20102;&#22522;&#20110;&#20301;&#30340; copy &#35821;&#20041;</span>
 <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Word</span> {
@@ -668,29 +671,29 @@ nontrivial 两种。只有 nontrivial 的实体才会被合成于程序中。<br
 </div>
 </div>
 </div>
-<div id="outline-container-orgb78a397" class="outline-4">
-<h4 id="orgb78a397">什么时候类不展现基于位的 copy 语义</h4>
-<div class="outline-text-4" id="text-orgb78a397">
+<div id="outline-container-orga4cee4c" class="outline-4">
+<h4 id="orga4cee4c">什么时候类不展现基于位的 copy 语义</h4>
+<div class="outline-text-4" id="text-orga4cee4c">
 </div>
-<div id="outline-container-org5ca7691" class="outline-5">
-<h5 id="org5ca7691">当类内含一个成员对象，而后者的类定义了一个 copy 构造函数。</h5>
-<div class="outline-text-5" id="text-org5ca7691">
+<div id="outline-container-org6f9a353" class="outline-5">
+<h5 id="org6f9a353">当类内含一个成员对象，而后者的类定义了一个 copy 构造函数。</h5>
+<div class="outline-text-5" id="text-org6f9a353">
 <p>
 编译器需要将成员的 copy 构造调用操作安插到被合成的 copy 构造函数中。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org5844bc3" class="outline-5">
-<h5 id="org5844bc3">当类继承自一个基类而后者存在有一个 copy constructor。</h5>
-<div class="outline-text-5" id="text-org5844bc3">
+<div id="outline-container-org31215bc" class="outline-5">
+<h5 id="org31215bc">当类继承自一个基类而后者存在有一个 copy constructor。</h5>
+<div class="outline-text-5" id="text-org31215bc">
 <p>
 编译器需要将基类的 copy 构造调用操作安插到被合成的 copy 构造函数中。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org260dff0" class="outline-5">
-<h5 id="org260dff0">当类声明了一个或多个虚函数。</h5>
-<div class="outline-text-5" id="text-org260dff0">
+<div id="outline-container-orgaa2380f" class="outline-5">
+<h5 id="orgaa2380f">当类声明了一个或多个虚函数。</h5>
+<div class="outline-text-5" id="text-orgaa2380f">
 <p>
 编译器需要重新设定虚指针。<br />
 合成出来的类 A 的 copy 构造函数会明确设定对象的 vptr 指向类 A 的虚表，而不是直接从右手边的类对象中将其 vptr 直接 copy 过来。<br />
@@ -698,9 +701,9 @@ nontrivial 两种。只有 nontrivial 的实体才会被合成于程序中。<br
 </p>
 </div>
 </div>
-<div id="outline-container-org56cdd71" class="outline-5">
-<h5 id="org56cdd71">当类派生自一个继承串链，其中有一个或多个虚基类。</h5>
-<div class="outline-text-5" id="text-org56cdd71">
+<div id="outline-container-org67007ec" class="outline-5">
+<h5 id="org67007ec">当类派生自一个继承串链，其中有一个或多个虚基类。</h5>
+<div class="outline-text-5" id="text-org67007ec">
 <p>
 编译器需要处理虚基类子对象。<br />
 </p>
@@ -708,13 +711,13 @@ nontrivial 两种。只有 nontrivial 的实体才会被合成于程序中。<br
 </div>
 </div>
 </div>
-<div id="outline-container-orgb92cd0f" class="outline-3">
-<h3 id="orgb92cd0f">程序转化语义学</h3>
-<div class="outline-text-3" id="text-orgb92cd0f">
+<div id="outline-container-org8de887a" class="outline-3">
+<h3 id="org8de887a">程序转化语义学</h3>
+<div class="outline-text-3" id="text-org8de887a">
 </div>
-<div id="outline-container-org0ea7553" class="outline-4">
-<h4 id="org0ea7553">明确的初始化操作</h4>
-<div class="outline-text-4" id="text-org0ea7553">
+<div id="outline-container-org8193795" class="outline-4">
+<h4 id="org8193795">明确的初始化操作</h4>
+<div class="outline-text-4" id="text-org8193795">
 <div class="org-src-container">
 <pre class="src src-cpp"><span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">foo_bar</span>() {
    <span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #7590db;">x1</span>( x0 );
@@ -741,9 +744,9 @@ nontrivial 两种。只有 nontrivial 的实体才会被合成于程序中。<br
 </div>
 </div>
 </div>
-<div id="outline-container-org0447443" class="outline-4">
-<h4 id="org0447443">参数的初始化</h4>
-<div class="outline-text-4" id="text-org0447443">
+<div id="outline-container-org12bf9b9" class="outline-4">
+<h4 id="org12bf9b9">参数的初始化</h4>
+<div class="outline-text-4" id="text-org12bf9b9">
 <div class="org-src-container">
 <pre class="src src-cpp"><span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #7590db;">xx</span>;
 <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">...</span>
@@ -764,9 +767,9 @@ foo( __temp0 );
 </div>
 </div>
 </div>
-<div id="outline-container-org09e17fc" class="outline-4">
-<h4 id="org09e17fc">返回值的初始化</h4>
-<div class="outline-text-4" id="text-org09e17fc">
+<div id="outline-container-orgaeeaf4d" class="outline-4">
+<h4 id="orgaeeaf4d">返回值的初始化</h4>
+<div class="outline-text-4" id="text-orgaeeaf4d">
 <div class="org-src-container">
 <pre class="src src-cpp"><span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #bc6ec5; font-weight: bold;">bar</span>() {
    <span style="color: #ce537a; font-weight: bold;">X</span> <span style="color: #7590db;">xx</span>;
@@ -810,13 +813,13 @@ pf = bar;
 </pre>
 </div>
 </div>
-<div id="outline-container-org8cb5693" class="outline-5">
-<h5 id="org8cb5693">返回值优化</h5>
-<div class="outline-text-5" id="text-org8cb5693">
+<div id="outline-container-org258bf2a" class="outline-5">
+<h5 id="org258bf2a">返回值优化</h5>
+<div class="outline-text-5" id="text-org258bf2a">
 </div>
-<div id="outline-container-org91bfd1e" class="outline-6">
-<h6 id="org91bfd1e">在使用者层面做优化</h6>
-<div class="outline-text-6" id="text-org91bfd1e">
+<div id="outline-container-org30b7cc8" class="outline-6">
+<h6 id="org30b7cc8">在使用者层面做优化</h6>
+<div class="outline-text-6" id="text-org30b7cc8">
 <p>
 定义一个计算用的 constructor。这样可能导致计算用途的 construtor 大量扩散。<br />
 </p>
@@ -842,9 +845,9 @@ pf = bar;
 </div>
 </div>
 </div>
-<div id="outline-container-org2a8f1f9" class="outline-6">
-<h6 id="org2a8f1f9">在编译器层面做优化</h6>
-<div class="outline-text-6" id="text-org2a8f1f9">
+<div id="outline-container-org2955766" class="outline-6">
+<h6 id="org2955766">在编译器层面做优化</h6>
+<div class="outline-text-6" id="text-org2955766">
 <p>
 对于所有的 return 语句返回有名字对象的情况，编译器可以对其进行优化，方法为将返回值按照参数传递给该函数，这样的优化操作被称为 Named Return Value 优化。<br />
 因为 Named Return Value 优化是为了避免 copy constructor 的调用，所以当用户没有定义类的 copy 构造函数时，该优化不会实施，显式定义一个 copy 构造函数会激活 Named Return Value 优化。<br />
@@ -878,9 +881,9 @@ Named Return Value 优化提供了重要的效率改善，也受到了一些批�
 </div>
 </div>
 </div>
-<div id="outline-container-org6b32f6d" class="outline-3">
-<h3 id="org6b32f6d">成员们的初始化列表</h3>
-<div class="outline-text-3" id="text-org6b32f6d">
+<div id="outline-container-org720b6ad" class="outline-3">
+<h3 id="org720b6ad">成员们的初始化列表</h3>
+<div class="outline-text-3" id="text-org720b6ad">
 <p>
 下列情况下，为了让你的程序能够被顺利编译，你必须使用 member initialization list:<br />
 1 当初始化一个引用成员时；<br />
@@ -895,9 +898,9 @@ Named Return Value 优化提供了重要的效率改善，也受到了一些批�
 </div>
 </div>
 </div>
-<div id="outline-container-org2004177" class="outline-2">
-<h2 id="org2004177">3 The Semantics of Data</h2>
-<div class="outline-text-2" id="text-org2004177">
+<div id="outline-container-orgbac77de" class="outline-2">
+<h2 id="orgbac77de">3 The Semantics of Data</h2>
+<div class="outline-text-2" id="text-orgbac77de">
 <p>
 影响类对象大小的三个因素：<br />
 1 语言本身所造成的额外负担。由于支持某些语言特性（主要是各种 virtual 特性），编译器自动加上了额外的数据成员。<br />
@@ -906,17 +909,17 @@ Named Return Value 优化提供了重要的效率改善，也受到了一些批�
 </p>
 </div>
 
-<div id="outline-container-org8f405b3" class="outline-3">
-<h3 id="org8f405b3">数据成员的绑定</h3>
-<div class="outline-text-3" id="text-org8f405b3">
+<div id="outline-container-orgad5e3c9" class="outline-3">
+<h3 id="orgad5e3c9">数据成员的绑定</h3>
+<div class="outline-text-3" id="text-orgad5e3c9">
 <p>
 对成员函数本身的分析，会直到整个类的声明都出现了才开始。但是对于成员函数的参数列表并不是这样的，参数列表中的名称还是会在它们第一次被遇到时被适当地决议完成。所以，应该将嵌套在类内的类型声明放置在类的起始位置。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org05a6015" class="outline-3">
-<h3 id="org05a6015">数据成员的布局</h3>
-<div class="outline-text-3" id="text-org05a6015">
+<div id="outline-container-org35f965e" class="outline-3">
+<h3 id="org35f965e">数据成员的布局</h3>
+<div class="outline-text-3" id="text-org35f965e">
 <p>
 静态数据成员存放在程序的数据段中，和个别的类对象无关。<br />
 C++标准要求，在同一个 access section 中，成员的排列只需符合较晚出现的成员在类对象中有较高的地址。也就是说各个成员并不一定得连续排列。<br />
@@ -943,13 +946,13 @@ C++标准要求，在同一个 access section 中，成员的排列只需符合�
 </div>
 </div>
 </div>
-<div id="outline-container-org4072541" class="outline-3">
-<h3 id="org4072541">数据成员的存取</h3>
-<div class="outline-text-3" id="text-org4072541">
+<div id="outline-container-orgc5f4d97" class="outline-3">
+<h3 id="orgc5f4d97">数据成员的存取</h3>
+<div class="outline-text-3" id="text-orgc5f4d97">
 </div>
-<div id="outline-container-org828534f" class="outline-4">
-<h4 id="org828534f">静态数据成员</h4>
-<div class="outline-text-4" id="text-org828534f">
+<div id="outline-container-org0d08310" class="outline-4">
+<h4 id="org0d08310">静态数据成员</h4>
+<div class="outline-text-4" id="text-org0d08310">
 <p>
 每一个静态数据成员只有一个实体，存放在程序的数据段之中，每次程序取用静态数据成员，就会被内部转化为对该唯一的 extern 实体的直接参考操作。<br />
 对一个静态数据成员取地址，会得到一个指向其数据类型的指针，而不是一个指向类成员的指针。<br />
@@ -957,9 +960,9 @@ C++标准要求，在同一个 access section 中，成员的排列只需符合�
 </p>
 </div>
 </div>
-<div id="outline-container-org7718f29" class="outline-4">
-<h4 id="org7718f29">非静态数据成员</h4>
-<div class="outline-text-4" id="text-org7718f29">
+<div id="outline-container-org0a94820" class="outline-4">
+<h4 id="org0a94820">非静态数据成员</h4>
+<div class="outline-text-4" id="text-org0a94820">
 <p>
 非静态数据成员直接存放在每一个类对象之中。对一个非静态数据成员进行存取操作，编译器需要把类对象的起始地址加上数据成员的偏移量。<br />
 </p>
@@ -977,16 +980,16 @@ C++标准要求，在同一个 access section 中，成员的排列只需符合�
 </div>
 </div>
 </div>
-<div id="outline-container-org490368b" class="outline-3">
-<h3 id="org490368b">继承的数据成员</h3>
-<div class="outline-text-3" id="text-org490368b">
+<div id="outline-container-orgfb6ed60" class="outline-3">
+<h3 id="orgfb6ed60">继承的数据成员</h3>
+<div class="outline-text-3" id="text-orgfb6ed60">
 <p>
 C++标准没有强制指定派生类成员和基类成员的排列次序。大部分编译器，基类成员总是先出现，但虚基类除外。<br />
 </p>
 </div>
-<div id="outline-container-org341d248" class="outline-4">
-<h4 id="org341d248">没有多态的继承</h4>
-<div class="outline-text-4" id="text-org341d248">
+<div id="outline-container-org81afd45" class="outline-4">
+<h4 id="org81afd45">没有多态的继承</h4>
+<div class="outline-text-4" id="text-org81afd45">
 <p>
 把一个类分解为两层或者更多层，有可能会为了表现类体系之抽象化而膨胀所需空间。因为 C++语言保证出现在派生类中的基类子对象有其完整原样性。<br />
 </p>
@@ -1035,9 +1038,9 @@ C++标准没有强制指定派生类成员和基类成员的排列次序。大�
 </div>
 </div>
 </div>
-<div id="outline-container-org26d86a3" class="outline-4">
-<h4 id="org26d86a3">加上多态以后</h4>
-<div class="outline-text-4" id="text-org26d86a3">
+<div id="outline-container-org7d39bdf" class="outline-4">
+<h4 id="org7d39bdf">加上多态以后</h4>
+<div class="outline-text-4" id="text-org7d39bdf">
 <p>
 支持多态后产生的额外负担：<br />
 1 导入一个和 Point2d 相关的虚表，用来存放它所声明的每一个虚函数地址。这个虚表的元素数目一般而言是被声明的虚函数的数目，再加上一个或两个 slots(用以支持 runtime type identification)<br />
@@ -1080,9 +1083,9 @@ C++标准没有强制指定派生类成员和基类成员的排列次序。大�
 </pre>
 </div>
 </div>
-<div id="outline-container-org7adae44" class="outline-5">
-<h5 id="org7adae44">虚表指针放在类对象前端还是末尾？</h5>
-<div class="outline-text-5" id="text-org7adae44">
+<div id="outline-container-org9496fbf" class="outline-5">
+<h5 id="org9496fbf">虚表指针放在类对象前端还是末尾？</h5>
+<div class="outline-text-5" id="text-org9496fbf">
 <ol class="org-ol">
 <li>虚表指针放在尾端可以保留 base class C struct 的对象布局。可以将 C++对象直接传递给 c 函数进行处理。<br /></li>
 </ol>
@@ -1104,26 +1107,26 @@ C++标准没有强制指定派生类成员和基类成员的排列次序。大�
 </div>
 <ol class="org-ol">
 <li>虚表指针放在类对象前端，对于“在多重继承之下，通过指向类成员的指针调用虚函数”，会带来一些帮助。否则，不仅“从类对象起始点开始量起”的 offset 必须在执行器备妥，甚至 class vptr 之间的 offset 也必须备妥。<br /></li>
-<li>具体内容可以参考 <a href="#org99a37e7">多重继承下，指向成员函数的指针</a><br /></li>
+<li>具体内容可以参考 <a href="#orgb12c896">多重继承下，指向成员函数的指针</a><br /></li>
 </ol>
 </div>
 </div>
-<div id="outline-container-org84cf68c" class="outline-5">
-<h5 id="org84cf68c">如何判断当前编译器虚表指针放置位置？</h5>
-<div class="outline-text-5" id="text-org84cf68c">
+<div id="outline-container-orgef986ea" class="outline-5">
+<h5 id="orgef986ea">如何判断当前编译器虚表指针放置位置？</h5>
+<div class="outline-text-5" id="text-orgef986ea">
 </div>
-<div id="outline-container-org2a1f484" class="outline-6">
-<h6 id="org2a1f484">方法 1</h6>
-<div class="outline-text-6" id="text-org2a1f484">
+<div id="outline-container-org73e8b57" class="outline-6">
+<h6 id="org73e8b57">方法 1</h6>
+<div class="outline-text-6" id="text-org73e8b57">
 <p>
 debug 查看对象成员，得到对象的地址，和虚表指针成员的内容。<br />
 查看内存，跳转到对象地址所在内存，看其实内容和虚表指针成员的内容是否一致，如果一致，则说明虚表指针放在了对象前端，否则是末端。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org2206fd4" class="outline-6">
-<h6 id="org2206fd4">方法 2</h6>
-<div class="outline-text-6" id="text-org2206fd4">
+<div id="outline-container-org164b65a" class="outline-6">
+<h6 id="org164b65a">方法 2</h6>
+<div class="outline-text-6" id="text-org164b65a">
 <p>
 打印下面类对象地址和类成员地址，比较地址，如果类对象地址比成员地址小 4，说明虚指针在对象前端，否则是末端。<br />
 </p>
@@ -1146,9 +1149,9 @@ debug 查看对象成员，得到对象的地址，和虚表指针成员的内�
 </div>
 </div>
 </div>
-<div id="outline-container-org4052295" class="outline-5">
-<h5 id="org4052295">多态导致的内存消耗</h5>
-<div class="outline-text-5" id="text-org4052295">
+<div id="outline-container-org15f6a71" class="outline-5">
+<h5 id="org15f6a71">多态导致的内存消耗</h5>
+<div class="outline-text-5" id="text-org15f6a71">
 <div class="org-src-container">
 <pre class="src src-cpp">  <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">A</span>
   {
@@ -1186,16 +1189,16 @@ debug 查看对象成员，得到对象的地址，和虚表指针成员的内�
 </pre>
 </div>
 
-<div id="org51c815b" class="figure">
+<div id="org78f7bbf" class="figure">
 <p><img src="./InsideCPlusPlus/single_inherit_obj_layout.jpg" alt="single_inherit_obj_layout.jpg" /><br />
 </p>
 </div>
 </div>
 </div>
 </div>
-<div id="outline-container-org9f2d535" class="outline-4">
-<h4 id="org9f2d535">多重继承</h4>
-<div class="outline-text-4" id="text-org9f2d535">
+<div id="outline-container-org1b4d40d" class="outline-4">
+<h4 id="org1b4d40d">多重继承</h4>
+<div class="outline-text-4" id="text-org1b4d40d">
 <ol class="org-ol">
 <li>多重继承的问题主要发生于派生类对象和其第二或后继基类对象之间的转换。<br /></li>
 </ol>
@@ -1235,9 +1238,9 @@ pv = p3d ? (<span style="color: #ce537a; font-weight: bold;">Vertex</span>*)((<s
 2 对于第二或后继基类中的数据成员的存储是不需要付出额外成本的，因为成员的位置在编译时就固定下了，因此存取成员只是一个简单的 offset 运算。<br />
 </p>
 </div>
-<div id="outline-container-org7d70aed" class="outline-5">
-<h5 id="org7d70aed">多重继承导致的内存消耗</h5>
-<div class="outline-text-5" id="text-org7d70aed">
+<div id="outline-container-orgb91bba9" class="outline-5">
+<h5 id="orgb91bba9">多重继承导致的内存消耗</h5>
+<div class="outline-text-5" id="text-orgb91bba9">
 <div class="org-src-container">
 <pre class="src src-cpp">  <span style="color: #4f97d7; font-weight: bold;">namespace</span> <span style="color: #a45bad;">MultiInherit</span> 
   {
@@ -1284,16 +1287,16 @@ pv = p3d ? (<span style="color: #ce537a; font-weight: bold;">Vertex</span>*)((<s
 </pre>
 </div>
 
-<div id="orgff53054" class="figure">
+<div id="org684e0a2" class="figure">
 <p><img src="./InsideCPlusPlus/multi_inherit_obj_layout.jpg" alt="multi_inherit_obj_layout.jpg" /><br />
 </p>
 </div>
 </div>
 </div>
 </div>
-<div id="outline-container-org48444e1" class="outline-4">
-<h4 id="org48444e1">虚拟继承</h4>
-<div class="outline-text-4" id="text-org48444e1">
+<div id="outline-container-org1c2a1fd" class="outline-4">
+<h4 id="org1c2a1fd">虚拟继承</h4>
+<div class="outline-text-4" id="text-org1c2a1fd">
 <p>
 类如果内含一个或多个虚基类子对象，其将被分割为两个部分：一个不变局部和一个共享局部。不变局部中的数据，不管后继如何衍化，总是拥有固定的 offset（从对象的开头算起），所以这部分数据可以被直接存取。至于共享局部，存储的就是虚拟基类子对象，这部分数据，其位置会因为每次的派生操作而有变化，所以他们只可以被间接存取。一般的布局策略是先安排好派生类的不变部分，然后再建立其共享部分。<br />
 </p>
@@ -1340,9 +1343,9 @@ pv = p3d ? (<span style="color: #ce537a; font-weight: bold;">Vertex</span>*)((<s
 </ol>
 </div>
 
-<div id="outline-container-org2d04e55" class="outline-5">
-<h5 id="org2d04e55">多重虚拟继承导致的内存消耗</h5>
-<div class="outline-text-5" id="text-org2d04e55">
+<div id="outline-container-org94d2029" class="outline-5">
+<h5 id="org94d2029">多重虚拟继承导致的内存消耗</h5>
+<div class="outline-text-5" id="text-org94d2029">
 <div class="org-src-container">
 <pre class="src src-cpp">  <span style="color: #4f97d7; font-weight: bold;">namespace</span> <span style="color: #a45bad;">MultiVirtualInherit</span> 
   {
@@ -1396,34 +1399,34 @@ pv = p3d ? (<span style="color: #ce537a; font-weight: bold;">Vertex</span>*)((<s
 </div>
 </div>
 </div>
-<div id="outline-container-orgb2e6bcc" class="outline-3">
-<h3 id="orgb2e6bcc">数据成员的效率</h3>
-<div class="outline-text-3" id="text-orgb2e6bcc">
+<div id="outline-container-org28cae3e" class="outline-3">
+<h3 id="org28cae3e">数据成员的效率</h3>
+<div class="outline-text-3" id="text-org28cae3e">
 <p>
 打开优化后 inline get/set 函数和 struct public 成员的存取效率相同。<br />
 虚拟继承后，对虚基类成员的存取消耗会增大。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orge2d0ee3" class="outline-3">
-<h3 id="orge2d0ee3">指向数据成员的指针</h3>
-<div class="outline-text-3" id="text-orge2d0ee3">
+<div id="outline-container-org0d50add" class="outline-3">
+<h3 id="org0d50add">指向数据成员的指针</h3>
+<div class="outline-text-3" id="text-org0d50add">
 <p>
 指向数据成员的指针表示了该成员在类对象中的偏移量。<br />
 </p>
 </div>
-<div id="outline-container-org6d11fd9" class="outline-4">
-<h4 id="org6d11fd9">如何确定 vptr 是放在类的起始处还是尾端。</h4>
-<div class="outline-text-4" id="text-org6d11fd9">
+<div id="outline-container-org70ba003" class="outline-4">
+<h4 id="org70ba003">如何确定 vptr 是放在类的起始处还是尾端。</h4>
+<div class="outline-text-4" id="text-org70ba003">
 <p>
 定义一个类其中放置两个数据成员，不包含虚函数，打印类成员变量的指针。为这个类定义一个虚函数，再次打印成员变量的指针。如果有变化说明 vptr 被放<br />
 在了类的起始地址，如果没有变化说明 vptr 被放在类成员的末尾了。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org18d78ec" class="outline-4">
-<h4 id="org18d78ec">指向数据成员的指针的效率问题</h4>
-<div class="outline-text-4" id="text-org18d78ec">
+<div id="outline-container-org8c3fa5b" class="outline-4">
+<h4 id="org8c3fa5b">指向数据成员的指针的效率问题</h4>
+<div class="outline-text-4" id="text-org8c3fa5b">
 <p>
 以指向成员的指针来存取数据会导致效率变慢。开启优化后效率和通过对象直接存取相同。<br />
 虚拟继承的情况下，通过指针存取虚基类对象的成员消耗会增大。<br />
@@ -1436,17 +1439,17 @@ Tips: vc++中虚基类对象和类其他成员布局在一起，对虚基类成�
 </div>
 </div>
 </div>
-<div id="outline-container-org323124a" class="outline-2">
-<h2 id="org323124a">4 The Semantics of Function</h2>
-<div class="outline-text-2" id="text-org323124a">
+<div id="outline-container-orgd0affea" class="outline-2">
+<h2 id="orgd0affea">4 The Semantics of Function</h2>
+<div class="outline-text-2" id="text-orgd0affea">
 </div>
-<div id="outline-container-org08f3227" class="outline-3">
-<h3 id="org08f3227">成员函数的各种调用方式</h3>
-<div class="outline-text-3" id="text-org08f3227">
+<div id="outline-container-orgc88b464" class="outline-3">
+<h3 id="orgc88b464">成员函数的各种调用方式</h3>
+<div class="outline-text-3" id="text-orgc88b464">
 </div>
-<div id="outline-container-org9ef069e" class="outline-4">
-<h4 id="org9ef069e">非静态成员函数</h4>
-<div class="outline-text-4" id="text-org9ef069e">
+<div id="outline-container-org9177a69" class="outline-4">
+<h4 id="org9177a69">非静态成员函数</h4>
+<div class="outline-text-4" id="text-org9177a69">
 <p>
 C++的设计准则之一就是非静态成员函数至少和一般的非成员函数有相同的效率。选择成员函数不应该带来什么额外的负担。<br />
 成员函数被内化为非成员函数，转化步骤如下：<br />
@@ -1481,9 +1484,9 @@ ptr-&gt;magnitude();  <span style="color: #2aa1ae; background-color: #292e34;">/
 </div>
 </div>
 </div>
-<div id="outline-container-org70150d2" class="outline-4">
-<h4 id="org70150d2">虚成员函数</h4>
-<div class="outline-text-4" id="text-org70150d2">
+<div id="outline-container-orgbb2a4ca" class="outline-4">
+<h4 id="orgbb2a4ca">虚成员函数</h4>
+<div class="outline-text-4" id="text-orgbb2a4ca">
 <div class="org-src-container">
 <pre class="src src-cpp">ptr-&gt;normalize();
 <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19978;&#38754;&#30340;&#20195;&#30721;&#20250;&#34987;&#36716;&#25442;&#20026;&#19979;&#38754;&#30340;&#20195;&#30721;</span>
@@ -1492,22 +1495,22 @@ ptr-&gt;magnitude();  <span style="color: #2aa1ae; background-color: #292e34;">/
 </div>
 </div>
 </div>
-<div id="outline-container-org5bfad0a" class="outline-4">
-<h4 id="org5bfad0a">静态成员函数</h4>
-<div class="outline-text-4" id="text-org5bfad0a">
+<div id="outline-container-org80850a5" class="outline-4">
+<h4 id="org80850a5">静态成员函数</h4>
+<div class="outline-text-4" id="text-org80850a5">
 <p>
 对一个静态成员函数取地址获得的是这个函数在内存中的地址。由于静态成员函数没有 this 指针，所以其地址的类型并不是一个指向类成员函数的指针。<br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-org493c1cd" class="outline-3">
-<h3 id="org493c1cd">虚拟成员函数</h3>
-<div class="outline-text-3" id="text-org493c1cd">
+<div id="outline-container-org490034e" class="outline-3">
+<h3 id="org490034e">虚拟成员函数</h3>
+<div class="outline-text-3" id="text-org490034e">
 </div>
-<div id="outline-container-orgbbfec3a" class="outline-4">
-<h4 id="orgbbfec3a">无继承或单继承下的虚函数</h4>
-<div class="outline-text-4" id="text-orgbbfec3a">
+<div id="outline-container-orgba531a6" class="outline-4">
+<h4 id="orgba531a6">无继承或单继承下的虚函数</h4>
+<div class="outline-text-4" id="text-orgba531a6">
 <p>
 当一个类包含虚函数时，该类支持多态。为了支持多态，编译器需要执行如下操作：<br />
 </p>
@@ -1518,7 +1521,7 @@ ptr-&gt;magnitude();  <span style="color: #2aa1ae; background-color: #292e34;">/
 </ol>
 
 
-<div id="orgf91c1b5" class="figure">
+<div id="orge7f1b0a" class="figure">
 <p><img src="./InsideCPlusPlus/single_inherit_virtual_tbl.jpg" alt="single_inherit_virtual_tbl.jpg" /><br />
 </p>
 </div>
@@ -1532,9 +1535,9 @@ ptr-&gt;magnitude();  <span style="color: #2aa1ae; background-color: #292e34;">/
 </div>
 </div>
 </div>
-<div id="outline-container-org46cc019" class="outline-4">
-<h4 id="org46cc019">多重继承下的虚函数</h4>
-<div class="outline-text-4" id="text-org46cc019">
+<div id="outline-container-org73ad0f8" class="outline-4">
+<h4 id="org73ad0f8">多重继承下的虚函数</h4>
+<div class="outline-text-4" id="text-org73ad0f8">
 <p>
 在多重继承下支持虚函数，其复杂度围绕在第二个即后继的 base 类身上，以及必须在执行期调整 this 指针这一点上。<br />
 在多重继承下，一个派生类内含有多个额外的虚函数表。所以，虚表指针成员也需要 name mangling 技术。<br />
@@ -1570,9 +1573,9 @@ pder-&gt;mumble();
 </div>
 </div>
 </div>
-<div id="outline-container-orge5ef26c" class="outline-4">
-<h4 id="orge5ef26c">虚拟继承下的虚函数</h4>
-<div class="outline-text-4" id="text-orge5ef26c">
+<div id="outline-container-orge15c320" class="outline-4">
+<h4 id="orge15c320">虚拟继承下的虚函数</h4>
+<div class="outline-text-4" id="text-orge15c320">
 <p>
 这种情况很复杂。<br />
 </p>
@@ -1580,12 +1583,12 @@ pder-&gt;mumble();
 </div>
 </div>
 
-<div id="outline-container-orgf0c3aba" class="outline-3">
-<h3 id="orgf0c3aba"><span class="todo TODO">TODO</span> 函数的效能</h3>
+<div id="outline-container-org422101c" class="outline-3">
+<h3 id="org422101c"><span class="todo TODO">TODO</span> 函数的效能</h3>
 </div>
-<div id="outline-container-orgcbffd43" class="outline-3">
-<h3 id="orgcbffd43">指向成员函数的指针</h3>
-<div class="outline-text-3" id="text-orgcbffd43">
+<div id="outline-container-org544e853" class="outline-3">
+<h3 id="org544e853">指向成员函数的指针</h3>
+<div class="outline-text-3" id="text-org544e853">
 <p>
 取一个非静态成员函数的地址，如果该函数为非虚函数，则得到它在内存中的真正地址。然而这个值也不是完全的，它需要被绑定于某个类对象的地址上，才能够通过它来调用该函数。<br />
 指向成员函数的指针的声明语法，以及指向成员选择运算符的指针，其作用是作为 this 指针的空间保留者。<br />
@@ -1617,9 +1620,9 @@ printf(<span style="color: #2d9574;">"Point::~Point = %p\n"</span>, &amp;<span s
 使用一个成员函数指针，如果并不用于 virtual 函数、多重继承、虚基类等情况的话，并不会比使用一个非成员函数指针的成本更高。<br />
 </p>
 </div>
-<div id="outline-container-org1d8047b" class="outline-4">
-<h4 id="org1d8047b">支持指向虚成员函数的指针</h4>
-<div class="outline-text-4" id="text-org1d8047b">
+<div id="outline-container-org821990a" class="outline-4">
+<h4 id="org821990a">支持指向虚成员函数的指针</h4>
+<div class="outline-text-4" id="text-org821990a">
 <p>
 对一个 virtual 成员函数取地址，所能获得的只是一个虚表中的索引值。<br />
 </p>
@@ -1637,9 +1640,9 @@ ptr-&gt;*pmf();
 </div>
 </div>
 </div>
-<div id="outline-container-org99a37e7" class="outline-4">
-<h4 id="org99a37e7">多重继承下，指向成员函数的指针</h4>
-<div class="outline-text-4" id="text-org99a37e7">
+<div id="outline-container-orgb12c896" class="outline-4">
+<h4 id="orgb12c896">多重继承下，指向成员函数的指针</h4>
+<div class="outline-text-4" id="text-orgb12c896">
 <p>
 为了让成员函数的指针也能够支持多重继承和虚拟继承，设计了下面结构体。<br />
 如果 vptr 被编译器放在类对象的前端，则 v_offset 字段可以省略。该结构体只在多重继承或虚拟继承的情况下才有其必要性，很多编译器在自身内部根据 class 的不同特性提供多种指向成员函数的指针形式：<br />
@@ -1670,9 +1673,9 @@ ptr-&gt;*pmf();
 </div>
 </div>
 </div>
-<div id="outline-container-org3617ec6" class="outline-4">
-<h4 id="org3617ec6">指向成员函数之指针的效率</h4>
-<div class="outline-text-4" id="text-org3617ec6">
+<div id="outline-container-org6a7dd2a" class="outline-4">
+<h4 id="org6a7dd2a">指向成员函数之指针的效率</h4>
+<div class="outline-text-4" id="text-org6a7dd2a">
 <ol class="org-ol">
 <li>非成员函数指针,非虚成员函数指针,多重继承非虚函数指针  开启优化后，3者效率差不多都为 4.30s<br /></li>
 <li>虚拟继承非虚函数指针,虚成员函数指针                 开启优化后，2者效率差不多都为 4.70s<br /></li>
@@ -1682,17 +1685,17 @@ ptr-&gt;*pmf();
 </div>
 </div>
 </div>
-<div id="outline-container-org72e0e58" class="outline-3">
-<h3 id="org72e0e58">Inline Function</h3>
-<div class="outline-text-3" id="text-org72e0e58">
+<div id="outline-container-org2d3784d" class="outline-3">
+<h3 id="org2d3784d">Inline Function</h3>
+<div class="outline-text-3" id="text-org2d3784d">
 <p>
 把存取函数声明为 inline，就可以保持直接存取成员的高效率，而且兼顾了函数的封装性。<br />
 关键词 inline 只是一项请求。如果这项请求被编译器接受，编译器就必须认为它可以用一个表达式合理地将这个函数扩展开来。<br />
 </p>
 </div>
-<div id="outline-container-org8a4e715" class="outline-4">
-<h4 id="org8a4e715">形式参数</h4>
-<div class="outline-text-4" id="text-org8a4e715">
+<div id="outline-container-orgd4eef46" class="outline-4">
+<h4 id="orgd4eef46">形式参数</h4>
+<div class="outline-text-4" id="text-orgd4eef46">
 <p>
 面对“会带有副作用的实际参数”，通常都需要引入临时性对象。如果实际参数是一个常量表达式，在替换之前先完成求值操作，后继 inline 替换，就直接将<br />
 常量绑上去。如果既不是个常量表达式，也不是个带有副作用的表达式，就直接替换之。<br />
@@ -1726,9 +1729,9 @@ minval =
 </div>
 </div>
 </div>
-<div id="outline-container-orga0e063f" class="outline-4">
-<h4 id="orga0e063f">局部变量</h4>
-<div class="outline-text-4" id="text-orga0e063f">
+<div id="outline-container-org3bc536b" class="outline-4">
+<h4 id="org3bc536b">局部变量</h4>
+<div class="outline-text-4" id="text-org3bc536b">
 <p>
 一般而言，inline 函数中的每个局部变量都必须被放在函数调用的一个封闭区段中，拥有一个独一无二的名称。如果 inline 函数以单一表达式扩展多次，<br />
 那么每次扩展都需要自己的一组局部变量。如果 inline 函数以分离的多个式子被扩展多次，那么只需要一组局部变量，就可以重复使用。<br />
@@ -1743,49 +1746,49 @@ minval =
 </div>
 </div>
 </div>
-<div id="outline-container-orga58ea0e" class="outline-2">
-<h2 id="orga58ea0e">5 Semantics of Construction,Destruction,and Copy</h2>
-<div class="outline-text-2" id="text-orga58ea0e">
+<div id="outline-container-orgd2599de" class="outline-2">
+<h2 id="orgd2599de">5 Semantics of Construction,Destruction,and Copy</h2>
+<div class="outline-text-2" id="text-orgd2599de">
 <p>
 可以定义和调用一个纯虚函数，不过它只能被静态地调用，不能经由虚拟机制调用。<br />
 </p>
-<pre class="example" id="org9b97946">
+<pre class="example" id="org4bf30cb">
 虽然可以定义和调用一个纯虚函数，但是最好不要这样做，让纯虚函数保持其接口的语义，即指定子类必须需要重新实现的功能。
 如果需要有默认实现，那么只用虚函数就可以了。然后将抽象类的析构函数指定为纯虚函数，提供默认实现。
 </pre>
 </div>
-<div id="outline-container-orge323d6e" class="outline-3">
-<h3 id="orge323d6e">无继承情况下的对象构造</h3>
-<div class="outline-text-3" id="text-orge323d6e">
+<div id="outline-container-orgedff7e4" class="outline-3">
+<h3 id="orgedff7e4">无继承情况下的对象构造</h3>
+<div class="outline-text-3" id="text-orgedff7e4">
 </div>
-<div id="outline-container-org9399333" class="outline-4">
-<h4 id="org9399333">Plain Ol' Data</h4>
-<div class="outline-text-4" id="text-org9399333">
+<div id="outline-container-org15cbf5e" class="outline-4">
+<h4 id="org15cbf5e">Plain Ol' Data</h4>
+<div class="outline-text-4" id="text-org15cbf5e">
 <p>
 这种情况下构造函数和析构函数要么不会被合成出来，要么不会被调用。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org4331a80" class="outline-4">
-<h4 id="org4331a80">抽象数据类型</h4>
-<div class="outline-text-4" id="text-org4331a80">
+<div id="outline-container-org75923b9" class="outline-4">
+<h4 id="org75923b9">抽象数据类型</h4>
+<div class="outline-text-4" id="text-org75923b9">
 <p>
 这种情况下构造函数会被调用。析构函数没有被合成出来，也不会被调用。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org2537ff1" class="outline-4">
-<h4 id="org2537ff1">包含虚函数</h4>
-<div class="outline-text-4" id="text-org2537ff1">
+<div id="outline-container-org827a97b" class="outline-4">
+<h4 id="org827a97b">包含虚函数</h4>
+<div class="outline-text-4" id="text-org827a97b">
 <p>
 这种情况下可能会生成 copy 构造函数、copy 赋值操作符。<br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-org0bd0497" class="outline-3">
-<h3 id="org0bd0497">继承体系下的对象构造</h3>
-<div class="outline-text-3" id="text-org0bd0497">
+<div id="outline-container-org310618b" class="outline-3">
+<h3 id="org310618b">继承体系下的对象构造</h3>
+<div class="outline-text-3" id="text-org310618b">
 <p>
 定义一个类的对象时，实际发生了什么事情？如果类有一个构造函数，它会被调用。<br />
 构造函数的调用真正伴随了什么？编译器会扩充每一个构造函数，扩充程度和类的继承体系有关。一般而言扩充操作大致如下：<br />
@@ -1802,9 +1805,9 @@ minval =
 5.3 如果类对象是 most derived 类(最浅的类)，其构造函数被调用；某些用以支持这个行为的机制必须被放进了。<br />
 </p>
 </div>
-<div id="outline-container-orgb3dc0a2" class="outline-4">
-<h4 id="orgb3dc0a2">vptr 初始化语义</h4>
-<div class="outline-text-4" id="text-orgb3dc0a2">
+<div id="outline-container-org2be40c2" class="outline-4">
+<h4 id="org2be40c2">vptr 初始化语义</h4>
+<div class="outline-text-4" id="text-org2be40c2">
 <p>
 vptr 初始化操作在基类构造函数调用完后，但是在程序员提供的代码或成员初始化列表中所列成员初始化操作之前进行。这样可以保证在构造函数中调用虚函数<br />
 可以调用正确的虚函数实体。 但是在构造函数中调用成员函数可能并不安全，因为函数本身可能还得依赖未被设立初值的成员。<br />
@@ -1812,9 +1815,9 @@ vptr 初始化操作在基类构造函数调用完后，但是在程序员提供
 </div>
 </div>
 </div>
-<div id="outline-container-org7eb066b" class="outline-3">
-<h3 id="org7eb066b">对象复制语义</h3>
-<div class="outline-text-3" id="text-org7eb066b">
+<div id="outline-container-orgcbd34dc" class="outline-3">
+<h3 id="orgcbd34dc">对象复制语义</h3>
+<div class="outline-text-3" id="text-orgcbd34dc">
 <p>
 一个类对于默认 copy 赋值操作，在下面情况下不会表现出基于位 copy 的语意：<br />
 1 当类内带一个成员对象，而其类有一个 copy 赋值操作符函数时。<br />
@@ -1824,12 +1827,12 @@ vptr 初始化操作在基类构造函数调用完后，但是在程序员提供
 </p>
 </div>
 </div>
-<div id="outline-container-org282877f" class="outline-3">
-<h3 id="org282877f"><span class="todo TODO">TODO</span> 对象的效能</h3>
+<div id="outline-container-org01b21c9" class="outline-3">
+<h3 id="org01b21c9"><span class="todo TODO">TODO</span> 对象的效能</h3>
 </div>
-<div id="outline-container-org0fc41ed" class="outline-3">
-<h3 id="org0fc41ed">对象解构语义</h3>
-<div class="outline-text-3" id="text-org0fc41ed">
+<div id="outline-container-orgab133d5" class="outline-3">
+<h3 id="orgab133d5">对象解构语义</h3>
+<div class="outline-text-3" id="text-orgab133d5">
 <p>
 一个由程序员定义的析构函数被扩展的方式类似于构造函数被扩展的方式，但顺序相反：<br />
 1 如果对象内带一个 vptr，那么首先重设相关的 virtual table<br />
@@ -1847,20 +1850,20 @@ vptr 初始化操作在基类构造函数调用完后，但是在程序员提供
 </div>
 </div>
 </div>
-<div id="outline-container-org50a6c13" class="outline-2">
-<h2 id="org50a6c13">6 Runtime Semantics</h2>
-<div class="outline-text-2" id="text-org50a6c13">
+<div id="outline-container-org267056c" class="outline-2">
+<h2 id="org267056c">6 Runtime Semantics</h2>
+<div class="outline-text-2" id="text-org267056c">
 </div>
-<div id="outline-container-org5c3e468" class="outline-3">
-<h3 id="org5c3e468">对象的构造和解构</h3>
-<div class="outline-text-3" id="text-org5c3e468">
+<div id="outline-container-orgd98c017" class="outline-3">
+<h3 id="orgd98c017">对象的构造和解构</h3>
+<div class="outline-text-3" id="text-orgd98c017">
 <p>
 一般而言将对象尽量放置在使用它的那个程序区段附近，这样可以节省不必要的对象产生操作和摧毁操作。<br />
 </p>
 </div>
-<div id="outline-container-orgce6ee41" class="outline-4">
-<h4 id="orgce6ee41">全局对象</h4>
-<div class="outline-text-4" id="text-orgce6ee41">
+<div id="outline-container-orgbc7e9b5" class="outline-4">
+<h4 id="orgbc7e9b5">全局对象</h4>
+<div class="outline-text-4" id="text-orgbc7e9b5">
 <p>
 C++保证一定会在 main()函数中第一次用到某个全局对象之前，将该全局对象构造出来，而在 main()函数结束之前把该全局对象销毁掉。如果该全局对象<br />
 有构造函数和析构函数的话，它需要今天的初始化操作和内存释放操作。<br />
@@ -1874,9 +1877,9 @@ C++程序中所有全局对象都被放置在程序的数据段中。如果明�
 </p>
 </div>
 </div>
-<div id="outline-container-org2801619" class="outline-4">
-<h4 id="org2801619">局部静态对象</h4>
-<div class="outline-text-4" id="text-org2801619">
+<div id="outline-container-orgdfbb8a6" class="outline-4">
+<h4 id="orgdfbb8a6">局部静态对象</h4>
+<div class="outline-text-4" id="text-orgdfbb8a6">
 <div class="org-src-container">
 <pre class="src src-cpp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">generated temporary static object guard</span>
 <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #4f97d7; font-weight: bold;">struct</span> <span style="color: #ce537a; font-weight: bold;">Matrix</span> *<span style="color: #7590db;">__0__F3</span> = 0 ;
@@ -1900,9 +1903,9 @@ C++程序中所有全局对象都被放置在程序的数据段中。如果明�
 </div>
 </div>
 </div>
-<div id="outline-container-org9456ee0" class="outline-4">
-<h4 id="org9456ee0">对象数组</h4>
-<div class="outline-text-4" id="text-org9456ee0">
+<div id="outline-container-org5e0d965" class="outline-4">
+<h4 id="org5e0d965">对象数组</h4>
+<div class="outline-text-4" id="text-org5e0d965">
 <p>
 定义一个类对象数组时，如果该类没有明确定义一个默认构造函数，也没有编译器合成的有用的默认构造函数，此时只需要配置足够的内存就可以了。<br />
 如果类对象有默认构造函数，则需要在每个创建的类上执行该默认构造函数。<br />
@@ -1929,9 +1932,9 @@ C++程序中所有全局对象都被放置在程序的数据段中。如果明�
 </div>
 </div>
 </div>
-<div id="outline-container-org2c9b784" class="outline-4">
-<h4 id="org2c9b784">Default Constructors 和数组</h4>
-<div class="outline-text-4" id="text-org2c9b784">
+<div id="outline-container-orge7c611a" class="outline-4">
+<h4 id="orge7c611a">Default Constructors 和数组</h4>
+<div class="outline-text-4" id="text-orge7c611a">
 <p>
 为了支持数组对象初始化时，可调用类的含有默认参数的构造函数。编译器生成了一个不带任何参数的默认构造函数，然后在该函数内指定默认参数调用用户的<br />
 构造函数。<br />
@@ -1952,13 +1955,13 @@ C++程序中所有全局对象都被放置在程序的数据段中。如果明�
 </div>
 </div>
 </div>
-<div id="outline-container-org7167ff1" class="outline-3">
-<h3 id="org7167ff1">new delete 运算符</h3>
-<div class="outline-text-3" id="text-org7167ff1">
+<div id="outline-container-org29e4e61" class="outline-3">
+<h3 id="org29e4e61">new delete 运算符</h3>
+<div class="outline-text-3" id="text-org29e4e61">
 </div>
-<div id="outline-container-orga895024" class="outline-4">
-<h4 id="orga895024">内置类型</h4>
-<div class="outline-text-4" id="text-orga895024">
+<div id="outline-container-org5574333" class="outline-4">
+<h4 id="org5574333">内置类型</h4>
+<div class="outline-text-4" id="text-org5574333">
 <div class="org-src-container">
 <pre class="src src-c++"><span style="color: #ce537a; font-weight: bold;">int</span> *<span style="color: #7590db;">pi</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">int</span>(5);
 <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">&#19978;&#38754;&#30340;&#20195;&#30721;&#20250;&#34987;&#36716;&#25442;&#20026;&#19979;&#38754;&#30340;&#20195;&#30721;</span>
@@ -1974,9 +1977,9 @@ C++程序中所有全局对象都被放置在程序的数据段中。如果明�
 </div>
 </div>
 </div>
-<div id="outline-container-org95330c9" class="outline-4">
-<h4 id="org95330c9">类对象</h4>
-<div class="outline-text-4" id="text-org95330c9">
+<div id="outline-container-org0162608" class="outline-4">
+<h4 id="org0162608">类对象</h4>
+<div class="outline-text-4" id="text-org0162608">
 <div class="org-src-container">
 <pre class="src src-c++"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">1 new &#23545;&#35937;</span>
 <span style="color: #ce537a; font-weight: bold;">Point3d</span> *<span style="color: #7590db;">origin</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Point3d</span>;
@@ -2025,9 +2028,9 @@ C++程序中所有全局对象都被放置在程序的数据段中。如果明�
 </div>
 </div>
 </div>
-<div id="outline-container-orgea3fcea" class="outline-4">
-<h4 id="orgea3fcea">new</h4>
-<div class="outline-text-4" id="text-orgea3fcea">
+<div id="outline-container-orga4ee28c" class="outline-4">
+<h4 id="orga4ee28c">new</h4>
+<div class="outline-text-4" id="text-orga4ee28c">
 <div class="org-src-container">
 <pre class="src src-c++"><span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">&#19979;&#38754;&#36825;&#26679;&#30340;&#20889;&#27861;&#34429;&#28982;&#27491;&#30830;&#65292;&#20294;&#26159;&#27599;&#19968;&#27425; new &#30340;&#35843;&#29992;&#24517;&#39035;&#36820;&#22238;&#19968;&#20010;&#29420;&#19968;&#26080;&#20108;&#30340;&#25351;&#38024;&#65292;&#25152;&#20197;&#22914;&#26524;&#30003;&#35831; 0 &#23383;&#33410;&#30340;&#20869;&#23384;&#65292;new &#25805;&#20316;&#20250;&#23558; size &#21464;&#20026; 1.</span>
 <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">T</span>[ 0 ];
@@ -2051,9 +2054,9 @@ C++程序中所有全局对象都被放置在程序的数据段中。如果明�
 </div>
 </div>
 </div>
-<div id="outline-container-org144e5d9" class="outline-4">
-<h4 id="org144e5d9">delete</h4>
-<div class="outline-text-4" id="text-org144e5d9">
+<div id="outline-container-orge9c8623" class="outline-4">
+<h4 id="orge9c8623">delete</h4>
+<div class="outline-text-4" id="text-orge9c8623">
 <div class="org-src-container">
 <pre class="src src-c++"><span style="color: #4f97d7; font-weight: bold;">extern</span> <span style="color: #ce537a; font-weight: bold;">void</span>
 <span style="color: #4f97d7; font-weight: bold;">operator</span> <span style="color: #4f97d7; font-weight: bold;">delete</span>( <span style="color: #ce537a; font-weight: bold;">void</span> *<span style="color: #7590db;">ptr</span> )
@@ -2065,9 +2068,9 @@ C++程序中所有全局对象都被放置在程序的数据段中。如果明�
 </div>
 </div>
 </div>
-<div id="outline-container-org7563477" class="outline-4">
-<h4 id="org7563477">new []</h4>
-<div class="outline-text-4" id="text-org7563477">
+<div id="outline-container-orgc933180" class="outline-4">
+<h4 id="orgc933180">new []</h4>
+<div class="outline-text-4" id="text-orgc933180">
 <div class="org-src-container">
 <pre class="src src-c++"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">array_key is the address of the new array</span>
 <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">mustn't either be 0 or already entered</span>
@@ -2123,9 +2126,9 @@ C++程序中所有全局对象都被放置在程序的数据段中。如果明�
 </div>
 </div>
 </div>
-<div id="outline-container-org8e70d44" class="outline-4">
-<h4 id="org8e70d44">delete []</h4>
-<div class="outline-text-4" id="text-org8e70d44">
+<div id="outline-container-orgdf451b6" class="outline-4">
+<h4 id="orgdf451b6">delete []</h4>
+<div class="outline-text-4" id="text-orgdf451b6">
 <p>
 实施与数组上的析构函数，是根据交给 vec_delete 函数之“被删除的指针类型的 destructor”<br />
 </p>
@@ -2165,18 +2168,18 @@ C++程序中所有全局对象都被放置在程序的数据段中。如果明�
 </div>
 </div>
 </div>
-<div id="outline-container-org55a4665" class="outline-4">
-<h4 id="org55a4665">placement operator new 的语意</h4>
-<div class="outline-text-4" id="text-org55a4665">
+<div id="outline-container-org3ab2263" class="outline-4">
+<h4 id="org3ab2263">placement operator new 的语意</h4>
+<div class="outline-text-4" id="text-org3ab2263">
 <p>
 placement operator new 不支持多态。<br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-org2e4c575" class="outline-3">
-<h3 id="org2e4c575">临时性对象</h3>
-<div class="outline-text-3" id="text-org2e4c575">
+<div id="outline-container-orgc936be4" class="outline-3">
+<h3 id="orgc936be4">临时性对象</h3>
+<div class="outline-text-3" id="text-orgc936be4">
 <p>
 临时性对象的销毁，应该是对完整表达式求值过程中的最后一个步骤。该完整表达式造成临时对象的产生。<br />
 临时性对象的生命期规则有两个例外：<br />
@@ -2186,16 +2189,16 @@ placement operator new 不支持多态。<br />
 </div>
 </div>
 </div>
-<div id="outline-container-orge544966" class="outline-2">
-<h2 id="orge544966">7 On the Cusp of the Object Model</h2>
-<div class="outline-text-2" id="text-orge544966">
+<div id="outline-container-org494b7b5" class="outline-2">
+<h2 id="org494b7b5">7 On the Cusp of the Object Model</h2>
+<div class="outline-text-2" id="text-org494b7b5">
 </div>
-<div id="outline-container-org91dd060" class="outline-3">
-<h3 id="org91dd060"><span class="todo TODO">TODO</span> 模板</h3>
+<div id="outline-container-org3deb01d" class="outline-3">
+<h3 id="org3deb01d"><span class="todo TODO">TODO</span> 模板</h3>
 </div>
-<div id="outline-container-org5bb8edf" class="outline-3">
-<h3 id="org5bb8edf">异常处理</h3>
-<div class="outline-text-3" id="text-org5bb8edf">
+<div id="outline-container-org049049d" class="outline-3">
+<h3 id="org049049d">异常处理</h3>
+<div class="outline-text-3" id="text-org049049d">
 <p>
 C++异常处理由三个主要的语汇组件组成：<br />
 1 一个 throw 自己。它在程序某处发出一个异常。被丢出去的异常可以是内建类型，也可以是使用者自定义类型。<br />
@@ -2205,9 +2208,9 @@ C++异常处理由三个主要的语汇组件组成：<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org0628cc1" class="outline-3">
-<h3 id="org0628cc1">执行期类型识别</h3>
-<div class="outline-text-3" id="text-org0628cc1">
+<div id="outline-container-org8b5eaf8" class="outline-3">
+<h3 id="org8b5eaf8">执行期类型识别</h3>
+<div class="outline-text-3" id="text-org8b5eaf8">
 <p>
 typeid 既可以用于多态类，也可用于内置类型和非多态类。<br />
 typeid(var)返回一个类型为 type_info 的 const 引用.<br />
@@ -2231,17 +2234,17 @@ typeid(var)返回一个类型为 type_info 的 const 引用.<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org14fe1b6" class="outline-2">
-<h2 id="org14fe1b6">Q&amp;A:</h2>
-<div class="outline-text-2" id="text-org14fe1b6">
+<div id="outline-container-org10519d7" class="outline-2">
+<h2 id="org10519d7">Q&amp;A:</h2>
+<div class="outline-text-2" id="text-org10519d7">
 </div>
-<div id="outline-container-orgcbd03cc" class="outline-3">
-<h3 id="orgcbd03cc">c++中的类型转换有哪些？</h3>
-<div class="outline-text-3" id="text-orgcbd03cc">
+<div id="outline-container-org61f37cd" class="outline-3">
+<h3 id="org61f37cd">c++中的类型转换有哪些？</h3>
+<div class="outline-text-3" id="text-org61f37cd">
 </div>
-<div id="outline-container-orgfd00fbc" class="outline-4">
-<h4 id="orgfd00fbc">一、类型转换的意义：</h4>
-<div class="outline-text-4" id="text-orgfd00fbc">
+<div id="outline-container-orgeb4c19a" class="outline-4">
+<h4 id="orgeb4c19a">一、类型转换的意义：</h4>
+<div class="outline-text-4" id="text-orgeb4c19a">
 <p>
 表达式是否合法取决于操作数的类型，而且合法的表达式其含义也由操作数类型决定。而操作数的类型又可由 C++中的类型转换而改变。因此，类型转换影响着<br />
 表达式的合法性和表达式的结果。<br />
@@ -2249,9 +2252,9 @@ typeid(var)返回一个类型为 type_info 的 const 引用.<br />
 </div>
 </div>
 
-<div id="outline-container-orga4a48a3" class="outline-4">
-<h4 id="orga4a48a3">二、什么是类型转换：</h4>
-<div class="outline-text-4" id="text-orga4a48a3">
+<div id="outline-container-org644f8cf" class="outline-4">
+<h4 id="org644f8cf">二、什么是类型转换：</h4>
+<div class="outline-text-4" id="text-org644f8cf">
 <p>
 顾名思义，类型转换就是一种类型值转换为另一种类型值的处理方式。在 C++中定义了内置类型之间的类型转换（即，标准转换，另一种转换被称为类类型转换），<br />
 也允许将某种类型转换为类类型（例如，接受单个形参的构造函数可以将某种类型转换为类类型）或者将类类型转换为某种类型（例如，通过重载转换操作符可以<br />
@@ -2263,13 +2266,13 @@ typeid(var)返回一个类型为 type_info 的 const 引用.<br />
 </div>
 </div>
 
-<div id="outline-container-org94c9b23" class="outline-4">
-<h4 id="org94c9b23">三、类型转换分类：</h4>
-<div class="outline-text-4" id="text-org94c9b23">
+<div id="outline-container-orgb43d4c1" class="outline-4">
+<h4 id="orgb43d4c1">三、类型转换分类：</h4>
+<div class="outline-text-4" id="text-orgb43d4c1">
 </div>
-<div id="outline-container-org9877fb8" class="outline-5">
-<h5 id="org9877fb8">从是否需要在类型转换的地方写代码来使用类型转换，可以将类型转换分为：隐式类型转换、显示转换。</h5>
-<div class="outline-text-5" id="text-org9877fb8">
+<div id="outline-container-org6b844e0" class="outline-5">
+<h5 id="org6b844e0">从是否需要在类型转换的地方写代码来使用类型转换，可以将类型转换分为：隐式类型转换、显示转换。</h5>
+<div class="outline-text-5" id="text-org6b844e0">
 <p>
 隐式类型转换——编译器自动实现的类型转换。假设表达式需要某种特定类型的数值，但其操作数却是其他不同的类型，此时如果系统定义了适当的类型转换，<br />
 编译器会自动根据转换规则将该操作数转换为需要的类型。<br />
@@ -2277,9 +2280,9 @@ typeid(var)返回一个类型为 type_info 的 const 引用.<br />
 reinterpret_cast。<br />
 </p>
 </div>
-<div id="outline-container-org918e24f" class="outline-6">
-<h6 id="org918e24f">隐式转换</h6>
-<div class="outline-text-6" id="text-org918e24f">
+<div id="outline-container-org56678f2" class="outline-6">
+<h6 id="org56678f2">隐式转换</h6>
+<div class="outline-text-6" id="text-org56678f2">
 <p>
 何时发生隐式类型转换？<br />
 1、在混合类型的表达式中，其操作数被转换为相同的类型。例如：<br />
@@ -2291,9 +2294,9 @@ ival &gt;= dval; //ival converted to double<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgc91bdd1" class="outline-6">
-<h6 id="orgc91bdd1">显式转换</h6>
-<div class="outline-text-6" id="text-orgc91bdd1">
+<div id="outline-container-org3a0ab70" class="outline-6">
+<h6 id="org3a0ab70">显式转换</h6>
+<div class="outline-text-6" id="text-org3a0ab70">
 <p>
 何时需要显式转换？<br />
 （1）需要覆盖标准转换时，应该使用强制类型转换。例如：<br />
@@ -2306,15 +2309,15 @@ ival *= static_cast&lt;int&gt;dval;<br />
 </p>
 </div>
 <ul class="org-ul">
-<li><a id="org3dce874"></a>static_cast<br />
-<div class="outline-text-7" id="text-org3dce874">
+<li><a id="org179f382"></a>static_cast<br />
+<div class="outline-text-7" id="text-org179f382">
 <p>
 显式的类型转换，和（type）var 等价。<br />
 </p>
 </div>
 </li>
-<li><a id="org8761cd6"></a>dynamic_cast<br />
-<div class="outline-text-7" id="text-org8761cd6">
+<li><a id="org69ed6b4"></a>dynamic_cast<br />
+<div class="outline-text-7" id="text-org69ed6b4">
 <p>
 dynamic_cast 支持运行时识别指针或引用所指向的对象，将基类类型的指针或引用安全地转换为派生类型<br />
 的指针或引用。<br />
@@ -2323,8 +2326,8 @@ Tips：<br />
 </p>
 </div>
 </li>
-<li><a id="org2288d66"></a>const_cast<br />
-<div class="outline-text-7" id="text-org2288d66">
+<li><a id="org9f2265b"></a>const_cast<br />
+<div class="outline-text-7" id="text-org9f2265b">
 <p>
 const_cast ,顾名思义,将转换掉表达式的 const 性质。<br />
 const 只支持指针和引用的转换。<br />
@@ -2352,8 +2355,8 @@ const 只支持指针和引用的转换。<br />
 </div>
 </div>
 </li>
-<li><a id="orgfd3b94a"></a>reinterpret_cast<br />
-<div class="outline-text-7" id="text-orgfd3b94a">
+<li><a id="orgaaf3361"></a>reinterpret_cast<br />
+<div class="outline-text-7" id="text-orgaaf3361">
 <p>
 reinterpret_cast 通常为操作数的位模式提供较低层次的重新解释。<br />
 </p>
@@ -2362,9 +2365,9 @@ reinterpret_cast 通常为操作数的位模式提供较低层次的重新解释
 </ul>
 </div>
 </div>
-<div id="outline-container-orgba78478" class="outline-5">
-<h5 id="orgba78478">从是否需要编写代码来实现类型转换的具体实现细节，可以将类型转换分为：标准转换、类类型转换。</h5>
-<div class="outline-text-5" id="text-orgba78478">
+<div id="outline-container-orgd3d6617" class="outline-5">
+<h5 id="orgd3d6617">从是否需要编写代码来实现类型转换的具体实现细节，可以将类型转换分为：标准转换、类类型转换。</h5>
+<div class="outline-text-5" id="text-orgd3d6617">
 <p>
 标准转换——内置类型之间的相互转换。<br />
 类类型转换——到类类型或从类类型的转换。接受一个形参的非显示构造函数定义了到类类型的转换。转换操作符定义了从类类型到操作符所指定类型的转换。<br />
@@ -2373,34 +2376,34 @@ reinterpret_cast 通常为操作数的位模式提供较低层次的重新解释
 </div>
 </div>
 </div>
-<div id="outline-container-org12d1338" class="outline-3">
-<h3 id="org12d1338">extern 和 static 的区别？</h3>
-<div class="outline-text-3" id="text-org12d1338">
+<div id="outline-container-orga11581b" class="outline-3">
+<h3 id="orga11581b">extern 和 static 的区别？</h3>
+<div class="outline-text-3" id="text-orga11581b">
 </div>
-<div id="outline-container-orgd68fd41" class="outline-4">
-<h4 id="orgd68fd41">static</h4>
-<div class="outline-text-4" id="text-orgd68fd41">
+<div id="outline-container-orga11d5e6" class="outline-4">
+<h4 id="orga11d5e6">static</h4>
+<div class="outline-text-4" id="text-orga11d5e6">
 </div>
-<div id="outline-container-orgd371cf7" class="outline-5">
-<h5 id="orgd371cf7">改变生命期</h5>
-<div class="outline-text-5" id="text-orgd371cf7">
+<div id="outline-container-org458685e" class="outline-5">
+<h5 id="org458685e">改变生命期</h5>
+<div class="outline-text-5" id="text-org458685e">
 <p>
 static 将变量声明为 static 会改变变量在内存中的存储（变量被放置在数据段）从而改变变量的生命期（程序结束之前会释放该变量）。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org7213e93" class="outline-5">
-<h5 id="org7213e93">改变作用域/可见性</h5>
-<div class="outline-text-5" id="text-org7213e93">
+<div id="outline-container-orgc918504" class="outline-5">
+<h5 id="orgc918504">改变作用域/可见性</h5>
+<div class="outline-text-5" id="text-orgc918504">
 <p>
 static 将变量的可见性限定在其所在的源文件内。所以 static 全局变量只在其所在源文件内可见,不可以在其他源文件中通过 extern 声明静态全局变量来<br />
 存取 static 全局变量。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org9385c2e" class="outline-5">
-<h5 id="org9385c2e">类静态成员</h5>
-<div class="outline-text-5" id="text-org9385c2e">
+<div id="outline-container-org0efb1c7" class="outline-5">
+<h5 id="org0efb1c7">类静态成员</h5>
+<div class="outline-text-5" id="text-org0efb1c7">
 <p>
 static 成员变量属于类，可以通过类或类的对象来存取静态对象。<br />
 static 成员函数没有隐含的 this 指针参数，可以通过类或类的对象来调用静态函数。<br />
@@ -2467,13 +2470,13 @@ l6_obj2.m_value = 3
 </div>
 </div>
 </div>
-<div id="outline-container-org517fffb" class="outline-4">
-<h4 id="org517fffb">extern</h4>
-<div class="outline-text-4" id="text-org517fffb">
+<div id="outline-container-org7cf3505" class="outline-4">
+<h4 id="org7cf3505">extern</h4>
+<div class="outline-text-4" id="text-org7cf3505">
 </div>
-<div id="outline-container-org70742e2" class="outline-5">
-<h5 id="org70742e2">声明变量</h5>
-<div class="outline-text-5" id="text-org70742e2">
+<div id="outline-container-orgef3cb5c" class="outline-5">
+<h5 id="orgef3cb5c">声明变量</h5>
+<div class="outline-text-5" id="text-orgef3cb5c">
 <p>
 extern 用来声明一个变量。也就是说指明该变量是在其他地方定义的。<br />
 Tips：<br />
@@ -2494,9 +2497,9 @@ extern int iValue = 10;  // 定义了一个变量 iValue 并初始化其值为 1
 </div>
 </div>
 </div>
-<div id="outline-container-orgd67a6a5" class="outline-5">
-<h5 id="orgd67a6a5">声明 c++函数</h5>
-<div class="outline-text-5" id="text-orgd67a6a5">
+<div id="outline-container-org2a171cf" class="outline-5">
+<h5 id="org2a171cf">声明 c++函数</h5>
+<div class="outline-text-5" id="text-org2a171cf">
 <p>
 声明 c++函数可以省略 extern，下面的代码效果是一样的。<br />
 extern void CppFunc(int arg);<br />
@@ -2504,13 +2507,13 @@ void CppFunc(int arg);<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org4a0d170" class="outline-5">
-<h5 id="org4a0d170">链接指示</h5>
-<div class="outline-text-5" id="text-org4a0d170">
+<div id="outline-container-org8d38f6d" class="outline-5">
+<h5 id="org8d38f6d">链接指示</h5>
+<div class="outline-text-5" id="text-org8d38f6d">
 </div>
-<div id="outline-container-orgf5e8200" class="outline-6">
-<h6 id="orgf5e8200">链接指示有两种形式</h6>
-<div class="outline-text-6" id="text-orgf5e8200">
+<div id="outline-container-orgfee4f8c" class="outline-6">
+<h6 id="orgfee4f8c">链接指示有两种形式</h6>
+<div class="outline-text-6" id="text-orgfee4f8c">
 <p>
 第一种形式由关键字 extern 后接字符串字面值，再接“普通”函数声明。字符串字面值指出编写函数所用的语言。<br />
 第二种形式是关键字 extern 后接字符串字面值，再接一对大括号，其中放置多个函数声明。<br />
@@ -2533,17 +2536,17 @@ void CppFunc(int arg);<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org83451a4" class="outline-6">
-<h6 id="org83451a4">链接指示支持的语言</h6>
-<div class="outline-text-6" id="text-org83451a4">
+<div id="outline-container-org8e067b1" class="outline-6">
+<h6 id="org8e067b1">链接指示支持的语言</h6>
+<div class="outline-text-6" id="text-org8e067b1">
 <p>
 extern "C" extern "Ada" extern "FORTRAN"<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org563968d" class="outline-6">
-<h6 id="org563968d">链接指示的运用</h6>
-<div class="outline-text-6" id="text-org563968d">
+<div id="outline-container-org6a1a2f0" class="outline-6">
+<h6 id="org6a1a2f0">链接指示的运用</h6>
+<div class="outline-text-6" id="text-org6a1a2f0">
 <p>
 在 C++中使用其他语言的函数时，需要通过 extern "xxx"来声明该语言的函数。<br />
 extern "C" {<br />
@@ -2566,15 +2569,15 @@ extern "C" {<br />
 </div>
 </div>
 </div>
-<div id="outline-container-orge97870f" class="outline-3">
-<h3 id="orge97870f">字节对齐是什么？</h3>
+<div id="outline-container-orgfa68da4" class="outline-3">
+<h3 id="orgfa68da4">字节对齐是什么？</h3>
 </div>
-<div id="outline-container-orgcee1428" class="outline-3">
-<h3 id="orgcee1428">内置类型变量在内存中如何布局？</h3>
+<div id="outline-container-orgf90acab" class="outline-3">
+<h3 id="orgf90acab">内置类型变量在内存中如何布局？</h3>
 </div>
-<div id="outline-container-org486631d" class="outline-3">
-<h3 id="org486631d">类在内存中的布局是怎样的？</h3>
-<div class="outline-text-3" id="text-org486631d">
+<div id="outline-container-org260a318" class="outline-3">
+<h3 id="org260a318">类在内存中的布局是怎样的？</h3>
+<div class="outline-text-3" id="text-org260a318">
 <p>
 类包含了静态成员变量、非静态成员变量、静态成员函数、非静态成员函数、虚函数，基类的相关内容，虚基类的相关内容。<br />
 类的静态成员变量、静态成员函数、成员函数，非静态成员函数会有隐含的 this 指针参数。这些函数和 C 语言一样。<br />
@@ -2583,9 +2586,9 @@ extern "C" {<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgdbfefd6" class="outline-3">
-<h3 id="orgdbfefd6">对象在内存中的布局是怎样的？</h3>
-<div class="outline-text-3" id="text-orgdbfefd6">
+<div id="outline-container-org2ee540a" class="outline-3">
+<h3 id="org2ee540a">对象在内存中的布局是怎样的？</h3>
+<div class="outline-text-3" id="text-org2ee540a">
 <p>
 按照继承顺序布局类中的成员变量。<br />
 对于有虚函数的会在对象末尾添加_vptr__X 指针，该指针指向虚函数表。<br />
@@ -2593,39 +2596,39 @@ extern "C" {<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orge708ad6" class="outline-3">
-<h3 id="orge708ad6">什么时候需要在成员函数中显式使用 this?</h3>
-<div class="outline-text-3" id="text-orge708ad6">
+<div id="outline-container-org8e544cd" class="outline-3">
+<h3 id="org8e544cd">什么时候需要在成员函数中显式使用 this?</h3>
+<div class="outline-text-3" id="text-org8e544cd">
 <p>
 一种情况就是，在类的非静态成员函数中返回类对象本身的时候，直接使用 return *this；<br />
 另外一种情况是当参数与成员变量名相同时，如 this-&gt;n = n（不能写成 n = n）。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgb30e6ed" class="outline-3">
-<h3 id="orgb30e6ed">关于 inline 的问题</h3>
-<div class="outline-text-3" id="text-orgb30e6ed">
+<div id="outline-container-org5fbefa7" class="outline-3">
+<h3 id="org5fbefa7">关于 inline 的问题</h3>
+<div class="outline-text-3" id="text-org5fbefa7">
 </div>
-<div id="outline-container-orgca7206e" class="outline-4">
-<h4 id="orgca7206e">什么时候使用 inline 什么时候不能使用 inline？</h4>
-<div class="outline-text-4" id="text-orgca7206e">
+<div id="outline-container-org5cd7926" class="outline-4">
+<h4 id="org5cd7926">什么时候使用 inline 什么时候不能使用 inline？</h4>
+<div class="outline-text-4" id="text-org5cd7926">
 <p>
 通常对于成员变量的存取操作可以指定为内置函数。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org1d0bf6c" class="outline-4">
-<h4 id="org1d0bf6c">虚函数是否可以指定为 inline？</h4>
-<div class="outline-text-4" id="text-org1d0bf6c">
+<div id="outline-container-orga4caf87" class="outline-4">
+<h4 id="orga4caf87">虚函数是否可以指定为 inline？</h4>
+<div class="outline-text-4" id="text-orga4caf87">
 <p>
 可以。<br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-org3c017d7" class="outline-3">
-<h3 id="org3c017d7">memcpy 和 memset 的使用</h3>
-<div class="outline-text-3" id="text-org3c017d7">
+<div id="outline-container-orgd672a2b" class="outline-3">
+<h3 id="orgd672a2b">memcpy 和 memset 的使用</h3>
+<div class="outline-text-3" id="text-orgd672a2b">
 <p>
 只有在类不含任何由编译器产生的内部成员时，memcpy 和 memset 才能有效运行，否则这两个函数会导致那些由编译器产生的内部成员的值被改写。<br />
 </p>
@@ -2650,9 +2653,9 @@ extern "C" {<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org996a4ca" class="outline-3">
-<h3 id="org996a4ca">virtual 机制和类对象、类指针、类引用</h3>
-<div class="outline-text-3" id="text-org996a4ca">
+<div id="outline-container-orgcaf3245" class="outline-3">
+<h3 id="orgcaf3245">virtual 机制和类对象、类指针、类引用</h3>
+<div class="outline-text-3" id="text-orgcaf3245">
 <p>
 virtual 机制包含虚基类 和 虚函数。<br />
 通过对象调用虚函数，或者对虚基类成员进行的存取，都可以优化为直接调用和直接存取。因为每次调用和存取，对象的类型是固定不变的。<br />
@@ -2660,9 +2663,9 @@ virtual 机制包含虚基类 和 虚函数。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org6d20d89" class="outline-3">
-<h3 id="org6d20d89">Name Mangling</h3>
-<div class="outline-text-3" id="text-org6d20d89">
+<div id="outline-container-org9ee5ce4" class="outline-3">
+<h3 id="org9ee5ce4">Name Mangling</h3>
+<div class="outline-text-3" id="text-org9ee5ce4">
 <p>
 一般而言，成员的名称前面会被加上类名称，形成独一无二的命名。<br />
 </p>

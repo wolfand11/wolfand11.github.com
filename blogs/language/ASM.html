@@ -3,16 +3,19 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2022-03-14 周一 16:59 -->
+<!-- 2022-08-24 Wed 22:48 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>ASM</title>
 <meta name="generator" content="Org mode" />
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
          <meta name="viewport" content="width=device-width, initial-scale=1" />
-         <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/css/worg.css" type="text/css" />
-         <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/css/worg-zenburn.css" type="text/css" />
-         <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
+         <link rel="stylesheet" type="text/css" href="https://wolfand11.gitee.io/res/readtheorg_theme/css/htmlize.css"/>
+         <link rel="stylesheet" type="text/css" href="https://wolfand11.gitee.io/res/readtheorg_theme/css/readtheorg.css"/>
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/jquery.min.js"></script>
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/bootstrap.min.js"></script>
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/jquery.stickytableheaders.min.js"></script>
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/readtheorg_theme/js/readtheorg.js"></script>
          <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
          <script type="text/javascript" src="https://wolfand11.gitee.io/res/blog-tools.js"></script>
 <script type="text/javascript">
@@ -76,7 +79,7 @@
 <li><a href="#org70b87c6">0 符号约定</a></li>
 <li><a href="#orga75f82e">1 基础知识</a>
 <ul>
-<li><a href="#orgdd2ce82">CPU读写操作</a></li>
+<li><a href="#orgab50a0d">CPU 读写操作</a></li>
 <li><a href="#org65e62a0">主板</a></li>
 <li><a href="#org1601cb1">接口卡</a></li>
 <li><a href="#orgcc01da6">各类存储芯片</a></li>
@@ -87,30 +90,30 @@
 <ul>
 <li><a href="#orgfc7552c">通用寄存器</a></li>
 <li><a href="#orgf3de109">物理地址</a></li>
-<li><a href="#orgad3a2ea">16位结构CPU</a></li>
+<li><a href="#org940a975">16 位结构 CPU</a></li>
 <li><a href="#org1275be0">物理地址合成</a></li>
 <li><a href="#orgc35affe">段寄存器</a>
 <ul>
 <li><a href="#org9097164">CS IP 寄存器</a></li>
-<li><a href="#org9a2120e">修改 CS, IP的指令</a></li>
+<li><a href="#orga0a525a">修改 CS, IP 的指令</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li><a href="#orga63831a">3 寄存器(内存访问)</a>
 <ul>
-<li><a href="#org2e1cd81">DS和[address]</a></li>
+<li><a href="#orgf908d00">DS 和[address]</a></li>
 <li><a href="#orge5818d8">字的传送</a></li>
 <li><a href="#org62e5d96">mov add sub 指令</a></li>
-<li><a href="#org736b30b">CPU提供的栈机制</a></li>
+<li><a href="#orgf201397">CPU 提供的栈机制</a></li>
 </ul>
 </li>
 <li><a href="#org0a0e167">4 第一个程序</a></li>
-<li><a href="#org8d63ada">5 [BX]和loop指令</a>
+<li><a href="#orgec28cb7">5 [BX]和 loop 指令</a>
 <ul>
 <li><a href="#org3c8b22e">[bx]</a></li>
-<li><a href="#orgdcfb96f">loop</a></li>
-<li><a href="#org52664a6">如何将ffff:0-ffff:b中的8位数据，累加到16位寄存器dx中？</a></li>
+<li><a href="#orga096b16">loop</a></li>
+<li><a href="#orgbd5fd9f">如何将 ffff:0-ffff:b 中的 8 位数据，累加到 16 位寄存器 dx 中？</a></li>
 <li><a href="#org7b0825f">段前缀</a></li>
 </ul>
 </li>
@@ -120,7 +123,7 @@
 <li><a href="#org3162dac">and or</a></li>
 <li><a href="#orgb93c73a">字符形式数据</a></li>
 <li><a href="#org33133a4">[bx+idata]</a></li>
-<li><a href="#org9ccf17a">si和di</a></li>
+<li><a href="#orgf385996">si 和 di</a></li>
 <li><a href="#orgc538185">[bx+si] [bx+di] [bx+idata+si] [bx+idata+di]</a></li>
 </ul>
 </li>
@@ -139,27 +142,27 @@
 <ul>
 <li><a href="#orge6ab35d">依据位移进行转移</a></li>
 <li><a href="#orgdb5a5e8">转移的目的地址在指令中</a></li>
-<li><a href="#org9bdcd0c">转移地址在寄存器中的jmp指令</a></li>
-<li><a href="#org979805e">转移地址在内存中的jmp指令</a></li>
+<li><a href="#orgc1af012">转移地址在寄存器中的 jmp 指令</a></li>
+<li><a href="#orgb9662ae">转移地址在内存中的 jmp 指令</a></li>
 </ul>
 </li>
 <li><a href="#orgcd5377a">jcxz</a></li>
-<li><a href="#orga096b16">loop</a></li>
+<li><a href="#org041bdaf">loop</a></li>
 <li><a href="#org143c7ae">根据位移进行转移的意义</a></li>
 </ul>
 </li>
-<li><a href="#org2729de4">10 Call和Ret指令</a>
+<li><a href="#orgc23f685">10 Call 和 Ret 指令</a>
 <ul>
 <li><a href="#orgdcf8bd5">ret 和 retf</a></li>
 <li><a href="#orgdc10a1c">call</a>
 <ul>
-<li><a href="#orgd6456d6">根据位移进行转移的call指令</a></li>
-<li><a href="#org2da4d49">转移的目的地址在指令中的call指令</a></li>
-<li><a href="#orgcbd84bb">转移地址在寄存器中的call指令</a></li>
-<li><a href="#orgb36ba96">转移地址在内存中的 call指令</a></li>
+<li><a href="#org566b94d">根据位移进行转移的 call 指令</a></li>
+<li><a href="#orgc787194">转移的目的地址在指令中的 call 指令</a></li>
+<li><a href="#org955dc36">转移地址在寄存器中的 call 指令</a></li>
+<li><a href="#orgacd691b">转移地址在内存中的 call 指令</a></li>
 </ul>
 </li>
-<li><a href="#org4bc023d">call 和 ret配合使用</a></li>
+<li><a href="#orge16abab">call 和 ret 配合使用</a></li>
 <li><a href="#orgf85676c">mul</a></li>
 <li><a href="#org93f8277">参数和结果传递</a></li>
 </ul>
@@ -167,15 +170,15 @@
 <li><a href="#org61c1590">11 标志寄存器</a>
 <ul>
 <li><a href="#orgd04b2d0">ZF 标志 Zero Flag</a></li>
-<li><a href="#org43a7076">PF标志 Parity Flag</a></li>
-<li><a href="#orge015914">SF标志 Sign Flag</a></li>
-<li><a href="#org3dc5f4d">CF标志 Carry Flag</a></li>
+<li><a href="#org3bd7619">PF 标志 Parity Flag</a></li>
+<li><a href="#org67deeea">SF 标志 Sign Flag</a></li>
+<li><a href="#orgb3c82c0">CF 标志 Carry Flag</a></li>
 <li><a href="#org99c59e7">OF 标志 Overflow Flag</a></li>
 <li><a href="#orge6d8194">adc</a></li>
 <li><a href="#org7e80537">sbb</a></li>
 <li><a href="#org1dcfd18">cmp</a></li>
 <li><a href="#org9a41fec">检测比较结果的条件转移指令</a></li>
-<li><a href="#orgc2dcb3f">DF标志 Direction Flag</a></li>
+<li><a href="#org16e74cb">DF 标志 Direction Flag</a></li>
 <li><a href="#org877b1b8">pushf popf</a></li>
 </ul>
 </li>
@@ -189,19 +192,19 @@
 <li><a href="#org0fa7fcc">单步中断</a></li>
 </ul>
 </li>
-<li><a href="#orgc20465d">13 int指令</a>
+<li><a href="#orgc4ccbea">13 int 指令</a>
 <ul>
-<li><a href="#org8ae54e8">BIOS和DOS中断例程的安装过程</a></li>
-<li><a href="#org6fc2996">BIOS中断例程应用</a></li>
-<li><a href="#org7a8d32b">DOS中断例程应用</a></li>
+<li><a href="#org0d53000">BIOS 和 DOS 中断例程的安装过程</a></li>
+<li><a href="#orgf0b975d">BIOS 中断例程应用</a></li>
+<li><a href="#orgba4f42e">DOS 中断例程应用</a></li>
 </ul>
 </li>
 <li><a href="#orgd367038">14 端口</a>
 <ul>
 <li><a href="#orge5d7bcc">端口的读写</a></li>
-<li><a href="#org6c107c6">CMOS RAM芯片</a></li>
-<li><a href="#org05ad2b7">shl shr指令</a></li>
-<li><a href="#org88b58e6">读取 CMOS RAM中时间信息</a></li>
+<li><a href="#org8e615f7">CMOS RAM 芯片</a></li>
+<li><a href="#org0674976">shl shr 指令</a></li>
+<li><a href="#org348da54">读取 CMOS RAM 中时间信息</a></li>
 </ul>
 </li>
 <li><a href="#orgc5dd12a">15 外中断</a></li>
@@ -226,7 +229,7 @@
 <p>
 ASM note.<br />
 </p>
-<div class="HTML" id="org3972998">
+<div class="HTML" id="orgd0db550">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -264,7 +267,7 @@ ASM note.<br />
 
 <span style="color: #2aa1ae; background-color: #292e34;">/////////////////////////////////////////////////////</span>
 <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#32534;&#35793;&#22120;&#35782;&#21035;&#22788;&#29702;&#30340;&#31526;&#21495;</span>
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">db &#34920;&#31034;define byte</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">db &#34920;&#31034; define byte</span>
 <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">dw &#34920;&#31034; define word</span>
 <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">dd &#34920;&#31034; define double word</span>
 
@@ -288,16 +291,16 @@ ASM note.<br />
 <h3 id="orga75f82e">1 基础知识</h3>
 <div class="outline-text-3" id="text-orga75f82e">
 <p>
-CPU是计算机的核心部件，它控制整个计算机的运作并进行运算。要想让CPU工作，就必须向它提供指令和数据。指令和数据在存储器中存放，也就是我们平常所说的内存。磁盘不同于内存，磁盘上的数据或程序如果不读到内存中，就无法被CPU使用。<br />
+CPU 是计算机的核心部件，它控制整个计算机的运作并进行运算。要想让 CPU 工作，就必须向它提供指令和数据。指令和数据在存储器中存放，也就是我们平常所说的内存。磁盘不同于内存，磁盘上的数据或程序如果不读到内存中，就无法被 CPU 使用。<br />
 指令和数据是应用上的概念。在内存或磁盘上，指令和数据没有任何区别，都是二进制信息。<br />
-存储器被划分为若干个存储单元，每个存储单元存储8位（1字节）数据。<br />
+存储器被划分为若干个存储单元，每个存储单元存储 8 位（1字节）数据。<br />
 </p>
 </div>
-<div id="outline-container-orgdd2ce82" class="outline-4">
-<h4 id="orgdd2ce82">CPU读写操作</h4>
-<div class="outline-text-4" id="text-orgdd2ce82">
+<div id="outline-container-orgab50a0d" class="outline-4">
+<h4 id="orgab50a0d">CPU 读写操作</h4>
+<div class="outline-text-4" id="text-orgab50a0d">
 <p>
-CPU要想进行数据读写，必须和外部器件进行下面3类信息的交互：<br />
+CPU 要想进行数据读写，必须和外部器件进行下面 3 类信息的交互：<br />
 </p>
 <ol class="org-ol">
 <li>存储单元的地址          (地址信息)<br /></li>
@@ -306,18 +309,18 @@ CPU要想进行数据读写，必须和外部器件进行下面3类信息的交�
 </ol>
 
 <p>
-CPU通过总线和其他芯片进行数据传输。总线从逻辑上分为3类：<br />
+CPU 通过总线和其他芯片进行数据传输。总线从逻辑上分为 3 类：<br />
 </p>
 <ol class="org-ol">
-<li>地址总线  CPU通过地址总线将地址信息发出<br /></li>
-<li>控制总线  CPU通过控制总线选中芯片，并通知其，要对其进行读或写操作<br /></li>
-<li>数据总线  CPU和其他芯片通过数据总线互发数据<br /></li>
+<li>地址总线  CPU 通过地址总线将地址信息发出<br /></li>
+<li>控制总线  CPU 通过控制总线选中芯片，并通知其，要对其进行读或写操作<br /></li>
+<li>数据总线  CPU 和其他芯片通过数据总线互发数据<br /></li>
 </ol>
 
 <p>
-地址总线的宽度决定了CPU最多可寻址的范围。例如：地址总线有10根导线，则CPU可寻址 \(2^10=1024\) 个内存单元，内存的最大大小就为 1024字节，这就构成了该CPU的内存地址空间。<br />
-数据总线的宽度决定了CPU和外界的数据传输速度。例如：数据总线有8根导线，则数据总线一次可传输8位（1字节）信息。<br />
-控制总线的宽度决定了 CPU对外部器件的控制能力。<br />
+地址总线的宽度决定了 CPU 最多可寻址的范围。例如：地址总线有 10 根导线，则 CPU 可寻址 \(2^10=1024\) 个内存单元，内存的最大大小就为 1024 字节，这就构成了该 CPU 的内存地址空间。<br />
+数据总线的宽度决定了 CPU 和外界的数据传输速度。例如：数据总线有 8 根导线，则数据总线一次可传输 8 位（1字节）信息。<br />
+控制总线的宽度决定了 CPU 对外部器件的控制能力。<br />
 </p>
 </div>
 </div>
@@ -325,7 +328,7 @@ CPU通过总线和其他芯片进行数据传输。总线从逻辑上分为3类�
 <h4 id="org65e62a0">主板</h4>
 <div class="outline-text-4" id="text-org65e62a0">
 <p>
-每台计算机中，都有一个主板，主板上有核心器件和一些主要器件，这些器件通过总线相连。这些器件有CPU、存储器、外围芯片组、扩展插槽等。扩展插槽上一般插有RAM内存条和各类接口卡。<br />
+每台计算机中，都有一个主板，主板上有核心器件和一些主要器件，这些器件通过总线相连。这些器件有 CPU、存储器、外围芯片组、扩展插槽等。扩展插槽上一般插有 RAM 内存条和各类接口卡。<br />
 </p>
 </div>
 </div>
@@ -333,7 +336,7 @@ CPU通过总线和其他芯片进行数据传输。总线从逻辑上分为3类�
 <h4 id="org1601cb1">接口卡</h4>
 <div class="outline-text-4" id="text-org1601cb1">
 <p>
-计算机系统中，所有可以用程序控制其工作的设备，必须受到CPU的控制。CPU对外部设备都不能直接控制，如显示器、音响、打印机等。直接控制这些设备进行工作的是插在扩展插槽上的接口卡。扩展插槽通过总线和CPU相连，所以接口卡也通过总线同CPU相连。CPU可以直接控制这些接口卡，从而实现对外设的间接控制。<br />
+计算机系统中，所有可以用程序控制其工作的设备，必须受到 CPU 的控制。CPU 对外部设备都不能直接控制，如显示器、音响、打印机等。直接控制这些设备进行工作的是插在扩展插槽上的接口卡。扩展插槽通过总线和 CPU 相连，所以接口卡也通过总线同 CPU 相连。CPU 可以直接控制这些接口卡，从而实现对外设的间接控制。<br />
 </p>
 </div>
 </div>
@@ -351,13 +354,13 @@ CPU通过总线和其他芯片进行数据传输。总线从逻辑上分为3类�
 从功能和连接上又可分为：<br />
 </p>
 <ol class="org-ol">
-<li>随机存储器： 用于存放CPU使用的绝大部分程序和数据<br /></li>
-<li>装有BIOS（Basic Input/Output System）的ROM：BIOS是主板和各类接口卡厂商提供的软件系统，可通过它利用该硬件设备进行最基本的输入输出。<br /></li>
-<li>接口卡上的RAM：例如GPU的显存<br /></li>
+<li>随机存储器： 用于存放 CPU 使用的绝大部分程序和数据<br /></li>
+<li>装有 BIOS（Basic Input/Output System）的 ROM：BIOS 是主板和各类接口卡厂商提供的软件系统，可通过它利用该硬件设备进行最基本的输入输出。<br /></li>
+<li>接口卡上的 RAM：例如 GPU 的显存<br /></li>
 </ol>
 
 
-<div id="org58203a1" class="figure">
+<div id="org64211b4" class="figure">
 <p><img src="./ASM/memory-chip.jpg" alt="memory-chip.jpg" /><br />
 </p>
 </div>
@@ -370,11 +373,11 @@ CPU通过总线和其他芯片进行数据传输。总线从逻辑上分为3类�
 上面描述的存储器，在物理上是独立的器件，但是在下面两点上是相同的：<br />
 </p>
 <ol class="org-ol">
-<li>都和CPU的总线相连<br /></li>
-<li>CPU对它们进行读或写的时候都通过总线发出内存读写命令<br /></li>
+<li>都和 CPU 的总线相连<br /></li>
+<li>CPU 对它们进行读或写的时候都通过总线发出内存读写命令<br /></li>
 </ol>
 <p>
-CPU对他们进行操控时，把他们都当作内存来对待，把他们总的看作一个由若干存储单元组成的逻辑存储器。<br />
+CPU 对他们进行操控时，把他们都当作内存来对待，把他们总的看作一个由若干存储单元组成的逻辑存储器。<br />
 </p>
 </div>
 </div>
@@ -387,11 +390,11 @@ CPU对他们进行操控时，把他们都当作内存来对待，把他们总�
 <h4 id="orgfc7552c">通用寄存器</h4>
 <div class="outline-text-4" id="text-orgfc7552c">
 <p>
-8086CPU的所有寄存器都是16位(2个字节)的。AX BX CX DX这四个寄存器通常用来存放一般性的数据，被称为通用寄存器。8086CPU上一代CPU中的寄存器都是8位，为了保证兼容，AX BX CX DX这四个寄存器每个都可分为两个可独立使用的8位寄存器来用：<br />
-AX可分为AH和AL;<br />
-BX可分为BH和BL;<br />
-CX可分为CH和CL;<br />
-DX可分为DH和DL;<br />
+8086CPU 的所有寄存器都是 16 位(2 个字节)的。AX BX CX DX 这四个寄存器通常用来存放一般性的数据，被称为通用寄存器。8086CPU 上一代 CPU 中的寄存器都是 8 位，为了保证兼容，AX BX CX DX 这四个寄存器每个都可分为两个可独立使用的 8 位寄存器来用：<br />
+AX 可分为 AH 和 AL;<br />
+BX 可分为 BH 和 BL;<br />
+CX 可分为 CH 和 CL;<br />
+DX 可分为 DH 和 DL;<br />
 </p>
 
 <p>
@@ -406,21 +409,21 @@ DX可分为DH和DL;<br />
 <div class="outline-text-4" id="text-orgf3de109">
 <p>
 所有内存单元构成的存储空间使一个一维线性空间，每个内存单元在空间中都有唯一的地址，该地址被称为物理地址。<br />
-CPU通过地址总线送入存储器的必须是一个内存单元的物理地址。<br />
+CPU 通过地址总线送入存储器的必须是一个内存单元的物理地址。<br />
 </p>
 </div>
 </div>
 
-<div id="outline-container-orgad3a2ea" class="outline-4">
-<h4 id="orgad3a2ea">16位结构CPU</h4>
-<div class="outline-text-4" id="text-orgad3a2ea">
+<div id="outline-container-org940a975" class="outline-4">
+<h4 id="org940a975">16 位结构 CPU</h4>
+<div class="outline-text-4" id="text-org940a975">
 <ul class="org-ul">
-<li>运算器一次最多可以处理16位数据<br /></li>
-<li>寄存器的最大宽度为16位<br /></li>
-<li>寄存器和运算器之间的通路为16位<br /></li>
+<li>运算器一次最多可以处理 16 位数据<br /></li>
+<li>寄存器的最大宽度为 16 位<br /></li>
+<li>寄存器和运算器之间的通路为 16 位<br /></li>
 </ul>
 <p>
-8086CPU就是16位机，8080、8085是8位机<br />
+8086CPU 就是 16 位机，8080、8085 是 8 位机<br />
 </p>
 </div>
 </div>
@@ -429,19 +432,19 @@ CPU通过地址总线送入存储器的必须是一个内存单元的物理地�
 <h4 id="org1275be0">物理地址合成</h4>
 <div class="outline-text-4" id="text-org1275be0">
 <p>
-8086CPU有20位地址总线，其在内部用两个16位地址合成的方法来形成一个20位的物理地址。<br />
+8086CPU 有 20 位地址总线，其在内部用两个 16 位地址合成的方法来形成一个 20 位的物理地址。<br />
 </p>
 <ol class="org-ol">
-<li>CPU中相关部件提供两个16位地址，一个称为段地址，另一个称为偏移地址<br /></li>
+<li>CPU 中相关部件提供两个 16 位地址，一个称为段地址，另一个称为偏移地址<br /></li>
 <li>段地址和偏移地址通过内部总线送入一个称为地址加法器的部件<br /></li>
-<li>地址加法器将两个16位地址合成为一个20位地址<br /></li>
-<li>地址加法器通过内部总线将20位物理地址送入输入输出控制电路<br /></li>
-<li>输入输出控制电路将20位物理地址送上地址总线<br /></li>
-<li>20位物理地址被地址总线传送到存储器<br /></li>
+<li>地址加法器将两个 16 位地址合成为一个 20 位地址<br /></li>
+<li>地址加法器通过内部总线将 20 位物理地址送入输入输出控制电路<br /></li>
+<li>输入输出控制电路将 20 位物理地址送上地址总线<br /></li>
+<li>20 位物理地址被地址总线传送到存储器<br /></li>
 </ol>
 
 
-<div id="org04acd7c" class="figure">
+<div id="org4219ef6" class="figure">
 <p><img src="./ASM/gen-memory-addr.jpg" alt="gen-memory-addr.jpg" /><br />
 </p>
 </div>
@@ -452,15 +455,15 @@ CPU通过地址总线送入存储器的必须是一个内存单元的物理地�
 <h4 id="orgc35affe">段寄存器</h4>
 <div class="outline-text-4" id="text-orgc35affe">
 <p>
-段是CPU中合成物理地址用到的概念。在编程时可以根据需要，将若干地址连续的内存单元看作一个段，用段地址*16定位段的起始地址，用偏移地址定位段中的内存单元。<br />
+段是 CPU 中合成物理地址用到的概念。在编程时可以根据需要，将若干地址连续的内存单元看作一个段，用段地址*16 定位段的起始地址，用偏移地址定位段中的内存单元。<br />
 </p>
 <ul class="org-ul">
-<li>段地址*16必然是16的倍数<br /></li>
-<li>偏移地址为16位，16位地址的寻址能力为64KB，所以一个段的长度最大为64K<br /></li>
+<li>段地址*16 必然是 16 的倍数<br /></li>
+<li>偏移地址为 16 位，16 位地址的寻址能力为 64KB，所以一个段的长度最大为 64K<br /></li>
 </ul>
 
 <p>
-8086CPU有4个段寄存器：CS DS SS ES，合成物理地址时，由他们提供段地址。<br />
+8086CPU 有 4 个段寄存器：CS DS SS ES，合成物理地址时，由他们提供段地址。<br />
 </p>
 
 <p>
@@ -471,20 +474,20 @@ CPU通过地址总线送入存储器的必须是一个内存单元的物理地�
 <h5 id="org9097164">CS IP 寄存器</h5>
 <div class="outline-text-5" id="text-org9097164">
 <p>
-任意时刻，CS中的内容为M，IP(指令指针寄存器)中的内容为N，CPU将从内存 M*16+N单元开始，读取一条指令并执行。<br />
-8086CPU的工作过程如下：<br />
+任意时刻，CS 中的内容为 M，IP(指令指针寄存器)中的内容为 N，CPU 将从内存 M*16+N 单元开始，读取一条指令并执行。<br />
+8086CPU 的工作过程如下：<br />
 </p>
 <ol class="org-ol">
-<li>从CS:IP指向的内存单元读取指令，读取的指令进入指令缓冲器<br /></li>
-<li>IP = IP + 所读指令的长度，此时CS*16+IP就指向下一条指令了<br /></li>
-<li>执行指令。转到步骤1，重复此过程<br /></li>
+<li>从 CS:IP 指向的内存单元读取指令，读取的指令进入指令缓冲器<br /></li>
+<li>IP = IP + 所读指令的长度，此时 CS*16+IP 就指向下一条指令了<br /></li>
+<li>执行指令。转到步骤 1，重复此过程<br /></li>
 </ol>
 </div>
 </div>
 
-<div id="outline-container-org9a2120e" class="outline-5">
-<h5 id="org9a2120e">修改 CS, IP的指令</h5>
-<div class="outline-text-5" id="text-org9a2120e">
+<div id="outline-container-orga0a525a" class="outline-5">
+<h5 id="orga0a525a">修改 CS, IP 的指令</h5>
+<div class="outline-text-5" id="text-orga0a525a">
 <div class="org-src-container">
 <pre class="src src-asm">  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21516;&#26102;&#20462;&#25913;cs ip&#23492;&#23384;&#22120;</span>
   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">jmp &#27573;&#22320;&#22336;:&#20559;&#31227;&#22320;&#22336;</span>
@@ -505,11 +508,11 @@ CPU通过地址总线送入存储器的必须是一个内存单元的物理地�
 <h3 id="orga63831a">3 寄存器(内存访问)</h3>
 <div class="outline-text-3" id="text-orga63831a">
 </div>
-<div id="outline-container-org2e1cd81" class="outline-4">
-<h4 id="org2e1cd81">DS和[address]</h4>
-<div class="outline-text-4" id="text-org2e1cd81">
+<div id="outline-container-orgf908d00" class="outline-4">
+<h4 id="orgf908d00">DS 和[address]</h4>
+<div class="outline-text-4" id="text-orgf908d00">
 <p>
-DS寄存器通常用来存放要访问数据的段地址。<br />
+DS 寄存器通常用来存放要访问数据的段地址。<br />
 </p>
 
 <div class="org-src-container">
@@ -523,7 +526,7 @@ DS寄存器通常用来存放要访问数据的段地址。<br />
 </div>
 
 <p>
-Tips: 8086CPU不支持将数据直接送入段寄存器<br />
+Tips: 8086CPU 不支持将数据直接送入段寄存器<br />
 </p>
 </div>
 </div>
@@ -531,7 +534,7 @@ Tips: 8086CPU不支持将数据直接送入段寄存器<br />
 <h4 id="orge5818d8">字的传送</h4>
 <div class="outline-text-4" id="text-orge5818d8">
 <p>
-只要在mov指令中给出16位的寄存器就可以进行16位数据的传送了<br />
+只要在 mov 指令中给出 16 位的寄存器就可以进行 16 位数据的传送了<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">bx</span>,1000H
@@ -557,13 +560,13 @@ mov 段寄存器,内存单元<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org736b30b" class="outline-4">
-<h4 id="org736b30b">CPU提供的栈机制</h4>
-<div class="outline-text-4" id="text-org736b30b">
+<div id="outline-container-orgf201397" class="outline-4">
+<h4 id="orgf201397">CPU 提供的栈机制</h4>
+<div class="outline-text-4" id="text-orgf201397">
 <p>
-8086CPU提供相关指令来以栈的方式访问内存空间，编程时，可以将一段内存当作栈来使用，入栈和出栈操作都是以字为单位进行的。<br />
-段寄存器SS存放栈顶段地址，寄存器SP存放偏移地址。任意时刻SS:SP指向栈顶元素。<br />
-当栈空时，继续出栈会导致越界，当栈满时，继续入栈也会导致越界，8086CPU对越界没有保护，因此，需要我们自己避免越界。<br />
+8086CPU 提供相关指令来以栈的方式访问内存空间，编程时，可以将一段内存当作栈来使用，入栈和出栈操作都是以字为单位进行的。<br />
+段寄存器 SS 存放栈顶段地址，寄存器 SP 存放偏移地址。任意时刻 SS:SP 指向栈顶元素。<br />
+当栈空时，继续出栈会导致越界，当栈满时，继续入栈也会导致越界，8086CPU 对越界没有保护，因此，需要我们自己避免越界。<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">push</span> <span style="color: #4f97d7; font-weight: bold;">ax</span> <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#34920;&#31034;&#23558;&#23492;&#23384;&#22120;ax&#20013;&#30340;&#25968;&#25454;&#36865;&#20837;&#26632;&#20013;</span>
@@ -615,9 +618,9 @@ mov 段寄存器,内存单元<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org8d63ada" class="outline-3">
-<h3 id="org8d63ada">5 [BX]和loop指令</h3>
-<div class="outline-text-3" id="text-org8d63ada">
+<div id="outline-container-orgec28cb7" class="outline-3">
+<h3 id="orgec28cb7">5 [BX]和 loop 指令</h3>
+<div class="outline-text-3" id="text-orgec28cb7">
 </div>
 <div id="outline-container-org3c8b22e" class="outline-4">
 <h4 id="org3c8b22e">[bx]</h4>
@@ -630,16 +633,16 @@ mov 段寄存器,内存单元<br />
 </div>
 </div>
 </div>
-<div id="outline-container-orgdcfb96f" class="outline-4">
-<h4 id="orgdcfb96f">loop</h4>
-<div class="outline-text-4" id="text-orgdcfb96f">
+<div id="outline-container-orga096b16" class="outline-4">
+<h4 id="orga096b16">loop</h4>
+<div class="outline-text-4" id="text-orga096b16">
 <p>
 loop 标号<br />
-CPU执行loop指令时，首先会执行(cx)=(cx)-1，然后判断cx中的值，不为0则转至标号处执行程序，为0则继续向下执行。<br />
+CPU 执行 loop 指令时，首先会执行(cx)=(cx)-1，然后判断 cx 中的值，不为 0 则转至标号处执行程序，为 0 则继续向下执行。<br />
 </p>
 
 <p>
-Tips: (cx)表示cx寄存器中的内容<br />
+Tips: (cx)表示 cx 寄存器中的内容<br />
 </p>
 
 <div class="org-src-container">
@@ -657,9 +660,9 @@ Tips: (cx)表示cx寄存器中的内容<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org52664a6" class="outline-4">
-<h4 id="org52664a6">如何将ffff:0-ffff:b中的8位数据，累加到16位寄存器dx中？</h4>
-<div class="outline-text-4" id="text-org52664a6">
+<div id="outline-container-orgbd5fd9f" class="outline-4">
+<h4 id="orgbd5fd9f">如何将 ffff:0-ffff:b 中的 8 位数据，累加到 16 位寄存器 dx 中？</h4>
+<div class="outline-text-4" id="text-orgbd5fd9f">
 <div class="org-src-container">
 <pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#26041;&#27861;1: </span>
 (dx) <span style="color: #4f97d7; font-weight: bold;">=</span> (dx)+&#20869;&#23384;&#20013;8&#20301;&#25968;&#25454;  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20004;&#20010;&#36816;&#31639;&#23545;&#35937;&#30340;&#31867;&#22411;&#19981;&#21305;&#37197;</span>
@@ -708,8 +711,8 @@ Tips: (cx)表示cx寄存器中的内容<br />
 </div>
 
 <p>
-在实模式DOS下，可以直接利用汇编语言去操作真实的硬件。Dos方式下，一般情况，0:200~0:2ff空间(256字节大小)中没有系统或其他程序的数据。<br />
-Windows 2000，Unix是运行于CPU保护模式下的操作系统，不理会操作系统，用汇编语言去操作真实的硬件是根本不可能的。硬件已被这些操作系统利用CPU保护模式所提供的功能全面而严格地管理了。<br />
+在实模式 DOS 下，可以直接利用汇编语言去操作真实的硬件。Dos 方式下，一般情况，0:200~0:2ff 空间(256 字节大小)中没有系统或其他程序的数据。<br />
+Windows 2000，Unix 是运行于 CPU 保护模式下的操作系统，不理会操作系统，用汇编语言去操作真实的硬件是根本不可能的。硬件已被这些操作系统利用 CPU 保护模式所提供的功能全面而严格地管理了。<br />
 </p>
 
 <div class="org-src-container">
@@ -888,11 +891,11 @@ Windows 2000，Unix是运行于CPU保护模式下的操作系统，不理会操�
 </div>
 </div>
 </div>
-<div id="outline-container-org9ccf17a" class="outline-4">
-<h4 id="org9ccf17a">si和di</h4>
-<div class="outline-text-4" id="text-org9ccf17a">
+<div id="outline-container-orgf385996" class="outline-4">
+<h4 id="orgf385996">si 和 di</h4>
+<div class="outline-text-4" id="text-orgf385996">
 <p>
-si和di与bx的功能相近，但是si和di不能被分成两个8位寄存器使用。<br />
+si 和 di 与 bx 的功能相近，但是 si 和 di 不能被分成两个 8 位寄存器使用。<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;'welcom to masm!'&#22797;&#21046;&#21040;&#20854;&#21518;&#30340;&#25968;&#25454;&#21306;&#20013;</span>
@@ -945,7 +948,7 @@ si和di与bx的功能相近，但是si和di不能被分成两个8位寄存器使
 <h4 id="org8f8ff03">bx si di bp</h4>
 <div class="outline-text-4" id="text-org8f8ff03">
 <p>
-8086CPU只有bx si di bp四个寄存器可以在[&#x2026;]中来进行内存单元的寻址<br />
+8086CPU 只有 bx si di bp 四个寄存器可以在[&#x2026;]中来进行内存单元的寻址<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,[bx]
@@ -970,7 +973,7 @@ si和di与bx的功能相近，但是si和di不能被分成两个8位寄存器使
 <h4 id="org82b2728">机器指令处理的数据在什么地方？</h4>
 <div class="outline-text-4" id="text-org82b2728">
 
-<div id="org3e43bd3" class="figure">
+<div id="org55b318a" class="figure">
 <p><img src="./ASM/data-pos.jpg" alt="data-pos.jpg" /><br />
 </p>
 </div>
@@ -980,7 +983,7 @@ si和di与bx的功能相近，但是si和di不能被分成两个8位寄存器使
 <h4 id="orga3154dd">寻址方式总结</h4>
 <div class="outline-text-4" id="text-orga3154dd">
 
-<div id="org3582efd" class="figure">
+<div id="orgb7d0c15" class="figure">
 <p><img src="./ASM/addressing.jpg" alt="addressing.jpg" /><br />
 </p>
 </div>
@@ -990,7 +993,7 @@ si和di与bx的功能相近，但是si和di不能被分成两个8位寄存器使
 <h4 id="orgd91a6ea">指令要处理的数据有多长？</h4>
 <div class="outline-text-4" id="text-orgd91a6ea">
 <p>
-8086CPU的指令可以处理两种尺寸的数据，byte和word。汇编语言通过一下方法指明指令处理的数据长度：<br />
+8086CPU 的指令可以处理两种尺寸的数据，byte 和 word。汇编语言通过一下方法指明指令处理的数据长度：<br />
 </p>
 <ol class="org-ol">
 <li><p>
@@ -1002,7 +1005,7 @@ si和di与bx的功能相近，但是si和di不能被分成两个8位寄存器使
 </pre>
 </div></li>
 <li><p>
-用操作符X ptr指明内存单元的长度。X在汇编指令中可以为word或byte<br />
+用操作符 X ptr 指明内存单元的长度。X在汇编指令中可以为 word 或 byte<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-asm">   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22788;&#29702;&#30340;&#25968;&#25454;&#20026;word</span>
@@ -1028,9 +1031,9 @@ push 命令只进行字操作<br /></li>
 <div class="outline-text-4" id="text-orgac60cb3">
 <p>
 div 为除法指令<br />
-除数：有8位和16位两种，放置在一个reg或内存单元中<br />
-被除数：默认放置ax 或 （dx和ax)中。如果除数为8位，则被除数则为16位，默认放在ax中；如果除数为16位，则被除数则为32位，在DX和AX中存放，DX存放高16位，AX存放低16位。<br />
-结果：如果除数为8位，则AL存储除法操作的商，AH存储除法操作的余数；如果除数位16位，则AX存储商，DX存储余数。<br />
+除数：有 8 位和 16 位两种，放置在一个 reg 或内存单元中<br />
+被除数：默认放置 ax 或 （dx 和 ax)中。如果除数为 8 位，则被除数则为 16 位，默认放在 ax 中；如果除数为 16 位，则被除数则为 32 位，在 DX 和 AX 中存放，DX 存放高 16 位，AX 存放低 16 位。<br />
+结果：如果除数为 8 位，则 AL 存储除法操作的商，AH 存储除法操作的余数；如果除数位 16 位，则 AX 存储商，DX 存储余数。<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">div</span> <span style="color: #4f97d7; font-weight: bold;">reg</span>
@@ -1062,23 +1065,23 @@ div 为除法指令<br />
 <h3 id="org027440a">9 转移指令的原理</h3>
 <div class="outline-text-3" id="text-org027440a">
 <p>
-可以修改IP或同时修改CS和IP的指令统称为转移指令。<br />
-8086CPU的转移行为有以下几类：<br />
+可以修改 IP 或同时修改 CS 和 IP 的指令统称为转移指令。<br />
+8086CPU 的转移行为有以下几类：<br />
 </p>
 <ol class="org-ol">
-<li>只修改IP，称为段内转移。            例如：jmp ax<br /></li>
-<li>同时修改CS和IP时，称为段间转移。 例如：jmp 1000:0<br /></li>
+<li>只修改 IP，称为段内转移。            例如：jmp ax<br /></li>
+<li>同时修改 CS 和 IP 时，称为段间转移。 例如：jmp 1000:0<br /></li>
 </ol>
 <p>
-依据转移指令对IP的修改范围不同，段内转移又分为：<br />
+依据转移指令对 IP 的修改范围不同，段内转移又分为：<br />
 </p>
 <ul class="org-ul">
-<li>短转移：对IP修改范围为-128~127<br /></li>
-<li>近转移：对IP修改范围为-32768~32767<br /></li>
+<li>短转移：对 IP 修改范围为-128~127<br /></li>
+<li>近转移：对 IP 修改范围为-32768~32767<br /></li>
 </ul>
 
 <p>
-8086CPU的转移指令分为以下几类：<br />
+8086CPU 的转移指令分为以下几类：<br />
 </p>
 <ol class="org-ol">
 <li>无条件转移指令<br /></li>
@@ -1096,7 +1099,7 @@ div 为除法指令<br />
 <h5 id="orge6ab35d">依据位移进行转移</h5>
 <div class="outline-text-5" id="text-orge6ab35d">
 <p>
-jmp short 标号 <i>/ 段内短转移,对ip的修改范围都为：-128~127<br />
+jmp short 标号 <i>/ 段内短转移,对 ip 的修改范围都为：-128~127<br />
 jmp short 标号 /</i> 指令对应的机器码中，并不包含转移的目的地址，而包含的是转移的位移。<br />
 </p>
 
@@ -1114,7 +1117,7 @@ jmp short 标号 /</i> 指令对应的机器码中，并不包含转移的目的
 </pre>
 </div>
 
-<div id="org6d88bd2" class="figure">
+<div id="org04bd1ab" class="figure">
 <p><img src="./ASM/jmp-with-offset.jpg" alt="jmp-with-offset.jpg" /><br />
 </p>
 </div>
@@ -1143,18 +1146,18 @@ jmp far ptr 标号 // 段间转移，又称为远转移 (cs)=标号所在段的�
 </div>
 </div>
 </div>
-<div id="outline-container-org9bdcd0c" class="outline-5">
-<h5 id="org9bdcd0c">转移地址在寄存器中的jmp指令</h5>
-<div class="outline-text-5" id="text-org9bdcd0c">
+<div id="outline-container-orgc1af012" class="outline-5">
+<h5 id="orgc1af012">转移地址在寄存器中的 jmp 指令</h5>
+<div class="outline-text-5" id="text-orgc1af012">
 <div class="org-src-container">
 <pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">jmp</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>  <span style="color: #2aa1ae; background-color: #292e34;">;</span><span style="color: #2aa1ae; background-color: #292e34;">// &#27573;&#20869;&#36716;&#31227;</span>
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-org979805e" class="outline-5">
-<h5 id="org979805e">转移地址在内存中的jmp指令</h5>
-<div class="outline-text-5" id="text-org979805e">
+<div id="outline-container-orgb9662ae" class="outline-5">
+<h5 id="orgb9662ae">转移地址在内存中的 jmp 指令</h5>
+<div class="outline-text-5" id="text-orgb9662ae">
 <div class="org-src-container">
 <pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">;</span><span style="color: #2aa1ae; background-color: #292e34;">// jmp word ptr &#20869;&#23384;&#21333;&#20803;&#22320;&#22336;   // &#27573;&#20869;&#36716;&#31227;</span>
 <span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ax</span>,0123H
@@ -1177,18 +1180,18 @@ jmp far ptr 标号 // 段间转移，又称为远转移 (cs)=标号所在段的�
 <div class="outline-text-4" id="text-orgcd5377a">
 <p>
 jcxz 标号  // 如果(cx)=0, 转移到标号处执行；否则继续执行<br />
-所有条件转移指令都为短转移，对ip的修改范围都为：-128~127。<br />
+所有条件转移指令都为短转移，对 ip 的修改范围都为：-128~127。<br />
 Tips:<br />
 jcxz 表示 jump when CX is zero<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orga096b16" class="outline-4">
-<h4 id="orga096b16">loop</h4>
-<div class="outline-text-4" id="text-orga096b16">
+<div id="outline-container-org041bdaf" class="outline-4">
+<h4 id="org041bdaf">loop</h4>
+<div class="outline-text-4" id="text-org041bdaf">
 <p>
 loop 标号  // 如果(cx)!=0, 转移到标号处执行<br />
-所有循环指令都为短转移，对ip的修改范围都为：-128~127。<br />
+所有循环指令都为短转移，对 ip 的修改范围都为：-128~127。<br />
 </p>
 </div>
 </div>
@@ -1205,19 +1208,19 @@ loop 标号  // 如果(cx)!=0, 转移到标号处执行<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org2729de4" class="outline-3">
-<h3 id="org2729de4">10 Call和Ret指令</h3>
-<div class="outline-text-3" id="text-org2729de4">
+<div id="outline-container-orgc23f685" class="outline-3">
+<h3 id="orgc23f685">10 Call 和 Ret 指令</h3>
+<div class="outline-text-3" id="text-orgc23f685">
 <p>
-call和ret指令都是转移指令，他们都修改IP或同时修改IP和CS。可以用他们来实现子程序设计。<br />
+call 和 ret 指令都是转移指令，他们都修改 IP 或同时修改 IP 和 CS。可以用他们来实现子程序设计。<br />
 </p>
 </div>
 <div id="outline-container-orgdcf8bd5" class="outline-4">
 <h4 id="orgdcf8bd5">ret 和 retf</h4>
 <div class="outline-text-4" id="text-orgdcf8bd5">
 <p>
-ret利用栈中数据修改ip         //相当于 pop ip<br />
-retf 利用栈中数据修改ip 和cs  <i>/相当于 pop ip<br />
+ret 利用栈中数据修改 ip         //相当于 pop ip<br />
+retf 利用栈中数据修改 ip 和 cs  <i>/相当于 pop ip<br />
                               /</i>       pop cs<br />
 </p>
 </div>
@@ -1226,18 +1229,18 @@ retf 利用栈中数据修改ip 和cs  <i>/相当于 pop ip<br />
 <h4 id="orgdc10a1c">call</h4>
 <div class="outline-text-4" id="text-orgdc10a1c">
 <p>
-call指令不能实现短转移，除此之外，call指令实现转移的方法和jmp指令的原理相同<br />
+call 指令不能实现短转移，除此之外，call 指令实现转移的方法和 jmp 指令的原理相同<br />
 </p>
 </div>
-<div id="outline-container-orgd6456d6" class="outline-5">
-<h5 id="orgd6456d6">根据位移进行转移的call指令</h5>
-<div class="outline-text-5" id="text-orgd6456d6">
+<div id="outline-container-org566b94d" class="outline-5">
+<h5 id="org566b94d">根据位移进行转移的 call 指令</h5>
+<div class="outline-text-5" id="text-org566b94d">
 <p>
-call 标号          // 将当前的IP压栈后，转到标号处执行指令<br />
+call 标号          // 将当前的 IP 压栈后，转到标号处执行指令<br />
 </p>
 
 <p>
-16位位移的范围为-32768~32767，用补码表示<br />
+16 位位移的范围为-32768~32767，用补码表示<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">call &#26631;&#21495; &#30456;&#24403;&#20110;&#19979;&#38754;&#25351;&#20196;</span>
@@ -1247,9 +1250,9 @@ call 标号          // 将当前的IP压栈后，转到标号处执行指令<br
 </div>
 </div>
 </div>
-<div id="outline-container-org2da4d49" class="outline-5">
-<h5 id="org2da4d49">转移的目的地址在指令中的call指令</h5>
-<div class="outline-text-5" id="text-org2da4d49">
+<div id="outline-container-orgc787194" class="outline-5">
+<h5 id="orgc787194">转移的目的地址在指令中的 call 指令</h5>
+<div class="outline-text-5" id="text-orgc787194">
 <p>
 call far ptr 标号  // 段间转移<br />
 </p>
@@ -1262,11 +1265,11 @@ call far ptr 标号  // 段间转移<br />
 </div>
 </div>
 </div>
-<div id="outline-container-orgcbd84bb" class="outline-5">
-<h5 id="orgcbd84bb">转移地址在寄存器中的call指令</h5>
-<div class="outline-text-5" id="text-orgcbd84bb">
+<div id="outline-container-org955dc36" class="outline-5">
+<h5 id="org955dc36">转移地址在寄存器中的 call 指令</h5>
+<div class="outline-text-5" id="text-org955dc36">
 <p>
-call 16位reg<br />
+call 16 位 reg<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">push</span> <span style="color: #4f97d7; font-weight: bold;">ip</span>
@@ -1275,9 +1278,9 @@ call 16位reg<br />
 </div>
 </div>
 </div>
-<div id="outline-container-orgb36ba96" class="outline-5">
-<h5 id="orgb36ba96">转移地址在内存中的 call指令</h5>
-<div class="outline-text-5" id="text-orgb36ba96">
+<div id="outline-container-orgacd691b" class="outline-5">
+<h5 id="orgacd691b">转移地址在内存中的 call 指令</h5>
+<div class="outline-text-5" id="text-orgacd691b">
 <p>
 call word ptr 内存单元地址<br />
 call dword ptr 内存单元地址<br />
@@ -1296,9 +1299,9 @@ call dword ptr 内存单元地址<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org4bc023d" class="outline-4">
-<h4 id="org4bc023d">call 和 ret配合使用</h4>
-<div class="outline-text-4" id="text-org4bc023d">
+<div id="outline-container-orge16abab" class="outline-4">
+<h4 id="orge16abab">call 和 ret 配合使用</h4>
+<div class="outline-text-4" id="text-orge16abab">
 <div class="org-src-container">
 <pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">assume</span> <span style="color: #4f97d7; font-weight: bold;">cs</span>:code
 
@@ -1329,11 +1332,11 @@ call dword ptr 内存单元地址<br />
 <h4 id="orgf85676c">mul</h4>
 <div class="outline-text-4" id="text-orgf85676c">
 <p>
-关于mul 乘法指令需要注意如下两点：<br />
+关于 mul 乘法指令需要注意如下两点：<br />
 </p>
 <ol class="org-ol">
-<li>两个相乘的数：要么都是8位，要么都是16位。如果是8位，一个默认放在AL中，另一个放在8位reg或内存字节单元中；如果是16位，一个默认在AX中，另一个在16位reg或内存字单元中。<br /></li>
-<li>结果：如果是8位乘法，结果默认放在AX中；如果是16位乘法，结果高位默认在DX中存放，低位在AX中存放。<br /></li>
+<li>两个相乘的数：要么都是 8 位，要么都是 16 位。如果是 8 位，一个默认放在 AL 中，另一个放在 8 位 reg 或内存字节单元中；如果是 16 位，一个默认在 AX 中，另一个在 16 位 reg 或内存字单元中。<br /></li>
+<li>结果：如果是 8 位乘法，结果默认放在 AX 中；如果是 16 位乘法，结果高位默认在 DX 中存放，低位在 AX 中存放。<br /></li>
 </ol>
 <div class="org-src-container">
 <pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#35745;&#31639;100*10000  10000&#22823;&#20110;255&#65292;&#25152;&#20197;&#24517;&#39035;&#20570;16&#20301;&#20056;&#27861;</span>
@@ -1425,12 +1428,12 @@ call dword ptr 内存单元地址<br />
 </p>
 <ol class="org-ol">
 <li>存储相关指令的某些执行结果<br /></li>
-<li>为CPU执行相关指令提供行为依据<br /></li>
-<li>控制CPU的相关工作方式<br /></li>
+<li>为 CPU 执行相关指令提供行为依据<br /></li>
+<li>控制 CPU 的相关工作方式<br /></li>
 </ol>
 
 <p>
-flag寄存器是按位作用的，其每一个位都有专门的含义<br />
+flag 寄存器是按位作用的，其每一个位都有专门的含义<br />
 <img src="./ASM/flag-register-bit-usage.jpg" alt="flag-register-bit-usage.jpg" /><br />
 </p>
 </div>
@@ -1439,34 +1442,34 @@ flag寄存器是按位作用的，其每一个位都有专门的含义<br />
 <h4 id="orgd04b2d0">ZF 标志 Zero Flag</h4>
 <div class="outline-text-4" id="text-orgd04b2d0">
 <p>
-零标志位。其记录相关指令执行完后，结果是否为0。如果为0，ZF=1；否则，ZF=0<br />
-8086CPU中，运算指令（进行逻辑或算术运算 如 add sub mul div inc or and等）会影响ZF，传送指令（如 mov push pop等）不影响ZF。<br />
+零标志位。其记录相关指令执行完后，结果是否为 0。如果为 0，ZF=1；否则，ZF=0<br />
+8086CPU 中，运算指令（进行逻辑或算术运算 如 add sub mul div inc or and 等）会影响 ZF，传送指令（如 mov push pop 等）不影响 ZF。<br />
 </p>
 </div>
 </div>
 
-<div id="outline-container-org43a7076" class="outline-4">
-<h4 id="org43a7076">PF标志 Parity Flag</h4>
-<div class="outline-text-4" id="text-org43a7076">
+<div id="outline-container-org3bd7619" class="outline-4">
+<h4 id="org3bd7619">PF 标志 Parity Flag</h4>
+<div class="outline-text-4" id="text-org3bd7619">
 <p>
-奇偶标志位。其记录相关指令执行完后，其结果的所有bit中1的个数是否为偶数。如果1的个数为偶数，PF=1；否则，PF=0<br />
+奇偶标志位。其记录相关指令执行完后，其结果的所有 bit 中 1 的个数是否为偶数。如果 1 的个数为偶数，PF=1；否则，PF=0<br />
 </p>
 </div>
 </div>
 
-<div id="outline-container-orge015914" class="outline-4">
-<h4 id="orge015914">SF标志 Sign Flag</h4>
-<div class="outline-text-4" id="text-orge015914">
+<div id="outline-container-org67deeea" class="outline-4">
+<h4 id="org67deeea">SF 标志 Sign Flag</h4>
+<div class="outline-text-4" id="text-org67deeea">
 <p>
 符号标志位。其记录相关指令执行完后，其结果是否位负。如果结果为负，SF=1；否则，SF=0<br />
-SF标志，就是CPU对有符号数运算结果的一种记录。当我们将数据当作有符号数来运算的时候，可以通过它来得知结果的正负。如果我们将数据当作无符号数来运算，SF的值则没有意义，虽然相关指令影响了它的值。<br />
+SF 标志，就是 CPU 对有符号数运算结果的一种记录。当我们将数据当作有符号数来运算的时候，可以通过它来得知结果的正负。如果我们将数据当作无符号数来运算，SF 的值则没有意义，虽然相关指令影响了它的值。<br />
 </p>
 </div>
 </div>
 
-<div id="outline-container-org3dc5f4d" class="outline-4">
-<h4 id="org3dc5f4d">CF标志 Carry Flag</h4>
-<div class="outline-text-4" id="text-org3dc5f4d">
+<div id="outline-container-orgb3c82c0" class="outline-4">
+<h4 id="orgb3c82c0">CF 标志 Carry Flag</h4>
+<div class="outline-text-4" id="text-orgb3c82c0">
 <p>
 进位标志位。一般情况下，在进行无符号数运算的时候，其记录了运算结果的最好有效位向更高位的进位值，或从更高位的借位值。<br />
 </p>
@@ -1487,12 +1490,12 @@ SF标志，就是CPU对有符号数运算结果的一种记录。当我们将数
 <h4 id="org99c59e7">OF 标志 Overflow Flag</h4>
 <div class="outline-text-4" id="text-org99c59e7">
 <p>
-溢出标志位。一般情况下，OF记录了有符号运算的结果是否发生了溢出。如果发生溢出，OF=1；否则，OF=0<br />
+溢出标志位。一般情况下，OF 记录了有符号运算的结果是否发生了溢出。如果发生溢出，OF=1；否则，OF=0<br />
 </p>
 
 <p>
 Tips:<br />
-CF 是对应无符号数运算的  OF是对应有符号数运算的<br />
+CF 是对应无符号数运算的  OF 是对应有符号数运算的<br />
 </p>
 </div>
 </div>
@@ -1501,7 +1504,7 @@ CF 是对应无符号数运算的  OF是对应有符号数运算的<br />
 <h4 id="orge6d8194">adc</h4>
 <div class="outline-text-4" id="text-orge6d8194">
 <p>
-带进位加法指令，它利用了CF位上记录的进位值<br />
+带进位加法指令，它利用了 CF 位上记录的进位值<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#35745;&#31639; 1ef000H + 201000H&#65292;&#32467;&#26524;&#25918;&#22312;ax&#65288;&#23384;&#25918;&#39640;16&#20301;&#65289;&#21644;bx&#65288;&#23384;&#25918;&#20302;16&#20301;&#65289;</span>
@@ -1526,7 +1529,7 @@ CF 是对应无符号数运算的  OF是对应有符号数运算的<br />
 <h4 id="org7e80537">sbb</h4>
 <div class="outline-text-4" id="text-org7e80537">
 <p>
-带借位减法指令，它利用了CF位上记录的借位值。<br />
+带借位减法指令，它利用了 CF 位上记录的借位值。<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#35745;&#31639;003e1000H - 00202000H&#65292;&#32467;&#26524;&#25918;&#22312;ax&#65292;bx&#20013;</span>
@@ -1543,8 +1546,8 @@ CF 是对应无符号数运算的  OF是对应有符号数运算的<br />
 <h4 id="org1dcfd18">cmp</h4>
 <div class="outline-text-4" id="text-org1dcfd18">
 <p>
-比较指令，cmp的功能相当于减法指令，只是不保存结果。cmp指令执行后，将对标志寄存器产生影响。<br />
-cmp 和add，sub指令一样，也包含两种含义：进行无符号运算和进行有符号运算。<br />
+比较指令，cmp 的功能相当于减法指令，只是不保存结果。cmp 指令执行后，将对标志寄存器产生影响。<br />
+cmp 和 add，sub 指令一样，也包含两种含义：进行无符号运算和进行有符号运算。<br />
 对于无符号的情况：<br />
 cmp ax,bx<br />
 </p>
@@ -1553,7 +1556,7 @@ cmp ax,bx<br />
 <li>zf=0, 说明(ax)!=(bx)<br /></li>
 <li>cf=1, 说明(ax) &lt;(bx)<br /></li>
 <li>cf=0, 说明(ax)&gt;=(bx)<br /></li>
-<li>cf=0并且zf=0, 说明(ax)&gt; (bx)<br /></li>
+<li>cf=0 并且 zf=0, 说明(ax)&gt; (bx)<br /></li>
 <li>cf=1 或 zf=1,   说明(ax)&lt;=(bx)<br /></li>
 </ol>
 
@@ -1565,8 +1568,8 @@ cmp ah,bh<br />
 <li>zf=1, 说明(ah)==(bh)<br /></li>
 <li>zf=0, 说明(ah)!=(bh)<br /></li>
 <li>of=0 sf=1<br />
-of=0没有溢出，逻辑上真正结果的正负 = 实际结果的正负<br />
-sf=1实际结果为负<br /></li>
+of=0 没有溢出，逻辑上真正结果的正负 = 实际结果的正负<br />
+sf=1 实际结果为负<br /></li>
 <li>of=1 sf=1, 说明(ah)&gt;(bh)<br />
 of=1 有溢出，逻辑上真正结果的正负 != 实际结果的正负<br />
 sf=1 实际结果为负<br />
@@ -1576,8 +1579,8 @@ of=1 有溢出，逻辑上真正结果的正负 != 实际结果的正负<br />
 sf=0 实际结果为正<br />
 因为溢出导致实际结果为正，所以逻辑上真正的结果必然为负<br /></li>
 <li>of=0 sf=0, 说明(ah)&gt;=(bh)<br />
-of=0没有溢出，逻辑上真正结果的正负 = 实际结果的正负<br />
-sf=0实际结果为正<br /></li>
+of=0 没有溢出，逻辑上真正结果的正负 = 实际结果的正负<br />
+sf=0 实际结果为正<br /></li>
 </ol>
 </div>
 </div>
@@ -1586,37 +1589,37 @@ sf=0实际结果为正<br /></li>
 <h4 id="org9a41fec">检测比较结果的条件转移指令</h4>
 <div class="outline-text-4" id="text-org9a41fec">
 
-<div id="orgbef9065" class="figure">
+<div id="org90822a1" class="figure">
 <p><img src="./ASM/condition-jmp.jpg" alt="condition-jmp.jpg" /><br />
 </p>
 </div>
 </div>
 </div>
 
-<div id="outline-container-orgc2dcb3f" class="outline-4">
-<h4 id="orgc2dcb3f">DF标志 Direction Flag</h4>
-<div class="outline-text-4" id="text-orgc2dcb3f">
+<div id="outline-container-org16e74cb" class="outline-4">
+<h4 id="org16e74cb">DF 标志 Direction Flag</h4>
+<div class="outline-text-4" id="text-org16e74cb">
 <p>
-方向标志位。在串处理指令中，控制每次操作后si、di的增减。<br />
-df=0 每次操作后si、di递增<br />
-df=1每次操作后si、di递减<br />
+方向标志位。在串处理指令中，控制每次操作后 si、di 的增减。<br />
+df=0 每次操作后 si、di 递增<br />
+df=1 每次操作后 si、di 递减<br />
 </p>
 
 <p>
-movsb 将ds:si指向的内存字节单元送入es:di中，然后根据标志寄存器df位的值，将si和di递增1或递减1<br />
+movsb 将 ds:si 指向的内存字节单元送入 es:di 中，然后根据标志寄存器 df 位的值，将 si 和 di 递增 1 或递减 1<br />
 </p>
 <ol class="org-ol">
 <li>((es)*16+(di)) = ((ds)*16+(si))<br /></li>
-<li>如果df=0则：(si)=(si)+1 (di)=(di)+1<br />
-如果 df=1则：(si)=(si)-1 (di)=(di)-1<br /></li>
+<li>如果 df=0 则：(si)=(si)+1 (di)=(di)+1<br />
+如果 df=1 则：(si)=(si)-1 (di)=(di)-1<br /></li>
 </ol>
 
 <p>
-movsw 将ds:si指向的内存字单元送入es:di中，然后根据标志寄存器df位的值，将si和di递增2或递减2<br />
+movsw 将 ds:si 指向的内存字单元送入 es:di 中，然后根据标志寄存器 df 位的值，将 si 和 di 递增 2 或递减 2<br />
 </p>
 
 <p>
-rep的作用是根据cx的值，重复执行后面的串传送指令<br />
+rep 的作用是根据 cx 的值，重复执行后面的串传送指令<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">rep movsb &#30456;&#24403;&#20110;&#22914;&#19979;&#20195;&#30721;</span>
@@ -1643,17 +1646,17 @@ popf  从栈中弹出数据送入标志寄存器<br />
 <h3 id="org3784c1b">12 内中断</h3>
 <div class="outline-text-3" id="text-org3784c1b">
 <p>
-中断信息是对几个具有先后顺序的硬件操作所产生的事件的统一描述。中断的意思是指，CPU不再接着向下执行，而是转去处理这个特殊信息。中断信息可以来自CPU内部也可以来自CPU外部。<br />
+中断信息是对几个具有先后顺序的硬件操作所产生的事件的统一描述。中断的意思是指，CPU 不再接着向下执行，而是转去处理这个特殊信息。中断信息可以来自 CPU 内部也可以来自 CPU 外部。<br />
 </p>
 
 <p>
-8086CPU在下面四种情况下，会产生相应中断信息：<br />
+8086CPU 在下面四种情况下，会产生相应中断信息：<br />
 </p>
 <ol class="org-ol">
 <li>除法错误<br /></li>
 <li>当步执行<br /></li>
-<li>执行into指令<br /></li>
-<li>执行int 指令<br /></li>
+<li>执行 into 指令<br /></li>
+<li>执行 int 指令<br /></li>
 </ol>
 </div>
 
@@ -1661,13 +1664,13 @@ popf  从栈中弹出数据送入标志寄存器<br />
 <h4 id="org9dbef73">中断类型码</h4>
 <div class="outline-text-4" id="text-org9dbef73">
 <p>
-8086CPU的中断类型码如下<br />
+8086CPU 的中断类型码如下<br />
 </p>
 <ol class="org-ol">
 <li>除法错误：0<br /></li>
 <li>单步执行：1<br /></li>
-<li>执行into指令：4<br /></li>
-<li>执行int指令，该指令的格式位int n，指令中的n为字节型立即数，是提供给CPU的中断类型码。<br /></li>
+<li>执行 into 指令：4<br /></li>
+<li>执行 int 指令，该指令的格式位 int n，指令中的 n 为字节型立即数，是提供给 CPU 的中断类型码。<br /></li>
 </ol>
 </div>
 </div>
@@ -1676,8 +1679,8 @@ popf  从栈中弹出数据送入标志寄存器<br />
 <h4 id="orgfef0c19">中断向量表</h4>
 <div class="outline-text-4" id="text-orgfef0c19">
 <p>
-CPU用8位中断类型码通过中断向量表找到相应的中断处理程序的入口地址。中断向量表就是中断处理程序入口地址的列表。<br />
-中断向量表存放在内存中，对于8086CPU机，中断向量表指定存放在内存地址0处（从内存0000:0000 到 0000:03ff的1024个单元中）。一个表项占两个字节，高地址存放段地址，低地址存放偏移地址。<br />
+CPU 用 8 位中断类型码通过中断向量表找到相应的中断处理程序的入口地址。中断向量表就是中断处理程序入口地址的列表。<br />
+中断向量表存放在内存中，对于 8086CPU 机，中断向量表指定存放在内存地址 0 处（从内存 0000:0000 到 0000:03ff 的 1024 个单元中）。一个表项占两个字节，高地址存放段地址，低地址存放偏移地址。<br />
 </p>
 </div>
 </div>
@@ -1686,7 +1689,7 @@ CPU用8位中断类型码通过中断向量表找到相应的中断处理程序�
 <h4 id="orge3c07fc">中断过程</h4>
 <div class="outline-text-4" id="text-orge3c07fc">
 <p>
-用中断类型找到中断向量，并用它设置CS和IP，这个工作是由CPU的硬件自动完成的，该过程被称为中断过程。其具体执行步骤如下：<br />
+用中断类型找到中断向量，并用它设置 CS 和 IP，这个工作是由 CPU 的硬件自动完成的，该过程被称为中断过程。其具体执行步骤如下：<br />
 </p>
 <ol class="org-ol">
 <li>从中断信息中取得中断类型码<br /></li>
@@ -1697,7 +1700,7 @@ CPU用8位中断类型码通过中断向量表找到相应的中断处理程序�
 <li>(ip)=(n*4) (cs)=(n*4+2)<br /></li>
 </ol>
 <p>
-在最后一步完成后，CPU开始执行由程序员便携的中断处理程序。<br />
+在最后一步完成后，CPU 开始执行由程序员便携的中断处理程序。<br />
 </p>
 </div>
 </div>
@@ -1712,7 +1715,7 @@ CPU用8位中断类型码通过中断向量表找到相应的中断处理程序�
 <li>保存用到的寄存器<br /></li>
 <li>处理中断<br /></li>
 <li>恢复用到的寄存器<br /></li>
-<li>用iret指令返回<br /></li>
+<li>用 iret 指令返回<br /></li>
 </ol>
 
 <div class="org-src-container">
@@ -1792,12 +1795,12 @@ CPU用8位中断类型码通过中断向量表找到相应的中断处理程序�
 <h4 id="org0fa7fcc">单步中断</h4>
 <div class="outline-text-4" id="text-org0fa7fcc">
 <p>
-单步中断的中断类型码为1。通过该中断，就可以实现单步跟踪程序的执行过程。<br />
+单步中断的中断类型码为 1。通过该中断，就可以实现单步跟踪程序的执行过程。<br />
 </p>
 
 <p>
-一般情况下，CPU在执行完当前指令后，如果检测到中断信息，就响应中断，引发中断过程。可以，在有些情况下，CPU在执行完当前指令后，即使发生中断，也不会响应。<br />
-例如：在执行完向ss寄存器传送数据的指令后，即便发生中断，CPU也不会响应。因为，ss:sp联合指向栈顶，而对他们的设置应该连续完成。如果在执行完设置ss的指令后，CPU响应中断，引发中断过程，要在栈中压入标志寄存器、CS和IP的值。而ss改变，sp并未改变，此时ss:sp指向的不是正确的栈顶，将引起错误。<br />
+一般情况下，CPU 在执行完当前指令后，如果检测到中断信息，就响应中断，引发中断过程。可以，在有些情况下，CPU 在执行完当前指令后，即使发生中断，也不会响应。<br />
+例如：在执行完向 ss 寄存器传送数据的指令后，即便发生中断，CPU 也不会响应。因为，ss:sp 联合指向栈顶，而对他们的设置应该连续完成。如果在执行完设置 ss 的指令后，CPU 响应中断，引发中断过程，要在栈中压入标志寄存器、CS 和 IP 的值。而 ss 改变，sp 并未改变，此时 ss:sp 指向的不是正确的栈顶，将引起错误。<br />
 </p>
 
 <div class="org-src-container">
@@ -1816,33 +1819,33 @@ CPU用8位中断类型码通过中断向量表找到相应的中断处理程序�
 </div>
 </div>
 </div>
-<div id="outline-container-orgc20465d" class="outline-3">
-<h3 id="orgc20465d">13 int指令</h3>
-<div class="outline-text-3" id="text-orgc20465d">
+<div id="outline-container-orgc4ccbea" class="outline-3">
+<h3 id="orgc4ccbea">13 int 指令</h3>
+<div class="outline-text-3" id="text-orgc4ccbea">
 <p>
-int 为interrupt的缩写<br />
+int 为 interrupt 的缩写<br />
 </p>
 
 <p>
-int n  // n为中断类型码，int的功能是引发中断类型码为n的中断过程<br />
+int n  // n 为中断类型码，int 的功能是引发中断类型码为 n 的中断过程<br />
 </p>
 </div>
-<div id="outline-container-org8ae54e8" class="outline-4">
-<h4 id="org8ae54e8">BIOS和DOS中断例程的安装过程</h4>
-<div class="outline-text-4" id="text-org8ae54e8">
+<div id="outline-container-org0d53000" class="outline-4">
+<h4 id="org0d53000">BIOS 和 DOS 中断例程的安装过程</h4>
+<div class="outline-text-4" id="text-org0d53000">
 <ol class="org-ol">
-<li>开机后，CPU一加电，初始化 (cs)=0ffffH, (ip)=0, 自动从 ffff:0单元开始执行程序。ffff:0处有一条跳转指令，CPU执行该指令后，转去执行BIOS中的硬件系统检测和初始化程序。<br /></li>
-<li>初始化程序将建立BIOS所支持的中断向量，即将BIOS提供的中断例程的入口地址登记在中断向量表中。注意：对于BIOS所提供的中断例程，只需将入口地址登记在中断向量表中即可，因为他们是固化到ROM中的程序，一直在内存中存在。<br /></li>
-<li>硬件系统检测和初始化完成后，调用int 19H进行操作系统的引导。从此将计算机交给操作系统控制。<br /></li>
-<li>DOS启动后，除完成其他工作外，还将它所提供的中断例程装入内存，并建立相应的中断向量。<br /></li>
+<li>开机后，CPU 一加电，初始化 (cs)=0ffffH, (ip)=0, 自动从 ffff:0 单元开始执行程序。ffff:0 处有一条跳转指令，CPU 执行该指令后，转去执行 BIOS 中的硬件系统检测和初始化程序。<br /></li>
+<li>初始化程序将建立 BIOS 所支持的中断向量，即将 BIOS 提供的中断例程的入口地址登记在中断向量表中。注意：对于 BIOS 所提供的中断例程，只需将入口地址登记在中断向量表中即可，因为他们是固化到 ROM 中的程序，一直在内存中存在。<br /></li>
+<li>硬件系统检测和初始化完成后，调用 int 19H 进行操作系统的引导。从此将计算机交给操作系统控制。<br /></li>
+<li>DOS 启动后，除完成其他工作外，还将它所提供的中断例程装入内存，并建立相应的中断向量。<br /></li>
 </ol>
 </div>
 </div>
-<div id="outline-container-org6fc2996" class="outline-4">
-<h4 id="org6fc2996">BIOS中断例程应用</h4>
-<div class="outline-text-4" id="text-org6fc2996">
+<div id="outline-container-orgf0b975d" class="outline-4">
+<h4 id="orgf0b975d">BIOS 中断例程应用</h4>
+<div class="outline-text-4" id="text-orgf0b975d">
 <p>
-int 10H中断例程是BIOS提供的中断例程，其中包含多个和屏幕输出相关的子程序<br />
+int 10H 中断例程是 BIOS 提供的中断例程，其中包含多个和屏幕输出相关的子程序<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#35843;&#29992;10H&#21495;&#20013;&#26029;&#20363;&#31243;&#30340;2&#21495;&#23376;&#31243;&#24207;&#65292;&#20854;&#21151;&#33021;&#20026;&#35774;&#32622;&#20809;&#26631;&#25152;&#22312;&#30340;&#34892;&#21495;&#12289;&#21015;&#21495;&#12289;&#39029;&#21495;</span>
@@ -1855,11 +1858,11 @@ int 10H中断例程是BIOS提供的中断例程，其中包含多个和屏幕输
 </div>
 </div>
 </div>
-<div id="outline-container-org7a8d32b" class="outline-4">
-<h4 id="org7a8d32b">DOS中断例程应用</h4>
-<div class="outline-text-4" id="text-org7a8d32b">
+<div id="outline-container-orgba4f42e" class="outline-4">
+<h4 id="orgba4f42e">DOS 中断例程应用</h4>
+<div class="outline-text-4" id="text-orgba4f42e">
 <p>
-int 21H中断例程是DOS提供的中断例程，包含了DOS提供给程序员在编程时调用的子程序<br />
+int 21H 中断例程是 DOS 提供的中断例程，包含了 DOS 提供给程序员在编程时调用的子程序<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">ah</span>,4cH    <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#31243;&#24207;&#36820;&#22238;</span>
@@ -1874,10 +1877,10 @@ int 21H中断例程是DOS提供的中断例程，包含了DOS提供给程序员�
 <h3 id="orgd367038">14 端口</h3>
 <div class="outline-text-3" id="text-orgd367038">
 <p>
-CPU可以直接读写以下3个地方的数据：<br />
+CPU 可以直接读写以下 3 个地方的数据：<br />
 </p>
 <ol class="org-ol">
-<li>CPU内部寄存器<br /></li>
+<li>CPU 内部寄存器<br /></li>
 <li>内存单元<br /></li>
 <li>端口<br /></li>
 </ol>
@@ -1886,7 +1889,7 @@ CPU可以直接读写以下3个地方的数据：<br />
 <h4 id="orge5d7bcc">端口的读写</h4>
 <div class="outline-text-4" id="text-orge5d7bcc">
 <p>
-CPU通过in out命令来对端口进行读写。在in和out指令中，只能使用ax或al来存放端口中读入的数据或要发送到端口中的数据，访问8位端口时用al，访问16位端口时用ax。<br />
+CPU 通过 in out 命令来对端口进行读写。在 in 和 out 指令中，只能使用 ax 或 al 来存放端口中读入的数据或要发送到端口中的数据，访问 8 位端口时用 al，访问 16 位端口时用 ax。<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">in</span> <span style="color: #4f97d7; font-weight: bold;">al</span>, 60H             <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#20174;60H&#21495;&#31471;&#21475;&#35835;&#20837;&#19968;&#20010;&#23383;&#33410;</span>
@@ -1898,32 +1901,32 @@ CPU通过in out命令来对端口进行读写。在in和out指令中，只能使
 </div>
 </div>
 </div>
-<div id="outline-container-org6c107c6" class="outline-4">
-<h4 id="org6c107c6">CMOS RAM芯片</h4>
-<div class="outline-text-4" id="text-org6c107c6">
+<div id="outline-container-org8e615f7" class="outline-4">
+<h4 id="org8e615f7">CMOS RAM 芯片</h4>
+<div class="outline-text-4" id="text-org8e615f7">
 <ol class="org-ol">
-<li>CMOS RAM芯片包含一个实时钟和一个有128存储单元的RAM存储器。<br /></li>
-<li>该芯片靠电池供电，PC关机后其内部实时钟依然可正常工作，RAM中信息不丢失。<br /></li>
-<li>128个字节的RAM中，0~0dH单元来保存时间信息，其余大部分用于保存系统配置信息，供系统启动时BIOS程序读取<br /></li>
-<li>该芯片内部有两个端口，端口地址为70H和71H。CPU通过这两个端口来读写CMOS RAM。70为地址端口，存放要访问CMOS RAM单元的地址；71H为数据端口，存放选定的CMOS RAM单元中读取的数据，或要写入到其中的数据。<br /></li>
+<li>CMOS RAM 芯片包含一个实时钟和一个有 128 存储单元的 RAM 存储器。<br /></li>
+<li>该芯片靠电池供电，PC 关机后其内部实时钟依然可正常工作，RAM 中信息不丢失。<br /></li>
+<li>128 个字节的 RAM 中，0~0dH 单元来保存时间信息，其余大部分用于保存系统配置信息，供系统启动时 BIOS 程序读取<br /></li>
+<li>该芯片内部有两个端口，端口地址为 70H 和 71H。CPU 通过这两个端口来读写 CMOS RAM。70 为地址端口，存放要访问 CMOS RAM 单元的地址；71H 为数据端口，存放选定的 CMOS RAM 单元中读取的数据，或要写入到其中的数据。<br /></li>
 </ol>
 </div>
 </div>
-<div id="outline-container-org05ad2b7" class="outline-4">
-<h4 id="org05ad2b7">shl shr指令</h4>
-<div class="outline-text-4" id="text-org05ad2b7">
+<div id="outline-container-org0674976" class="outline-4">
+<h4 id="org0674976">shl shr 指令</h4>
+<div class="outline-text-4" id="text-org0674976">
 <p>
 逻辑移位指令。<br />
 shl 逻辑左移指令，其执行流程如下：<br />
 </p>
 <ol class="org-ol">
 <li>将寄存器或内存单元中的数据向左移位<br /></li>
-<li>将最后移出的一位写入CF中<br /></li>
-<li>最低位用0补充<br /></li>
+<li>将最后移出的一位写入 CF 中<br /></li>
+<li>最低位用 0 补充<br /></li>
 </ol>
 
 <p>
-移动多位时，必须将移动位数放入cl中<br />
+移动多位时，必须将移动位数放入 cl 中<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-asm"><span style="color: #bc6ec5; font-weight: bold;">mov</span> <span style="color: #4f97d7; font-weight: bold;">al</span>,01001000B
@@ -1936,9 +1939,9 @@ shl 逻辑左移指令，其执行流程如下：<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org88b58e6" class="outline-4">
-<h4 id="org88b58e6">读取 CMOS RAM中时间信息</h4>
-<div class="outline-text-4" id="text-org88b58e6">
+<div id="outline-container-org348da54" class="outline-4">
+<h4 id="org348da54">读取 CMOS RAM 中时间信息</h4>
+<div class="outline-text-4" id="text-org348da54">
 <div class="org-src-container">
 <pre class="src src-asm"><span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#22312;&#23631;&#24149;&#20013;&#38388;&#26174;&#31034;&#24403;&#21069;&#30340;&#26376;&#20221;</span>
 <span style="color: #bc6ec5; font-weight: bold;">assume</span> <span style="color: #4f97d7; font-weight: bold;">cs</span>:code
@@ -1974,17 +1977,17 @@ shl 逻辑左移指令，其执行流程如下：<br />
 <h3 id="orgc5dd12a">15 外中断</h3>
 <div class="outline-text-3" id="text-orgc5dd12a">
 <p>
-PC系统中，外中断源一共有两类：<br />
+PC 系统中，外中断源一共有两类：<br />
 </p>
 <ol class="org-ol">
 <li>可屏蔽中断<br />
-可屏蔽中断是CPU可以不响应的外中断。当CPU检测到可屏蔽中断时，会判断当前IF位的值，如果IF=1，则CPU在执行完当前指令后响应可屏蔽中断，引发中断过程；如果IF=0，则不响应可屏蔽中断。<br />
-IF置0后，在进入中断处理程序后，可以禁止其他的可屏蔽中断。<br />
-sti命令设置IF=1<br />
-cli命令设置IF=0<br /></li>
+可屏蔽中断是 CPU 可以不响应的外中断。当 CPU 检测到可屏蔽中断时，会判断当前 IF 位的值，如果 IF=1，则 CPU 在执行完当前指令后响应可屏蔽中断，引发中断过程；如果 IF=0，则不响应可屏蔽中断。<br />
+IF 置 0 后，在进入中断处理程序后，可以禁止其他的可屏蔽中断。<br />
+sti 命令设置 IF=1<br />
+cli 命令设置 IF=0<br /></li>
 
 <li>不可屏蔽中断<br />
-不可屏蔽中断是CPU必须响应的外中断。当CPU检测到不可屏蔽中断时，则在执行完当前指令后，立即响应，引发中断过程。<br /></li>
+不可屏蔽中断是 CPU 必须响应的外中断。当 CPU 检测到不可屏蔽中断时，则在执行完当前指令后，立即响应，引发中断过程。<br /></li>
 </ol>
 </div>
 </div>

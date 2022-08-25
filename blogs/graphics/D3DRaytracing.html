@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2022-08-24 Wed 22:47 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>D3DRaytracing</title>
+<meta name="generator" content="Org mode" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+         <meta name="viewport" content="width=device-width, initial-scale=1" />
+         <link rel="stylesheet" type="text/css" href="https://wolfand11.gitee.io/res/readtheorg_theme/css/htmlize.css"/>
+         <link rel="stylesheet" type="text/css" href="https://wolfand11.gitee.io/res/readtheorg_theme/css/readtheorg.css"/>
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/jquery.min.js"></script>
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/bootstrap.min.js"></script>
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/jquery.stickytableheaders.min.js"></script>
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/readtheorg_theme/js/readtheorg.js"></script>
+         <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/blog-tools.js"></script>
+<script type="text/javascript">
+// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
+<!--/*--><![CDATA[/*><!--*/
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.add("code-highlighted");
+         target.classList.add("code-highlighted");
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.remove("code-highlighted");
+         target.classList.remove("code-highlighted");
+       }
+     }
+    /*]]>*///-->
+// @license-end
+</script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href=""> UP </a>
+ |
+ <a accesskey="H" href="https://wolfand11.gitee.io"> HOME </a>
+</div><div id="content">
+<h1 class="title">D3DRaytracing</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgadced89">D3D</a>
+<ul>
+<li><a href="#org9e78a76">Conception</a></li>
+</ul>
+</li>
+<li><a href="#org7da1999">D3DRaytracing</a>
+<ul>
+<li><a href="#org9b168c1">hello world</a>
+<ul>
+<li><a href="#org564ea38">Acceleration Structures</a></li>
+<li><a href="#org81fe754">Raytracing Pipeline State</a>
+<ul>
+<li><a href="#org0d08371">Shader-Libraries</a></li>
+<li><a href="#orgae5f02c">Ray-Tracing Shaders</a></li>
+<li><a href="#orgd221386">Creating RT Pipeline State Object</a></li>
+</ul>
+</li>
+<li><a href="#org2513ea8">ShaderTable</a>
+<ul>
+<li><a href="#org887c6be">Shader Table Records</a></li>
+<li><a href="#org374e99b">Shader Table Layout</a></li>
+</ul>
+</li>
+<li><a href="#orgffd8f3d">Raytrace</a>
+<ul>
+<li><a href="#orgaaa80f2">Shader Resources</a></li>
+</ul>
+</li>
+<li><a href="#org1040435">BasicShaders</a>
+<ul>
+<li><a href="#org4c54b0d">A Very Simplified Execution Description</a></li>
+<li><a href="#orga2c57dc">Tracing Rays</a></li>
+</ul>
+</li>
+<li><a href="#org6c7c73e">Instancing</a></li>
+<li><a href="#orgec9ec29">ConstantBuffer</a></li>
+<li><a href="#orgf9faaac">PerInstanceConstantBuffer</a></li>
+<li><a href="#org432628f">SecondGeometry</a></li>
+<li><a href="#orgb783478">PerGeometryHitShader</a></li>
+<li><a href="#org4f8dd3b">SecondRayType</a></li>
+<li><a href="#orgb45375c">Refit</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org6e907eb">参考资料</a></li>
+</ul>
+</div>
+</div>
+<p>
+D3DRaytracing note.<br />
+</p>
+<div class="HTML" id="orgb8d659c">
+<p>
+&lt;!&#x2013; more &#x2013;&gt;<br />
+</p>
+
+</div>
+
+<div id="outline-container-orgadced89" class="outline-2">
+<h2 id="orgadced89">D3D</h2>
+<div class="outline-text-2" id="text-orgadced89">
+</div>
+<div id="outline-container-org9e78a76" class="outline-3">
+<h3 id="org9e78a76">Conception</h3>
+<div class="outline-text-3" id="text-org9e78a76">
+<p>
+CBV  constant buffer view<br />
+SRV  shader resource view<br />
+UAV  unordered access view<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org7da1999" class="outline-2">
+<h2 id="org7da1999">D3DRaytracing</h2>
+<div class="outline-text-2" id="text-org7da1999">
+</div>
+<div id="outline-container-org9b168c1" class="outline-3">
+<h3 id="org9b168c1">hello world</h3>
+<div class="outline-text-3" id="text-org9b168c1">
+</div>
+<div id="outline-container-org564ea38" class="outline-4">
+<h4 id="org564ea38">Acceleration Structures</h4>
+<div class="outline-text-4" id="text-org564ea38">
+<p>
+加速结构是不透明的数据结构，其表示了场景几何。渲染时，该结构用于射线相交检测。有两类加速结构：Bottom-Level Acceleration Structure, Top-Level Acceleration Structure。BLAS 表示 local-space mesh, 其不包含顶点的世界空间位置信息或实例信息。TLAS 表示整个场景，TLAS 会引用 BLAS，并存储了每个引用的 BLAS 对应的 local-to-world 变换矩阵。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org81fe754" class="outline-4">
+<h4 id="org81fe754">Raytracing Pipeline State</h4>
+<div class="outline-text-4" id="text-org81fe754">
+<p>
+和光栅化一样，Raytracing 也需要创建一个 pipleline state 来控制 fixed-function units，以及描述将会使用哪些 shader。<br />
+</p>
+</div>
+<div id="outline-container-org0d08371" class="outline-5">
+<h5 id="org0d08371">Shader-Libraries</h5>
+<div class="outline-text-5" id="text-org0d08371">
+<p>
+dxcompiler 是新的 SM6.x 的编译器，其引入了 Shader-libraries 这个新的概念。Libraries 允许我们编译一个包含多个 shaders 的文件，并且不指定一个 entry point。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgae5f02c" class="outline-5">
+<h5 id="orgae5f02c">Ray-Tracing Shaders</h5>
+<div class="outline-text-5" id="text-orgae5f02c">
+<p>
+DXR 引入了 5 种新的 shader 类型：ray-generation, miss, closet-hit, any-hit, intersection。<br />
+</p>
+
+<p>
+ray-generation shader<br />
+ray-generation shader 是 ray-tracing pipline 的第一个阶段。每一个 work item 会执行一次 ray-generation shader。在该 shader 中，用户可以生成 primary-rays，发布 ray-query calls。<br />
+</p>
+
+<p>
+miss-shader<br />
+当 raytrace query 没有 hit 到 TLAS 中的任何对象时，就会调用 miss-shader<br />
+</p>
+
+<p>
+hit-group<br />
+一个 hit group 是 Closest-Hit,Any-Hit,Intersection Shaders 的集合。其描述了如何进行相交检测，以及当检测到射线相交后的行为。<br />
+</p>
+<ul class="org-ul">
+<li>any hit shader ：在遍历过程中，发现一个 intersection 时，就会调用该 shader。其主要用途是用于确定一个 intersection 是否应该被接受。例如，对于 alpha-tested 几何体，如果 alpha test 失败，则我们应该忽略该 intersection。<br />
+Tips 1: 当创建加速结构时使用了 D3D12_RAYTRACING_GEOMETRY_FLAG_OPAQUE 标记，会忽略 any-hit shader。<br />
+Tips 2: 当找到多个 intersection 时，any-hit shaders 的执行顺序是不定的。即 第一个调用的可能不是离原点最近的 intersection。而且对于指定的 ray，该 shader 调用的次数也可能会变化。<br /></li>
+<li>closest hit shader : 每次遍历中，只会为最近的 intersection 调用一次该 shader.<br /></li>
+<li>intersection shader : 当 primitive 类型为轴对齐包围盒时，才会调用该 shader。对于 triangles，无论是否指定了一个 intersection shader 都只会使用一个内部的 triangle-intersection shader。<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgd221386" class="outline-5">
+<h5 id="orgd221386">Creating RT Pipeline State Object</h5>
+<div class="outline-text-5" id="text-orgd221386">
+<p>
+创建 RT Pipeline State Object 和 Pipeline State Object 不同，ID3D12StateObjectPtr 对象是新的 DXR 的 state interface。没有使用类似 D3D12_GRAPHICS_PIPELINE_STATE_DESC 这样的结构体，来构建 RTPSO，我们需要构建一个 D3D12_STATE_SUBOBJECT 数组。每个 sub-object 描述了单个元素的状态。<br />
+</p>
+
+<ul class="org-ul">
+<li>DxilLibray<br />
+对 D3D12_STATE_SUBOBJECT_TYPE_DXIL_LIBRARY 类型 sub-object 的抽象<br /></li>
+<li>HitProgram<br />
+对 D3D12_STATE_SUBOBJECT_TYPE_HIT_GROUP 类型 sub-object 的抽象<br /></li>
+<li>LocalRootSignature<br />
+DXR 引入了新的概念 Local Root Signature. 在 graphics 和 compute pipelines, 我们有单个全局的 root-signatrue 被所有 programs 所使用。对于 ray-tracing, 除此之外，我们可以创建 local root-signatures 并将他们绑定到特定 shaders。root-signature 的 size 会影响 Shader Binding Table 的 size，Local Root Signature 允许我们优化 Shader Binding Table.<br /></li>
+<li>ExportAssociation<br />
+对 D3D12_STATE_SUBOBJECT_TYPE_SUBOBJECT_TO_EXPORTS_ASSOCIATION 类型 sub-object 的抽象。将一个 sub-object 绑定到 shaders 和 hit-groups。<br /></li>
+<li>ShaderConfig<br />
+对 D3D12_STATE_SUBOBJECT_TYPE_RAYTRACING_SHADER_CONFIG 类型 sub-object 的抽象<br /></li>
+<li>PipelineConfig<br />
+对 D3D12_STATE_SUBOBJECT_TYPE_RAYTRACING_PIPELINE_CONFIG 类型 sub-object 的抽象<br /></li>
+<li>GlobalRootSignature<br />
+对 D3D12_STATE_SUBOBJECT_TYPE_GLOBAL_ROOT_SIGNATURE 类型 sub-object 的抽象<br /></li>
+<li>CreateStateObject<br />
+创建 ID3D12StateObject<br /></li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">D3D12_STATE_OBJECT_DESC</span> <span style="color: #7590db;">desc</span>;
+desc.NumSubobjects = index;
+desc.pSubobjects = subobjects.<span style="color: #bc6ec5; font-weight: bold;">data</span>();
+desc.Type = D3D12_STATE_OBJECT_TYPE_RAYTRACING_PIPELINE;
+<span style="color: #bc6ec5; font-weight: bold;">d3d_call</span>(mpDevice-&gt;<span style="color: #bc6ec5; font-weight: bold;">CreateStateObject</span>(&amp;desc, <span style="color: #bc6ec5; font-weight: bold;">IID_PPV_ARGS</span>(&amp;mpPipelineState)));
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org2513ea8" class="outline-4">
+<h4 id="org2513ea8">ShaderTable</h4>
+<div class="outline-text-4" id="text-org2513ea8">
+<p>
+Shader-Table 是 GPU 可见的 buffer，该 buffer 由 application 所拥有和管理(由 application 进行分配、数据上传等)。shader-table 是 records 的数组，其有两个职责：<br />
+</p>
+<ol class="org-ol">
+<li>描述场景几何体和被执行的程序之间的关系。我们有多个 hit 和 miss 程序关联到 state object，当射线碰到一个几何体后我们需要知道执行哪个 shader 程序。<br /></li>
+<li>绑定资源到 pipeline。我们可以使用不同的 local root signature 来创建每一个 shader 程序。每个几何体可能需要不同的资源(vertex-buffer, textures, 等等) 集合<br /></li>
+</ol>
+
+<p>
+Tips: 当个 DispatchRays() 调用中，可以使用多个 shader-tables。<br />
+</p>
+</div>
+<div id="outline-container-org887c6be" class="outline-5">
+<h5 id="org887c6be">Shader Table Records</h5>
+<div class="outline-text-5" id="text-org887c6be">
+<p>
+每个 shader table record 有两段。一个不透明的 shader program identifier，加一个 root table，root table 中包含了该 shader 的资源绑定。<br />
+这里的 root table 和 光栅化 pipeline 中的 root table 非常类似。不同点在于，我们直接设置 root table 中的条目，而不是使用 setter 方法。<br />
+root table 中不同条目的尺寸限制如下：<br />
+</p>
+<ul class="org-ul">
+<li>Root Constants 4 Bytes<br /></li>
+<li>Root Descriptors 8 Bytes<br /></li>
+<li>Descriptor Tables 8 Bytes (这和正常的 root signature 所需的尺寸不同)<br /></li>
+</ul>
+<p>
+Tips: root-descriptors 必须被存储到 8 字节对其的地址中。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org374e99b" class="outline-5">
+<h5 id="org374e99b">Shader Table Layout</h5>
+<div class="outline-text-5" id="text-org374e99b">
+<p>
+shader-table 是 shader-table records 的数组。没有规则限定 records 应该如何排布。有一系列参数可以决定 indexing 如何进行。<br />
+</p>
+
+<p>
+shader-table 中所有的 shader-table records 必须有相同的尺寸, 因此我们需要按照最大的 record 条目来确定 shader-table 的尺寸。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgffd8f3d" class="outline-4">
+<h4 id="orgffd8f3d">Raytrace</h4>
+<div class="outline-text-4" id="text-orgffd8f3d">
+</div>
+<div id="outline-container-orgaaa80f2" class="outline-5">
+<h5 id="orgaaa80f2">Shader Resources</h5>
+</div>
+</div>
+<div id="outline-container-org1040435" class="outline-4">
+<h4 id="org1040435">BasicShaders</h4>
+<div class="outline-text-4" id="text-org1040435">
+</div>
+<div id="outline-container-org4c54b0d" class="outline-5">
+<h5 id="org4c54b0d">A Very Simplified Execution Description</h5>
+<div class="outline-text-5" id="text-org4c54b0d">
+<p>
+在 ray-generation shader 中，创建 rays。每条 ray 会和 acceleration structure 做相交测试。如果 ray 没有碰到任何物体，miss shader 将会被调用。如果 ray 碰到了物体，则会为最近的 intersection 调用 closest hit shader。遍历和相交测试发生在 fixed-function unit。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orga2c57dc" class="outline-5">
+<h5 id="orga2c57dc">Tracing Rays</h5>
+<div class="outline-text-5" id="text-orga2c57dc">
+<p>
+DXR 引入了新的 HLSL 结构体-RayDesc, 以及新的内置函数 TraceRay()，该函数用于初始化一个 ray-tracing query.<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #4f97d7; font-weight: bold;">struct</span> RayDesc
+{
+    <span style="color: #ce537a; font-weight: bold;">float3</span> Origin;    <span style="color: #2aa1ae; background-color: #292e34;">// &#19990;&#30028;&#31354;&#38388;&#20013;ray &#30340;&#21407;&#28857;</span>
+    <span style="color: #ce537a; font-weight: bold;">float</span>  TMin;
+    <span style="color: #ce537a; font-weight: bold;">float3</span> Direction; <span style="color: #2aa1ae; background-color: #292e34;">// &#19990;&#30028;&#31354;&#38388;&#20013;ray&#30340;&#26041;&#21521;</span>
+    <span style="color: #ce537a; font-weight: bold;">float</span>  TMax;
+};
+</pre>
+</div>
+
+<p>
+TraceRay 参数解释:<br />
+1 Top Level Acceleration structure<br />
+2 ray flags. 这些 flags 可用于控制遍历行为，如 开启背面剔除<br />
+3 ray masks. 可用于整体剔除物体<br />
+4 RayContributionToHitGroupIndex 5 MultiplierForGeometryContributionToHitGroupIndex 用于索引 shader-table<br />
+6 miss-shader index。index 相对于调用 DispatchRays() 传递的 miss-shader index。我们只有 1 个 miss-shader, 因此为 0<br />
+7 RayDesc<br />
+8 用于 raytracing shader 各个阶段之间传递数据, 因此需要保证各个阶段所使用的定义一致<br />
+</p>
+
+<ul class="org-ul">
+<li>RayFlag <a href="https://docs.microsoft.com/en-us/windows/win32/direct3d12/ray_flag">https://docs.microsoft.com/en-us/windows/win32/direct3d12/ray_flag</a><br /></li>
+</ul>
+
+<p>
+TraceRay 其实是一个模板函数，其会根据不同 RayPayload 生成不同函数。Payload 牵涉到 c++ 代码。当创建 ray-tracing 程序时，我们需要设置 payload 的最大尺寸到 D3D12_RAYTRACING_SHADER_CONFIG 中, 我们需要为单个 pipeline-state 中的所有程序使用相同的 maximum payload size。<br />
+</p>
+
+<p>
+下面为整个 raytracing 的 shader：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// TLAS </span>
+RaytracingAccelerationStructure gRtScene : <span style="color: #4f97d7; font-weight: bold;">register</span>(t0);
+<span style="color: #2aa1ae; background-color: #292e34;">// UAV</span>
+RWTexture2D&lt;<span style="color: #ce537a; font-weight: bold;">float4</span>&gt; gOutput : <span style="color: #4f97d7; font-weight: bold;">register</span>(u0);
+
+<span style="color: #ce537a; font-weight: bold;">float3</span> <span style="color: #bc6ec5; font-weight: bold;">linearToSrgb</span>(<span style="color: #ce537a; font-weight: bold;">float3</span> c)
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">// Based on http://chilliant.blogspot.com/2012/08/srgb-approximations-for-hlsl.html</span>
+    <span style="color: #ce537a; font-weight: bold;">float3</span> sq1 = <span style="color: #4f97d7;">sqrt</span>(c);
+    <span style="color: #ce537a; font-weight: bold;">float3</span> sq2 = <span style="color: #4f97d7;">sqrt</span>(sq1);
+    <span style="color: #ce537a; font-weight: bold;">float3</span> sq3 = <span style="color: #4f97d7;">sqrt</span>(sq2);
+    <span style="color: #ce537a; font-weight: bold;">float3</span> srgb = 0.662002687 * sq1 + 0.684122060 * sq2 - 0.323583601 * sq3 - 0.0225411470 * c;
+    <span style="color: #4f97d7; font-weight: bold;">return</span> srgb;
+}
+
+<span style="color: #4f97d7; font-weight: bold;">struct</span> RayPayload
+{
+    <span style="color: #ce537a; font-weight: bold;">float3</span> color;
+};
+
+[shader(<span style="color: #2d9574;">"raygeneration"</span>)]
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">rayGen</span>()
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#21457;&#23556; Rays &#30340;&#32034;&#24341;</span>
+    uint3 launchIndex = DispatchRaysIndex();
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#21457;&#23556; Rays &#30340;&#33539;&#22260;&#65288;width&#65292;height&#65292;depth&#65289;</span>
+    uint3 launchDim = DispatchRaysDimensions();
+
+    <span style="color: #ce537a; font-weight: bold;">float2</span> crd = <span style="color: #ce537a; font-weight: bold;">float2</span>(launchIndex.xy);
+    <span style="color: #ce537a; font-weight: bold;">float2</span> dims = <span style="color: #ce537a; font-weight: bold;">float2</span>(launchDim.xy);
+
+    <span style="color: #ce537a; font-weight: bold;">float2</span> d = ((crd/dims) * 2.f - 1.f);
+    <span style="color: #ce537a; font-weight: bold;">float</span> aspectRatio = dims.x / dims.y;
+
+    RayDesc ray;
+    ray.Origin = <span style="color: #ce537a; font-weight: bold;">float3</span>(0, 0, -2);
+    ray.Direction = <span style="color: #4f97d7;">normalize</span>(<span style="color: #ce537a; font-weight: bold;">float3</span>(d.x * aspectRatio, -d.y, 1));
+
+    ray.TMin = 0;
+    ray.TMax = 100000;
+
+    RayPayload payload;
+    
+    TraceRay( gRtScene, 0 <span style="color: #2aa1ae; background-color: #292e34;">/*rayFlags*/</span>, 0xFF <span style="color: #2aa1ae; background-color: #292e34;">/*rayMasks*/</span>, 0 <span style="color: #2aa1ae; background-color: #292e34;">/* ray index*/</span>, 0, 0 <span style="color: #2aa1ae; background-color: #292e34;">/* miss-shader idx */</span>, ray, payload );
+    <span style="color: #ce537a; font-weight: bold;">float3</span> col = linearToSrgb(payload.color);
+    gOutput[launchIndex.xy] = <span style="color: #ce537a; font-weight: bold;">float4</span>(col, 1);
+}
+
+[shader(<span style="color: #2d9574;">"miss"</span>)]
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">miss</span>(<span style="color: #4f97d7; font-weight: bold;">inout</span> RayPayload payload)
+{
+    payload.color = <span style="color: #ce537a; font-weight: bold;">float3</span>(0.4, 0.6, 0.2);
+}
+
+[shader(<span style="color: #2d9574;">"closesthit"</span>)]
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">chs</span>(<span style="color: #4f97d7; font-weight: bold;">inout</span> RayPayload payload, <span style="color: #4f97d7; font-weight: bold;">in</span> BuiltInTriangleIntersectionAttributes attribs)
+{
+    <span style="color: #ce537a; font-weight: bold;">float3</span> barycentrics = <span style="color: #ce537a; font-weight: bold;">float3</span>(1.0 - attribs.barycentrics.x - attribs.barycentrics.y, attribs.barycentrics.x, attribs.barycentrics.y);
+
+    <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">float3</span> A = <span style="color: #ce537a; font-weight: bold;">float3</span>(1, 0, 0);
+    <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">float3</span> B = <span style="color: #ce537a; font-weight: bold;">float3</span>(0, 1, 0);
+    <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">float3</span> C = <span style="color: #ce537a; font-weight: bold;">float3</span>(0, 0, 1);
+
+    payload.color = A * barycentrics.x + B * barycentrics.y + C * barycentrics.z;
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org6c7c73e" class="outline-4">
+<h4 id="org6c7c73e">Instancing</h4>
+</div>
+<div id="outline-container-orgec9ec29" class="outline-4">
+<h4 id="orgec9ec29">ConstantBuffer</h4>
+</div>
+<div id="outline-container-orgf9faaac" class="outline-4">
+<h4 id="orgf9faaac">PerInstanceConstantBuffer</h4>
+</div>
+<div id="outline-container-org432628f" class="outline-4">
+<h4 id="org432628f">SecondGeometry</h4>
+</div>
+<div id="outline-container-orgb783478" class="outline-4">
+<h4 id="orgb783478">PerGeometryHitShader</h4>
+</div>
+<div id="outline-container-org4f8dd3b" class="outline-4">
+<h4 id="org4f8dd3b">SecondRayType</h4>
+</div>
+<div id="outline-container-orgb45375c" class="outline-4">
+<h4 id="orgb45375c">Refit</h4>
+</div>
+</div>
+</div>
+<div id="outline-container-org6e907eb" class="outline-2">
+<h2 id="org6e907eb">参考资料</h2>
+<div class="outline-text-2" id="text-org6e907eb">
+<ul class="org-ul">
+<li><a href="https://github.com/NVIDIAGameWorks/DxrTutorials">https://github.com/NVIDIAGameWorks/DxrTutorials</a><br /></li>
+<li><a href="https://microsoft.github.io/DirectX-Specs/d3d/Raytracing.html">https://microsoft.github.io/DirectX-Specs/d3d/Raytracing.html</a><br /></li>
+<li><a href="https://docs.microsoft.com/en-us/samples/microsoft/directx-graphics-samples/d3d12-raytracing-samples-win32/">https://docs.microsoft.com/en-us/samples/microsoft/directx-graphics-samples/d3d12-raytracing-samples-win32/</a><br /></li>
+<li><a href="https://github.com/microsoft/DirectX-Graphics-Samples/tree/master/Samples/Desktop/D3D12Raytracing">https://github.com/microsoft/DirectX-Graphics-Samples/tree/master/Samples/Desktop/D3D12Raytracing</a><br /></li>
+<li>A Gentle Introduction To DirectX Raytracing <a href="http://cwyman.org/code/dxrTutors/dxr_tutors.md.html">http://cwyman.org/code/dxrTutors/dxr_tutors.md.html</a><br /></li>
+<li>D3D12 RootSignature <a href="https://zhuanlan.zhihu.com/p/388534044">https://zhuanlan.zhihu.com/p/388534044</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+</body>
+</html>

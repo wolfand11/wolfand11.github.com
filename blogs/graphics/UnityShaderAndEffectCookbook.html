@@ -3,16 +3,19 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2022-03-14 周一 16:59 -->
+<!-- 2022-08-24 Wed 22:48 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>UnityShaderAndEffectCookbook</title>
 <meta name="generator" content="Org mode" />
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
          <meta name="viewport" content="width=device-width, initial-scale=1" />
-         <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/css/worg.css" type="text/css" />
-         <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/css/worg-zenburn.css" type="text/css" />
-         <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
+         <link rel="stylesheet" type="text/css" href="https://wolfand11.gitee.io/res/readtheorg_theme/css/htmlize.css"/>
+         <link rel="stylesheet" type="text/css" href="https://wolfand11.gitee.io/res/readtheorg_theme/css/readtheorg.css"/>
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/jquery.min.js"></script>
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/bootstrap.min.js"></script>
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/jquery.stickytableheaders.min.js"></script>
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/readtheorg_theme/js/readtheorg.js"></script>
          <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
          <script type="text/javascript" src="https://wolfand11.gitee.io/res/blog-tools.js"></script>
 <script type="text/javascript">
@@ -51,7 +54,7 @@
 <ul>
 <li><a href="#org5fcc192">Basic</a>
 <ul>
-<li><a href="#org913ae18">Properties</a></li>
+<li><a href="#orgc2d8ff3">Properties</a></li>
 <li><a href="#org9c43b0c">SurfaceShader</a>
 <ul>
 <li><a href="#org08787fe">SurfaceShader 工作流程图</a></li>
@@ -66,7 +69,7 @@
 </li>
 <li><a href="#orgc0d198c">shader 的代码结构</a>
 <ul>
-<li><a href="#orgc2d8ff3">Properties</a></li>
+<li><a href="#org88193dd">Properties</a></li>
 <li><a href="#org671c58e">Category</a></li>
 <li><a href="#orgc6ee233">SubShader</a>
 <ul>
@@ -130,14 +133,14 @@
 <li><a href="#org975cf32">Additional Passes</a></li>
 </ul>
 </li>
-<li><a href="#org0f1eccb">Performance Considerations</a></li>
+<li><a href="#org61cb14f">Performance Considerations</a></li>
 </ul>
 </li>
 <li><a href="#org43400c8">Deferred Shading path</a>
 <ul>
 <li><a href="#org70ba59b">Overview</a></li>
 <li><a href="#org9b65a4d">Requirements</a></li>
-<li><a href="#org61cb14f">Performance Considerations</a></li>
+<li><a href="#orgc0fd40a">Performance Considerations</a></li>
 <li><a href="#org8ccc33f">Implementation Details</a></li>
 <li><a href="#orge962d6b">G-Buffer Pass</a></li>
 <li><a href="#org9ca46f4">Lighting Pass</a></li>
@@ -154,7 +157,7 @@
 </li>
 <li><a href="#org2934a7d">Misc</a>
 <ul>
-<li><a href="#org2f7fb3a">Shader Variants</a>
+<li><a href="#org66691a9">Shader Variants</a>
 <ul>
 <li><a href="#org1a9824b">Useage</a>
 <ul>
@@ -186,7 +189,7 @@
 <li><a href="#org5e80654">Fresnel reflection</a>
 <ul>
 <li><a href="#org8b35e85">如何模拟菲涅尔效应效果？</a></li>
-<li><a href="#orge1147f8">参考资料</a></li>
+<li><a href="#org1fa5dfa">参考资料</a></li>
 </ul>
 </li>
 </ul>
@@ -200,12 +203,12 @@
 <li><a href="#orgd3775c9">halfasview</a></li>
 <li><a href="#org12113aa">使用 UnityObjectToClipPos 代替 mul(UNITY_MATRIX_MVP,v.vertex)</a></li>
 <li><a href="#org603f5f7">Shader Lod</a></li>
-<li><a href="#org66691a9">Shader Variants</a>
+<li><a href="#org4b15fe2">Shader Variants</a>
 <ul>
 <li><a href="#orgb26c9d3">scriptable shader variants stripping</a></li>
 </ul>
 </li>
-<li><a href="#orgac34b87">参考资料</a></li>
+<li><a href="#org9c795d9">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#org8aae3c3">LightingModel</a></li>
@@ -221,7 +224,7 @@
 <ul>
 <li>
 <ul>
-<li><a href="#org6657370">参考资料</a></li>
+<li><a href="#orgad67f0f">参考资料</a></li>
 </ul>
 </li>
 </ul>
@@ -254,7 +257,7 @@
 </li>
 <li><a href="#orga887f7c">Pass 的执行顺序</a></li>
 <li><a href="#orga179653">Enable Disable Pass</a></li>
-<li><a href="#org7ed5b1e">Tips</a></li>
+<li><a href="#orgbf82627">Tips</a></li>
 </ul>
 </li>
 <li><a href="#org1d106ff">如何实现半透明渲染？</a></li>
@@ -264,7 +267,7 @@
 <li><a href="#org4eb1b41">Deferred Rendering</a></li>
 <li><a href="#org0371942">Deferred Shading</a></li>
 <li><a href="#orga41cd33">Deferred Lighting</a></li>
-<li><a href="#org3898fb8">参考资料</a></li>
+<li><a href="#org7e57df6">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#org24361b2">为什么 Unity 中 skybox 是在所有不透明物体和所有透明物体之间被绘制的？</a></li>
@@ -275,14 +278,14 @@
 <li><a href="#org407633c">What is tangent.w? How to know whether it's 1 or -1? tangent.w VS unity_WorldTransformParams.w?</a></li>
 </ul>
 </li>
-<li><a href="#org7525fc4">参考资料</a></li>
+<li><a href="#org6824e47">参考资料</a></li>
 </ul>
 </div>
 </div>
 <p>
 本来只是一篇读书笔记，后来把 unity shader 相关的东西都加进来了。<br />
 </p>
-<div class="HTML" id="org5c8cd79">
+<div class="HTML" id="orgbd56fe2">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -292,44 +295,53 @@
 <h2 id="org5fcc192">Basic</h2>
 <div class="outline-text-2" id="text-org5fcc192">
 </div>
-<div id="outline-container-org913ae18" class="outline-3">
-<h3 id="org913ae18">Properties</h3>
-<div class="outline-text-3" id="text-org913ae18">
+<div id="outline-container-orgc2d8ff3" class="outline-3">
+<h3 id="orgc2d8ff3">Properties</h3>
+<div class="outline-text-3" id="text-orgc2d8ff3">
 <p>
 通过 Properties，可以将 shader 的一些参数暴露给编辑器进行设置。<br />
 </p>
 <div class="org-src-container">
-<pre class="src src-shader">  <span style="color: #4f97d7; font-weight: bold;">Properties</span> {
-      <span style="color: #7590db;">_MyFloatValue</span>(<span style="color: #2d9574;">"This is a Float"</span>, <span style="color: #4f97d7; font-weight: bold;">Float</span>) = 1.5
-      <span style="color: #7590db;">_MyRangeValue</span>(<span style="color: #2d9574;">"This is a Range"</span>, <span style="color: #4f97d7; font-weight: bold;">Range</span>(0,10)) = 2.5
-      <span style="color: #7590db;">_MyColorValue</span>(<span style="color: #2d9574;">"This is a ColorAmbient Color"</span>, <span style="color: #4f97d7; font-weight: bold;">Color</span>) = (0.5,1,1,1)
-      <span style="color: #7590db;">_MyVectorValue</span>(<span style="color: #2d9574;">"This is a Vector"</span>, <span style="color: #4f97d7; font-weight: bold;">Vector</span>) = (1,2,3,4)
-      <span style="color: #7590db;">_My2DValue</span>(<span style="color: #2d9574;">"This is a Texture 2D"</span>, <span style="color: #4f97d7; font-weight: bold;">2D</span>) = <span style="color: #2d9574;">"white"</span> {}
-      <span style="color: #7590db;">_MyRectValue</span>(<span style="color: #2d9574;">"This is a Texture Rect"</span>, Rect) = <span style="color: #2d9574;">"white"</span> {}
-      <span style="color: #7590db;">_MyCubeValue</span>(<span style="color: #2d9574;">"This is a Texture Cube"</span>, <span style="color: #4f97d7; font-weight: bold;">Cube</span>) = <span style="color: #2d9574;">"white"</span> {}
-  
-      <span style="color: #2aa1ae; background-color: #292e34;">// &#24067;&#23572;&#20063;&#26159;&#28014;&#28857;&#22411;&#25968;&#25454;&#65292;&#21482;&#26159;&#22312;&#26448;&#36136;&#38754;&#26495;&#19978;&#20197;&#24320;&#20851;&#30340;&#24418;&#24335;&#26174;&#31034;</span>
-      <span style="color: #2aa1ae; background-color: #292e34;">// &#24320;&#20851;&#21482;&#20250;&#29992;&#21040;&#20004;&#20010;&#25968;&#65306;0&#21644;1&#65292;&#24320;&#21551;&#21363;&#20026;1&#65292;&#20851;&#38381;&#21363;&#20026;0</span>
-      <span style="color: #2aa1ae; background-color: #292e34;">// &#24403;&#24320;&#20851;&#24320;&#21551;&#65292;shader&#20851;&#38190;&#35789;&#20250;&#34987;&#35774;&#23450;&#20026;&#65306;"property name" + "_ON"&#65292;&#24517;&#39035;&#22823;&#20889;  _INVERT_ON</span>
-      [Toggle] <span style="color: #7590db;">_Invert</span> (<span style="color: #2d9574;">"Invert color?"</span>, <span style="color: #4f97d7; font-weight: bold;">Float</span>) = 0
-  
-      <span style="color: #2aa1ae; background-color: #292e34;">// &#25110;&#32773;&#37325;&#26032;&#25351;&#23450;&#19968;&#20010;shader&#20851;&#38190;&#35789;&#65292;&#25324;&#21495;&#20869;&#20026;shader&#20851;&#38190;&#35789;</span>
-      [Toggle(ENABLE_FANCY)] <span style="color: #7590db;">_Fancy</span> (<span style="color: #2d9574;">"Fancy?"</span>, <span style="color: #4f97d7; font-weight: bold;">Float</span>) = 0
-  
-      <span style="color: #2aa1ae; background-color: #292e34;">// &#19979;&#38754;&#23646;&#24615;&#23545;&#24212;&#20102; _RECEIVE_SHADOWS_OFF &#20851;&#38190;&#23383;</span>
-      [ToggleOff] <span style="color: #7590db;">_Receive_Shadows</span>(<span style="color: #2d9574;">"Receive Shadows"</span>, <span style="color: #4f97d7; font-weight: bold;">Float</span>) = 1.0
-  
-      <span style="color: #2aa1ae; background-color: #292e34;">// Blend mode values</span>
-      [Enum(UnityEngine.Rendering.BlendMode)] <span style="color: #7590db;">_Blend</span> (<span style="color: #2d9574;">"Blend mode"</span>, <span style="color: #4f97d7; font-weight: bold;">Float</span>) = 1
-  
-      <span style="color: #2aa1ae; background-color: #292e34;">// A subset of blend mode values, just "One" (value 1) and "SrcAlpha" (value 5).</span>
-      [Enum(One,1,SrcAlpha,5)] <span style="color: #7590db;">_Blend2</span> (<span style="color: #2d9574;">"Blend mode subset"</span>, <span style="color: #4f97d7; font-weight: bold;">Float</span>) = 1
-  
-      <span style="color: #2aa1ae; background-color: #292e34;">// &#20851;&#38190;&#35789;&#26522;&#20030;&#20063;&#26159;&#28014;&#28857;&#22411;&#25968;&#25454;&#65292;&#21482;&#26159;&#22312;&#26448;&#36136;&#38754;&#26495;&#19978;&#20197;&#19979;&#25289;&#21015;&#34920;&#30340;&#24418;&#24335;&#26174;&#31034;</span>
-      <span style="color: #2aa1ae; background-color: #292e34;">// shader&#20851;&#38190;&#35789;&#26684;&#24335;&#20026;&#65306;"property name" + &#19979;&#21010;&#32447; + &#8220;&#26522;&#20030;&#21517;&#31216;&#8221;&#65292;&#24517;&#39035;&#22823;&#20889;</span>
-      <span style="color: #2aa1ae; background-color: #292e34;">// &#20294;&#26159;&#26368;&#22810;&#25903;&#25345;9&#20010;&#26522;&#20030;&#21517;&#31216;</span>
-      [KeywordEnum(None, Add, Multiply)] <span style="color: #7590db;">_Overlay</span> (<span style="color: #2d9574;">"Overlay mode"</span>, <span style="color: #4f97d7; font-weight: bold;">Float</span>) = 0
-  }
+<pre class="src src-shader"><span style="color: #4f97d7; font-weight: bold;">Properties</span> {
+    <span style="color: #7590db;">_MyFloatValue</span>(<span style="color: #2d9574;">"This is a Float"</span>, <span style="color: #4f97d7; font-weight: bold;">Float</span>) = 1.5
+    <span style="color: #7590db;">_MyRangeValue</span>(<span style="color: #2d9574;">"This is a Range"</span>, <span style="color: #4f97d7; font-weight: bold;">Range</span>(0,10)) = 2.5
+    <span style="color: #7590db;">_MyColorValue</span>(<span style="color: #2d9574;">"This is a ColorAmbient Color"</span>, <span style="color: #4f97d7; font-weight: bold;">Color</span>) = (0.5,1,1,1)
+    <span style="color: #7590db;">_MyVectorValue</span>(<span style="color: #2d9574;">"This is a Vector"</span>, <span style="color: #4f97d7; font-weight: bold;">Vector</span>) = (1,2,3,4)
+    <span style="color: #7590db;">_My2DValue</span>(<span style="color: #2d9574;">"This is a Texture 2D"</span>, <span style="color: #4f97d7; font-weight: bold;">2D</span>) = <span style="color: #2d9574;">"white"</span> {}
+    <span style="color: #7590db;">_MyRectValue</span>(<span style="color: #2d9574;">"This is a Texture Rect"</span>, Rect) = <span style="color: #2d9574;">"white"</span> {}
+    <span style="color: #7590db;">_MyCubeValue</span>(<span style="color: #2d9574;">"This is a Texture Cube"</span>, <span style="color: #4f97d7; font-weight: bold;">Cube</span>) = <span style="color: #2d9574;">"white"</span> {}
+
+    [NoScaleOffset]<span style="color: #7590db;">_Tex2</span>(<span style="color: #2d9574;">"Texture 2D no scale offset"</span>, <span style="color: #4f97d7; font-weight: bold;">2D</span>) = <span style="color: #2d9574;">"white"</span> {}
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#24067;&#23572;&#20063;&#26159;&#28014;&#28857;&#22411;&#25968;&#25454;&#65292;&#21482;&#26159;&#22312;&#26448;&#36136;&#38754;&#26495;&#19978;&#20197;&#24320;&#20851;&#30340;&#24418;&#24335;&#26174;&#31034;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#24320;&#20851;&#21482;&#20250;&#29992;&#21040;&#20004;&#20010;&#25968;&#65306;0&#21644;1&#65292;&#24320;&#21551;&#21363;&#20026;1&#65292;&#20851;&#38381;&#21363;&#20026;0</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#24403;&#24320;&#20851;&#24320;&#21551;&#65292;shader&#20851;&#38190;&#35789;&#20250;&#34987;&#35774;&#23450;&#20026;&#65306;"property name" + "_ON"&#65292;&#24517;&#39035;&#22823;&#20889;  _INVERT_ON</span>
+    [Toggle] <span style="color: #7590db;">_Invert</span> (<span style="color: #2d9574;">"Invert color?"</span>, <span style="color: #4f97d7; font-weight: bold;">Float</span>) = 0
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#25110;&#32773;&#37325;&#26032;&#25351;&#23450;&#19968;&#20010;shader&#20851;&#38190;&#35789;&#65292;&#25324;&#21495;&#20869;&#20026;shader&#20851;&#38190;&#35789;</span>
+    [Toggle(ENABLE_FANCY)] <span style="color: #7590db;">_Fancy</span> (<span style="color: #2d9574;">"Fancy?"</span>, <span style="color: #4f97d7; font-weight: bold;">Float</span>) = 0
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#19979;&#38754;&#23646;&#24615;&#23545;&#24212;&#20102; _RECEIVE_SHADOWS_OFF &#20851;&#38190;&#23383;</span>
+    [ToggleOff] <span style="color: #7590db;">_Receive_Shadows</span>(<span style="color: #2d9574;">"Receive Shadows"</span>, <span style="color: #4f97d7; font-weight: bold;">Float</span>) = 1.0
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// Blend mode values</span>
+    [Enum(UnityEngine.Rendering.BlendMode)] <span style="color: #7590db;">_SrcBlend</span> (<span style="color: #2d9574;">"_SrcBlend"</span>, <span style="color: #4f97d7; font-weight: bold;">Float</span>) = 1
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// A subset of blend mode values, just "One" (value 1) and "SrcAlpha" (value 5).</span>
+    [Enum(One,1,SrcAlpha,5)] <span style="color: #7590db;">_Blend2</span> (<span style="color: #2d9574;">"Blend mode subset"</span>, <span style="color: #4f97d7; font-weight: bold;">Float</span>) = 1
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#20851;&#38190;&#35789;&#26522;&#20030;&#20063;&#26159;&#28014;&#28857;&#22411;&#25968;&#25454;&#65292;&#21482;&#26159;&#22312;&#26448;&#36136;&#38754;&#26495;&#19978;&#20197;&#19979;&#25289;&#21015;&#34920;&#30340;&#24418;&#24335;&#26174;&#31034;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// shader&#20851;&#38190;&#35789;&#26684;&#24335;&#20026;&#65306;"property name" + &#19979;&#21010;&#32447; + &#8220;&#26522;&#20030;&#21517;&#31216;&#8221;&#65292;&#24517;&#39035;&#22823;&#20889;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#20294;&#26159;&#26368;&#22810;&#25903;&#25345;9&#20010;&#26522;&#20030;&#21517;&#31216;</span>
+    [KeywordEnum(None, Add, Multiply)] <span style="color: #7590db;">_Overlay</span> (<span style="color: #2d9574;">"Overlay mode"</span>, <span style="color: #4f97d7; font-weight: bold;">Float</span>) = 0
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#24120;&#29992;&#35774;&#32622;</span>
+    [Enum(UnityEngine.Rendering.BlendMode)] <span style="color: #7590db;">_SrcBlend</span> (<span style="color: #2d9574;">"_SrcBlend"</span>, <span style="color: #4f97d7; font-weight: bold;">Float</span>) = 1
+    [Enum(UnityEngine.Rendering.BlendMode)] <span style="color: #7590db;">_DstBlend</span> (<span style="color: #2d9574;">"_DstBlend"</span>, <span style="color: #4f97d7; font-weight: bold;">Float</span>) = 0
+    [Enum(Off, 0, On, 1)] <span style="color: #7590db;">_ZWrite</span> (<span style="color: #2d9574;">"ZWrite"</span>, <span style="color: #4f97d7; font-weight: bold;">Float</span>) = 0  <span style="color: #2aa1ae; background-color: #292e34;">//&#22768;&#26126;&#22806;&#37096;&#25511;&#21046;&#24320;&#20851;</span>
+    [Enum(UnityEngine.Rendering.CompareFunction)] <span style="color: #7590db;">_ZTest</span> (<span style="color: #2d9574;">"ZTest"</span>, <span style="color: #4f97d7; font-weight: bold;">Float</span>) = 0  <span style="color: #2aa1ae; background-color: #292e34;">// &#22768;&#26126;&#22806;&#37096;&#25511;&#21046;&#24320;&#20851;</span>
+    [Enum(UnityEngine.Rendering.CullMode)] <span style="color: #7590db;">_Cull</span> (<span style="color: #2d9574;">"Cull Mode"</span>, <span style="color: #4f97d7; font-weight: bold;">Float</span>) = 1      <span style="color: #2aa1ae; background-color: #292e34;">// &#22768;&#26126;&#22806;&#37096;&#25511;&#21046;&#24320;&#20851; 0-Off 1-Front 2-Back</span>
+}
 </pre>
 </div>
 <ul class="org-ul">
@@ -355,7 +367,7 @@
 <h4 id="org08787fe">SurfaceShader 工作流程图</h4>
 <div class="outline-text-4" id="text-org08787fe">
 
-<div id="orgf0bfc7c" class="figure">
+<div id="orga961272" class="figure">
 <p><img src="UnityShaderAndEffectCookbook/SurfaceShaderFlow.jpg" alt="SurfaceShaderFlow.jpg" /><br />
 </p>
 </div>
@@ -504,7 +516,7 @@ Tips：<br />
 </tr>
 </tbody>
 </table>
-<pre class="example" id="orgfa66121">
+<pre class="example" id="org8c2a26f">
 Tips:
 使用 worldRefl;INTERNAL_DATA 时， 通过 WorldReflectionVector (IN, o.Normal)来从法线贴图获得反射向量
 使用 worldNormal;INTERNAL_DATA 时，通过 WorldNormalVector（IN, o.Normal）来从法线贴图获得法线
@@ -617,9 +629,9 @@ Tips:
 </pre>
 </div>
 </div>
-<div id="outline-container-orgc2d8ff3" class="outline-4">
-<h4 id="orgc2d8ff3">Properties</h4>
-<div class="outline-text-4" id="text-orgc2d8ff3">
+<div id="outline-container-org88193dd" class="outline-4">
+<h4 id="org88193dd">Properties</h4>
+<div class="outline-text-4" id="text-org88193dd">
 <p>
 Properties 指定了 surface shader 中可供调节的变量，这些变量可以被显示在 Inspector 中。<br />
 </p>
@@ -690,7 +702,7 @@ Category 将其中的所有指令组成一组。通常用于渲染状态继承�
 <p>
 小于等于 2500 的渲染队列，被当做不透明物体的渲染队列，并且可以调整物体的渲染顺序来达到最佳性能。更高的渲染队列被认为是透明物体的渲染队列，并且物体依据距离来排序，从最远的物体开始渲染直到最近的物体。Skyboxes 是在所有不透明物体和所有透明物体之间被绘制的。<br />
 </p>
-<pre class="example" id="org9f23ef6">
+<pre class="example" id="orgbdaa5d1">
 Tags { "Queue" = "Transparent" }
 </pre>
 </div>
@@ -732,7 +744,7 @@ Geometry 和 AlphaTest 之后渲染的队列，该队列以从后到前的顺序
 </li>
 <li><a id="org0e44b83"></a>自定义渲染队列<br />
 <div class="outline-text-7" id="text-org0e44b83">
-<pre class="example" id="orgf6d64cb">
+<pre class="example" id="orgebc33a5">
 Tags { "Queue" = "Geometry+1" }
 </pre>
 </div>
@@ -776,7 +788,7 @@ Shader Replacement 会用到该设置。<br />
 <div id="outline-container-org7910028" class="outline-6">
 <h6 id="org7910028">其他的一些 tag</h6>
 <div class="outline-text-6" id="text-org7910028">
-<pre class="example" id="org7794de1">
+<pre class="example" id="org777f624">
 ForceNoShadowCasting
 IgnoreProjector
 CanUseSpriteAtlas
@@ -1462,8 +1474,8 @@ Pass 可以设置图形硬件的渲染状态。<br />
 </div>
 </li>
 
-<li><a id="org0721650"></a>Tips<br />
-<div class="outline-text-8" id="text-org0721650">
+<li><a id="org7ed5b1e"></a>Tips<br />
+<div class="outline-text-8" id="text-org7ed5b1e">
 <ul class="org-ul">
 <li>Comp Pass Fail ZFail<br /></li>
 <li>CompFront PassFront FailFront ZFailFront 显示指定渲染几何体正面时，使用的模板缓冲区操作。<br /></li>
@@ -1473,8 +1485,8 @@ Pass 可以设置图形硬件的渲染状态。<br />
 </li>
 </ul>
 </li>
-<li><a id="orgfd1fd2d"></a>参考资料<br />
-<div class="outline-text-7" id="text-orgfd1fd2d">
+<li><a id="org7525fc4"></a>参考资料<br />
+<div class="outline-text-7" id="text-org7525fc4">
 <ul class="org-ul">
 <li><a href="https://docs.unity3d.com/Manual/SL-Stencil.html">https://docs.unity3d.com/Manual/SL-Stencil.html</a><br /></li>
 <li><a href="https://learnopengl.com/Advanced-OpenGL/Stencil-testing">https://learnopengl.com/Advanced-OpenGL/Stencil-testing</a><br /></li>
@@ -1512,8 +1524,8 @@ Blend Off 关闭混合（默认）<br />
 </p>
 </div>
 <ul class="org-ul">
-<li><a id="orgd8ced47"></a>参考资料<br />
-<div class="outline-text-7" id="text-orgd8ced47">
+<li><a id="orga43f509"></a>参考资料<br />
+<div class="outline-text-7" id="text-orga43f509">
 <ul class="org-ul">
 <li><a href="https://docs.unity3d.com/Manual/SL-Blend.html">https://docs.unity3d.com/Manual/SL-Blend.html</a><br /></li>
 <li><a href="https://blog.csdn.net/ecidevilin/article/details/52864349">https://blog.csdn.net/ecidevilin/article/details/52864349</a><br /></li>
@@ -1556,7 +1568,7 @@ Blend Off 关闭混合（默认）<br />
 </p>
 
 
-<div id="org07c813b" class="figure">
+<div id="org0f09ec7" class="figure">
 <p><img src="./UnityShaderAndEffectCookbook/001_CameraRender.jpg" alt="001_CameraRender.jpg" /><br />
 </p>
 </div>
@@ -1574,7 +1586,7 @@ Blend Off 关闭混合（默认）<br />
 <p>
 Shaders 定义了一个物体看起来是怎样的，以及这个物体如何和光照交互。因为光照计算必须在 shader 中进行，并且可能有很多种类型的光照和阴影，所以编写高质量的可用的 shaders 将是一个复杂的任务。为了让这项工作变的简单，Unity 提供了 Surface Shaders，其中所有的光照、阴影、光照贴图，正向渲染、延迟渲染等事情都被自动化管理。<br />
 </p>
-<pre class="example" id="orgfd3b185">
+<pre class="example" id="org63fa8e4">
 本小结内容翻译自 Unity 官方文档：
 SL-RenderPipeline.html
 RenderTech-ForwardRendering.html
@@ -1705,9 +1717,9 @@ Additional Passes 用来渲染影响到物体的每个额外的 per-pixel 方式
 </div>
 </div>
 </div>
-<div id="outline-container-org0f1eccb" class="outline-5">
-<h5 id="org0f1eccb">Performance Considerations</h5>
-<div class="outline-text-5" id="text-org0f1eccb">
+<div id="outline-container-org61cb14f" class="outline-5">
+<h5 id="org61cb14f">Performance Considerations</h5>
+<div class="outline-text-5" id="text-org61cb14f">
 <p>
 Spherical Harmonics 方式计算的光照渲染速度非常快。他们消耗很少的 CPU 资源，并且对于 GPU 基本是无消耗的（也就是说，Base Passes 总是计算 SH 方式计算的光照，但是，基于 SH 的工作方式，无论有多少光照按照 SH 方式计算，其消耗都是一样的）。<br />
 SH 方式计算光照的缺点有：<br />
@@ -1755,9 +1767,9 @@ Deferred Pass 用来渲染光照计算需要的所有的信息（在内置 shade
 </p>
 </div>
 </div>
-<div id="outline-container-org61cb14f" class="outline-5">
-<h5 id="org61cb14f">Performance Considerations</h5>
-<div class="outline-text-5" id="text-org61cb14f">
+<div id="outline-container-orgc0fd40a" class="outline-5">
+<h5 id="orgc0fd40a">Performance Considerations</h5>
+<div class="outline-text-5" id="text-orgc0fd40a">
 <p>
 在延迟渲染中渲染实时光照的开销和被照明的像素数量成比例，而和场景的复杂程度无关。所以小的点光源或聚光灯开销非常小，如果场景中的物体将它们整个或部分遮挡，渲染它们的开销将更小。<br />
 </p>
@@ -1935,9 +1947,9 @@ z-depth 是表示被渲染的片段离摄像机的距离。渲染的时候会依
 <h3 id="org2934a7d">Misc</h3>
 <div class="outline-text-3" id="text-org2934a7d">
 </div>
-<div id="outline-container-org2f7fb3a" class="outline-4">
-<h4 id="org2f7fb3a">Shader Variants</h4>
-<div class="outline-text-4" id="text-org2f7fb3a">
+<div id="outline-container-org66691a9" class="outline-4">
+<h4 id="org66691a9">Shader Variants</h4>
+<div class="outline-text-4" id="text-org66691a9">
 </div>
 <div id="outline-container-org1a9824b" class="outline-5">
 <h5 id="org1a9824b">Useage</h5>
@@ -2265,9 +2277,9 @@ o.<span style="color: #4f97d7; font-weight: bold;">Specular</span> = <span style
 </div>
 </div>
 </div>
-<div id="outline-container-orge1147f8" class="outline-4">
-<h4 id="orge1147f8">参考资料</h4>
-<div class="outline-text-4" id="text-orge1147f8">
+<div id="outline-container-org1fa5dfa" class="outline-4">
+<h4 id="org1fa5dfa">参考资料</h4>
+<div class="outline-text-4" id="text-org1fa5dfa">
 <p>
 菲涅耳反射 互动百科:<br />
 <a href="http://www.baike.com/wiki/%E8%8F%B2%E6%B6%85%E5%B0%94%E5%8F%8D%E5%B0%84">http://www.baike.com/wiki/%E8%8F%B2%E6%B6%85%E5%B0%94%E5%8F%8D%E5%B0%84</a><br />
@@ -2498,21 +2510,38 @@ UnityObjectToClipPos 的效率要比 mul(UNITY_MATRIX_MVP,v.vertex)高。<br />
 设置 someShader.maximumLOD = -1 后，该 shader 恢复受 Shader.globalMaximumLOD 影响。<br />
 </p>
 
+<p>
+shader lod 越大，对应效果越好。unity 内置 shader 的 lod 设置如下：<br />
+VertexLit kind of shaders = 100<br />
+Decal, Reflective VertexLit = 150<br />
+Diffuse = 200<br />
+Diffuse Detail, Reflective Bumped Unlit, Reflective Bumped VertexLit = 250<br />
+Bumped, Specular = 300<br />
+Bumped Specular = 400<br />
+Parallax = 500<br />
+Parallax Specular = 600<br />
+</p>
+
+<p>
+Tips:<br />
+Shader.globalMaximumLOD 和 someShader.maximumLOD 并不会随着到摄像机距离的变化而变化。随着摄像机距离的变化而变化的特性应该通过 LodGroup 来实现，ShaderLOD 通常用于不同画质品质切换。<br />
+</p>
+
 <ul class="org-ul">
 <li>Unity 中 Shader LOD 控制 <a href="https://zhuanlan.zhihu.com/p/21316674">https://zhuanlan.zhihu.com/p/21316674</a><br /></li>
-<li>Shader Level of Detail <a href="https://docs.unity3d.com/2018.3/Documentation/Manual/SL-ShaderLOD.html">https://docs.unity3d.com/2018.3/Documentation/Manual/SL-ShaderLOD.html</a><br /></li>
+<li>Shader Level of Detail <a href="https://docs.unity3d.com/Documentation/Manual/SL-ShaderLOD.html">https://docs.unity3d.com/Documentation/Manual/SL-ShaderLOD.html</a><br /></li>
 </ul>
 </div>
 </div>
-<div id="outline-container-org66691a9" class="outline-3">
-<h3 id="org66691a9">Shader Variants</h3>
-<div class="outline-text-3" id="text-org66691a9">
+<div id="outline-container-org4b15fe2" class="outline-3">
+<h3 id="org4b15fe2">Shader Variants</h3>
+<div class="outline-text-3" id="text-org4b15fe2">
 </div>
 <div id="outline-container-orgb26c9d3" class="outline-4">
 <h4 id="orgb26c9d3">scriptable shader variants stripping</h4>
 <div class="outline-text-4" id="text-orgb26c9d3">
 
-<div id="orgf5e8290" class="figure">
+<div id="orgf1b9660" class="figure">
 <p><img src="./UnityShaderAndEffectCookbook/scriptable-shader-variant-stripping.png" alt="scriptable-shader-variant-stripping.png" /><br />
 </p>
 </div>
@@ -2566,9 +2595,9 @@ UnityObjectToClipPos 的效率要比 mul(UNITY_MATRIX_MVP,v.vertex)高。<br />
 </div>
 </div>
 </div>
-<div id="outline-container-orgac34b87" class="outline-3">
-<h3 id="orgac34b87">参考资料</h3>
-<div class="outline-text-3" id="text-orgac34b87">
+<div id="outline-container-org9c795d9" class="outline-3">
+<h3 id="org9c795d9">参考资料</h3>
+<div class="outline-text-3" id="text-org9c795d9">
 <p>
 <a href="https://docs.unity3d.com/Manual/SL-SurfaceShaders.html">Shader 编译指令</a><br />
 <a href="https://docs.unity3d.com/Manual/MobileOptimizationPracticalGuide.html">Mobile Optimize Doc</a><br />
@@ -2661,9 +2690,9 @@ Normal Map 又叫 Ramp Map，其实就是法线贴图。<br />
 UnpackNormal 的作用是将 0-1 范围的数值(法线贴图存储的颜色值)映射为-1-1 范围的数值（法线向量）。<br />
 </p>
 </div>
-<div id="outline-container-org6657370" class="outline-4">
-<h4 id="org6657370">参考资料</h4>
-<div class="outline-text-4" id="text-org6657370">
+<div id="outline-container-orgad67f0f" class="outline-4">
+<h4 id="orgad67f0f">参考资料</h4>
+<div class="outline-text-4" id="text-orgad67f0f">
 <p>
 <a href="http://www.songho.ca/opengl/gl_normaltransform.html">Normal 变换矩阵推导</a><br />
 <a href="http://blog.csdn.net/candycat1992/article/details/41605257">Unity 中的 Normal Map</a><br />
@@ -2798,9 +2827,9 @@ material.SetShaderPassEnabled(<span style="color: #2d9574;">"ShadowCaster"</span
 </ul>
 </div>
 </div>
-<div id="outline-container-org7ed5b1e" class="outline-4">
-<h4 id="org7ed5b1e">Tips</h4>
-<div class="outline-text-4" id="text-org7ed5b1e">
+<div id="outline-container-orgbf82627" class="outline-4">
+<h4 id="orgbf82627">Tips</h4>
+<div class="outline-text-4" id="text-orgbf82627">
 <ul class="org-ul">
 <li>需要注意的是，SurfaceShader 中定义多个 Pass 时，不需要写 Pass{}，因为 SurfaceShader 编译时，会自动添加 Pass{}.具体信息可以参考如下链接：<br /></li>
 </ul>
@@ -2876,9 +2905,9 @@ Deferred lighting 是对 Deferred Shading 的一种修改。该技术使用了�
 </p>
 </div>
 </div>
-<div id="outline-container-org3898fb8" class="outline-4">
-<h4 id="org3898fb8">参考资料</h4>
-<div class="outline-text-4" id="text-org3898fb8">
+<div id="outline-container-org7e57df6" class="outline-4">
+<h4 id="org7e57df6">参考资料</h4>
+<div class="outline-text-4" id="text-org7e57df6">
 <p>
 <a href="http://chengkehan.github.io/DeferredRendering.html">http://chengkehan.github.io/DeferredRendering.html</a><br />
 <a href="http://blog.csdn.net/bugrunner/article/details/7436600">http://blog.csdn.net/bugrunner/article/details/7436600</a><br />
@@ -2946,9 +2975,9 @@ photoshop 中贴图 UV 坐标系原点在 左上角。<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org7525fc4" class="outline-2">
-<h2 id="org7525fc4">参考资料</h2>
-<div class="outline-text-2" id="text-org7525fc4">
+<div id="outline-container-org6824e47" class="outline-2">
+<h2 id="org6824e47">参考资料</h2>
+<div class="outline-text-2" id="text-org6824e47">
 <p>
 Unity3D Shader 入门 <a href="https://onevcat.com/2013/07/shader-tutorial-1/">https://onevcat.com/2013/07/shader-tutorial-1/</a><br />
 </p>

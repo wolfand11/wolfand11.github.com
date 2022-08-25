@@ -3,16 +3,19 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2022-03-14 周一 16:59 -->
+<!-- 2022-08-24 Wed 22:48 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>URP</title>
 <meta name="generator" content="Org mode" />
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
          <meta name="viewport" content="width=device-width, initial-scale=1" />
-         <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/css/worg.css" type="text/css" />
-         <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/css/worg-zenburn.css" type="text/css" />
-         <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
+         <link rel="stylesheet" type="text/css" href="https://wolfand11.gitee.io/res/readtheorg_theme/css/htmlize.css"/>
+         <link rel="stylesheet" type="text/css" href="https://wolfand11.gitee.io/res/readtheorg_theme/css/readtheorg.css"/>
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/jquery.min.js"></script>
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/bootstrap.min.js"></script>
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/jquery.stickytableheaders.min.js"></script>
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/readtheorg_theme/js/readtheorg.js"></script>
          <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
          <script type="text/javascript" src="https://wolfand11.gitee.io/res/blog-tools.js"></script>
 <script type="text/javascript">
@@ -73,7 +76,18 @@
 <ul>
 <li><a href="#org019064a">URP</a>
 <ul>
-<li>
+<li><a href="#org1470e33">Base</a>
+<ul>
+<li><a href="#org7c666e0">源码分析</a></li>
+<li><a href="#orge92ca68">Custom RenderFeature for PostProcess</a></li>
+</ul>
+</li>
+<li><a href="#org41b1a1f">Shader</a>
+<ul>
+<li><a href="#orgc0e944b">Lightmap 烘培</a></li>
+</ul>
+</li>
+<li><a href="#org287e34d">Misc</a>
 <ul>
 <li><a href="#org7f8edaf">Upgrade Buildin Shader To URP</a>
 <ul>
@@ -86,6 +100,11 @@
 <li><a href="#org078609b">URP Buildin GI 比较</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li><a href="#org3e96868">HDRP</a>
+<ul>
+<li><a href="#org724271e">Setup</a></li>
 </ul>
 </li>
 <li><a href="#org3f29dcf">ERROR</a>
@@ -104,7 +123,7 @@
 <p>
 URP note.<br />
 </p>
-<div class="HTML" id="org5b64191">
+<div class="HTML" id="orgac10f6d">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -114,6 +133,127 @@ URP note.<br />
 <div id="outline-container-org019064a" class="outline-2">
 <h2 id="org019064a">URP</h2>
 <div class="outline-text-2" id="text-org019064a">
+</div>
+<div id="outline-container-org1470e33" class="outline-3">
+<h3 id="org1470e33">Base</h3>
+<div class="outline-text-3" id="text-org1470e33">
+</div>
+<div id="outline-container-org7c666e0" class="outline-4">
+<h4 id="org7c666e0">源码分析</h4>
+<div class="outline-text-4" id="text-org7c666e0">
+<ul class="org-ul">
+<li><a href="https://zhuanlan.zhihu.com/p/399297398">https://zhuanlan.zhihu.com/p/399297398</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orge92ca68" class="outline-4">
+<h4 id="orge92ca68">Custom RenderFeature for PostProcess</h4>
+<div class="outline-text-4" id="text-orge92ca68">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">UnityEngine</span>;
+<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">UnityEngine</span>.<span style="color: #7590db;">Rendering</span>;
+<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">UnityEngine</span>.<span style="color: #7590db;">Rendering</span>.<span style="color: #7590db;">Universal</span>;
+
+<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">CustomPP</span> : <span style="color: #ce537a; font-weight: bold;">ScriptableRendererFeature</span>
+{
+    [System.Serializable]
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> CustomRPSettings
+    {
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">Material</span> <span style="color: #7590db;">material</span>;
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">RenderPassEvent</span> <span style="color: #7590db;">passEvent</span> = RenderPassEvent.AfterRenderingTransparents;
+    }
+
+    <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">CustomRenderPass</span> : <span style="color: #ce537a; font-weight: bold;">ScriptableRenderPass</span>
+    {
+        <span style="color: #4f97d7; font-weight: bold;">private</span> <span style="color: #ce537a; font-weight: bold;">CustomRPSettings</span> <span style="color: #7590db;">_customRPSettings</span>;
+        <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">fxSourceId</span> = Shader.<span style="color: #bc6ec5; font-weight: bold;">PropertyToID</span>(<span style="color: #2d9574;">"_PostFXSource"</span>);
+
+        <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #7590db;">_needTempRT</span> = <span style="color: #a45bad;">false</span>;
+        <span style="color: #ce537a; font-weight: bold;">RenderTargetHandle</span> <span style="color: #7590db;">_tempRT</span>;
+        <span style="color: #ce537a; font-weight: bold;">RenderTargetIdentifier</span> <span style="color: #7590db;">_cameraColorRT</span>;
+
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #bc6ec5; font-weight: bold;">CustomRenderPass</span>(<span style="color: #ce537a; font-weight: bold;">CustomRPSettings</span> <span style="color: #7590db;">customRPSettings</span>)
+        {
+            _customRPSettings = customRPSettings;
+        }
+
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Setup</span>(<span style="color: #ce537a; font-weight: bold;">RenderTargetIdentifier</span> <span style="color: #7590db;">camColorRT</span>)
+        {
+            _cameraColorRT = camColorRT;
+        }
+
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Configure</span>(<span style="color: #ce537a; font-weight: bold;">CommandBuffer</span> <span style="color: #7590db;">cmd</span>, <span style="color: #ce537a; font-weight: bold;">RenderTextureDescriptor</span> <span style="color: #7590db;">cameraTextureDescriptor</span>)
+        {
+            _tempRT.<span style="color: #bc6ec5; font-weight: bold;">Init</span>(<span style="color: #2d9574;">"CustomPP_RT"</span>);
+        }
+
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Execute</span>(<span style="color: #ce537a; font-weight: bold;">ScriptableRenderContext</span> <span style="color: #7590db;">context</span>, <span style="color: #4f97d7; font-weight: bold;">ref</span> <span style="color: #ce537a; font-weight: bold;">RenderingData</span> <span style="color: #7590db;">renderingData</span>)
+        {
+            <span style="color: #ce537a; font-weight: bold;">CommandBuffer</span> <span style="color: #7590db;">cmd</span> = CommandBufferPool.<span style="color: #bc6ec5; font-weight: bold;">Get</span>(<span style="color: #2d9574;">"Custom PP Pass"</span>);
+            <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">_needTempRT = true;</span>
+            <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">cmd.GetTemporaryRT(_tempRT.id, renderingData.cameraData.cameraTargetDescriptor, FilterMode.Bilinear);</span>
+
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">custom pp</span>
+            cmd.<span style="color: #bc6ec5; font-weight: bold;">SetGlobalTexture</span>(fxSourceId, _cameraColorRT);
+            <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">cmd.SetRenderTarget(_tempRT.id, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store);</span>
+            cmd.<span style="color: #bc6ec5; font-weight: bold;">SetRenderTarget</span>(_cameraColorRT, RenderBufferLoadAction.Load, RenderBufferStoreAction.Store);
+            cmd.<span style="color: #bc6ec5; font-weight: bold;">DrawProcedural</span>(Matrix4x4.identity, _customRPSettings.material, 0, MeshTopology.Triangles, 3);
+
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">copy to _CameraColorRT</span>
+            <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">cmd.SetGlobalTexture(fxSourceId, _tempRT.id);</span>
+            <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">cmd.SetRenderTarget(_cameraColorRT, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store);</span>
+            <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">cmd.DrawProcedural(Matrix4x4.identity, _customRPSettings.material, 1, MeshTopology.Triangles, 3);</span>
+
+            context.<span style="color: #bc6ec5; font-weight: bold;">ExecuteCommandBuffer</span>(cmd);
+            CommandBufferPool.<span style="color: #bc6ec5; font-weight: bold;">Release</span>(cmd);
+        }
+
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">FrameCleanup</span>(<span style="color: #ce537a; font-weight: bold;">CommandBuffer</span> <span style="color: #7590db;">cmd</span>)
+        {
+            <span style="color: #4f97d7; font-weight: bold;">if</span>(_needTempRT)
+            {
+                cmd.<span style="color: #bc6ec5; font-weight: bold;">ReleaseTemporaryRT</span>(_tempRT.id);
+            }
+        }
+    }
+
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">CustomRPSettings</span> <span style="color: #7590db;">customRPSettings</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">CustomRPSettings</span>();
+    <span style="color: #ce537a; font-weight: bold;">CustomRenderPass</span> <span style="color: #7590db;">m_ScriptablePass</span>;
+
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Create</span>()
+    {
+        m_ScriptablePass = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">CustomRenderPass</span>(customRPSettings);
+
+        m_ScriptablePass.renderPassEvent = customRPSettings.passEvent;
+    }
+
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">AddRenderPasses</span>(<span style="color: #ce537a; font-weight: bold;">ScriptableRenderer</span> <span style="color: #7590db;">renderer</span>, <span style="color: #4f97d7; font-weight: bold;">ref</span> <span style="color: #ce537a; font-weight: bold;">RenderingData</span> <span style="color: #7590db;">renderingData</span>)
+    {
+        m_ScriptablePass.<span style="color: #bc6ec5; font-weight: bold;">Setup</span>(renderer.cameraColorTarget);
+        renderer.<span style="color: #bc6ec5; font-weight: bold;">EnqueuePass</span>(m_ScriptablePass);
+    }
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org41b1a1f" class="outline-3">
+<h3 id="org41b1a1f">Shader</h3>
+<div class="outline-text-3" id="text-org41b1a1f">
+</div>
+<div id="outline-container-orgc0e944b" class="outline-4">
+<h4 id="orgc0e944b">Lightmap 烘培</h4>
+<div class="outline-text-4" id="text-orgc0e944b">
+<p>
+<a href="./UnityCatLikeCoding.html#org62a2680">Lightmap 烘培</a><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org287e34d" class="outline-3">
+<h3 id="org287e34d">Misc</h3>
+<div class="outline-text-3" id="text-org287e34d">
 </div>
 <div id="outline-container-org7f8edaf" class="outline-4">
 <h4 id="org7f8edaf">Upgrade Buildin Shader To URP</h4>
@@ -288,6 +428,22 @@ LightProbe 数据来自 AmbientColor，场景中方向光，场景中物体反�
 </div>
 </div>
 </div>
+</div>
+<div id="outline-container-org3e96868" class="outline-2">
+<h2 id="org3e96868">HDRP</h2>
+<div class="outline-text-2" id="text-org3e96868">
+</div>
+<div id="outline-container-org724271e" class="outline-3">
+<h3 id="org724271e">Setup</h3>
+<div class="outline-text-3" id="text-org724271e">
+<ol class="org-ol">
+<li>安装 HDRP package<br /></li>
+<li>打开 HDRP 设置向导 Window/Rendering/HDRP Wizard, 如果有设置错误，直接点击 FixAll<br /></li>
+</ol>
+</div>
+</div>
+</div>
+
 <div id="outline-container-org3f29dcf" class="outline-2">
 <h2 id="org3f29dcf">ERROR</h2>
 <div class="outline-text-2" id="text-org3f29dcf">

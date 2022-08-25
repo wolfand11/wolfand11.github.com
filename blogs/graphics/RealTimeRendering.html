@@ -3,16 +3,19 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2022-03-14 周一 16:59 -->
+<!-- 2022-08-24 Wed 22:47 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Real Time Rendering</title>
 <meta name="generator" content="Org mode" />
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
          <meta name="viewport" content="width=device-width, initial-scale=1" />
-         <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/css/worg.css" type="text/css" />
-         <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/css/worg-zenburn.css" type="text/css" />
-         <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
+         <link rel="stylesheet" type="text/css" href="https://wolfand11.gitee.io/res/readtheorg_theme/css/htmlize.css"/>
+         <link rel="stylesheet" type="text/css" href="https://wolfand11.gitee.io/res/readtheorg_theme/css/readtheorg.css"/>
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/jquery.min.js"></script>
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/bootstrap.min.js"></script>
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/jquery.stickytableheaders.min.js"></script>
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/readtheorg_theme/js/readtheorg.js"></script>
          <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
          <script type="text/javascript" src="https://wolfand11.gitee.io/res/blog-tools.js"></script>
 <script type="text/javascript">
@@ -56,11 +59,16 @@
 <li><a href="#orge2ad30d">Architecture</a></li>
 <li><a href="#org9fb2947">The Application Stage</a></li>
 <li><a href="#orgc9249be">Geometry Processing</a></li>
-<li><a href="#orge9fe809">Rasterization</a></li>
+<li><a href="#org11ba1bf">Rasterization</a></li>
 <li><a href="#orge7dfff7">Pixel Processing</a></li>
 </ul>
 </li>
-<li><a href="#org5df4516">03 The Graphics Processing Unit</a></li>
+<li><a href="#org5df4516">03 The Graphics Processing Unit</a>
+<ul>
+<li><a href="#org9b6e653">Data-Parallel Architectures</a></li>
+<li><a href="#org7bbbf9d">GPU Pipeline Overview</a></li>
+</ul>
+</li>
 <li><a href="#orga22c2c6">09 Physically Based Shading</a>
 <ul>
 <li><a href="#orgfcca506">The BRDF</a></li>
@@ -68,7 +76,7 @@
 </li>
 <li><a href="#orgb26bd55">23 Graphics Hardware</a>
 <ul>
-<li><a href="#org11ba1bf">Rasterization</a></li>
+<li><a href="#orgee8f90b">Rasterization</a></li>
 </ul>
 </li>
 </ul>
@@ -79,7 +87,7 @@
 <p>
 Real Time Rendering 第 4 版翻译.<br />
 </p>
-<div class="HTML" id="org8f09ff5">
+<div class="HTML" id="org9bb63c4">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -113,7 +121,7 @@ pipeline 的各个阶段是并行执行的，每个阶段只依赖前一阶段�
 </p>
 
 
-<div id="org4357e81" class="figure">
+<div id="org9eb7a1f" class="figure">
 <p><img src="./RealTimeRendering/02_01_architecture.jpg" alt="02_01_architecture.jpg" /><br />
 </p>
 </div>
@@ -123,7 +131,7 @@ pipeline 的各个阶段是并行执行的，每个阶段只依赖前一阶段�
 </p>
 
 
-<div id="org0cd62a6" class="figure">
+<div id="org3cd8a60" class="figure">
 <p><img src="./RealTimeRendering/02_01_architecture01.jpg" alt="02_01_architecture01.jpg" /><br />
 </p>
 </div>
@@ -160,9 +168,9 @@ vertex shader 的输出为执行了 MVP 变换后得到的齐次空间的坐标�
 </p>
 </div>
 </div>
-<div id="outline-container-orge9fe809" class="outline-4">
-<h4 id="orge9fe809">Rasterization</h4>
-<div class="outline-text-4" id="text-orge9fe809">
+<div id="outline-container-org11ba1bf" class="outline-4">
+<h4 id="org11ba1bf">Rasterization</h4>
+<div class="outline-text-4" id="text-org11ba1bf">
 <p>
 Rasterization 阶段的目标是找到所有被图元覆盖的像素，其被分为两个子阶段：triangle setup(primitive assembly)和 triangle traversal。Rasterization 也被称为 Scan Conversion(扫描转化)，因为其将屏幕空间上多个二维的顶点转换为了屏幕上的像素。<br />
 </p>
@@ -177,7 +185,7 @@ Triangle Traversal 阶段：判断哪些像素或样本被三角形覆盖，对�
 <h4 id="orge7dfff7">Pixel Processing</h4>
 <div class="outline-text-4" id="text-orge7dfff7">
 
-<div id="org1712f4c" class="figure">
+<div id="org872bce3" class="figure">
 <p><img src="./RealTimeRendering/02_01_architecture03.jpg" alt="02_01_architecture03.jpg" /><br />
 </p>
 </div>
@@ -186,7 +194,47 @@ Triangle Traversal 阶段：判断哪些像素或样本被三角形覆盖，对�
 </div>
 <div id="outline-container-org5df4516" class="outline-3">
 <h3 id="org5df4516">03 The Graphics Processing Unit</h3>
+<div class="outline-text-3" id="text-org5df4516">
 </div>
+<div id="outline-container-org9b6e653" class="outline-4">
+<h4 id="org9b6e653">Data-Parallel Architectures</h4>
+<div class="outline-text-4" id="text-org9b6e653">
+<p>
+GPU 中的一些专用术语：<br />
+</p>
+<ul class="org-ul">
+<li>Thread          为一个片段调用一次 pixel shader 被称为一个 thread。<br /></li>
+<li>Warp/Wavefronts 使用相同 shader 程序的 threads 被分成多个组，这些组被称为 warps(NVIDIA) 或 wavefronts(AMD)。一个 warp 可以被调度到多个 GPU shader cores(通常是 8 到 64 个 shader cores)上按照 SIMD 的方式执行。每个 thread 被映射到一个 SIMD lane。<br /></li>
+</ul>
+
+<p>
+假如我们有一个 Mesh 被光栅化，然后该 Mesh 覆盖了 2000 个像素，生成了 2000 个片段。NVIDIA GPUs 一个 warp 包含 32 个 threads。2000/32=62.5，因此需要分配 63 个 warps，其中有一个 warp 的一半是空的。一个 warp 对应的 shader 程序会在 32 个 processors 上以 lock-step 的方式执行。执行中若需要获取内存，该 warp 中的所有的 threads 会同时需要获取内存（因为，为 warp 内所有的 threads 执行相同的指令），内存获取通知该 warp 阻塞，warp 内的所有 threads 都各自等待各自所需内存数据返回。被阻塞的 warp 会被置换出去，另一个不同的 warp 会被置换进来，继续在这 32 个 processors 上执行。因为，置换操作不会碰 thread 的任何数据（每个 thread 都有其自己的寄存器，每个 warp 记录其当前正在执行的指令），置换到新的 warp 只是将一组 cores 指向一组不同的 threads 来执行，所以，这种置换操作非常的快。如下图所示：<br />
+<img src="./RealTimeRendering/03_01_gpu_warp_schedule.jpg" alt="03_01_gpu_warp_schedule.jpg" /><br />
+</p>
+
+
+<p>
+warp-swapping 机制是 GPU 用于隐藏延迟的主要机制。很多因素会影响隐藏延迟，如：<br />
+</p>
+<ul class="org-ul">
+<li>只有很少的 threads，因此只能创建很少的 warps。这导致没有足够的 warps 被置换。<br /></li>
+<li>shader 程序的结构也会对隐藏延迟造成影响。每个 thread 所用的寄存器越多，就会导致 GPU 容纳的 threads、warps 越少。<br /></li>
+<li>内存获取频率也会对隐藏延迟造成影响。<br /></li>
+</ul>
+<p>
+当前驻留在 GPU 中的 warps 被称为“in flight”，驻留在 GPU 中的 warps 数量被称为占有率。高占有率意味着有很多 warps 可以被处理，processor 空闲的可能性就低。低占有率通常导致低性能。<br />
+</p>
+
+<p>
+dynamic branching 也会影响整体效率。如果所有的 threads 都走相同的分支，则 warp 可以不关心其他的分支。然而，如果一些 threads 甚至有一个 thread 走了其他分支，则 warp 需要执行两个分支的所有逻辑，并丢弃不需要的结果。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org7bbbf9d" class="outline-4">
+<h4 id="org7bbbf9d">GPU Pipeline Overview</h4>
+</div>
+</div>
+
 <div id="outline-container-orga22c2c6" class="outline-3">
 <h3 id="orga22c2c6">09 Physically Based Shading</h3>
 <div class="outline-text-3" id="text-orga22c2c6">
@@ -195,7 +243,7 @@ Triangle Traversal 阶段：判断哪些像素或样本被三角形覆盖，对�
 <h4 id="orgfcca506">The BRDF</h4>
 <div class="outline-text-4" id="text-orgfcca506">
 
-<div id="org6d0cea5" class="figure">
+<div id="org5f42857" class="figure">
 <p><img src="./RealTimeRendering/09_03_brdf.jpg" alt="09_03_brdf.jpg" /><br />
 </p>
 </div>
@@ -244,9 +292,9 @@ hemispherical-directional reflectance R(v)是一个类似的函数。其测量�
 <h3 id="orgb26bd55">23 Graphics Hardware</h3>
 <div class="outline-text-3" id="text-orgb26bd55">
 </div>
-<div id="outline-container-org11ba1bf" class="outline-4">
-<h4 id="org11ba1bf">Rasterization</h4>
-<div class="outline-text-4" id="text-org11ba1bf">
+<div id="outline-container-orgee8f90b" class="outline-4">
+<h4 id="orgee8f90b">Rasterization</h4>
+<div class="outline-text-4" id="text-orgee8f90b">
 <p>
 所有的像素被按照 2x2 的方式组合，这样就可以实现 ddx ddy 了。<br />
 </p>

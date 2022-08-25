@@ -3,16 +3,19 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2022-03-14 周一 17:01 -->
+<!-- 2022-08-24 Wed 22:49 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Job System</title>
 <meta name="generator" content="Org mode" />
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
          <meta name="viewport" content="width=device-width, initial-scale=1" />
-         <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/css/worg.css" type="text/css" />
-         <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/css/worg-zenburn.css" type="text/css" />
-         <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
+         <link rel="stylesheet" type="text/css" href="https://wolfand11.gitee.io/res/readtheorg_theme/css/htmlize.css"/>
+         <link rel="stylesheet" type="text/css" href="https://wolfand11.gitee.io/res/readtheorg_theme/css/readtheorg.css"/>
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/jquery.min.js"></script>
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/bootstrap.min.js"></script>
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/jquery.stickytableheaders.min.js"></script>
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/readtheorg_theme/js/readtheorg.js"></script>
          <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
          <script type="text/javascript" src="https://wolfand11.gitee.io/res/blog-tools.js"></script>
 <script type="text/javascript">
@@ -54,10 +57,10 @@
 <li><a href="#orgab31375">Unity Job System</a>
 <ul>
 <li><a href="#orge23c0fa">概述</a></li>
-<li><a href="#orgdaa0ecb">Safety system</a>
+<li><a href="#org31fce5a">Safety system</a>
 <ul>
 <li><a href="#org525126c">Race conditions(竞争情况|竞争态势|竞争环境)</a></li>
-<li><a href="#org0042fb7">Safety system</a></li>
+<li><a href="#orgdaa0ecb">Safety system</a></li>
 </ul>
 </li>
 <li><a href="#org2772387">Native Container</a>
@@ -114,12 +117,12 @@
 <li><a href="#org9040fc2">Index 12 is out of restricted IJobParallelFor range [0&#x2026;11] in ReadWriteBuffer.</a></li>
 </ul>
 </li>
-<li><a href="#org57bafbb">参考资料</a></li>
+<li><a href="#orgfbb8320">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#org3662175">Implement Job System With CPP</a>
 <ul>
-<li><a href="#orgfbb8320">参考资料</a></li>
+<li><a href="#orgf3ef5ad">参考资料</a></li>
 </ul>
 </li>
 </ul>
@@ -128,7 +131,7 @@
 <p>
 Job System note.<br />
 </p>
-<div class="HTML" id="orgef6ceb0">
+<div class="HTML" id="orgcf8bb85">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -168,9 +171,9 @@ Job System note.<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-orgdaa0ecb" class="outline-4">
-<h4 id="orgdaa0ecb">Safety system</h4>
-<div class="outline-text-4" id="text-orgdaa0ecb">
+<div id="outline-container-org31fce5a" class="outline-4">
+<h4 id="org31fce5a">Safety system</h4>
+<div class="outline-text-4" id="text-org31fce5a">
 </div>
 <div id="outline-container-org525126c" class="outline-5">
 <h5 id="org525126c">Race conditions(竞争情况|竞争态势|竞争环境)</h5>
@@ -180,9 +183,9 @@ Job System note.<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org0042fb7" class="outline-5">
-<h5 id="org0042fb7">Safety system</h5>
-<div class="outline-text-5" id="text-org0042fb7">
+<div id="outline-container-orgdaa0ecb" class="outline-5">
+<h5 id="orgdaa0ecb">Safety system</h5>
+<div class="outline-text-5" id="text-orgdaa0ecb">
 <p>
 为了使得编写多线程代码更容易，unity c# job system 会检测所有潜在的 race conditions，并且避免 race conditions 导致的 bugs。<br />
 </p>
@@ -209,7 +212,7 @@ NativeContainer 是一个托管值类型，其为 native 内存提供了相对�
 <h5 id="orgfb5aa2c">What types of NativeContainer are available?</h5>
 <div class="outline-text-5" id="text-orgfb5aa2c">
 <p>
-Unity 附带了一个被名为 NativeArray 的 NativeContainer。你可以使用 NativeSlice 来操作一个 NativeArray 来获得一个 NativeArray 的子集。<br />
+Unity 附带了一个名为 NativeArray 的 NativeContainer。你可以使用 NativeSlice 来操作一个 NativeArray 来获得一个 NativeArray 的子集。<br />
 </p>
 
 <p>
@@ -303,7 +306,8 @@ Tips： 设计 job 时，需要注意除 NativeContainer 变量外，其他变�
 
 <div class="org-src-container">
 <pre class="src src-csharp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Job adding two floating point values together</span>
-<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">struct</span> <span style="color: #ce537a; font-weight: bold;">MyJob</span> : <span style="color: #ce537a; font-weight: bold;">IJob</span>
+[<span style="color: #7590db;">BurstCompile</span>]
+<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">struct</span> MyJob : <span style="color: #ce537a; font-weight: bold;">IJob</span>
 {
     <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #7590db;">a</span>;
     <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #7590db;">b</span>;
@@ -316,6 +320,14 @@ Tips： 设计 job 时，需要注意除 NativeContainer 变量外，其他变�
 }
 </pre>
 </div>
+
+<p>
+Tips:<br />
+</p>
+<ul class="org-ul">
+<li>BurstCompile  显式指定 unity 使用 Burst 来编译我们的 MyJob job 结构体。当 job 第一次被执行时，其会被 Burst 在后台进行编译，此时会使用常规的 C#编译版本。当 Burst 编译完成后，才会切换到 Burst 编译版本。<br /></li>
+<li>BurstCompiel(CompileSynchronously=true) 表示强制 editor 立即编译 job 的 Burst 版本，unity 会卡住，直到编译完成。<br /></li>
+</ul>
 </div>
 </div>
 <div id="outline-container-orgade4470" class="outline-5">
@@ -506,11 +518,15 @@ ParallelFor job 使用 NativeArray 类型的数据作为其数据源。ParallelF
 
 <p>
 下图为整个调度 ParallelFor job 的流程：<br />
-<img src="./JobSystem/jobsystem_parallelfor_job_batches.jpg" alt="jobsystem_parallelfor_job_batches.jpg" /><br />
 </p>
 
+<div id="org67f4443" class="figure">
+<p><img src="./JobSystem/jobsystem_parallelfor_job_batches.jpg" alt="jobsystem_parallelfor_job_batches.jpg" width="700px" /><br />
+</p>
+</div>
+
 <p>
-当一个 Native Job 比其他 job 先完成分给它的 batchs，它会从其他 Native Job 抽取 batchs 来执行。为了保证 cache 的局部性，它只会抽取某个 Native Job 剩余的一般 batchs。<br />
+当一个 Native Job 比其他 job 先完成分给它的 batchs，它会从其他 Native Job 抽取 batchs 来执行。为了保证 cache 的局部性，它只会抽取某个 Native Job 剩余的一半 batchs。<br />
 </p>
 </div>
 </div>
@@ -737,7 +753,7 @@ nativeArray[0] = temp;
 <h5 id="org45b6135">调用 JobHandle.Complete 来重新获得所有权（Call JobHandle.Complete to regain ownership)</h5>
 <div class="outline-text-5" id="text-org45b6135">
 <p>
-只调用 JobHandle.IsCompleted 来检查是不够。对于主线程来说，必须调用 JobHandle.Complete 才能重新获得 NativeContainer 类型数据的所有权。调用 Complete 还会清楚 safety system 中的状态。不这样做会导致内存泄露。如果你每帧调度的新 jobs 依赖于前面帧的 job，这个过程也适用。<br />
+只调用 JobHandle.IsCompleted 来检查是不够的。对于主线程来说，必须调用 JobHandle.Complete 才能重新获得 NativeContainer 类型数据的所有权。调用 Complete 还会清除 safety system 中的状态。不这样做会导致内存泄露。如果你每帧调度的新 jobs 依赖于前面帧的 job，这个过程也适用。<br />
 </p>
 </div>
 </div>
@@ -829,9 +845,9 @@ job 有一个 Run 方法，你可以在 Schedule 的地方使用 Run 来代替�
 </div>
 </div>
 </div>
-<div id="outline-container-org57bafbb" class="outline-3">
-<h3 id="org57bafbb">参考资料</h3>
-<div class="outline-text-3" id="text-org57bafbb">
+<div id="outline-container-orgfbb8320" class="outline-3">
+<h3 id="orgfbb8320">参考资料</h3>
+<div class="outline-text-3" id="text-orgfbb8320">
 <ul class="org-ul">
 <li>JobSystem <a href="https://docs.unity3d.com/Manual/JobSystem.html">https://docs.unity3d.com/Manual/JobSystem.html</a><br /></li>
 <li>Burst <a href="https://docs.unity3d.com/Packages/com.unity.burst@0.2/manual/index.html">https://docs.unity3d.com/Packages/com.unity.burst@0.2/manual/index.html</a><br /></li>
@@ -845,9 +861,9 @@ job 有一个 Run 方法，你可以在 Schedule 的地方使用 Run 来代替�
 <h2 id="org3662175">Implement Job System With CPP</h2>
 <div class="outline-text-2" id="text-org3662175">
 </div>
-<div id="outline-container-orgfbb8320" class="outline-3">
-<h3 id="orgfbb8320">参考资料</h3>
-<div class="outline-text-3" id="text-orgfbb8320">
+<div id="outline-container-orgf3ef5ad" class="outline-3">
+<h3 id="orgf3ef5ad">参考资料</h3>
+<div class="outline-text-3" id="text-orgf3ef5ad">
 <ul class="org-ul">
 <li>Parallelizing the Naughty Dog Engine Using Fibers <a href="https://www.gdcvault.com/play/1022186/Parallelizing-the-Naughty-Dog-Engine">https://www.gdcvault.com/play/1022186/Parallelizing-the-Naughty-Dog-Engine</a><br /></li>
 <li>Parallelizing the Naughty Dog Engine Using Fibers <a href="https://ubm-twvideo01.s3.amazonaws.com/o1/vault/gdc2015/presentations/Gyrling_Christian_Parallelizing_The_Naughty.pdf">https://ubm-twvideo01.s3.amazonaws.com/o1/vault/gdc2015/presentations/Gyrling_Christian_Parallelizing_The_Naughty.pdf</a><br /></li>

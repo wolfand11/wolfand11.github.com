@@ -3,16 +3,19 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2022-03-14 周一 16:59 -->
+<!-- 2022-05-13 Fri 18:08 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Move Sync</title>
 <meta name="generator" content="Org mode" />
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
          <meta name="viewport" content="width=device-width, initial-scale=1" />
-         <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/css/worg.css" type="text/css" />
-         <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/css/worg-zenburn.css" type="text/css" />
-         <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/css/worg-classic.css" type="text/css" />
+         <link rel="stylesheet" type="text/css" href="https://wolfand11.gitee.io/res/readtheorg_theme/css/htmlize.css"/>
+         <link rel="stylesheet" type="text/css" href="https://wolfand11.gitee.io/res/readtheorg_theme/css/readtheorg.css"/>
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/jquery.min.js"></script>
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/bootstrap.min.js"></script>
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/jquery.stickytableheaders.min.js"></script>
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/readtheorg_theme/js/readtheorg.js"></script>
          <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
          <script type="text/javascript" src="https://wolfand11.gitee.io/res/blog-tools.js"></script>
 <script type="text/javascript">
@@ -48,15 +51,15 @@
 <p>
 最近在看移动同步相关的东西，发现网上已经有人写了很好的文章。这里就只做一些简单思考和学习笔记吧。文章结尾处有原文章地址。<br />
 </p>
-<div class="HTML" id="org27758c5">
+<div class="HTML" id="orgdd97a3f">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
 
 </div>
-<div id="outline-container-orgf749f8b" class="outline-2">
-<h2 id="orgf749f8b">网络同步演示</h2>
-<div class="outline-text-2" id="text-orgf749f8b">
+<div id="outline-container-org8b9f1a9" class="outline-2">
+<h2 id="org8b9f1a9">网络同步演示</h2>
+<div class="outline-text-2" id="text-org8b9f1a9">
 <p>
 原始文章中，网络延迟模拟的方法是，发送数据时，随机一个时间间隔，在该时间间隔以后处理发送的数据，这种方式无法保证模拟的网络数据按照发送的顺序被依次处理。<br />
 我采用了拥堵概率（delayRate）来模拟网络延迟，发送数据时，将数据放入一个队列中，取数据时，随机一个 0 到 1 的数值 randValue：<br />
@@ -66,16 +69,16 @@
 </div>
 </div>
 
-<div id="outline-container-org12e227b" class="outline-2">
-<h2 id="org12e227b">状态更新及航位预测法</h2>
-<div class="outline-text-2" id="text-org12e227b">
+<div id="outline-container-orgba699e9" class="outline-2">
+<h2 id="orgba699e9">状态更新及航位预测法</h2>
+<div class="outline-text-2" id="text-orgba699e9">
 <p>
 引入原因： 状态更新和航位预测用来降低网络同步频率，从而降低服务器响应压力。<br />
 </p>
 </div>
-<div id="outline-container-orgca3bd39" class="outline-3">
-<h3 id="orgca3bd39">状态更新</h3>
-<div class="outline-text-3" id="text-orgca3bd39">
+<div id="outline-container-org972d5f4" class="outline-3">
+<h3 id="org972d5f4">状态更新</h3>
+<div class="outline-text-3" id="text-org972d5f4">
 <p>
 在同步数据之前，首先判断状态（速度，加速度，方向）是否改变，如果没有改变则不需要进行同步。<br />
 如果存在加速度，需要做下面一些判断，任何判断为是，则需要进行同步：<br />
@@ -87,9 +90,9 @@
 </ul>
 </div>
 </div>
-<div id="outline-container-org69a1335" class="outline-3">
-<h3 id="org69a1335">航位预测</h3>
-<div class="outline-text-3" id="text-org69a1335">
+<div id="outline-container-org326bdaf" class="outline-3">
+<h3 id="org326bdaf">航位预测</h3>
+<div class="outline-text-3" id="text-org326bdaf">
 <p>
 在同步数据之前，按照前一次同步过的状态，预计算出现在的位置。如果预计算得到的位置和真实的位置的差值超过某个阙值，则进行状态同步。<br />
 在实现航位预测时，增加了 lastSyncedMoveInfo 变量，来存储前一次同步过的移动信息。不能直接使用 lastMoveInfo 的原因是，如果两帧之间的变化小于阙值时，不会改变 lastSyncedMoveInfo，但是，lastMoveInfo 是需要改变的。<br />
@@ -97,22 +100,22 @@
 </div>
 </div>
 
-<div id="outline-container-org853cc4e" class="outline-3">
-<h3 id="org853cc4e">航位预测是状态更新的补充，航位预测可以避免累积错误。</h3>
-<div class="outline-text-3" id="text-org853cc4e">
+<div id="outline-container-org6f781af" class="outline-3">
+<h3 id="org6f781af">航位预测是状态更新的补充，航位预测可以避免累积错误。</h3>
+<div class="outline-text-3" id="text-org6f781af">
 <p>
 在包含状态更新的情况下，是否需要航位预测？<br />
 状态更新是否存在累积错误？<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org13d17e6" class="outline-3">
-<h3 id="org13d17e6">平滑算法</h3>
-<div class="outline-text-3" id="text-org13d17e6">
+<div id="outline-container-orga2836dc" class="outline-3">
+<h3 id="orga2836dc">平滑算法</h3>
+<div class="outline-text-3" id="text-orga2836dc">
 </div>
-<div id="outline-container-orgcd9d2e0" class="outline-4">
-<h4 id="orgcd9d2e0">引入原因：</h4>
-<div class="outline-text-4" id="text-orgcd9d2e0">
+<div id="outline-container-org0122c54" class="outline-4">
+<h4 id="org0122c54">引入原因：</h4>
+<div class="outline-text-4" id="text-org0122c54">
 <p>
 当当前位置和目标位置的差值大于一帧移动的距离时（航位预测法中预测位置和目标位置），为了避免闪现（跳跃）可以采用平滑算法，将角色从当前位置平滑移动到目标位置。<br />
 </p>
@@ -139,9 +142,9 @@ sobj1 在 t1=t0+10ms+120ms 时，速度变为 4m/s，方向为（0,1）<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgb451628" class="outline-4">
-<h4 id="orgb451628">平滑处理中有以下几点需要注意：</h4>
-<div class="outline-text-4" id="text-orgb451628">
+<div id="outline-container-orgf9a4900" class="outline-4">
+<h4 id="orgf9a4900">平滑处理中有以下几点需要注意：</h4>
+<div class="outline-text-4" id="text-orgf9a4900">
 <ul class="org-ul">
 <li>目标位置 不是当前从服务器发来的位置，而是发来的位置加上延迟时间内又移动的距离，所以目标位置稍远一些。<br /></li>
 <li>平滑时间<br /></li>
@@ -171,9 +174,9 @@ sobj1 在 t1=t0+10ms+120ms 时，速度变为 4m/s，方向为（0,1）<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org1e0220b" class="outline-4">
-<h4 id="org1e0220b">线性插值</h4>
-<div class="outline-text-4" id="text-org1e0220b">
+<div id="outline-container-org4b1a84e" class="outline-4">
+<h4 id="org4b1a84e">线性插值</h4>
+<div class="outline-text-4" id="text-org4b1a84e">
 <p>
 线性插值代码：<br />
 </p>
@@ -192,9 +195,9 @@ sobj1 在 t1=t0+10ms+120ms 时，速度变为 4m/s，方向为（0,1）<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org0ad905b" class="outline-4">
-<h4 id="org0ad905b">立方样条插值</h4>
-<div class="outline-text-4" id="text-org0ad905b">
+<div id="outline-container-org8434fcc" class="outline-4">
+<h4 id="org8434fcc">立方样条插值</h4>
+<div class="outline-text-4" id="text-org8434fcc">
 <p>
 实现立方样条插值需要 4 个坐标点：<br />
 坐标点 0：开始位置（即本地当前位置）<br />
@@ -217,9 +220,9 @@ H = y<sub>0</sub><br />
 </div>
 </div>
 
-<div id="outline-container-org287b462" class="outline-4">
-<h4 id="org287b462">加权平均插值</h4>
-<div class="outline-text-4" id="text-org287b462">
+<div id="outline-container-orgfa5d7c3" class="outline-4">
+<h4 id="orgfa5d7c3">加权平均插值</h4>
+<div class="outline-text-4" id="text-orgfa5d7c3">
 <p>
 curPos = curPos + (targetPos - curPos)/slowdownFactor<br />
 slowdownFactor 为缓动因子，slowdownFactor 越大，平滑速度越慢。<br />
@@ -232,9 +235,9 @@ slowdownFactor 为缓动因子，slowdownFactor 越大，平滑速度越慢。<b
 </div>
 </div>
 </div>
-<div id="outline-container-org61649f6" class="outline-2">
-<h2 id="org61649f6">帧锁定算法</h2>
-<div class="outline-text-2" id="text-org61649f6">
+<div id="outline-container-orgaf5fe89" class="outline-2">
+<h2 id="orgaf5fe89">帧锁定算法</h2>
+<div class="outline-text-2" id="text-orgaf5fe89">
 <p>
 帧锁定同步算法描述：<br />
 帧锁定同步分为两个部分，第一部分是发送客户端的移动信息，第二部分是接收服务器返回的移动信息，并利用该信息执行移动逻辑。具体实现参考下面代码即可。<br />
@@ -332,9 +335,9 @@ slowdownFactor 为缓动因子，slowdownFactor 越大，平滑速度越慢。<b
 </div>
 </div>
 </div>
-<div id="outline-container-org2e975d7" class="outline-2">
-<h2 id="org2e975d7">参考链接</h2>
-<div class="outline-text-2" id="text-org2e975d7">
+<div id="outline-container-org25b7e94" class="outline-2">
+<h2 id="org25b7e94">参考链接</h2>
+<div class="outline-text-2" id="text-org25b7e94">
 <p>
 <a href="http://www.zhust.com/index.php/2014/02/%E7%BD%91%E7%BB%9C%E6%B8%B8%E6%88%8F%E7%9A%84%E7%A7%BB%E5%8A%A8%E5%90%8C%E6%AD%A5%EF%BC%88%E4%B8%80%EF%BC%89%E7%BD%91%E7%BB%9C%E5%90%8C%E6%AD%A5%E6%BC%94%E7%A4%BA/">网络游戏的移动同步（一）网络同步演示</a><br />
 <a href="http://www.zhust.com/index.php/2014/02/%E7%BD%91%E7%BB%9C%E6%B8%B8%E6%88%8F%E7%9A%84%E7%A7%BB%E5%8A%A8%E5%90%8C%E6%AD%A5%EF%BC%88%E4%BA%8C%EF%BC%89%E7%8A%B6%E6%80%81%E6%9B%B4%E6%96%B0%E5%8F%8A%E8%88%AA%E4%BD%8D%E9%A2%84%E6%B5%8B%E6%B3%95/">网络游戏的移动同步（二）状态更新及航位预测法</a><br />

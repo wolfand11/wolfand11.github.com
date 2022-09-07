@@ -3,19 +3,16 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2022-05-13 Fri 18:07 -->
+<!-- 2022-09-07 Wed 11:19 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Unity Optimize</title>
 <meta name="generator" content="Org mode" />
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
          <meta name="viewport" content="width=device-width, initial-scale=1" />
-         <link rel="stylesheet" type="text/css" href="https://wolfand11.gitee.io/res/readtheorg_theme/css/htmlize.css"/>
-         <link rel="stylesheet" type="text/css" href="https://wolfand11.gitee.io/res/readtheorg_theme/css/readtheorg.css"/>
-         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/jquery.min.js"></script>
-         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/bootstrap.min.js"></script>
-         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/jquery.stickytableheaders.min.js"></script>
-         <script type="text/javascript" src="https://wolfand11.gitee.io/res/readtheorg_theme/js/readtheorg.js"></script>
+         <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/worg_theme/css/worg.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/worg_theme/css/worg-zenburn.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/worg_theme/css/worg-classic.css" type="text/css" />
          <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
          <script type="text/javascript" src="https://wolfand11.gitee.io/res/blog-tools.js"></script>
 <script type="text/javascript">
@@ -52,43 +49,43 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orgcb183de">Optimize</a>
+<li><a href="#org42c7b54">Optimize</a>
 <ul>
-<li><a href="#org63c1324">Render</a>
+<li><a href="#org29970b3">Render</a>
 <ul>
-<li><a href="#org316e989">Optimizing SkinnedMeshRenderers</a></li>
+<li><a href="#org0471ec7">Optimizing SkinnedMeshRenderers</a></li>
 </ul>
 </li>
-<li><a href="#org250b79f">Animation</a>
+<li><a href="#org8e1dbab">Animation</a>
 <ul>
-<li><a href="#orgf1b8661">SkinMesh 动画 Bake 为 Mesh 动画</a></li>
+<li><a href="#org4b520a1">SkinMesh 动画 Bake 为 Mesh 动画</a></li>
 </ul>
 </li>
-<li><a href="#org777a73c">Performance Review</a>
+<li><a href="#org536bc86">Performance Review</a>
 <ul>
-<li><a href="#org7c3da99">Unity 性能消耗</a></li>
-<li><a href="#orgf6909a0">参考资料</a></li>
+<li><a href="#org86145e8">Unity 性能消耗</a></li>
+<li><a href="#org613d38c">参考资料</a></li>
 </ul>
 </li>
-<li><a href="#orgf680ea0">Misc</a>
+<li><a href="#org73cfbfb">Misc</a>
 <ul>
-<li><a href="#org55b9b7a">利用 Culling Group 实现 LOD 和剔除逻辑</a></li>
+<li><a href="#org4f95c95">利用 Culling Group 实现 LOD 和剔除逻辑</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#org7e30a0b">tools</a>
+<li><a href="#org40fff20">tools</a>
 <ul>
-<li><a href="#org3157205">Unity Profiler</a>
+<li><a href="#orgb7fd52b">Unity Profiler</a>
 <ul>
-<li><a href="#org994d0ce">Gfx.WaitForPresent</a></li>
+<li><a href="#orge422d7a">Gfx.WaitForPresent</a></li>
 </ul>
 </li>
-<li><a href="#orgdbf0a8a">Xcode</a>
+<li><a href="#org987a119">Xcode</a>
 <ul>
-<li><a href="#orgc0dbd31">Error</a>
+<li><a href="#org2bff126">Error</a>
 <ul>
-<li><a href="#org98456f7">Xcode Instruments Call Tree Symbol Name 显示地址而不是函数名</a></li>
+<li><a href="#orgb6bd17d">Xcode Instruments Call Tree Symbol Name 显示地址而不是函数名</a></li>
 </ul>
 </li>
 </ul>
@@ -101,24 +98,24 @@
 <p>
 Unity Optimize note.<br />
 </p>
-<div class="HTML" id="orgd4a72bc">
+<div class="HTML" id="orge527fce">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
 
 </div>
 
-<div id="outline-container-orgcb183de" class="outline-2">
-<h2 id="orgcb183de">Optimize</h2>
-<div class="outline-text-2" id="text-orgcb183de">
+<div id="outline-container-org42c7b54" class="outline-2">
+<h2 id="org42c7b54">Optimize</h2>
+<div class="outline-text-2" id="text-org42c7b54">
 </div>
-<div id="outline-container-org63c1324" class="outline-3">
-<h3 id="org63c1324">Render</h3>
-<div class="outline-text-3" id="text-org63c1324">
+<div id="outline-container-org29970b3" class="outline-3">
+<h3 id="org29970b3">Render</h3>
+<div class="outline-text-3" id="text-org29970b3">
 </div>
-<div id="outline-container-org316e989" class="outline-4">
-<h4 id="org316e989">Optimizing SkinnedMeshRenderers</h4>
-<div class="outline-text-4" id="text-org316e989">
+<div id="outline-container-org0471ec7" class="outline-4">
+<h4 id="org0471ec7">Optimizing SkinnedMeshRenderers</h4>
+<div class="outline-text-4" id="text-org0471ec7">
 <p>
 <a href="https://www.flamebaitgames.com/optimizing-skinnedmeshrenderers-for-unity-5-2/">https://www.flamebaitgames.com/optimizing-skinnedmeshrenderers-for-unity-5-2/</a><br />
 </p>
@@ -126,13 +123,13 @@ Unity Optimize note.<br />
 </div>
 </div>
 
-<div id="outline-container-org250b79f" class="outline-3">
-<h3 id="org250b79f">Animation</h3>
-<div class="outline-text-3" id="text-org250b79f">
+<div id="outline-container-org8e1dbab" class="outline-3">
+<h3 id="org8e1dbab">Animation</h3>
+<div class="outline-text-3" id="text-org8e1dbab">
 </div>
-<div id="outline-container-orgf1b8661" class="outline-4">
-<h4 id="orgf1b8661">SkinMesh 动画 Bake 为 Mesh 动画</h4>
-<div class="outline-text-4" id="text-orgf1b8661">
+<div id="outline-container-org4b520a1" class="outline-4">
+<h4 id="org4b520a1">SkinMesh 动画 Bake 为 Mesh 动画</h4>
+<div class="outline-text-4" id="text-org4b520a1">
 <p>
 <a href="https://stackoverflow.com/questions/41007012/optimizing-animations-to-show-dozens-or-even-hundreds-on-mobile-in-unity">https://stackoverflow.com/questions/41007012/optimizing-animations-to-show-dozens-or-even-hundreds-on-mobile-in-unity</a><br />
 </p>
@@ -140,16 +137,16 @@ Unity Optimize note.<br />
 </div>
 </div>
 
-<div id="outline-container-org777a73c" class="outline-3">
-<h3 id="org777a73c">Performance Review</h3>
-<div class="outline-text-3" id="text-org777a73c">
+<div id="outline-container-org536bc86" class="outline-3">
+<h3 id="org536bc86">Performance Review</h3>
+<div class="outline-text-3" id="text-org536bc86">
 </div>
-<div id="outline-container-org7c3da99" class="outline-4">
-<h4 id="org7c3da99">Unity 性能消耗</h4>
+<div id="outline-container-org86145e8" class="outline-4">
+<h4 id="org86145e8">Unity 性能消耗</h4>
 </div>
-<div id="outline-container-orgf6909a0" class="outline-4">
-<h4 id="orgf6909a0">参考资料</h4>
-<div class="outline-text-4" id="text-orgf6909a0">
+<div id="outline-container-org613d38c" class="outline-4">
+<h4 id="org613d38c">参考资料</h4>
+<div class="outline-text-4" id="text-org613d38c">
 <ul class="org-ul">
 <li>Unity 性能 Review <a href="https://zhuanlan.zhihu.com/p/31345068">https://zhuanlan.zhihu.com/p/31345068</a><br /></li>
 </ul>
@@ -157,13 +154,13 @@ Unity Optimize note.<br />
 </div>
 </div>
 
-<div id="outline-container-orgf680ea0" class="outline-3">
-<h3 id="orgf680ea0">Misc</h3>
-<div class="outline-text-3" id="text-orgf680ea0">
+<div id="outline-container-org73cfbfb" class="outline-3">
+<h3 id="org73cfbfb">Misc</h3>
+<div class="outline-text-3" id="text-org73cfbfb">
 </div>
-<div id="outline-container-org55b9b7a" class="outline-4">
-<h4 id="org55b9b7a">利用 Culling Group 实现 LOD 和剔除逻辑</h4>
-<div class="outline-text-4" id="text-org55b9b7a">
+<div id="outline-container-org4f95c95" class="outline-4">
+<h4 id="org4f95c95">利用 Culling Group 实现 LOD 和剔除逻辑</h4>
+<div class="outline-text-4" id="text-org4f95c95">
 <p>
 <a href="https://blog.csdn.net/u010019717/article/details/97690363">https://blog.csdn.net/u010019717/article/details/97690363</a><br />
 </p>
@@ -172,34 +169,34 @@ Unity Optimize note.<br />
 </div>
 </div>
 
-<div id="outline-container-org7e30a0b" class="outline-2">
-<h2 id="org7e30a0b">tools</h2>
-<div class="outline-text-2" id="text-org7e30a0b">
+<div id="outline-container-org40fff20" class="outline-2">
+<h2 id="org40fff20">tools</h2>
+<div class="outline-text-2" id="text-org40fff20">
 </div>
-<div id="outline-container-org3157205" class="outline-3">
-<h3 id="org3157205">Unity Profiler</h3>
-<div class="outline-text-3" id="text-org3157205">
+<div id="outline-container-orgb7fd52b" class="outline-3">
+<h3 id="orgb7fd52b">Unity Profiler</h3>
+<div class="outline-text-3" id="text-orgb7fd52b">
 </div>
-<div id="outline-container-org994d0ce" class="outline-4">
-<h4 id="org994d0ce">Gfx.WaitForPresent</h4>
-<div class="outline-text-4" id="text-org994d0ce">
+<div id="outline-container-orge422d7a" class="outline-4">
+<h4 id="orge422d7a">Gfx.WaitForPresent</h4>
+<div class="outline-text-4" id="text-orge422d7a">
 <ul class="org-ul">
 <li><a href="https://github.com/UnityCommunity/UnityLibrary/wiki/Profiler:-Overhead---Gfx.WaitForPresent-explained">https://github.com/UnityCommunity/UnityLibrary/wiki/Profiler:-Overhead---Gfx.WaitForPresent-explained</a><br /></li>
 </ul>
 </div>
 </div>
 </div>
-<div id="outline-container-orgdbf0a8a" class="outline-3">
-<h3 id="orgdbf0a8a">Xcode</h3>
-<div class="outline-text-3" id="text-orgdbf0a8a">
+<div id="outline-container-org987a119" class="outline-3">
+<h3 id="org987a119">Xcode</h3>
+<div class="outline-text-3" id="text-org987a119">
 </div>
-<div id="outline-container-orgc0dbd31" class="outline-4">
-<h4 id="orgc0dbd31">Error</h4>
-<div class="outline-text-4" id="text-orgc0dbd31">
+<div id="outline-container-org2bff126" class="outline-4">
+<h4 id="org2bff126">Error</h4>
+<div class="outline-text-4" id="text-org2bff126">
 </div>
-<div id="outline-container-org98456f7" class="outline-5">
-<h5 id="org98456f7">Xcode Instruments Call Tree Symbol Name 显示地址而不是函数名</h5>
-<div class="outline-text-5" id="text-org98456f7">
+<div id="outline-container-orgb6bd17d" class="outline-5">
+<h5 id="orgb6bd17d">Xcode Instruments Call Tree Symbol Name 显示地址而不是函数名</h5>
+<div class="outline-text-5" id="text-orgb6bd17d">
 <p>
 首先保证 build 生成 app 时，同时生成了 dSYM 文件。使用 Product/BuildFor/Profiling 构建 App 可以默认生成 dSYM 文件。<br />
 其次保证 使用 Xcode Instruments Time Profiler 工具 Profile App 时，使用了上一步生成的 dSYM 文件。可以<br />
@@ -213,6 +210,31 @@ Unity Optimize note.<br />
 </div>
 </div>
 </div>
+</div>
+<div id="postamble" class="status">
+<div id="vssue"></div>
+        <link rel="stylesheet" href="https://unpkg.com/vssue/dist/vssue.min.css">
+        <script src="https://unpkg.com/vue@2.7.10/dist/vue.runtime.min.js"></script>
+        <script src="https://unpkg.com/vssue/dist/vssue.github.min.js"></script>
+        <script>
+          new Vue({
+            el: '#vssue',
+            render: h => h('Vssue', {
+              props: {
+                // 在这里设置当前页面对应的 Issue 标题
+                title: 'Unity Optimize',
+
+                // 在这里设置你使用的平台的 OAuth App 配置
+                options: {
+                    owner: 'wolfand11',
+                    repo: 'blog_comments',
+                    clientId: 'a02b49185d85859cb92c',
+                    clientSecret: '6f123085c6f1ce339e2517d24e5b099fa1dc9c85', // 只有在使用某些平台时需要
+                },
+              }
+            })
+          })
+        </script>
 </div>
 </body>
 </html>

@@ -3,19 +3,16 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2022-08-24 Wed 22:47 -->
+<!-- 2022-09-07 Wed 11:15 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Real Time Rendering</title>
 <meta name="generator" content="Org mode" />
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
          <meta name="viewport" content="width=device-width, initial-scale=1" />
-         <link rel="stylesheet" type="text/css" href="https://wolfand11.gitee.io/res/readtheorg_theme/css/htmlize.css"/>
-         <link rel="stylesheet" type="text/css" href="https://wolfand11.gitee.io/res/readtheorg_theme/css/readtheorg.css"/>
-         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/jquery.min.js"></script>
-         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/bootstrap.min.js"></script>
-         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/jquery.stickytableheaders.min.js"></script>
-         <script type="text/javascript" src="https://wolfand11.gitee.io/res/readtheorg_theme/js/readtheorg.js"></script>
+         <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/worg_theme/css/worg.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/worg_theme/css/worg-zenburn.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/worg_theme/css/worg-classic.css" type="text/css" />
          <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
          <script type="text/javascript" src="https://wolfand11.gitee.io/res/blog-tools.js"></script>
 <script type="text/javascript">
@@ -52,31 +49,31 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org13e268d">Real Time Rendering</a>
+<li><a href="#org0ab3187">Real Time Rendering</a>
 <ul>
-<li><a href="#org6e7ce77">02 The Graphics Rendering Pipeline</a>
+<li><a href="#org0520ff0">02 The Graphics Rendering Pipeline</a>
 <ul>
-<li><a href="#orge2ad30d">Architecture</a></li>
-<li><a href="#org9fb2947">The Application Stage</a></li>
-<li><a href="#orgc9249be">Geometry Processing</a></li>
-<li><a href="#org11ba1bf">Rasterization</a></li>
-<li><a href="#orge7dfff7">Pixel Processing</a></li>
+<li><a href="#org7e50b90">Architecture</a></li>
+<li><a href="#orgf354281">The Application Stage</a></li>
+<li><a href="#org77fc133">Geometry Processing</a></li>
+<li><a href="#orgc93d3f2">Rasterization</a></li>
+<li><a href="#orged7c074">Pixel Processing</a></li>
 </ul>
 </li>
-<li><a href="#org5df4516">03 The Graphics Processing Unit</a>
+<li><a href="#orgfe79cc7">03 The Graphics Processing Unit</a>
 <ul>
-<li><a href="#org9b6e653">Data-Parallel Architectures</a></li>
-<li><a href="#org7bbbf9d">GPU Pipeline Overview</a></li>
+<li><a href="#orgfa34c28">Data-Parallel Architectures</a></li>
+<li><a href="#orgfce07ed">GPU Pipeline Overview</a></li>
 </ul>
 </li>
-<li><a href="#orga22c2c6">09 Physically Based Shading</a>
+<li><a href="#org57e3727">09 Physically Based Shading</a>
 <ul>
-<li><a href="#orgfcca506">The BRDF</a></li>
+<li><a href="#orgd9e2e22">The BRDF</a></li>
 </ul>
 </li>
-<li><a href="#orgb26bd55">23 Graphics Hardware</a>
+<li><a href="#orgad909bf">23 Graphics Hardware</a>
 <ul>
-<li><a href="#orgee8f90b">Rasterization</a></li>
+<li><a href="#orgf6b04f8">Rasterization</a></li>
 </ul>
 </li>
 </ul>
@@ -87,27 +84,27 @@
 <p>
 Real Time Rendering 第 4 版翻译.<br />
 </p>
-<div class="HTML" id="org9bb63c4">
+<div class="HTML" id="orgeedf080">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
 
 </div>
 
-<div id="outline-container-org13e268d" class="outline-2">
-<h2 id="org13e268d">Real Time Rendering</h2>
-<div class="outline-text-2" id="text-org13e268d">
+<div id="outline-container-org0ab3187" class="outline-2">
+<h2 id="org0ab3187">Real Time Rendering</h2>
+<div class="outline-text-2" id="text-org0ab3187">
 </div>
-<div id="outline-container-org6e7ce77" class="outline-3">
-<h3 id="org6e7ce77">02 The Graphics Rendering Pipeline</h3>
-<div class="outline-text-3" id="text-org6e7ce77">
+<div id="outline-container-org0520ff0" class="outline-3">
+<h3 id="org0520ff0">02 The Graphics Rendering Pipeline</h3>
+<div class="outline-text-3" id="text-org0520ff0">
 <p>
 本章主要专注于 rendering pipeline 各个不同阶段的功能，而不是实现。<br />
 </p>
 </div>
-<div id="outline-container-orge2ad30d" class="outline-4">
-<h4 id="orge2ad30d">Architecture</h4>
-<div class="outline-text-4" id="text-orge2ad30d">
+<div id="outline-container-org7e50b90" class="outline-4">
+<h4 id="org7e50b90">Architecture</h4>
+<div class="outline-text-4" id="text-org7e50b90">
 <p>
 pipeline 的各个阶段是并行执行的，每个阶段只依赖前一阶段的结果。理想情况下，一个非管线系统被分为 n 个管线阶段后，会得到 n 倍的加速。这是使用管线的主要原因。例如，制作三明治可以被划分为三个阶段，准备面包、添加肉、添加佐料。每个人负责一个阶段，每个阶段的结果会传递给下一个阶段。如果每个人都需要花费 20 秒完成自己阶段的任务，则制作出一个三明治需要的最短时间为 20 秒(使用管线之前，制作出一个三明治需要 60 秒)。<br />
 </p>
@@ -121,7 +118,7 @@ pipeline 的各个阶段是并行执行的，每个阶段只依赖前一阶段�
 </p>
 
 
-<div id="org9eb7a1f" class="figure">
+<div id="org286edef" class="figure">
 <p><img src="./RealTimeRendering/02_01_architecture.jpg" alt="02_01_architecture.jpg" /><br />
 </p>
 </div>
@@ -131,7 +128,7 @@ pipeline 的各个阶段是并行执行的，每个阶段只依赖前一阶段�
 </p>
 
 
-<div id="org3cd8a60" class="figure">
+<div id="orgfd93e7b" class="figure">
 <p><img src="./RealTimeRendering/02_01_architecture01.jpg" alt="02_01_architecture01.jpg" /><br />
 </p>
 </div>
@@ -142,9 +139,9 @@ pipeline 的各个阶段是并行执行的，每个阶段只依赖前一阶段�
 </div>
 </div>
 
-<div id="outline-container-org9fb2947" class="outline-4">
-<h4 id="org9fb2947">The Application Stage</h4>
-<div class="outline-text-4" id="text-org9fb2947">
+<div id="outline-container-orgf354281" class="outline-4">
+<h4 id="orgf354281">The Application Stage</h4>
+<div class="outline-text-4" id="text-orgf354281">
 <p>
 Application Stage 由应用程序驱动，由开发者完全控制在该阶段执行哪些任务，通常在软件上实现，并在通用的 CPUs 上执行。依赖于应用程序的类型，Applicaton Stage 需要完成的任务可能有 collision detection, global acceleration algorithms, animation, physics simulation 等等。<br />
 使用 computer shader，一些 Application Stage 的工作也可以由 GPU 来执行，此时将 GPU 视为高度并行的通用处理器，忽略其专门用于渲染图形的特殊功能。<br />
@@ -159,18 +156,18 @@ Application Stage 通常还会处理其他输入，如键盘、鼠标等等。�
 </p>
 </div>
 </div>
-<div id="outline-container-orgc9249be" class="outline-4">
-<h4 id="orgc9249be">Geometry Processing</h4>
-<div class="outline-text-4" id="text-orgc9249be">
+<div id="outline-container-org77fc133" class="outline-4">
+<h4 id="org77fc133">Geometry Processing</h4>
+<div class="outline-text-4" id="text-org77fc133">
 <p>
 vertex shader 的输出为执行了 MVP 变换后得到的齐次空间的坐标。<br />
 <img src="./RealTimeRendering/02_01_architecture02.jpg" alt="02_01_architecture02.jpg" /><br />
 </p>
 </div>
 </div>
-<div id="outline-container-org11ba1bf" class="outline-4">
-<h4 id="org11ba1bf">Rasterization</h4>
-<div class="outline-text-4" id="text-org11ba1bf">
+<div id="outline-container-orgc93d3f2" class="outline-4">
+<h4 id="orgc93d3f2">Rasterization</h4>
+<div class="outline-text-4" id="text-orgc93d3f2">
 <p>
 Rasterization 阶段的目标是找到所有被图元覆盖的像素，其被分为两个子阶段：triangle setup(primitive assembly)和 triangle traversal。Rasterization 也被称为 Scan Conversion(扫描转化)，因为其将屏幕空间上多个二维的顶点转换为了屏幕上的像素。<br />
 </p>
@@ -181,24 +178,24 @@ Triangle Traversal 阶段：判断哪些像素或样本被三角形覆盖，对�
 </p>
 </div>
 </div>
-<div id="outline-container-orge7dfff7" class="outline-4">
-<h4 id="orge7dfff7">Pixel Processing</h4>
-<div class="outline-text-4" id="text-orge7dfff7">
+<div id="outline-container-orged7c074" class="outline-4">
+<h4 id="orged7c074">Pixel Processing</h4>
+<div class="outline-text-4" id="text-orged7c074">
 
-<div id="org872bce3" class="figure">
+<div id="orgdc5e4cc" class="figure">
 <p><img src="./RealTimeRendering/02_01_architecture03.jpg" alt="02_01_architecture03.jpg" /><br />
 </p>
 </div>
 </div>
 </div>
 </div>
-<div id="outline-container-org5df4516" class="outline-3">
-<h3 id="org5df4516">03 The Graphics Processing Unit</h3>
-<div class="outline-text-3" id="text-org5df4516">
+<div id="outline-container-orgfe79cc7" class="outline-3">
+<h3 id="orgfe79cc7">03 The Graphics Processing Unit</h3>
+<div class="outline-text-3" id="text-orgfe79cc7">
 </div>
-<div id="outline-container-org9b6e653" class="outline-4">
-<h4 id="org9b6e653">Data-Parallel Architectures</h4>
-<div class="outline-text-4" id="text-org9b6e653">
+<div id="outline-container-orgfa34c28" class="outline-4">
+<h4 id="orgfa34c28">Data-Parallel Architectures</h4>
+<div class="outline-text-4" id="text-orgfa34c28">
 <p>
 GPU 中的一些专用术语：<br />
 </p>
@@ -230,20 +227,20 @@ dynamic branching 也会影响整体效率。如果所有的 threads 都走相�
 </p>
 </div>
 </div>
-<div id="outline-container-org7bbbf9d" class="outline-4">
-<h4 id="org7bbbf9d">GPU Pipeline Overview</h4>
+<div id="outline-container-orgfce07ed" class="outline-4">
+<h4 id="orgfce07ed">GPU Pipeline Overview</h4>
 </div>
 </div>
 
-<div id="outline-container-orga22c2c6" class="outline-3">
-<h3 id="orga22c2c6">09 Physically Based Shading</h3>
-<div class="outline-text-3" id="text-orga22c2c6">
+<div id="outline-container-org57e3727" class="outline-3">
+<h3 id="org57e3727">09 Physically Based Shading</h3>
+<div class="outline-text-3" id="text-org57e3727">
 </div>
-<div id="outline-container-orgfcca506" class="outline-4">
-<h4 id="orgfcca506">The BRDF</h4>
-<div class="outline-text-4" id="text-orgfcca506">
+<div id="outline-container-orgd9e2e22" class="outline-4">
+<h4 id="orgd9e2e22">The BRDF</h4>
+<div class="outline-text-4" id="text-orgd9e2e22">
 
-<div id="org5f42857" class="figure">
+<div id="org2c2f4f7" class="figure">
 <p><img src="./RealTimeRendering/09_03_brdf.jpg" alt="09_03_brdf.jpg" /><br />
 </p>
 </div>
@@ -288,13 +285,13 @@ hemispherical-directional reflectance R(v)是一个类似的函数。其测量�
 </div>
 </div>
 
-<div id="outline-container-orgb26bd55" class="outline-3">
-<h3 id="orgb26bd55">23 Graphics Hardware</h3>
-<div class="outline-text-3" id="text-orgb26bd55">
+<div id="outline-container-orgad909bf" class="outline-3">
+<h3 id="orgad909bf">23 Graphics Hardware</h3>
+<div class="outline-text-3" id="text-orgad909bf">
 </div>
-<div id="outline-container-orgee8f90b" class="outline-4">
-<h4 id="orgee8f90b">Rasterization</h4>
-<div class="outline-text-4" id="text-orgee8f90b">
+<div id="outline-container-orgf6b04f8" class="outline-4">
+<h4 id="orgf6b04f8">Rasterization</h4>
+<div class="outline-text-4" id="text-orgf6b04f8">
 <p>
 所有的像素被按照 2x2 的方式组合，这样就可以实现 ddx ddy 了。<br />
 </p>
@@ -302,6 +299,31 @@ hemispherical-directional reflectance R(v)是一个类似的函数。其测量�
 </div>
 </div>
 </div>
+</div>
+<div id="postamble" class="status">
+<div id="vssue"></div>
+        <link rel="stylesheet" href="https://unpkg.com/vssue/dist/vssue.min.css">
+        <script src="https://unpkg.com/vue@2.7.10/dist/vue.runtime.min.js"></script>
+        <script src="https://unpkg.com/vssue/dist/vssue.github.min.js"></script>
+        <script>
+          new Vue({
+            el: '#vssue',
+            render: h => h('Vssue', {
+              props: {
+                // 在这里设置当前页面对应的 Issue 标题
+                title: 'Real Time Rendering',
+
+                // 在这里设置你使用的平台的 OAuth App 配置
+                options: {
+                    owner: 'wolfand11',
+                    repo: 'blog_comments',
+                    clientId: 'a02b49185d85859cb92c',
+                    clientSecret: '6f123085c6f1ce339e2517d24e5b099fa1dc9c85', // 只有在使用某些平台时需要
+                },
+              }
+            })
+          })
+        </script>
 </div>
 </body>
 </html>

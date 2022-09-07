@@ -3,19 +3,16 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2022-08-24 Wed 22:47 -->
+<!-- 2022-09-07 Wed 11:16 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>UnityPostprocess</title>
 <meta name="generator" content="Org mode" />
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
          <meta name="viewport" content="width=device-width, initial-scale=1" />
-         <link rel="stylesheet" type="text/css" href="https://wolfand11.gitee.io/res/readtheorg_theme/css/htmlize.css"/>
-         <link rel="stylesheet" type="text/css" href="https://wolfand11.gitee.io/res/readtheorg_theme/css/readtheorg.css"/>
-         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/jquery.min.js"></script>
-         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/bootstrap.min.js"></script>
-         <script type="text/javascript" src="https://wolfand11.gitee.io/res/lib/js/jquery.stickytableheaders.min.js"></script>
-         <script type="text/javascript" src="https://wolfand11.gitee.io/res/readtheorg_theme/js/readtheorg.js"></script>
+         <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/worg_theme/css/worg.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/worg_theme/css/worg-zenburn.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/worg_theme/css/worg-classic.css" type="text/css" />
          <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
          <script type="text/javascript" src="https://wolfand11.gitee.io/res/blog-tools.js"></script>
 <script type="text/javascript">
@@ -52,51 +49,51 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org42c00f7">UnityPostprocessStack Version 2</a>
+<li><a href="#orgf777b0d">UnityPostprocessStack Version 2</a>
 <ul>
-<li><a href="#org1d8c554">使用 PPS</a></li>
-<li><a href="#org9279008">Writing Custom Effects</a>
+<li><a href="#org74382c1">使用 PPS</a></li>
+<li><a href="#org7169f4d">Writing Custom Effects</a>
 <ul>
-<li><a href="#orgad3cee3">CSharp 实现</a></li>
-<li><a href="#org223c5d0">Shader 实现</a></li>
+<li><a href="#orgaf96248">CSharp 实现</a></li>
+<li><a href="#orge704a20">Shader 实现</a></li>
 </ul>
 </li>
-<li><a href="#orgf51c2d4">Source Code</a>
+<li><a href="#orgf033026">Source Code</a>
 <ul>
-<li><a href="#orga144bd9">Q&amp;A</a>
+<li><a href="#orgd2bb2d2">Q&amp;A</a>
 <ul>
-<li><a href="#orgd197eaf">RuntimeUtilities.fullscreenTriangle 为什么只有一个三角形，且三角形顶点坐标中会有 3?</a></li>
-<li><a href="#org1c2b7ab">PPSV2 整个流程做了哪些事情？</a>
+<li><a href="#orgbdd323a">RuntimeUtilities.fullscreenTriangle 为什么只有一个三角形，且三角形顶点坐标中会有 3?</a></li>
+<li><a href="#orgbfe7521">PPSV2 整个流程做了哪些事情？</a>
 <ul>
-<li><a href="#org79c0d3c">初始化</a></li>
-<li><a href="#org54d4945">运行</a></li>
+<li><a href="#org6e03b06">初始化</a></li>
+<li><a href="#org477e308">运行</a></li>
 </ul>
 </li>
-<li><a href="#org0e5220c">PPSV2 是如何控制效果生效的时机的？</a></li>
-<li><a href="#org73b477a">ERROR: FrameDebug 死循环，看不到 DrawCall</a></li>
-<li><a href="#org11752e8">ERROR: _MainTex 属性没有传递到自己的 GBloom.shader 中</a></li>
+<li><a href="#orgc7337ed">PPSV2 是如何控制效果生效的时机的？</a></li>
+<li><a href="#orgb500a3c">ERROR: FrameDebug 死循环，看不到 DrawCall</a></li>
+<li><a href="#orgd2e215e">ERROR: _MainTex 属性没有传递到自己的 GBloom.shader 中</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#org059a12d">参考资料</a></li>
+<li><a href="#org89a7ad7">参考资料</a></li>
 </ul>
 </li>
-<li><a href="#orgcec8f4d">URP Postprocess</a>
+<li><a href="#org43201a5">URP Postprocess</a>
 <ul>
-<li><a href="#orgd97e969">使用 URP PP</a>
+<li><a href="#org8b5de40">使用 URP PP</a>
 <ul>
-<li><a href="#org1974b05">为摄像机指定 VolumeTrigger 和 VolumeLayerMask</a></li>
+<li><a href="#org68a01db">为摄像机指定 VolumeTrigger 和 VolumeLayerMask</a></li>
 </ul>
 </li>
-<li><a href="#org071b30b">Writing Custom Effects</a></li>
-<li><a href="#orgc4bc0d3">利用 RenderFeature 实现 Custom PP</a></li>
-<li><a href="#orga0b7b1f">Source Code</a>
+<li><a href="#org74a1e35">Writing Custom Effects</a></li>
+<li><a href="#org759f091">利用 RenderFeature 实现 Custom PP</a></li>
+<li><a href="#org39194f3">Source Code</a>
 <ul>
-<li><a href="#org06ac1c1">代码结构</a></li>
+<li><a href="#orgb36fe85">代码结构</a></li>
 </ul>
 </li>
-<li><a href="#orgbaa1c4b">参考资料</a></li>
+<li><a href="#org268b3f3">参考资料</a></li>
 </ul>
 </li>
 </ul>
@@ -105,20 +102,20 @@
 <p>
 UnityPostprocess note.<br />
 </p>
-<div class="HTML" id="org545afae">
+<div class="HTML" id="org4b6f55c">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
 
 </div>
 
-<div id="outline-container-org42c00f7" class="outline-2">
-<h2 id="org42c00f7">UnityPostprocessStack Version 2</h2>
-<div class="outline-text-2" id="text-org42c00f7">
+<div id="outline-container-orgf777b0d" class="outline-2">
+<h2 id="orgf777b0d">UnityPostprocessStack Version 2</h2>
+<div class="outline-text-2" id="text-orgf777b0d">
 </div>
-<div id="outline-container-org1d8c554" class="outline-3">
-<h3 id="org1d8c554">使用 PPS</h3>
-<div class="outline-text-3" id="text-org1d8c554">
+<div id="outline-container-org74382c1" class="outline-3">
+<h3 id="org74382c1">使用 PPS</h3>
+<div class="outline-text-3" id="text-org74382c1">
 <ul class="org-ul">
 <li>加载 profile,赋值给 PostProcessVolume。<br /></li>
 <li>修改 Effect 参数, 不写入到后处理配置文件中。<br /></li>
@@ -169,13 +166,13 @@ UnityPostprocess note.<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org9279008" class="outline-3">
-<h3 id="org9279008">Writing Custom Effects</h3>
-<div class="outline-text-3" id="text-org9279008">
+<div id="outline-container-org7169f4d" class="outline-3">
+<h3 id="org7169f4d">Writing Custom Effects</h3>
+<div class="outline-text-3" id="text-org7169f4d">
 </div>
-<div id="outline-container-orgad3cee3" class="outline-4">
-<h4 id="orgad3cee3">CSharp 实现</h4>
-<div class="outline-text-4" id="text-orgad3cee3">
+<div id="outline-container-orgaf96248" class="outline-4">
+<h4 id="orgaf96248">CSharp 实现</h4>
+<div class="outline-text-4" id="text-orgaf96248">
 <ul class="org-ul">
 <li>PostProcess 性质的第二个参数指定了效果生效的时机<br />
 <ul class="org-ul">
@@ -228,9 +225,9 @@ UnityPostprocess note.<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org223c5d0" class="outline-4">
-<h4 id="org223c5d0">Shader 实现</h4>
-<div class="outline-text-4" id="text-org223c5d0">
+<div id="outline-container-orge704a20" class="outline-4">
+<h4 id="orge704a20">Shader 实现</h4>
+<div class="outline-text-4" id="text-orge704a20">
 <div class="org-src-container">
 <pre class="src src-shader">  <span style="color: #4f97d7; font-weight: bold;">Shader</span> <span style="color: #2d9574;">"Hidden/Custom/GDepthOfField"</span>
   {
@@ -296,17 +293,17 @@ UnityPostprocess note.<br />
 </div>
 </div>
 </div>
-<div id="outline-container-orgf51c2d4" class="outline-3">
-<h3 id="orgf51c2d4">Source Code</h3>
-<div class="outline-text-3" id="text-orgf51c2d4">
+<div id="outline-container-orgf033026" class="outline-3">
+<h3 id="orgf033026">Source Code</h3>
+<div class="outline-text-3" id="text-orgf033026">
 </div>
-<div id="outline-container-orga144bd9" class="outline-4">
-<h4 id="orga144bd9">Q&amp;A</h4>
-<div class="outline-text-4" id="text-orga144bd9">
+<div id="outline-container-orgd2bb2d2" class="outline-4">
+<h4 id="orgd2bb2d2">Q&amp;A</h4>
+<div class="outline-text-4" id="text-orgd2bb2d2">
 </div>
-<div id="outline-container-orgd197eaf" class="outline-5">
-<h5 id="orgd197eaf">RuntimeUtilities.fullscreenTriangle 为什么只有一个三角形，且三角形顶点坐标中会有 3?</h5>
-<div class="outline-text-5" id="text-orgd197eaf">
+<div id="outline-container-orgbdd323a" class="outline-5">
+<h5 id="orgbdd323a">RuntimeUtilities.fullscreenTriangle 为什么只有一个三角形，且三角形顶点坐标中会有 3?</h5>
+<div class="outline-text-5" id="text-orgbdd323a">
 <p>
 Postprocess 没有通过绘制两个三角形来实现绘制整个屏幕,而是通过绘制一个超出屏幕的大三角形来覆盖整个屏幕，这样不仅减少了 DrawCall，而且减少了 Overdraw(绘制两个三角形时，屏幕对角线占用的像素需要绘制两次，从而产生了 Overdraw).<br />
 下图为绘制 fullscreenTriangle 的图示，其中淡黄色区域为实际绘制的部分，其他部分都会被剔除。<br />
@@ -369,21 +366,21 @@ Postprocess 没有通过绘制两个三角形来实现绘制整个屏幕,而是�
 </div>
 </div>
 
-<div id="outline-container-org1c2b7ab" class="outline-5">
-<h5 id="org1c2b7ab">PPSV2 整个流程做了哪些事情？</h5>
-<div class="outline-text-5" id="text-org1c2b7ab">
+<div id="outline-container-orgbfe7521" class="outline-5">
+<h5 id="orgbfe7521">PPSV2 整个流程做了哪些事情？</h5>
+<div class="outline-text-5" id="text-orgbfe7521">
 </div>
-<div id="outline-container-org79c0d3c" class="outline-6">
-<h6 id="org79c0d3c">初始化</h6>
-<div class="outline-text-6" id="text-org79c0d3c">
+<div id="outline-container-org6e03b06" class="outline-6">
+<h6 id="org6e03b06">初始化</h6>
+<div class="outline-text-6" id="text-org6e03b06">
 <p>
 PostProcessLayer.OnEnable() 中会调用 PostProcessLayer.Init() PostProcessLayer.InitBundles()<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org54d4945" class="outline-6">
-<h6 id="org54d4945">运行</h6>
-<div class="outline-text-6" id="text-org54d4945">
+<div id="outline-container-org477e308" class="outline-6">
+<h6 id="org477e308">运行</h6>
+<div class="outline-text-6" id="text-org477e308">
 <p>
 PostProcessLayer.OnPreRender() 中会调用 PostProcessLayer.BuildCommandBuffers(); 只有在 VR 模式下，OnPreRender 中的 BuildCommandBuffers();才会被调用。<br />
 PostProcessLayer.OnPreCull() 中会调用 PostProcessLayer.BuildCommandBuffers();<br />
@@ -392,9 +389,9 @@ PostProcessLayer.OnPreCull() 中会调用 PostProcessLayer.BuildCommandBuffers()
 </div>
 </div>
 
-<div id="outline-container-org0e5220c" class="outline-5">
-<h5 id="org0e5220c">PPSV2 是如何控制效果生效的时机的？</h5>
-<div class="outline-text-5" id="text-org0e5220c">
+<div id="outline-container-orgc7337ed" class="outline-5">
+<h5 id="orgc7337ed">PPSV2 是如何控制效果生效的时机的？</h5>
+<div class="outline-text-5" id="text-orgc7337ed">
 <div class="org-src-container">
 <pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">enum</span> <span style="color: #ce537a; font-weight: bold;">PostProcessEvent</span>
 {
@@ -423,9 +420,9 @@ PPSV2 中通过 PostProcessEvent 枚举来定义后处理效果生效的时机�
 </div>
 </div>
 
-<div id="outline-container-org73b477a" class="outline-5">
-<h5 id="org73b477a">ERROR: FrameDebug 死循环，看不到 DrawCall</h5>
-<div class="outline-text-5" id="text-org73b477a">
+<div id="outline-container-orgb500a3c" class="outline-5">
+<h5 id="orgb500a3c">ERROR: FrameDebug 死循环，看不到 DrawCall</h5>
+<div class="outline-text-5" id="text-orgb500a3c">
 <div class="org-src-container">
 <pre class="src src-shader">cmd.BeginSample(<span style="color: #2d9574;">"GBloomPyramid"</span>);
 <span style="color: #2aa1ae; background-color: #292e34;">// ......</span>
@@ -437,9 +434,9 @@ cmd.EndSample(<span style="color: #2d9574;">"GBloomPyramid-END"</span>);
 </div>
 </div>
 
-<div id="outline-container-org11752e8" class="outline-5">
-<h5 id="org11752e8">ERROR: _MainTex 属性没有传递到自己的 GBloom.shader 中</h5>
-<div class="outline-text-5" id="text-org11752e8">
+<div id="outline-container-orgd2e215e" class="outline-5">
+<h5 id="orgd2e215e">ERROR: _MainTex 属性没有传递到自己的 GBloom.shader 中</h5>
+<div class="outline-text-5" id="text-orgd2e215e">
 <div class="org-src-container">
 <pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// RuntimeUtilieties.cs</span>
 <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">BlitFullscreenTriangle</span>(<span style="color: #4f97d7; font-weight: bold;">this</span> CommandBuffer cmd, RenderTargetIdentifier source, RenderTargetIdentifier destination, PropertySheet propertySheet, <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #4f97d7; font-weight: bold;">pass</span>, RenderBufferLoadAction loadAction, Rect? viewport = null)
@@ -460,26 +457,26 @@ cmd.EndSample(<span style="color: #2d9574;">"GBloomPyramid-END"</span>);
 </div>
 </div>
 </div>
-<div id="outline-container-org059a12d" class="outline-3">
-<h3 id="org059a12d">参考资料</h3>
-<div class="outline-text-3" id="text-org059a12d">
+<div id="outline-container-org89a7ad7" class="outline-3">
+<h3 id="org89a7ad7">参考资料</h3>
+<div class="outline-text-3" id="text-org89a7ad7">
 <ul class="org-ul">
 <li>官方文档 <a href="https://docs.unity3d.com/Packages/com.unity.postprocessing@2.2/manual/Manipulating-the-Stack.html">https://docs.unity3d.com/Packages/com.unity.postprocessing@2.2/manual/Manipulating-the-Stack.html</a><br /></li>
 </ul>
 </div>
 </div>
 </div>
-<div id="outline-container-orgcec8f4d" class="outline-2">
-<h2 id="orgcec8f4d">URP Postprocess</h2>
-<div class="outline-text-2" id="text-orgcec8f4d">
+<div id="outline-container-org43201a5" class="outline-2">
+<h2 id="org43201a5">URP Postprocess</h2>
+<div class="outline-text-2" id="text-org43201a5">
 </div>
-<div id="outline-container-orgd97e969" class="outline-3">
-<h3 id="orgd97e969">使用 URP PP</h3>
-<div class="outline-text-3" id="text-orgd97e969">
+<div id="outline-container-org8b5de40" class="outline-3">
+<h3 id="org8b5de40">使用 URP PP</h3>
+<div class="outline-text-3" id="text-org8b5de40">
 </div>
-<div id="outline-container-org1974b05" class="outline-4">
-<h4 id="org1974b05">为摄像机指定 VolumeTrigger 和 VolumeLayerMask</h4>
-<div class="outline-text-4" id="text-org1974b05">
+<div id="outline-container-org68a01db" class="outline-4">
+<h4 id="org68a01db">为摄像机指定 VolumeTrigger 和 VolumeLayerMask</h4>
+<div class="outline-text-4" id="text-org68a01db">
 <div class="org-src-container">
 <pre class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">uaCamData</span> = camera.<span style="color: #bc6ec5; font-weight: bold;">GetComponent</span>&lt;<span style="color: #ce537a; font-weight: bold;">UniversalAdditionalCameraData</span>&gt;();
 uaCamData.volumeTrigger = someGObj.transform;
@@ -489,17 +486,17 @@ uaCamData.volumeLayerMask = 1&lt;&lt;30;
 </div>
 </div>
 </div>
-<div id="outline-container-org071b30b" class="outline-3">
-<h3 id="org071b30b">Writing Custom Effects</h3>
-<div class="outline-text-3" id="text-org071b30b">
+<div id="outline-container-org74a1e35" class="outline-3">
+<h3 id="org74a1e35">Writing Custom Effects</h3>
+<div class="outline-text-3" id="text-org74a1e35">
 <ul class="org-ul">
 <li><a href="https://github.com/yahiaetman/URPCustomPostProcessingStack">https://github.com/yahiaetman/URPCustomPostProcessingStack</a><br /></li>
 </ul>
 </div>
 </div>
-<div id="outline-container-orgc4bc0d3" class="outline-3">
-<h3 id="orgc4bc0d3">利用 RenderFeature 实现 Custom PP</h3>
-<div class="outline-text-3" id="text-orgc4bc0d3">
+<div id="outline-container-org759f091" class="outline-3">
+<h3 id="org759f091">利用 RenderFeature 实现 Custom PP</h3>
+<div class="outline-text-3" id="text-org759f091">
 <div class="org-src-container">
 <pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">CustomPP</span> : <span style="color: #ce537a; font-weight: bold;">ScriptableRendererFeature</span>
 {
@@ -584,13 +581,13 @@ uaCamData.volumeLayerMask = 1&lt;&lt;30;
 </div>
 </div>
 </div>
-<div id="outline-container-orga0b7b1f" class="outline-3">
-<h3 id="orga0b7b1f">Source Code</h3>
-<div class="outline-text-3" id="text-orga0b7b1f">
+<div id="outline-container-org39194f3" class="outline-3">
+<h3 id="org39194f3">Source Code</h3>
+<div class="outline-text-3" id="text-org39194f3">
 </div>
-<div id="outline-container-org06ac1c1" class="outline-4">
-<h4 id="org06ac1c1">代码结构</h4>
-<div class="outline-text-4" id="text-org06ac1c1">
+<div id="outline-container-orgb36fe85" class="outline-4">
+<h4 id="orgb36fe85">代码结构</h4>
+<div class="outline-text-4" id="text-orgb36fe85">
 <p>
 下面主要列出 Runtime 下目录结构<br />
 com.unity.render-pipelines.universal@10.5.0<br />
@@ -624,9 +621,9 @@ com.unity.render-pipelines.universal@10.5.0<br />
 </div>
 </div>
 
-<div id="outline-container-orgbaa1c4b" class="outline-3">
-<h3 id="orgbaa1c4b">参考资料</h3>
-<div class="outline-text-3" id="text-orgbaa1c4b">
+<div id="outline-container-org268b3f3" class="outline-3">
+<h3 id="org268b3f3">参考资料</h3>
+<div class="outline-text-3" id="text-org268b3f3">
 <ul class="org-ul">
 <li><a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.0/manual/integration-with-post-processing.html">https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.0/manual/integration-with-post-processing.html</a><br /></li>
 <li><a href="https://github.com/sebastianhein/urp_kawase_blur">https://github.com/sebastianhein/urp_kawase_blur</a><br /></li>
@@ -634,6 +631,31 @@ com.unity.render-pipelines.universal@10.5.0<br />
 </div>
 </div>
 </div>
+</div>
+<div id="postamble" class="status">
+<div id="vssue"></div>
+        <link rel="stylesheet" href="https://unpkg.com/vssue/dist/vssue.min.css">
+        <script src="https://unpkg.com/vue@2.7.10/dist/vue.runtime.min.js"></script>
+        <script src="https://unpkg.com/vssue/dist/vssue.github.min.js"></script>
+        <script>
+          new Vue({
+            el: '#vssue',
+            render: h => h('Vssue', {
+              props: {
+                // 在这里设置当前页面对应的 Issue 标题
+                title: 'UnityPostprocess',
+
+                // 在这里设置你使用的平台的 OAuth App 配置
+                options: {
+                    owner: 'wolfand11',
+                    repo: 'blog_comments',
+                    clientId: 'a02b49185d85859cb92c',
+                    clientSecret: '6f123085c6f1ce339e2517d24e5b099fa1dc9c85', // 只有在使用某些平台时需要
+                },
+              }
+            })
+          })
+        </script>
 </div>
 </body>
 </html>

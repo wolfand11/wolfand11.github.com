@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2022-09-07 Wed 11:16 -->
+<!-- 2022-11-01 Tue 19:45 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>URP</title>
@@ -76,7 +76,18 @@
 <li><a href="#org67b8fa0">Base</a>
 <ul>
 <li><a href="#org0733043">源码分析</a></li>
-<li><a href="#org2960cb4">Custom RenderFeature for PostProcess</a></li>
+<li><a href="#orgfa152c6">Native RenderPass</a></li>
+<li><a href="#org8829e72">URPAsset</a>
+<ul>
+<li><a href="#org48f9566">Runtime 修改 URPAsset 设置</a></li>
+</ul>
+</li>
+<li><a href="#orgc2f63dd">RenderFeature</a>
+<ul>
+<li><a href="#org574eed1">Disable/Enable RenderFeature Runtime</a></li>
+<li><a href="#org1a5f244">Custom RenderFeature</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#org18df838">Shader</a>
@@ -120,7 +131,7 @@
 <p>
 URP note.<br />
 </p>
-<div class="HTML" id="orga5f4cae">
+<div class="HTML" id="org793e0e4">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -138,99 +149,203 @@ URP note.<br />
 <div id="outline-container-org0733043" class="outline-4">
 <h4 id="org0733043">源码分析</h4>
 <div class="outline-text-4" id="text-org0733043">
+<p>
+<a href="./URP/Unity URP.xmind">./URP/Unity URP.xmind</a><br />
+</p>
+
+<p>
+URP 12.1.6 版本中 ForwardRenderer 变为了 UniversalRenderer<br />
+</p>
+
 <ul class="org-ul">
-<li><a href="https://zhuanlan.zhihu.com/p/399297398">https://zhuanlan.zhihu.com/p/399297398</a><br /></li>
+<li>Unity URP 简要剖析 <a href="https://zhuanlan.zhihu.com/p/399297398">https://zhuanlan.zhihu.com/p/399297398</a><br /></li>
 </ul>
 </div>
 </div>
-<div id="outline-container-org2960cb4" class="outline-4">
-<h4 id="org2960cb4">Custom RenderFeature for PostProcess</h4>
-<div class="outline-text-4" id="text-org2960cb4">
+<div id="outline-container-orgfa152c6" class="outline-4">
+<h4 id="orgfa152c6">Native RenderPass</h4>
+<div class="outline-text-4" id="text-orgfa152c6">
+<ul class="org-ul">
+<li><a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@13.1/manual/urp-universal-renderer.html">https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@13.1/manual/urp-universal-renderer.html</a><br /></li>
+<li><a href="https://forum.unity.com/threads/what-is-the-issue-with-native-renderpass-and-xr.1141285/">https://forum.unity.com/threads/what-is-the-issue-with-native-renderpass-and-xr.1141285/</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org8829e72" class="outline-4">
+<h4 id="org8829e72">URPAsset</h4>
+<div class="outline-text-4" id="text-org8829e72">
+</div>
+<div id="outline-container-org48f9566" class="outline-5">
+<h5 id="org48f9566">Runtime 修改 URPAsset 设置</h5>
+<div class="outline-text-5" id="text-org48f9566">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">System</span>.<span style="color: #7590db;">Collections</span>;
+<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">System</span>.<span style="color: #7590db;">Collections</span>.<span style="color: #7590db;">Generic</span>;
+<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">System</span>.<span style="color: #7590db;">Reflection</span>;
+<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">UnityEngine</span>;
+<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">UnityEngine</span>.<span style="color: #7590db;">Rendering</span>.<span style="color: #7590db;">Universal</span>;
+
+<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">UniversalRenderPipelineAssetExtensions</span>
+{
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">ScriptableRendererFeature</span> <span style="color: #bc6ec5; font-weight: bold;">GetRenderFeature</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt;(<span style="color: #4f97d7; font-weight: bold;">this</span> <span style="color: #ce537a; font-weight: bold;">UniversalRenderPipelineAsset</span> <span style="color: #7590db;">asset</span>, <span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #7590db;">name</span>) <span style="color: #4f97d7; font-weight: bold;">where</span> T : ScriptableRendererFeature
+    {
+        <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">type</span> = asset.<span style="color: #bc6ec5; font-weight: bold;">GetType</span>();
+        <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">propertyInfo</span> = type.<span style="color: #bc6ec5; font-weight: bold;">GetField</span>(<span style="color: #2d9574;">"m_RendererDataList"</span>, BindingFlags.Instance | BindingFlags.NonPublic);
+
+        <span style="color: #4f97d7; font-weight: bold;">if</span> (propertyInfo == <span style="color: #a45bad;">null</span>)
+        {
+            <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #a45bad;">null</span>;
+        }
+
+        <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">scriptableRenderData</span> = (<span style="color: #ce537a; font-weight: bold;">ScriptableRendererData</span>[])propertyInfo.<span style="color: #bc6ec5; font-weight: bold;">GetValue</span>(<span style="color: #ce537a; font-weight: bold;">asset</span>);
+
+        <span style="color: #4f97d7; font-weight: bold;">if</span> (scriptableRenderData != <span style="color: #a45bad;">null</span> &amp;&amp; scriptableRenderData.Length &gt; 0)
+        {
+            <span style="color: #4f97d7; font-weight: bold;">foreach</span> (<span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">renderData</span> <span style="color: #4f97d7; font-weight: bold;">in</span> scriptableRenderData)
+            {
+                <span style="color: #4f97d7; font-weight: bold;">foreach</span> (<span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">rendererFeature</span> <span style="color: #4f97d7; font-weight: bold;">in</span> renderData.rendererFeatures)
+                {
+                    <span style="color: #4f97d7; font-weight: bold;">if</span> (rendererFeature <span style="color: #4f97d7; font-weight: bold;">is</span> T &amp;&amp; rendererFeature.name == name)
+                    {
+                        <span style="color: #4f97d7; font-weight: bold;">return</span> rendererFeature;
+                    }
+                }
+            }
+        }
+
+        <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #a45bad;">null</span>;
+    }
+    
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">ScriptableRendererFeature</span> <span style="color: #bc6ec5; font-weight: bold;">SetRenderFeatureEnable</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt;(<span style="color: #4f97d7; font-weight: bold;">this</span> <span style="color: #ce537a; font-weight: bold;">UniversalRenderPipelineAsset</span> <span style="color: #7590db;">asset</span>, <span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #7590db;">name</span>, <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #7590db;">enable</span>) <span style="color: #4f97d7; font-weight: bold;">where</span> T : ScriptableRendererFeature
+    {
+        <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">feature</span> = <span style="color: #bc6ec5; font-weight: bold;">GetRenderFeature</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt;(<span style="color: #ce537a; font-weight: bold;">asset</span>, <span style="color: #ce537a; font-weight: bold;">name</span>);
+        <span style="color: #4f97d7; font-weight: bold;">if</span> (feature)
+            feature.<span style="color: #bc6ec5; font-weight: bold;">SetActive</span>(<span style="color: #ce537a; font-weight: bold;">enable</span>);
+
+        <span style="color: #4f97d7; font-weight: bold;">return</span> feature;
+    }
+}
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">EnableFeature</span>(<span style="color: #ce537a; font-weight: bold;">FeatureTag</span> <span style="color: #7590db;">featureTag</span>, <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #7590db;">isEnable</span>)
+{
+    <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">asset</span> =  GraphicsSettings.currentRenderPipeline <span style="color: #4f97d7; font-weight: bold;">as</span> UniversalRenderPipelineAsset;
+    <span style="color: #4f97d7; font-weight: bold;">switch</span>(featureTag)
+    {
+    <span style="color: #4f97d7; font-weight: bold;">case</span> FeatureTag.kColorRT:
+        asset.supportsCameraOpaqueTexture = isEnable;
+        <span style="color: #4f97d7; font-weight: bold;">break</span>;
+    <span style="color: #4f97d7; font-weight: bold;">case</span> FeatureTag.kDepthRT:
+        asset.supportsCameraDepthTexture = isEnable;
+        <span style="color: #4f97d7; font-weight: bold;">break</span>;
+    <span style="color: #4f97d7; font-weight: bold;">case</span> FeatureTag.kUpdateDepthRT:
+        asset.<span style="color: #bc6ec5; font-weight: bold;">SetRenderFeatureEnable</span>&lt;<span style="color: #ce537a; font-weight: bold;">CopyDepth</span>&gt;(<span style="color: #2d9574;">"UpdateDepth"</span>, isEnable);
+        <span style="color: #4f97d7; font-weight: bold;">break</span>;
+    <span style="color: #4f97d7; font-weight: bold;">case</span> FeatureTag.kPlaneReflectionRT:
+        <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">TODO</span>
+        <span style="color: #4f97d7; font-weight: bold;">break</span>;
+    }
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc2f63dd" class="outline-4">
+<h4 id="orgc2f63dd">RenderFeature</h4>
+<div class="outline-text-4" id="text-orgc2f63dd">
+</div>
+<div id="outline-container-org574eed1" class="outline-5">
+<h5 id="org574eed1">Disable/Enable RenderFeature Runtime</h5>
+<div class="outline-text-5" id="text-org574eed1">
+<div class="org-src-container">
+<pre class="src src-csharp">screenShotRendererFeature.<span style="color: #bc6ec5; font-weight: bold;">SetActive</span>(<span style="color: #ce537a; font-weight: bold;">enableSSRF</span>);
+</pre>
+</div>
+
+<ul class="org-ul">
+<li><a href="https://forum.unity.com/threads/enable-or-disable-render-features-at-runtime.932571/">https://forum.unity.com/threads/enable-or-disable-render-features-at-runtime.932571/</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org1a5f244" class="outline-5">
+<h5 id="org1a5f244">Custom RenderFeature</h5>
+<div class="outline-text-5" id="text-org1a5f244">
 <div class="org-src-container">
 <pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">UnityEngine</span>;
 <span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">UnityEngine</span>.<span style="color: #7590db;">Rendering</span>;
-<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">UnityEngine</span>.<span style="color: #7590db;">Rendering</span>.<span style="color: #7590db;">Universal</span>;
+<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">UnityEngine</span>.<span style="color: #7590db;">Rendering</span>.<span style="color: #7590db;">LWRP</span>;
 
-<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">CustomPP</span> : <span style="color: #ce537a; font-weight: bold;">ScriptableRendererFeature</span>
+<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">CustomRenderPassFeature</span> : <span style="color: #ce537a; font-weight: bold;">ScriptableRendererFeature</span>
 {
-    [System.Serializable]
-    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> CustomRPSettings
-    {
-        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">Material</span> <span style="color: #7590db;">material</span>;
-        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">RenderPassEvent</span> <span style="color: #7590db;">passEvent</span> = RenderPassEvent.AfterRenderingTransparents;
-    }
-
     <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">CustomRenderPass</span> : <span style="color: #ce537a; font-weight: bold;">ScriptableRenderPass</span>
     {
-        <span style="color: #4f97d7; font-weight: bold;">private</span> <span style="color: #ce537a; font-weight: bold;">CustomRPSettings</span> <span style="color: #7590db;">_customRPSettings</span>;
-        <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">fxSourceId</span> = Shader.<span style="color: #bc6ec5; font-weight: bold;">PropertyToID</span>(<span style="color: #2d9574;">"_PostFXSource"</span>);
 
-        <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #7590db;">_needTempRT</span> = <span style="color: #a45bad;">false</span>;
-        <span style="color: #ce537a; font-weight: bold;">RenderTargetHandle</span> <span style="color: #7590db;">_tempRT</span>;
-        <span style="color: #ce537a; font-weight: bold;">RenderTargetIdentifier</span> <span style="color: #7590db;">_cameraColorRT</span>;
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">Mesh</span> <span style="color: #7590db;">Mesh</span>;
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">Material</span> <span style="color: #7590db;">Material</span>;
 
-        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #bc6ec5; font-weight: bold;">CustomRenderPass</span>(<span style="color: #ce537a; font-weight: bold;">CustomRPSettings</span> <span style="color: #7590db;">customRPSettings</span>)
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">This method is called by the renderer before rendering a camera</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Override this method if you need to to configure render targets and their clear state, and to create temporary render target textures.</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">If a render pass doesn't override this method, this render pass renders to the active Camera's render target.</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">You should never call CommandBuffer.SetRenderTarget. Instead call &lt;c&gt;ConfigureTarget&lt;/c&gt; and &lt;c&gt;ConfigureClear&lt;/c&gt;.</span>
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">OnCameraSetup</span>(<span style="color: #ce537a; font-weight: bold;">CommandBuffer</span> <span style="color: #7590db;">cmd</span>, <span style="color: #4f97d7; font-weight: bold;">ref</span> <span style="color: #ce537a; font-weight: bold;">RenderingData</span> <span style="color: #7590db;">renderingData</span>)
         {
-            _customRPSettings = customRPSettings;
+            
         }
-
-        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Setup</span>(<span style="color: #ce537a; font-weight: bold;">RenderTargetIdentifier</span> <span style="color: #7590db;">camColorRT</span>)
-        {
-            _cameraColorRT = camColorRT;
-        }
-
+        
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">This method is called before executing the render pass.</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">It can be used to configure render targets and their clear state. Also to create temporary render target textures.</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">When empty this render pass will render to the active camera render target.</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">You should never call CommandBuffer.SetRenderTarget. Instead call &lt;c&gt;ConfigureTarget&lt;/c&gt; and &lt;c&gt;ConfigureClear&lt;/c&gt;.</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">The render pipeline will ensure target setup and clearing happens in an performance manner.</span>
         <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Configure</span>(<span style="color: #ce537a; font-weight: bold;">CommandBuffer</span> <span style="color: #7590db;">cmd</span>, <span style="color: #ce537a; font-weight: bold;">RenderTextureDescriptor</span> <span style="color: #7590db;">cameraTextureDescriptor</span>)
         {
-            _tempRT.<span style="color: #bc6ec5; font-weight: bold;">Init</span>(<span style="color: #2d9574;">"CustomPP_RT"</span>);
         }
 
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Here you can implement the rendering logic.</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Use &lt;c&gt;ScriptableRenderContext&lt;/c&gt; to issue drawing commands or execute command buffers</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">https://docs.unity3d.com/ScriptReference/Rendering.ScriptableRenderContext.html</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">You don't have to call ScriptableRenderContext.submit, the render pipeline will call it at specific points in the pipeline.</span>
         <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Execute</span>(<span style="color: #ce537a; font-weight: bold;">ScriptableRenderContext</span> <span style="color: #7590db;">context</span>, <span style="color: #4f97d7; font-weight: bold;">ref</span> <span style="color: #ce537a; font-weight: bold;">RenderingData</span> <span style="color: #7590db;">renderingData</span>)
         {
-            <span style="color: #ce537a; font-weight: bold;">CommandBuffer</span> <span style="color: #7590db;">cmd</span> = CommandBufferPool.<span style="color: #bc6ec5; font-weight: bold;">Get</span>(<span style="color: #2d9574;">"Custom PP Pass"</span>);
-            <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">_needTempRT = true;</span>
-            <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">cmd.GetTemporaryRT(_tempRT.id, renderingData.cameraData.cameraTargetDescriptor, FilterMode.Bilinear);</span>
-
-            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">custom pp</span>
-            cmd.<span style="color: #bc6ec5; font-weight: bold;">SetGlobalTexture</span>(fxSourceId, _cameraColorRT);
-            <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">cmd.SetRenderTarget(_tempRT.id, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store);</span>
-            cmd.<span style="color: #bc6ec5; font-weight: bold;">SetRenderTarget</span>(_cameraColorRT, RenderBufferLoadAction.Load, RenderBufferStoreAction.Store);
-            cmd.<span style="color: #bc6ec5; font-weight: bold;">DrawProcedural</span>(Matrix4x4.identity, _customRPSettings.material, 0, MeshTopology.Triangles, 3);
-
-            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">copy to _CameraColorRT</span>
-            <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">cmd.SetGlobalTexture(fxSourceId, _tempRT.id);</span>
-            <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">cmd.SetRenderTarget(_cameraColorRT, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store);</span>
-            <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">cmd.DrawProcedural(Matrix4x4.identity, _customRPSettings.material, 1, MeshTopology.Triangles, 3);</span>
+            <span style="color: #ce537a; font-weight: bold;">CommandBuffer</span> <span style="color: #7590db;">cmd</span> = CommandBufferPool.<span style="color: #bc6ec5; font-weight: bold;">Get</span>();
+            cmd.<span style="color: #bc6ec5; font-weight: bold;">DrawMeshInstanced</span>(Mesh, 0, Material, 0, <span style="color: #4f97d7; font-weight: bold;">new</span>[] { Matrix4x4.<span style="color: #bc6ec5; font-weight: bold;">TRS</span>(Vector3.zero, Quaternion.identity, Vector3.one) });
 
             context.<span style="color: #bc6ec5; font-weight: bold;">ExecuteCommandBuffer</span>(cmd);
             CommandBufferPool.<span style="color: #bc6ec5; font-weight: bold;">Release</span>(cmd);
         }
 
+        <span style="color: #9f8766;">/// Cleanup any allocated resources that were created during the execution of this render pass.</span>
         <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">FrameCleanup</span>(<span style="color: #ce537a; font-weight: bold;">CommandBuffer</span> <span style="color: #7590db;">cmd</span>)
         {
-            <span style="color: #4f97d7; font-weight: bold;">if</span>(_needTempRT)
-            {
-                cmd.<span style="color: #bc6ec5; font-weight: bold;">ReleaseTemporaryRT</span>(_tempRT.id);
-            }
         }
     }
 
-    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">CustomRPSettings</span> <span style="color: #7590db;">customRPSettings</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">CustomRPSettings</span>();
     <span style="color: #ce537a; font-weight: bold;">CustomRenderPass</span> <span style="color: #7590db;">m_ScriptablePass</span>;
 
     <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Create</span>()
     {
-        m_ScriptablePass = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">CustomRenderPass</span>(customRPSettings);
+        Debug.<span style="color: #bc6ec5; font-weight: bold;">Log</span>(<span style="color: #2d9574;">"Create"</span>);
 
-        m_ScriptablePass.renderPassEvent = customRPSettings.passEvent;
+        m_ScriptablePass = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">CustomRenderPass</span>();
+        m_ScriptablePass.Mesh = Resources.<span style="color: #bc6ec5; font-weight: bold;">Load</span>&lt;<span style="color: #ce537a; font-weight: bold;">Mesh</span>&gt;(<span style="color: #2d9574;">"Cube123"</span>);
+        m_ScriptablePass.Material = Resources.<span style="color: #bc6ec5; font-weight: bold;">Load</span>&lt;<span style="color: #ce537a; font-weight: bold;">Material</span>&gt;(<span style="color: #2d9574;">"TestMaterial123"</span>);
+
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Configures where the render pass should be injected.</span>
+        m_ScriptablePass.renderPassEvent = RenderPassEvent.BeforeRenderingOpaques;
     }
 
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Here you can inject one or multiple render passes in the renderer.</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">This method is called when setting up the renderer once per-camera.</span>
     <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">AddRenderPasses</span>(<span style="color: #ce537a; font-weight: bold;">ScriptableRenderer</span> <span style="color: #7590db;">renderer</span>, <span style="color: #4f97d7; font-weight: bold;">ref</span> <span style="color: #ce537a; font-weight: bold;">RenderingData</span> <span style="color: #7590db;">renderingData</span>)
     {
-        m_ScriptablePass.<span style="color: #bc6ec5; font-weight: bold;">Setup</span>(renderer.cameraColorTarget);
         renderer.<span style="color: #bc6ec5; font-weight: bold;">EnqueuePass</span>(m_ScriptablePass);
     }
 }
 </pre>
+</div>
 </div>
 </div>
 </div>
@@ -388,28 +503,49 @@ shader 的 vert frag 入口函数被定义在 com.unity.render-pipelines.univers
 <div class="outline-text-4" id="text-orgf8baf42">
 <p>
 下图为图 1<br />
-<img src="./URP/gi_compare_01.png" alt="gi_compare_01.png" /><br />
 </p>
+
+
+<div id="org1fe8af1" class="figure">
+<p><img src="./URP/gi_compare_01.png" alt="gi_compare_01.png" width="1500px" /><br />
+</p>
+</div>
 
 <p>
 下图为图 2<br />
-<img src="./URP/gi_compare_02.png" alt="gi_compare_02.png" /><br />
 </p>
+
+<div id="org14c1a57" class="figure">
+<p><img src="./URP/gi_compare_02.png" alt="gi_compare_02.png" width="1500px" /><br />
+</p>
+</div>
 
 <p>
 下图为图 3<br />
-<img src="./URP/gi_compare_03.png" alt="gi_compare_03.png" /><br />
 </p>
+
+<div id="org3c41bb2" class="figure">
+<p><img src="./URP/gi_compare_03.png" alt="gi_compare_03.png" width="1500px" /><br />
+</p>
+</div>
 
 <p>
 下图为图 4<br />
-<img src="./URP/gi_compare_04.png" alt="gi_compare_04.png" /><br />
 </p>
+
+<div id="org617bcaf" class="figure">
+<p><img src="./URP/gi_compare_04.png" alt="gi_compare_04.png" width="1500px" /><br />
+</p>
+</div>
 
 <p>
 下图为图 5<br />
-<img src="./URP/gi_compare_05.png" alt="gi_compare_05.png" /><br />
 </p>
+
+<div id="org0e865a9" class="figure">
+<p><img src="./URP/gi_compare_05.png" alt="gi_compare_05.png" width="1500px" /><br />
+</p>
+</div>
 
 <p>
 图 1 中，Buildin 下 BakedGI 和 RealtimeGI 差别为什么很大？<br />
@@ -420,7 +556,6 @@ LightProbe 数据来自 AmbientColor，场景中方向光，场景中物体反�
 
 <p>
 检查自定义的 Surface Shader，发现其中会使用 viewDir，猜测在离线烘焙时，viewDir 的值为（0，0，0），所以导致 Custom Surface Shader MetaPass 返回的 albedo 是错误的。<br />
-另外 Custom Surface Shader 中还使用了 screenUV，离线烘培时，此变量应该也是无意义的吧？ TODO<br />
 </p>
 </div>
 </div>
@@ -452,6 +587,7 @@ LightProbe 数据来自 AmbientColor，场景中方向光，场景中物体反�
 URP 中使用_BaseMap 代替了_MainTex。并在_BaseMap 的前面标记了[MainTexture]。Editor 中有代码依赖_MainTex 命名，所以导致了该错误。<br />
 在 Shader 'Custom/MyEffect/Unlit/Liquid' 的 Property 部分添加如下代码就可以解决该问题<br />
 </p>
+
 <div class="org-src-container">
 <pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// ObsoleteProperties</span>
 <span style="color: #2aa1ae; background-color: #292e34;">//[HideInInspector] _MainTex("BaseMap", 2D) = "white" {}</span>

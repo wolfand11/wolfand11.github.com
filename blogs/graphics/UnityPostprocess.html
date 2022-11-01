@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2022-09-07 Wed 11:16 -->
+<!-- 2022-10-08 Sat 23:12 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>UnityPostprocess</title>
@@ -52,13 +52,13 @@
 <li><a href="#orgf777b0d">UnityPostprocessStack Version 2</a>
 <ul>
 <li><a href="#org74382c1">使用 PPS</a></li>
-<li><a href="#org7169f4d">Writing Custom Effects</a>
+<li><a href="#org74a1e35">Writing Custom Effects</a>
 <ul>
 <li><a href="#orgaf96248">CSharp 实现</a></li>
 <li><a href="#orge704a20">Shader 实现</a></li>
 </ul>
 </li>
-<li><a href="#orgf033026">Source Code</a>
+<li><a href="#org39194f3">Source Code</a>
 <ul>
 <li><a href="#orgd2bb2d2">Q&amp;A</a>
 <ul>
@@ -76,7 +76,7 @@
 </li>
 </ul>
 </li>
-<li><a href="#org89a7ad7">参考资料</a></li>
+<li><a href="#org268b3f3">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#org43201a5">URP Postprocess</a>
@@ -86,14 +86,27 @@
 <li><a href="#org68a01db">为摄像机指定 VolumeTrigger 和 VolumeLayerMask</a></li>
 </ul>
 </li>
-<li><a href="#org74a1e35">Writing Custom Effects</a></li>
-<li><a href="#org759f091">利用 RenderFeature 实现 Custom PP</a></li>
-<li><a href="#org39194f3">Source Code</a>
+<li><a href="#org5e8e18a">Writing Custom Effects</a>
+<ul>
+<li><a href="#org07dc2e5">自定义 RenderFeature</a></li>
+<li><a href="#org9e01d3a">URP Blit</a></li>
+</ul>
+</li>
+<li><a href="#org3379340">Source Code</a>
 <ul>
 <li><a href="#orgb36fe85">代码结构</a></li>
 </ul>
 </li>
-<li><a href="#org268b3f3">参考资料</a></li>
+<li><a href="#org0302634">参考资料</a></li>
+</ul>
+</li>
+<li><a href="#org2613802">Common</a>
+<ul>
+<li><a href="#org453d6da">Bloom</a>
+<ul>
+<li><a href="#orgd67c31e">Bloom 优化</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -102,7 +115,7 @@
 <p>
 UnityPostprocess note.<br />
 </p>
-<div class="HTML" id="org4b6f55c">
+<div class="HTML" id="org7350cf8">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -166,9 +179,9 @@ UnityPostprocess note.<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org7169f4d" class="outline-3">
-<h3 id="org7169f4d">Writing Custom Effects</h3>
-<div class="outline-text-3" id="text-org7169f4d">
+<div id="outline-container-org74a1e35" class="outline-3">
+<h3 id="org74a1e35">Writing Custom Effects</h3>
+<div class="outline-text-3" id="text-org74a1e35">
 </div>
 <div id="outline-container-orgaf96248" class="outline-4">
 <h4 id="orgaf96248">CSharp 实现</h4>
@@ -293,9 +306,9 @@ UnityPostprocess note.<br />
 </div>
 </div>
 </div>
-<div id="outline-container-orgf033026" class="outline-3">
-<h3 id="orgf033026">Source Code</h3>
-<div class="outline-text-3" id="text-orgf033026">
+<div id="outline-container-org39194f3" class="outline-3">
+<h3 id="org39194f3">Source Code</h3>
+<div class="outline-text-3" id="text-org39194f3">
 </div>
 <div id="outline-container-orgd2bb2d2" class="outline-4">
 <h4 id="orgd2bb2d2">Q&amp;A</h4>
@@ -311,29 +324,30 @@ Postprocess 没有通过绘制两个三角形来实现绘制整个屏幕,而是�
 </p>
 
 <div class="org-src-container">
-<pre class="src src-shader">  <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> Mesh fullscreenTriangle
-  {
-      <span style="color: #4f97d7; font-weight: bold;">get</span>
-      {
-          <span style="color: #4f97d7; font-weight: bold;">if</span> (s_FullscreenTriangle != null)
-          <span style="color: #4f97d7; font-weight: bold;">return</span> s_FullscreenTriangle;
+<pre class="src src-shader"><span style="color: #4f97d7; font-weight: bold;">static</span> Mesh s_FullscreenTriangle = null;
+<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> Mesh fullscreenTriangle
+{
+    <span style="color: #4f97d7; font-weight: bold;">get</span>
+    {
+        <span style="color: #4f97d7; font-weight: bold;">if</span> (s_FullscreenTriangle != null)
+        <span style="color: #4f97d7; font-weight: bold;">return</span> s_FullscreenTriangle;
 
-          s_FullscreenTriangle = <span style="color: #4f97d7; font-weight: bold;">new</span> Mesh { name = <span style="color: #2d9574;">"Fullscreen Triangle"</span> };
+        s_FullscreenTriangle = <span style="color: #4f97d7; font-weight: bold;">new</span> Mesh { name = <span style="color: #2d9574;">"Fullscreen Triangle"</span> };
 
-          <span style="color: #2aa1ae; background-color: #292e34;">// Because we have to support older platforms (GLES2/3, DX9 etc) we can't do all of</span>
-          <span style="color: #2aa1ae; background-color: #292e34;">// this directly in the vertex shader using vertex ids :(</span>
-          s_FullscreenTriangle.SetVertices(<span style="color: #4f97d7; font-weight: bold;">new</span> List&lt;Vector3&gt;
-              {
-                  <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #bc6ec5; font-weight: bold;">Vector3</span>(-1f, -1f, 0f),
-                  <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #bc6ec5; font-weight: bold;">Vector3</span>(-1f,  3f, 0f),
-                  <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #bc6ec5; font-weight: bold;">Vector3</span>( 3f, -1f, 0f)
-              });
-          s_FullscreenTriangle.SetIndices(<span style="color: #4f97d7; font-weight: bold;">new</span> [] { 0, 1, 2 }, MeshTopology.Triangles, 0, <span style="color: #a45bad;">false</span>);
-          s_FullscreenTriangle.UploadMeshData(<span style="color: #a45bad;">false</span>);
+        <span style="color: #2aa1ae; background-color: #292e34;">// Because we have to support older platforms (GLES2/3, DX9 etc) we can't do all of</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// this directly in the vertex shader using vertex ids :(</span>
+        s_FullscreenTriangle.SetVertices(<span style="color: #4f97d7; font-weight: bold;">new</span> List&lt;Vector3&gt;
+            {
+                <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #bc6ec5; font-weight: bold;">Vector3</span>(-1f, -1f, 0f),
+                <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #bc6ec5; font-weight: bold;">Vector3</span>(-1f,  3f, 0f),
+                <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #bc6ec5; font-weight: bold;">Vector3</span>( 3f, -1f, 0f)
+            });
+        s_FullscreenTriangle.SetIndices(<span style="color: #4f97d7; font-weight: bold;">new</span> [] { 0, 1, 2 }, MeshTopology.Triangles, 0, <span style="color: #a45bad;">false</span>);
+        s_FullscreenTriangle.UploadMeshData(<span style="color: #a45bad;">false</span>);
 
-          <span style="color: #4f97d7; font-weight: bold;">return</span> s_FullscreenTriangle;
-      }
-  }
+        <span style="color: #4f97d7; font-weight: bold;">return</span> s_FullscreenTriangle;
+    }
+}
 </pre>
 </div>
 
@@ -457,9 +471,9 @@ cmd.EndSample(<span style="color: #2d9574;">"GBloomPyramid-END"</span>);
 </div>
 </div>
 </div>
-<div id="outline-container-org89a7ad7" class="outline-3">
-<h3 id="org89a7ad7">参考资料</h3>
-<div class="outline-text-3" id="text-org89a7ad7">
+<div id="outline-container-org268b3f3" class="outline-3">
+<h3 id="org268b3f3">参考资料</h3>
+<div class="outline-text-3" id="text-org268b3f3">
 <ul class="org-ul">
 <li>官方文档 <a href="https://docs.unity3d.com/Packages/com.unity.postprocessing@2.2/manual/Manipulating-the-Stack.html">https://docs.unity3d.com/Packages/com.unity.postprocessing@2.2/manual/Manipulating-the-Stack.html</a><br /></li>
 </ul>
@@ -486,104 +500,96 @@ uaCamData.volumeLayerMask = 1&lt;&lt;30;
 </div>
 </div>
 </div>
-<div id="outline-container-org74a1e35" class="outline-3">
-<h3 id="org74a1e35">Writing Custom Effects</h3>
-<div class="outline-text-3" id="text-org74a1e35">
+<div id="outline-container-org5e8e18a" class="outline-3">
+<h3 id="org5e8e18a">Writing Custom Effects</h3>
+<div class="outline-text-3" id="text-org5e8e18a">
 <ul class="org-ul">
 <li><a href="https://github.com/yahiaetman/URPCustomPostProcessingStack">https://github.com/yahiaetman/URPCustomPostProcessingStack</a><br /></li>
 </ul>
 </div>
+<div id="outline-container-org07dc2e5" class="outline-4">
+<h4 id="org07dc2e5">自定义 RenderFeature</h4>
+<div class="outline-text-4" id="text-org07dc2e5">
+<p>
+<a href="./URP.html#org1a5f244">Custom RenderFeature</a><br />
+</p>
 </div>
-<div id="outline-container-org759f091" class="outline-3">
-<h3 id="org759f091">利用 RenderFeature 实现 Custom PP</h3>
-<div class="outline-text-3" id="text-org759f091">
+</div>
+<div id="outline-container-org9e01d3a" class="outline-4">
+<h4 id="org9e01d3a">URP Blit</h4>
+<div class="outline-text-4" id="text-org9e01d3a">
 <div class="org-src-container">
-<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">CustomPP</span> : <span style="color: #ce537a; font-weight: bold;">ScriptableRendererFeature</span>
+<pre class="src src-shader"><span style="color: #4f97d7; font-weight: bold;">Shader</span> <span style="color: #2d9574;">"Hidden/Blit"</span>
 {
-    [System.Serializable]
-    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> CustomRPSettings
+    <span style="color: #4f97d7; font-weight: bold;">SubShader</span>
     {
-        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">Material</span> <span style="color: #7590db;">material</span>;
-        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">RenderPassEvent</span> <span style="color: #7590db;">passEvent</span> = RenderPassEvent.AfterRenderingTransparents;
-    }
+        <span style="color: #4f97d7; font-weight: bold;">Tags</span> { <span style="color: #2d9574;">"RenderType"</span> = <span style="color: #2d9574;">"Opaque"</span> <span style="color: #2d9574;">"RenderPipeline"</span> = <span style="color: #2d9574;">"UniversalPipeline"</span>}
+        <span style="color: #4f97d7; font-weight: bold;">LOD</span> 100
 
-    <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">CustomRenderPass</span> : <span style="color: #ce537a; font-weight: bold;">ScriptableRenderPass</span>
-    {
-        <span style="color: #4f97d7; font-weight: bold;">private</span> <span style="color: #ce537a; font-weight: bold;">CustomRPSettings</span> <span style="color: #7590db;">_customRPSettings</span>;
-        <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">fxSourceId</span> = Shader.<span style="color: #bc6ec5; font-weight: bold;">PropertyToID</span>(<span style="color: #2d9574;">"_PostFXSource"</span>);
-
-        <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #7590db;">_needTempRT</span> = <span style="color: #a45bad;">false</span>;
-        <span style="color: #ce537a; font-weight: bold;">RenderTargetHandle</span> <span style="color: #7590db;">_tempRT</span>;
-        <span style="color: #ce537a; font-weight: bold;">RenderTargetIdentifier</span> <span style="color: #7590db;">_cameraColorRT</span>;
-
-        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #bc6ec5; font-weight: bold;">CustomRenderPass</span>(<span style="color: #ce537a; font-weight: bold;">CustomRPSettings</span> <span style="color: #7590db;">customRPSettings</span>)
+        <span style="color: #4f97d7; font-weight: bold;">Pass</span>
         {
-            _customRPSettings = customRPSettings;
-        }
+            <span style="color: #4f97d7; font-weight: bold;">Name</span> <span style="color: #2d9574;">"Blit"</span>
+            <span style="color: #4f97d7; font-weight: bold;">ZTest</span> Always
+            <span style="color: #4f97d7; font-weight: bold;">ZWrite</span> Off
+            <span style="color: #4f97d7; font-weight: bold;">Cull</span> Off
 
-        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Setup</span>(<span style="color: #ce537a; font-weight: bold;">RenderTargetIdentifier</span> <span style="color: #7590db;">camColorRT</span>)
-        {
-            _cameraColorRT = camColorRT;
-        }
+            HLSLPROGRAM
+<span style="color: #bc6ec5;">            #pragma</span> vertex Vert
+<span style="color: #bc6ec5;">            #pragma</span> fragment Fragment
 
-        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Configure</span>(<span style="color: #ce537a; font-weight: bold;">CommandBuffer</span> <span style="color: #7590db;">cmd</span>, <span style="color: #ce537a; font-weight: bold;">RenderTextureDescriptor</span> <span style="color: #7590db;">cameraTextureDescriptor</span>)
-        {
-            _tempRT.<span style="color: #bc6ec5; font-weight: bold;">Init</span>(<span style="color: #2d9574;">"CustomPP_RT"</span>);
-        }
+<span style="color: #bc6ec5;">            #include</span> <span style="color: #2d9574;">"Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"</span>
 
-        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Execute</span>(<span style="color: #ce537a; font-weight: bold;">ScriptableRenderContext</span> <span style="color: #7590db;">context</span>, <span style="color: #4f97d7; font-weight: bold;">ref</span> <span style="color: #ce537a; font-weight: bold;">RenderingData</span> <span style="color: #7590db;">renderingData</span>)
-        {
-            <span style="color: #ce537a; font-weight: bold;">CommandBuffer</span> <span style="color: #7590db;">cmd</span> = CommandBufferPool.<span style="color: #bc6ec5; font-weight: bold;">Get</span>(<span style="color: #2d9574;">"Custom PP Pass"</span>);
-            <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">_needTempRT = true;</span>
-            <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">cmd.GetTemporaryRT(_tempRT.id, renderingData.cameraData.cameraTargetDescriptor, FilterMode.Bilinear);</span>
+            TEXTURE2D_X(<span style="color: #7590db;">_SourceTex</span>);
+            SAMPLER(sampler_SourceTex);
 
-            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">custom pp</span>
-            cmd.<span style="color: #bc6ec5; font-weight: bold;">SetGlobalTexture</span>(fxSourceId, _cameraColorRT);
-            <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">cmd.SetRenderTarget(_tempRT.id, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store);</span>
-            cmd.<span style="color: #bc6ec5; font-weight: bold;">SetRenderTarget</span>(_cameraColorRT, RenderBufferLoadAction.Load, RenderBufferStoreAction.Store);
-            cmd.<span style="color: #bc6ec5; font-weight: bold;">DrawProcedural</span>(Matrix4x4.identity, _customRPSettings.material, 0, MeshTopology.Triangles, 3);
-
-            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">copy to _CameraColorRT</span>
-            <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">cmd.SetGlobalTexture(fxSourceId, _tempRT.id);</span>
-            <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">cmd.SetRenderTarget(_cameraColorRT, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store);</span>
-            <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">cmd.DrawProcedural(Matrix4x4.identity, _customRPSettings.material, 1, MeshTopology.Triangles, 3);</span>
-
-            context.<span style="color: #bc6ec5; font-weight: bold;">ExecuteCommandBuffer</span>(cmd);
-            CommandBufferPool.<span style="color: #bc6ec5; font-weight: bold;">Release</span>(cmd);
-        }
-
-        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">FrameCleanup</span>(<span style="color: #ce537a; font-weight: bold;">CommandBuffer</span> <span style="color: #7590db;">cmd</span>)
-        {
-            <span style="color: #4f97d7; font-weight: bold;">if</span>(_needTempRT)
+            <span style="color: #4f97d7; font-weight: bold;">struct</span> Attributes
             {
-                cmd.<span style="color: #bc6ec5; font-weight: bold;">ReleaseTemporaryRT</span>(_tempRT.id);
+                <span style="color: #ce537a; font-weight: bold;">float4</span> positionOS : <span style="color: #a45bad;">POSITION</span>;
+                <span style="color: #ce537a; font-weight: bold;">float2</span> uv         : <span style="color: #a45bad;">TEXCOORD0</span>;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
+            };
+
+            <span style="color: #4f97d7; font-weight: bold;">struct</span> Varyings
+            {
+                <span style="color: #ce537a; font-weight: bold;">float4</span> positionCS : <span style="color: #a45bad;">SV_POSITION</span>;
+                <span style="color: #ce537a; font-weight: bold;">float2</span> uv         : <span style="color: #a45bad;">TEXCOORD0</span>;
+                UNITY_VERTEX_OUTPUT_STEREO
+            };
+
+            Varyings <span style="color: #bc6ec5; font-weight: bold;">Vert</span>(Attributes input)
+            {
+                Varyings output;
+                UNITY_SETUP_INSTANCE_ID(input);
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
+
+                output.positionCS = <span style="color: #ce537a; font-weight: bold;">float4</span>(input.positionOS.xy, 0, 1);
+                output.uv = (input.positionOS.xy + 1) * 0.5;
+<span style="color: #bc6ec5;">                #if</span> UNITY_UV_STARTS_AT_TOP
+                output.uv = output.uv * <span style="color: #ce537a; font-weight: bold;">half2</span>(1, -1) + <span style="color: #ce537a; font-weight: bold;">half2</span>(0, 1);
+<span style="color: #bc6ec5;">                #endif</span>
+                <span style="color: #4f97d7; font-weight: bold;">return</span> output;
             }
+
+            <span style="color: #ce537a; font-weight: bold;">half4</span> <span style="color: #bc6ec5; font-weight: bold;">Fragment</span>(Varyings input) : <span style="color: #a45bad;">SV_Target</span>
+            {
+                UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+
+                <span style="color: #ce537a; font-weight: bold;">half4</span> col = SAMPLE_TEXTURE2D_X(<span style="color: #7590db;">_SourceTex</span>, sampler_SourceTex, input.uv);
+
+                <span style="color: #4f97d7; font-weight: bold;">return</span> col;
+            }
+            ENDHLSL
         }
-    }
-
-    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">CustomRPSettings</span> <span style="color: #7590db;">customRPSettings</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">CustomRPSettings</span>();
-    <span style="color: #ce537a; font-weight: bold;">CustomRenderPass</span> <span style="color: #7590db;">m_ScriptablePass</span>;
-
-    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Create</span>()
-    {
-        m_ScriptablePass = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">CustomRenderPass</span>(customRPSettings);
-
-        m_ScriptablePass.renderPassEvent = customRPSettings.passEvent;
-    }
-
-    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">AddRenderPasses</span>(<span style="color: #ce537a; font-weight: bold;">ScriptableRenderer</span> <span style="color: #7590db;">renderer</span>, <span style="color: #4f97d7; font-weight: bold;">ref</span> <span style="color: #ce537a; font-weight: bold;">RenderingData</span> <span style="color: #7590db;">renderingData</span>)
-    {
-        m_ScriptablePass.<span style="color: #bc6ec5; font-weight: bold;">Setup</span>(renderer.cameraColorTarget);
-        renderer.<span style="color: #bc6ec5; font-weight: bold;">EnqueuePass</span>(m_ScriptablePass);
     }
 }
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-org39194f3" class="outline-3">
-<h3 id="org39194f3">Source Code</h3>
-<div class="outline-text-3" id="text-org39194f3">
+</div>
+<div id="outline-container-org3379340" class="outline-3">
+<h3 id="org3379340">Source Code</h3>
+<div class="outline-text-3" id="text-org3379340">
 </div>
 <div id="outline-container-orgb36fe85" class="outline-4">
 <h4 id="orgb36fe85">代码结构</h4>
@@ -621,13 +627,32 @@ com.unity.render-pipelines.universal@10.5.0<br />
 </div>
 </div>
 
-<div id="outline-container-org268b3f3" class="outline-3">
-<h3 id="org268b3f3">参考资料</h3>
-<div class="outline-text-3" id="text-org268b3f3">
+<div id="outline-container-org0302634" class="outline-3">
+<h3 id="org0302634">参考资料</h3>
+<div class="outline-text-3" id="text-org0302634">
 <ul class="org-ul">
 <li><a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.0/manual/integration-with-post-processing.html">https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.0/manual/integration-with-post-processing.html</a><br /></li>
 <li><a href="https://github.com/sebastianhein/urp_kawase_blur">https://github.com/sebastianhein/urp_kawase_blur</a><br /></li>
 </ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org2613802" class="outline-2">
+<h2 id="org2613802">Common</h2>
+<div class="outline-text-2" id="text-org2613802">
+</div>
+<div id="outline-container-org453d6da" class="outline-3">
+<h3 id="org453d6da">Bloom</h3>
+<div class="outline-text-3" id="text-org453d6da">
+</div>
+<div id="outline-container-orgd67c31e" class="outline-4">
+<h4 id="orgd67c31e">Bloom 优化</h4>
+<div class="outline-text-4" id="text-orgd67c31e">
+<ul class="org-ul">
+<li>Post-processing Effects on Mobile: Optimization and Alternatives <a href="https://community.arm.com/arm-community-blogs/b/graphics-gaming-and-vr-blog/posts/post-processing-effects-on-mobile-optimization-and-alternatives">https://community.arm.com/arm-community-blogs/b/graphics-gaming-and-vr-blog/posts/post-processing-effects-on-mobile-optimization-and-alternatives</a><br /></li>
+</ul>
+</div>
 </div>
 </div>
 </div>

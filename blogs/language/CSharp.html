@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2022-09-07 Wed 11:16 -->
+<!-- 2022-10-08 Sat 23:12 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Programing in CSharp</title>
@@ -100,6 +100,7 @@
 </li>
 <li><a href="#orge22ef79">条件分支语句</a></li>
 <li><a href="#orgbce832e">预处理指令</a></li>
+<li><a href="#org621dc40">泛型函数</a></li>
 </ul>
 </li>
 <li><a href="#orged0ee49">类与对象</a>
@@ -222,7 +223,7 @@
 <li><a href="#org6e60896"><span class="todo TODO">TODO</span> 正则表达式</a>
 <ul>
 <li><a href="#org347131a">正则表达式匹配 ftp list directory detial</a></li>
-<li><a href="#org3fd9204">参考资料</a></li>
+<li><a href="#org1803b43">参考资料</a></li>
 </ul>
 </li>
 </ul>
@@ -230,7 +231,12 @@
 <li><a href="#org4d39a32"><span class="todo TODO">TODO</span> 异常处理</a></li>
 <li><a href="#orgf69e842">委托和事件</a>
 <ul>
-<li><a href="#org96dadf3">委托</a></li>
+<li><a href="#org96dadf3">委托</a>
+<ul>
+<li><a href="#org11aa5e6">Action</a></li>
+<li><a href="#org4ccd280">Func</a></li>
+</ul>
+</li>
 <li><a href="#org7f664a2">多重委托</a></li>
 <li><a href="#orgf102ed9">事件</a></li>
 <li><a href="#org6ceee69">事件和接口</a></li>
@@ -263,6 +269,7 @@
 <li><a href="#orgdeba8f4">运行期创建类型（反射输出）</a></li>
 <li><a href="#orgf914843">反射应用实例</a>
 <ul>
+<li><a href="#org35df788">反射创建实例</a></li>
 <li><a href="#orgc5e6426">反射序列化泛型 Array List Dictionary</a></li>
 <li><a href="#org9f3c64f">反射创建泛型 Array List Dictionary</a></li>
 <li><a href="#org1273274">反射序列化 其他程序集类</a></li>
@@ -361,14 +368,14 @@
 </li>
 </ul>
 </li>
-<li><a href="#org1803b43">参考资料</a></li>
+<li><a href="#orgdc13b5d">参考资料</a></li>
 </ul>
 </div>
 </div>
 <p>
 csharp language note.<br />
 </p>
-<div class="HTML" id="org7008cc0">
+<div class="HTML" id="orgaa44790">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -797,6 +804,48 @@ C#预处理器只实现了 C++预处理器的一个子集，不支持宏。<br /
 
 </pre>
 </div>
+</div>
+</div>
+<div id="outline-container-org621dc40" class="outline-4">
+<h4 id="org621dc40">泛型函数</h4>
+<div class="outline-text-4" id="text-org621dc40">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">ForeachObjInScene</span>&lt;<span style="color: #ce537a; font-weight: bold;">ObjT</span>&gt;(<span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #7590db;">scenePath</span>, <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #7590db;">includeInactive</span>, <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #7590db;">sceneProgress</span>, System.<span style="color: #ce537a; font-weight: bold;">Action</span>&lt;<span style="color: #ce537a; font-weight: bold;">ObjT</span>&gt; <span style="color: #7590db;">opt</span>) <span style="color: #4f97d7; font-weight: bold;">where</span> ObjT : UnityEngine.Object
+{
+    <span style="color: #4f97d7; font-weight: bold;">if</span> (opt == <span style="color: #a45bad;">null</span>) <span style="color: #4f97d7; font-weight: bold;">return</span>;
+
+    <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">info</span> = <span style="color: #ce537a; font-weight: bold;">string</span>.<span style="color: #bc6ec5; font-weight: bold;">Format</span>(<span style="color: #2d9574;">"Progessing {0}"</span>, scenePath);
+    <span style="color: #4f97d7; font-weight: bold;">if</span> (EditorUtility.<span style="color: #bc6ec5; font-weight: bold;">DisplayCancelableProgressBar</span>(<span style="color: #2d9574;">"Modify Light Param"</span>, info, sceneProgress))
+    {
+    }
+
+    <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">scene</span> = EditorSceneManager.<span style="color: #bc6ec5; font-weight: bold;">OpenScene</span>(scenePath);
+    <span style="color: #4f97d7; font-weight: bold;">if</span> (scene == <span style="color: #a45bad;">null</span>)
+    {
+        Debug.<span style="color: #bc6ec5; font-weight: bold;">LogWarningFormat</span>(<span style="color: #2d9574;">"scene not exist! {0}"</span>, scenePath);
+    }
+
+    <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">objArr</span> = GameObject.<span style="color: #bc6ec5; font-weight: bold;">FindObjectsOfType</span>&lt;<span style="color: #ce537a; font-weight: bold;">ObjT</span>&gt;(includeInactive);
+    <span style="color: #4f97d7; font-weight: bold;">foreach</span>(<span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">obj</span> <span style="color: #4f97d7; font-weight: bold;">in</span> objArr)
+    {
+        <span style="color: #bc6ec5; font-weight: bold;">opt</span>(obj);
+    }
+
+    <span style="color: #4f97d7; font-weight: bold;">if</span> (<span style="color: #a45bad;">!</span>EditorSceneManager.<span style="color: #bc6ec5; font-weight: bold;">SaveScene</span>(scene))
+    {
+        Debug.<span style="color: #bc6ec5; font-weight: bold;">LogWarningFormat</span>(<span style="color: #2d9574;">"Save Scene Failed! scene = {0}"</span>, scenePath);
+    }
+    <span style="color: #4f97d7; font-weight: bold;">if</span> (<span style="color: #a45bad;">!</span>EditorSceneManager.<span style="color: #bc6ec5; font-weight: bold;">CloseScene</span>(scene, <span style="color: #a45bad;">true</span>))
+    {
+        Debug.<span style="color: #bc6ec5; font-weight: bold;">LogWarningFormat</span>(<span style="color: #2d9574;">"Close Scene Failed! scene = {0}"</span>, scenePath);
+    }
+}
+</pre>
+</div>
+
+<ul class="org-ul">
+<li><a href="https://learn.microsoft.com/zh-cn/dotnet/csharp/programming-guide/generics/generic-methods">https://learn.microsoft.com/zh-cn/dotnet/csharp/programming-guide/generics/generic-methods</a><br /></li>
+</ul>
 </div>
 </div>
 </div>
@@ -2578,9 +2627,9 @@ Console.WriteLine (mutableStr);
 </div>
 </div>
 </div>
-<div id="outline-container-org3fd9204" class="outline-5">
-<h5 id="org3fd9204">参考资料</h5>
-<div class="outline-text-5" id="text-org3fd9204">
+<div id="outline-container-org1803b43" class="outline-5">
+<h5 id="org1803b43">参考资料</h5>
+<div class="outline-text-5" id="text-org1803b43">
 <ol class="org-ol">
 <li>C#正则表达式语言 <a href="https://msdn.microsoft.com/zh-cn/library/az24scfc(v=vs.110).aspx">https://msdn.microsoft.com/zh-cn/library/az24scfc(v=vs.110).aspx</a><br /></li>
 </ol>
@@ -2601,6 +2650,37 @@ Console.WriteLine (mutableStr);
 <p>
 委托是一种引用类型，用来封装带有特定签名和返回类型的方法。委托可用来封装静态成员方法、实例方法、匿名方法等。<br />
 </p>
+</div>
+<div id="outline-container-org11aa5e6" class="outline-5">
+<h5 id="org11aa5e6">Action</h5>
+<div class="outline-text-5" id="text-org11aa5e6">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">namespace</span> <span style="color: #7590db;">System</span>
+{
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">delegate</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Action</span>&lt;<span style="color: #4f97d7; font-weight: bold;">in</span> T&gt;(<span style="color: #ce537a; font-weight: bold;">T</span> <span style="color: #7590db;">obj</span>);
+}
+</pre>
+</div>
+<ul class="org-ul">
+<li><a href="https://learn.microsoft.com/zh-cn/dotnet/api/system.action-1?view=net-6.0">https://learn.microsoft.com/zh-cn/dotnet/api/system.action-1?view=net-6.0</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org4ccd280" class="outline-5">
+<h5 id="org4ccd280">Func</h5>
+<div class="outline-text-5" id="text-org4ccd280">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">namespace</span> <span style="color: #7590db;">System</span>
+{
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">delegate</span> <span style="color: #ce537a; font-weight: bold;">TResult</span> <span style="color: #bc6ec5; font-weight: bold;">Func</span>&lt;<span style="color: #4f97d7; font-weight: bold;">out</span> <span style="color: #ce537a; font-weight: bold;">TResult</span>&gt;();
+}
+</pre>
+</div>
+
+<ul class="org-ul">
+<li><a href="https://learn.microsoft.com/zh-cn/dotnet/api/system.func-1?view=net-6.0">https://learn.microsoft.com/zh-cn/dotnet/api/system.func-1?view=net-6.0</a><br /></li>
+</ul>
+</div>
 </div>
 </div>
 <div id="outline-container-org7f664a2" class="outline-4">
@@ -3057,6 +3137,26 @@ Tips: 必须把程序集属性放在所有 using 语句之后并且在其他任�
 <div id="outline-container-orgf914843" class="outline-4">
 <h4 id="orgf914843">反射应用实例</h4>
 <div class="outline-text-4" id="text-orgf914843">
+</div>
+<div id="outline-container-org35df788" class="outline-5">
+<h5 id="org35df788">反射创建实例</h5>
+<div class="outline-text-5" id="text-org35df788">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">baseToolT</span> = <span style="color: #4f97d7; font-weight: bold;">typeof</span>(GToolBase);
+<span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">types</span> = Assembly.<span style="color: #bc6ec5; font-weight: bold;">GetExecutingAssembly</span>().<span style="color: #bc6ec5; font-weight: bold;">GetTypes</span>();
+<span style="color: #4f97d7; font-weight: bold;">foreach</span>(<span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">t</span> <span style="color: #4f97d7; font-weight: bold;">in</span> types)
+{
+    <span style="color: #4f97d7; font-weight: bold;">if</span>(<span style="color: #a45bad;">!</span>t.<span style="color: #bc6ec5; font-weight: bold;">IsSubclassOf</span>(baseToolT))
+    {
+        <span style="color: #4f97d7; font-weight: bold;">continue</span>;
+    }
+
+    <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">tool</span> = System.Activator.<span style="color: #bc6ec5; font-weight: bold;">CreateInstance</span>(t, <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">object</span>[] { <span style="color: #4f97d7; font-weight: bold;">this</span> });
+    toolArr.<span style="color: #bc6ec5; font-weight: bold;">Add</span>(tool <span style="color: #4f97d7; font-weight: bold;">as</span> GToolBase);
+}
+</pre>
+</div>
+</div>
 </div>
 <div id="outline-container-orgc5e6426" class="outline-5">
 <h5 id="orgc5e6426">反射序列化泛型 Array List Dictionary</h5>
@@ -3855,9 +3955,9 @@ Directory.<span style="color: #bc6ec5; font-weight: bold;">Create</span>(path); 
 </div>
 </div>
 </div>
-<div id="outline-container-org1803b43" class="outline-2">
-<h2 id="org1803b43">参考资料</h2>
-<div class="outline-text-2" id="text-org1803b43">
+<div id="outline-container-orgdc13b5d" class="outline-2">
+<h2 id="orgdc13b5d">参考资料</h2>
+<div class="outline-text-2" id="text-orgdc13b5d">
 <ul class="org-ul">
 <li>.Net 系列文章 <a href="http://www.cnblogs.com/anding/p/5226343.html">http://www.cnblogs.com/anding/p/5226343.html</a><br /></li>
 </ul>

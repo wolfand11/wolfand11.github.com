@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2022-09-07 Wed 11:14 -->
+<!-- 2022-11-01 Tue 19:44 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Doom3 Engine</title>
@@ -37,6 +37,28 @@
     /*]]>*///-->
 // @license-end
 </script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
 </head>
 <body>
 <div id="org-div-home-and-up">
@@ -51,9 +73,9 @@
 <ul>
 <li><a href="#orgd0dc6e4">Doom3</a>
 <ul>
-<li><a href="#orgcaefea1">Introduction</a>
+<li><a href="#orgf061630">Introduction</a>
 <ul>
-<li><a href="#orge75b948">Architecture</a></li>
+<li><a href="#org004a553">Architecture</a></li>
 <li><a href="#org679cedf">Main Loop</a></li>
 <li><a href="#orgcec4a98">Doom3 sdk documents</a>
 <ul>
@@ -142,7 +164,7 @@
 </li>
 <li><a href="#org5f4588a">Renderer</a>
 <ul>
-<li><a href="#org06acca4">Architecture</a></li>
+<li><a href="#org0072314">Architecture</a></li>
 <li><a href="#orge1c98b4">Frontend/Backend/GPU collaboration</a></li>
 <li><a href="#org1dbefd2">Doom3 Renderer Frontend</a></li>
 <li><a href="#org88e4600">Doom3 Renderer Backend</a></li>
@@ -152,9 +174,9 @@
 </li>
 <li><a href="#org2bd8517">Doom3BFG</a>
 <ul>
-<li><a href="#orgf061630">Introduction</a>
+<li><a href="#org4a5d2c4">Introduction</a>
 <ul>
-<li><a href="#orgd7b774b">Architecture</a></li>
+<li><a href="#org5c1c290">Architecture</a></li>
 </ul>
 </li>
 <li><a href="#org3bb6728">Threading</a>
@@ -174,7 +196,7 @@
 </li>
 </ul>
 </li>
-<li><a href="#org06493eb">Architecture</a></li>
+<li><a href="#orgcefb466">Architecture</a></li>
 <li><a href="#org890b0fa">Usage</a></li>
 <li><a href="#org0e44909">How a Worker works</a>
 <ul>
@@ -186,13 +208,15 @@
 </li>
 <li><a href="#orgdfc2cab">Rendering</a>
 <ul>
-<li><a href="#org004a553">Architecture</a>
+<li><a href="#orgc6053f9">Architecture</a>
 <ul>
 <li><a href="#org40cfedc">为什么需要多线程渲染？</a></li>
 <li><a href="#orgaf7013d">Frontend 和 Backend 工作流程</a></li>
 <li><a href="#org60e0ed8">Render Frontend 和 Backend 的同步</a></li>
 <li><a href="#org71971f8">CPU 和 GPU 如何同步？</a></li>
+<li><a href="#org5225585">CPU 和 GPU 数据传输</a></li>
 <li><a href="#orgf25bbd5">GPU 和 显示器同步</a></li>
+<li><a href="#org804f542">shader</a></li>
 </ul>
 </li>
 <li><a href="#org099aadf">Threading Model</a></li>
@@ -208,7 +232,7 @@
 <p>
 Doom3 Engine note.<br />
 </p>
-<div class="HTML" id="orgc7a27cc">
+<div class="HTML" id="orgdf1e587">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -219,13 +243,13 @@ Doom3 Engine note.<br />
 <h2 id="orgd0dc6e4">Doom3</h2>
 <div class="outline-text-2" id="text-orgd0dc6e4">
 </div>
-<div id="outline-container-orgcaefea1" class="outline-3">
-<h3 id="orgcaefea1">Introduction</h3>
-<div class="outline-text-3" id="text-orgcaefea1">
+<div id="outline-container-orgf061630" class="outline-3">
+<h3 id="orgf061630">Introduction</h3>
+<div class="outline-text-3" id="text-orgf061630">
 </div>
-<div id="outline-container-orge75b948" class="outline-4">
-<h4 id="orge75b948">Architecture</h4>
-<div class="outline-text-4" id="text-orge75b948">
+<div id="outline-container-org004a553" class="outline-4">
+<h4 id="org004a553">Architecture</h4>
+<div class="outline-text-4" id="text-org004a553">
 <p>
 Solution structure 如下:<br />
 </p>
@@ -871,7 +895,7 @@ Misc 是我们放置不适合其他任何地方的实体的地方。 它包含�
 <p>
 AFEntity 是具有关联的关节体型（articulated figure）的实体。 它实际上可以是许多不同类型的实体之一。 玩家、怪物、车辆、锁链（如起重机）和一般的尸体都是 AF 实体。 有一个 idAFEntity_Base 类，其中包含所有 AF 实体共享的一些基本功能，idAFEntity_Gibbable、idAFEntity_Vehicle、idAFEntity_SteamPipe 和 idAFEntity_ClawFourFingers 都派生自 idAFEntity_Base。 AFEntity 实际上除了生成和销毁 AF 实体之外并没有做太多事情，因为所有实际工作都在 idAF 和 idPhysics_AF 中完成。<br />
 </p>
-<pre class="example" id="orgbebb8d7">
+<pre class="example" id="org42f5cad">
 idClass
 +-idEntity
   +-idAnimatedEntity
@@ -1097,7 +1121,7 @@ Seth Teller 在 1992 年发表了一篇令人惊叹的论文：密集遮挡多�
 </p>
 
 
-<div id="org1a268bb" class="figure">
+<div id="orge2d5e4b" class="figure">
 <p><img src="./doom3/simple-dmap-00.jpg" alt="simple-dmap-00.jpg" /><br />
 </p>
 </div>
@@ -1107,7 +1131,7 @@ Seth Teller 在 1992 年发表了一篇令人惊叹的论文：密集遮挡多�
 </p>
 
 
-<div id="orgd37ef20" class="figure">
+<div id="org520a15f" class="figure">
 <p><img src="./doom3/dmap_brush.png" alt="dmap_brush.png" /><br />
 </p>
 </div>
@@ -1292,7 +1316,7 @@ Dmap 源码注释非常清晰。<br />
 
 
 
-<div id="orgefb7b8a" class="figure">
+<div id="orgfa74278" class="figure">
 <p><img src="./doom3/post_filter.png" alt="post_filter.png" /><br />
 </p>
 </div>
@@ -1430,7 +1454,7 @@ idTech4 渲染器具有三项关键创新：<br />
 <p>
 到目前为止，最重要的是 idTech4 是一个多 pass 渲染器。 视图中每个灯光的贡献通过加法混合累积在 GPU 帧缓冲区中。Doom 3 充分利用了颜色帧缓冲区寄存器 saturate 而不是 wrapping around 的事实。<br />
 </p>
-<pre class="example" id="orgde28f57">
+<pre class="example" id="orga59e4ab">
 CPU register (wrap around) :
 ============================
 
@@ -1450,9 +1474,9 @@ GPU register ( saturate) :
 </pre>
 </div>
 
-<div id="outline-container-org06acca4" class="outline-4">
-<h4 id="org06acca4">Architecture</h4>
-<div class="outline-text-4" id="text-org06acca4">
+<div id="outline-container-org0072314" class="outline-4">
+<h4 id="org0072314">Architecture</h4>
+<div class="outline-text-4" id="text-org0072314">
 <p>
 渲染器不再和之前的 idTech 引擎一样是一个整体，而是被分为 Frontend 和 Backend 两部分<br />
 </p>
@@ -1471,7 +1495,7 @@ GPU register ( saturate) :
 </ul>
 
 
-<div id="org726bb9d" class="figure">
+<div id="org61fc983" class="figure">
 <p><img src="./doom3/fb_design_renderer.png" alt="fb_design_renderer.png" /><br />
 </p>
 </div>
@@ -1547,7 +1571,7 @@ GPU register ( saturate) :
 在加载 .proc 时，引擎还加载了.map 文件，其中包含了所有灯光和移动实体的定义。对于每个灯，引擎都建立一个受影响区域的列表：<br />
 <img src="./doom3/renderer_room_light.png" alt="renderer_room_light.png" /><br />
 </p>
-<pre class="example" id="org9945a2a">
+<pre class="example" id="org53dd1c3">
 Light 1 :
 =========
   - Area 0
@@ -1575,7 +1599,7 @@ FlowViewThroughPortals : 利用门户系统，从当前的区域开始洪水填�
 <img src="./doom3/frustrum_portal_division.png" alt="frustrum_portal_division.png" /><br />
 如此，我们就可以得到对屏幕有贡献的 light 和实体的列表。他们被存储在交互表(interaction table)中。<br />
 </p>
-<pre class="example" id="orgd7e9bdb">
+<pre class="example" id="org6b242aa">
 Interaction table (Light/Entity) :
 ==================================
 Light 1 - Area    0
@@ -1591,7 +1615,7 @@ Light 2 - Monster 1
 <li><p>
 R_AddLightSurfaces 通过遍历每个 light 的区域列表，将会找到不再视野中，但是投射了阴影的实体。<br />
 </p>
-<pre class="example" id="orgc66cfba">
+<pre class="example" id="org25dee63">
 Interaction table (Light/Entity) :
 ==================================
 
@@ -1689,13 +1713,13 @@ RB_DrawView
 <h2 id="org2bd8517">Doom3BFG</h2>
 <div class="outline-text-2" id="text-org2bd8517">
 </div>
-<div id="outline-container-orgf061630" class="outline-3">
-<h3 id="orgf061630">Introduction</h3>
-<div class="outline-text-3" id="text-orgf061630">
+<div id="outline-container-org4a5d2c4" class="outline-3">
+<h3 id="org4a5d2c4">Introduction</h3>
+<div class="outline-text-3" id="text-org4a5d2c4">
 </div>
-<div id="outline-container-orgd7b774b" class="outline-4">
-<h4 id="orgd7b774b">Architecture</h4>
-<div class="outline-text-4" id="text-orgd7b774b">
+<div id="outline-container-org5c1c290" class="outline-4">
+<h4 id="org5c1c290">Architecture</h4>
+<div class="outline-text-4" id="text-org5c1c290">
 <p>
 Solution structure 如下:<br />
 </p>
@@ -1785,7 +1809,7 @@ doom3 bfg 所用游戏引擎被称为 idTech4, 由 John Carmack 设计。该引�
 </p>
 
 
-<div id="org9614095" class="figure">
+<div id="org80f182e" class="figure">
 <p><img src="./doom3/doom3BFG_threading_model.png" alt="doom3BFG_threading_model.png" /><br />
 </p>
 </div>
@@ -2017,9 +2041,9 @@ Signal 主要用于将一个线程变为 sleep 状态。Workers 使用 idSysSign
 </div>
 </div>
 </div>
-<div id="outline-container-org06493eb" class="outline-4">
-<h4 id="org06493eb">Architecture</h4>
-<div class="outline-text-4" id="text-org06493eb">
+<div id="outline-container-orgcefb466" class="outline-4">
+<h4 id="orgcefb466">Architecture</h4>
+<div class="outline-text-4" id="text-orgcefb466">
 <p>
 ParalleleJobManager 是该多线程系统的大脑，由其生成工作线程并创建队列来存储 jobs。这种方式可以避免同步：将引擎的 job 发布系统划分为多个 sections（多个队列），仅由一个线程来访问，因此不需要同步。在 idTech4 引擎中，队列对应的类为 idParallelJobList。<br />
 ParalleleJobManager 结构图如下：<br />
@@ -2147,7 +2171,7 @@ Workers 都是无限循环。每次循环中会检查是否有更多的 JobList 
 </p>
 
 
-<div id="org5cd0410" class="figure">
+<div id="orge08e6e3" class="figure">
 <p><img src="./doom3/data_to_stack_copy.png" alt="data_to_stack_copy.png" /><br />
 </p>
 </div>
@@ -2253,15 +2277,15 @@ Tips:<br />
 <h3 id="orgdfc2cab">Rendering</h3>
 <div class="outline-text-3" id="text-orgdfc2cab">
 </div>
-<div id="outline-container-org004a553" class="outline-4">
-<h4 id="org004a553">Architecture</h4>
-<div class="outline-text-4" id="text-org004a553">
+<div id="outline-container-orgc6053f9" class="outline-4">
+<h4 id="orgc6053f9">Architecture</h4>
+<div class="outline-text-4" id="text-orgc6053f9">
 <p>
 和 Doom3 的架构一样，渲染器仍然被分为两部分：Frontend 和 Backend。Frontend 确定哪些需要被绘制，Backend 花费大部分时间调用绘制命令并等待 GPU 执行这些命令，GPU 还会等待 VSync。<br />
 </p>
 
 
-<div id="org50581ec" class="figure">
+<div id="orgd01677f" class="figure">
 <p><img src="./doom3/rendere_big_picture.png" alt="rendere_big_picture.png" /><br />
 </p>
 </div>
@@ -2662,10 +2686,58 @@ Renderer Backend 逻辑在主线程执行。<br />
 <ul class="org-ul">
 <li>glFinsh <a href="https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glFinish.xhtml">https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glFinish.xhtml</a><br /></li>
 <li>Sync Object <a href="https://www.khronos.org/opengl/wiki/Sync_Object">https://www.khronos.org/opengl/wiki/Sync_Object</a><br /></li>
-<li>图形渲染中关于 CPU 和 GPU 的一些问题？ <a href="https://www.zhihu.com/question/59732134/answer/168975408">https://www.zhihu.com/question/59732134/answer/168975408</a> <br /></li>
+<li>图形渲染中关于 CPU 和 GPU 的一些问题？ <a href="https://www.zhihu.com/question/59732134/answer/168975408">https://www.zhihu.com/question/59732134/answer/168975408</a><br /></li>
 </ul>
 </div>
 </div>
+
+<div id="outline-container-org5225585" class="outline-5">
+<h5 id="org5225585">CPU 和 GPU 数据传输</h5>
+<div class="outline-text-5" id="text-org5225585">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">&#xa0;</th>
+<th scope="col" class="org-left">&#xa0;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">Material Property</td>
+<td class="org-left">rpColor</td>
+</tr>
+
+<tr>
+<td class="org-left">Object Property</td>
+<td class="org-left">rpModelMatrixX rpModelMatrixY rpModelMatrixZ</td>
+</tr>
+
+<tr>
+<td class="org-left">Global Property</td>
+<td class="org-left">rpLocalViewOrigin</td>
+</tr>
+
+<tr>
+<td class="org-left">Mesh Data</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">Texture Data</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
 <div id="outline-container-orgf25bbd5" class="outline-5">
 <h5 id="orgf25bbd5">GPU 和 显示器同步</h5>
 <div class="outline-text-5" id="text-orgf25bbd5">
@@ -2681,7 +2753,43 @@ Renderer Backend 逻辑在主线程执行。<br />
 </ul>
 </div>
 </div>
+<div id="outline-container-org804f542" class="outline-5">
+<h5 id="org804f542">shader</h5>
+<div class="outline-text-5" id="text-org804f542">
+<p>
+shader 目录: DOOM-3-BFG\base\renderprogs<br />
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">&#xa0;</th>
+<th scope="col" class="org-left">&#xa0;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">DOOM-3-BFG\base\renderprogs\bumpyenvironment_skinned.vertex</td>
+<td class="org-left">gpu skin vertex shader</td>
+</tr>
+
+<tr>
+<td class="org-left">DOOM-3-BFG\base\renderprogs\bumpyenvironment_skinned.pixel</td>
+<td class="org-left">gpu skin pixel shader</td>
+</tr>
+</tbody>
+</table>
 </div>
+</div>
+</div>
+
 <div id="outline-container-org099aadf" class="outline-4">
 <h4 id="org099aadf">Threading Model</h4>
 <div class="outline-text-4" id="text-org099aadf">
@@ -2700,7 +2808,7 @@ Renderer Backend 逻辑在主线程执行。<br />
 </ul>
 
 
-<div id="org2495e25" class="figure">
+<div id="org828e8ba" class="figure">
 <p><img src="./doom3/renderer_threading_model.png" alt="renderer_threading_model.png" /><br />
 </p>
 </div>
@@ -2741,7 +2849,7 @@ Renderer Backend 逻辑在主线程执行。<br />
 </p>
 
 
-<div id="org01168b2" class="figure">
+<div id="orgac34b27" class="figure">
 <p><img src="./doom3/renderer_abstraction.png" alt="renderer_abstraction.png" /><br />
 </p>
 </div>

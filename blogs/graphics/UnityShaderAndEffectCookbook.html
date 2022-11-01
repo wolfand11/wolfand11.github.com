@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2022-09-07 Wed 11:16 -->
+<!-- 2022-11-01 Tue 19:45 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>UnityShaderAndEffectCookbook</title>
@@ -37,6 +37,28 @@
     /*]]>*///-->
 // @license-end
 </script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
 </head>
 <body>
 <div id="org-div-home-and-up">
@@ -51,7 +73,7 @@
 <ul>
 <li><a href="#org736b034">Basic</a>
 <ul>
-<li><a href="#org15d37e9">Properties</a></li>
+<li><a href="#orgf39f17e">Properties</a></li>
 <li><a href="#org7a82e14">SurfaceShader</a>
 <ul>
 <li><a href="#org5bae2ec">SurfaceShader 工作流程图</a></li>
@@ -66,7 +88,7 @@
 </li>
 <li><a href="#org784476d">shader 的代码结构</a>
 <ul>
-<li><a href="#org508ef23">Properties</a></li>
+<li><a href="#orge957b27">Properties</a></li>
 <li><a href="#org1178821">Category</a></li>
 <li><a href="#orgc5e5036">SubShader</a>
 <ul>
@@ -105,6 +127,7 @@
 <li><a href="#orgcac8a4f">Stencil</a></li>
 <li><a href="#org4260173">深度相关的状态</a></li>
 <li><a href="#org354835c">Blend</a></li>
+<li><a href="#orgc02f4d6">Conservative</a></li>
 </ul>
 </li>
 </ul>
@@ -130,14 +153,14 @@
 <li><a href="#org057b159">Additional Passes</a></li>
 </ul>
 </li>
-<li><a href="#orgbf66665">Performance Considerations</a></li>
+<li><a href="#orgc4cf38a">Performance Considerations</a></li>
 </ul>
 </li>
 <li><a href="#orgf2c894f">Deferred Shading path</a>
 <ul>
 <li><a href="#org4a6553b">Overview</a></li>
 <li><a href="#org8db0a10">Requirements</a></li>
-<li><a href="#org80013fc">Performance Considerations</a></li>
+<li><a href="#org52fb9eb">Performance Considerations</a></li>
 <li><a href="#orgdf85544">Implementation Details</a></li>
 <li><a href="#org0de2574">G-Buffer Pass</a></li>
 <li><a href="#org95cbf30">Lighting Pass</a></li>
@@ -152,9 +175,9 @@
 <li><a href="#orgde25cf6">shader 中 RenderQueue 设置</a></li>
 </ul>
 </li>
-<li><a href="#orgf53485a">Misc</a>
+<li><a href="#org6622b2d">Misc</a>
 <ul>
-<li><a href="#orgf1d1ed0">Shader Variants</a>
+<li><a href="#org3f8fc63">Shader Variants</a>
 <ul>
 <li><a href="#orgd8b4711">Useage</a>
 <ul>
@@ -186,7 +209,7 @@
 <li><a href="#org5a7c7a9">Fresnel reflection</a>
 <ul>
 <li><a href="#orgde5297c">如何模拟菲涅尔效应效果？</a></li>
-<li><a href="#org673599b">参考资料</a></li>
+<li><a href="#org1788c1f">参考资料</a></li>
 </ul>
 </li>
 </ul>
@@ -200,12 +223,13 @@
 <li><a href="#org9d0fa92">halfasview</a></li>
 <li><a href="#org656b81f">使用 UnityObjectToClipPos 代替 mul(UNITY_MATRIX_MVP,v.vertex)</a></li>
 <li><a href="#orgb8f9360">Shader Lod</a></li>
-<li><a href="#orgcfca8c1">Shader Variants</a>
+<li><a href="#org854f662">Shader Variants</a>
 <ul>
 <li><a href="#orgcf16193">scriptable shader variants stripping</a></li>
 </ul>
 </li>
-<li><a href="#org0402aef">参考资料</a></li>
+<li><a href="#orgb714a4b">Pixel Local Storage and FrameBufferFetch</a></li>
+<li><a href="#org3d6a0d3">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#orga174527">LightingModel</a></li>
@@ -221,7 +245,7 @@
 <ul>
 <li>
 <ul>
-<li><a href="#orgf25aa2d">参考资料</a></li>
+<li><a href="#org59e6a72">参考资料</a></li>
 </ul>
 </li>
 </ul>
@@ -240,7 +264,28 @@
 </li>
 </ul>
 </li>
-<li><a href="#org689ff7d">CommandBuffer</a></li>
+<li><a href="#org689ff7d">CommandBuffer</a>
+<ul>
+<li><a href="#orga954b9b">Misc</a>
+<ul>
+<li><a href="#org74ef4b5">URP Camera CommandBuffer 没有效果</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org999d5f7">ERROR</a>
+<ul>
+<li><a href="#orga594d27">Effect</a>
+<ul>
+<li><a href="#org7674f9c">线性空间下，Unity 中 UI 半透明图片显示和 Photoshop 中效果不一致</a>
+<ul>
+<li><a href="#org84aab37">为什么 Photoshop 中 alpha 通道填充 0.5，而 PS 文件实际存储的 alpha 通道的值为 0.36078 ?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a href="#org77e1aec">Q&amp;A</a>
 <ul>
 <li><a href="#orge867be4">unity 坐标系是左手还是右手？</a></li>
@@ -254,7 +299,7 @@
 </li>
 <li><a href="#org0e95f46">Pass 的执行顺序</a></li>
 <li><a href="#orga078e06">Enable Disable Pass</a></li>
-<li><a href="#org4d69bf7">Tips</a></li>
+<li><a href="#orgae65d2a">Tips</a></li>
 </ul>
 </li>
 <li><a href="#org46aa9ce">如何实现半透明渲染？</a></li>
@@ -264,7 +309,7 @@
 <li><a href="#org9a064e3">Deferred Rendering</a></li>
 <li><a href="#org102f647">Deferred Shading</a></li>
 <li><a href="#orgcd0b684">Deferred Lighting</a></li>
-<li><a href="#orgc12431e">参考资料</a></li>
+<li><a href="#org8bc37d1">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#org0d84a25">为什么 Unity 中 skybox 是在所有不透明物体和所有透明物体之间被绘制的？</a></li>
@@ -275,14 +320,14 @@
 <li><a href="#org0135b86">What is tangent.w? How to know whether it's 1 or -1? tangent.w VS unity_WorldTransformParams.w?</a></li>
 </ul>
 </li>
-<li><a href="#orge37e990">参考资料</a></li>
+<li><a href="#org68e480a">参考资料</a></li>
 </ul>
 </div>
 </div>
 <p>
 本来只是一篇读书笔记，后来把 unity shader 相关的东西都加进来了。<br />
 </p>
-<div class="HTML" id="org54572ae">
+<div class="HTML" id="orge607dc2">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -292,9 +337,9 @@
 <h2 id="org736b034">Basic</h2>
 <div class="outline-text-2" id="text-org736b034">
 </div>
-<div id="outline-container-org15d37e9" class="outline-3">
-<h3 id="org15d37e9">Properties</h3>
-<div class="outline-text-3" id="text-org15d37e9">
+<div id="outline-container-orgf39f17e" class="outline-3">
+<h3 id="orgf39f17e">Properties</h3>
+<div class="outline-text-3" id="text-orgf39f17e">
 <p>
 通过 Properties，可以将 shader 的一些参数暴露给编辑器进行设置。<br />
 </p>
@@ -364,7 +409,7 @@
 <h4 id="org5bae2ec">SurfaceShader 工作流程图</h4>
 <div class="outline-text-4" id="text-org5bae2ec">
 
-<div id="orgc6f5086" class="figure">
+<div id="org852c9b6" class="figure">
 <p><img src="UnityShaderAndEffectCookbook/SurfaceShaderFlow.jpg" alt="SurfaceShaderFlow.jpg" /><br />
 </p>
 </div>
@@ -513,7 +558,7 @@ Tips：<br />
 </tr>
 </tbody>
 </table>
-<pre class="example" id="org24d2e61">
+<pre class="example" id="orge67185a">
 Tips:
 使用 worldRefl;INTERNAL_DATA 时， 通过 WorldReflectionVector (IN, o.Normal)来从法线贴图获得反射向量
 使用 worldNormal;INTERNAL_DATA 时，通过 WorldNormalVector（IN, o.Normal）来从法线贴图获得法线
@@ -626,9 +671,9 @@ Tips:
 </pre>
 </div>
 </div>
-<div id="outline-container-org508ef23" class="outline-4">
-<h4 id="org508ef23">Properties</h4>
-<div class="outline-text-4" id="text-org508ef23">
+<div id="outline-container-orge957b27" class="outline-4">
+<h4 id="orge957b27">Properties</h4>
+<div class="outline-text-4" id="text-orge957b27">
 <p>
 Properties 指定了 surface shader 中可供调节的变量，这些变量可以被显示在 Inspector 中。<br />
 </p>
@@ -699,7 +744,7 @@ Category 将其中的所有指令组成一组。通常用于渲染状态继承�
 <p>
 小于等于 2500 的渲染队列，被当做不透明物体的渲染队列，并且可以调整物体的渲染顺序来达到最佳性能。更高的渲染队列被认为是透明物体的渲染队列，并且物体依据距离来排序，从最远的物体开始渲染直到最近的物体。Skyboxes 是在所有不透明物体和所有透明物体之间被绘制的。<br />
 </p>
-<pre class="example" id="orgaab103b">
+<pre class="example" id="org2113f23">
 Tags { "Queue" = "Transparent" }
 </pre>
 </div>
@@ -741,7 +786,7 @@ Geometry 和 AlphaTest 之后渲染的队列，该队列以从后到前的顺序
 </li>
 <li><a id="org0e766cd"></a>自定义渲染队列<br />
 <div class="outline-text-7" id="text-org0e766cd">
-<pre class="example" id="org481738f">
+<pre class="example" id="org453a0c1">
 Tags { "Queue" = "Geometry+1" }
 </pre>
 </div>
@@ -785,7 +830,7 @@ Shader Replacement 会用到该设置。<br />
 <div id="outline-container-org1929460" class="outline-6">
 <h6 id="org1929460">其他的一些 tag</h6>
 <div class="outline-text-6" id="text-org1929460">
-<pre class="example" id="orged9917a">
+<pre class="example" id="org171ce40">
 ForceNoShadowCasting
 IgnoreProjector
 CanUseSpriteAtlas
@@ -1294,6 +1339,11 @@ Pass 可以设置图形硬件的渲染状态。<br />
 <td class="org-left">Offset OffsetFactor, OffsetUnits</td>
 <td class="org-left">设置深度值的偏移</td>
 </tr>
+
+<tr>
+<td class="org-left">Conservative True/False</td>
+<td class="org-left">开启/关闭 保守光栅化</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -1471,8 +1521,8 @@ Pass 可以设置图形硬件的渲染状态。<br />
 </div>
 </li>
 
-<li><a id="org4f05b9f"></a>Tips<br />
-<div class="outline-text-8" id="text-org4f05b9f">
+<li><a id="orgb4f9d97"></a>Tips<br />
+<div class="outline-text-8" id="text-orgb4f9d97">
 <ul class="org-ul">
 <li>Comp Pass Fail ZFail<br /></li>
 <li>CompFront PassFront FailFront ZFailFront 显示指定渲染几何体正面时，使用的模板缓冲区操作。<br /></li>
@@ -1482,8 +1532,8 @@ Pass 可以设置图形硬件的渲染状态。<br />
 </li>
 </ul>
 </li>
-<li><a id="org48db295"></a>参考资料<br />
-<div class="outline-text-7" id="text-org48db295">
+<li><a id="orgebb0eb8"></a>参考资料<br />
+<div class="outline-text-7" id="text-orgebb0eb8">
 <ul class="org-ul">
 <li><a href="https://docs.unity3d.com/Manual/SL-Stencil.html">https://docs.unity3d.com/Manual/SL-Stencil.html</a><br /></li>
 <li><a href="https://learnopengl.com/Advanced-OpenGL/Stencil-testing">https://learnopengl.com/Advanced-OpenGL/Stencil-testing</a><br /></li>
@@ -1521,8 +1571,8 @@ Blend Off 关闭混合（默认）<br />
 </p>
 </div>
 <ul class="org-ul">
-<li><a id="org9fa8699"></a>参考资料<br />
-<div class="outline-text-7" id="text-org9fa8699">
+<li><a id="orgcb9d3e9"></a>参考资料<br />
+<div class="outline-text-7" id="text-orgcb9d3e9">
 <ul class="org-ul">
 <li><a href="https://docs.unity3d.com/Manual/SL-Blend.html">https://docs.unity3d.com/Manual/SL-Blend.html</a><br /></li>
 <li><a href="https://blog.csdn.net/ecidevilin/article/details/52864349">https://blog.csdn.net/ecidevilin/article/details/52864349</a><br /></li>
@@ -1531,10 +1581,21 @@ Blend Off 关闭混合（默认）<br />
 </li>
 </ul>
 </div>
-</div>
-</div>
-</div>
+<div id="outline-container-orgc02f4d6" class="outline-6">
+<h6 id="orgc02f4d6">Conservative</h6>
+<div class="outline-text-6" id="text-orgc02f4d6">
+<p>
+光栅化时会判断哪些像素会被三角形覆盖。通常，GPU 通过一个像素内的采样点来确定该像素是否被三角形覆盖，若满足一定覆盖范围，GPU 才认为会光栅化该像素。保守光栅化意味着像素被三角形覆盖一部分时，GPU 也会光栅化该像素，而不考虑覆盖范围是否满足。保守光栅化意味着在三角形边缘会产生更多的片段，这回导致片段着色器调用增加，从而增加 GPU 耗时。<br />
+</p>
 
+<ul class="org-ul">
+<li><a href="https://docs.unity.cn/Manual/SL-Conservative.html">https://docs.unity.cn/Manual/SL-Conservative.html</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
 <div id="outline-container-orgcf0e4f4" class="outline-3">
 <h3 id="orgcf0e4f4">贴图</h3>
 <div class="outline-text-3" id="text-orgcf0e4f4">
@@ -1565,8 +1626,8 @@ Blend Off 关闭混合（默认）<br />
 </p>
 
 
-<div id="org331aacc" class="figure">
-<p><img src="./UnityShaderAndEffectCookbook/001_CameraRender.jpg" alt="001_CameraRender.jpg" /><br />
+<div id="org87f2f3c" class="figure">
+<p><img src="./UnityShaderAndEffectCookbook/001_CameraRender.jpg" alt="001_CameraRender.jpg" width="900px" /><br />
 </p>
 </div>
 <ul class="org-ul">
@@ -1583,7 +1644,7 @@ Blend Off 关闭混合（默认）<br />
 <p>
 Shaders 定义了一个物体看起来是怎样的，以及这个物体如何和光照交互。因为光照计算必须在 shader 中进行，并且可能有很多种类型的光照和阴影，所以编写高质量的可用的 shaders 将是一个复杂的任务。为了让这项工作变的简单，Unity 提供了 Surface Shaders，其中所有的光照、阴影、光照贴图，正向渲染、延迟渲染等事情都被自动化管理。<br />
 </p>
-<pre class="example" id="orga4dce44">
+<pre class="example" id="org39df764">
 本小结内容翻译自 Unity 官方文档：
 SL-RenderPipeline.html
 RenderTech-ForwardRendering.html
@@ -1714,9 +1775,9 @@ Additional Passes 用来渲染影响到物体的每个额外的 per-pixel 方式
 </div>
 </div>
 </div>
-<div id="outline-container-orgbf66665" class="outline-5">
-<h5 id="orgbf66665">Performance Considerations</h5>
-<div class="outline-text-5" id="text-orgbf66665">
+<div id="outline-container-orgc4cf38a" class="outline-5">
+<h5 id="orgc4cf38a">Performance Considerations</h5>
+<div class="outline-text-5" id="text-orgc4cf38a">
 <p>
 Spherical Harmonics 方式计算的光照渲染速度非常快。他们消耗很少的 CPU 资源，并且对于 GPU 基本是无消耗的（也就是说，Base Passes 总是计算 SH 方式计算的光照，但是，基于 SH 的工作方式，无论有多少光照按照 SH 方式计算，其消耗都是一样的）。<br />
 SH 方式计算光照的缺点有：<br />
@@ -1764,9 +1825,9 @@ Deferred Pass 用来渲染光照计算需要的所有的信息（在内置 shade
 </p>
 </div>
 </div>
-<div id="outline-container-org80013fc" class="outline-5">
-<h5 id="org80013fc">Performance Considerations</h5>
-<div class="outline-text-5" id="text-org80013fc">
+<div id="outline-container-org52fb9eb" class="outline-5">
+<h5 id="org52fb9eb">Performance Considerations</h5>
+<div class="outline-text-5" id="text-org52fb9eb">
 <p>
 在延迟渲染中渲染实时光照的开销和被照明的像素数量成比例，而和场景的复杂程度无关。所以小的点光源或聚光灯开销非常小，如果场景中的物体将它们整个或部分遮挡，渲染它们的开销将更小。<br />
 </p>
@@ -1940,13 +2001,13 @@ z-depth 是表示被渲染的片段离摄像机的距离。渲染的时候会依
 </div>
 </div>
 
-<div id="outline-container-orgf53485a" class="outline-3">
-<h3 id="orgf53485a">Misc</h3>
-<div class="outline-text-3" id="text-orgf53485a">
+<div id="outline-container-org6622b2d" class="outline-3">
+<h3 id="org6622b2d">Misc</h3>
+<div class="outline-text-3" id="text-org6622b2d">
 </div>
-<div id="outline-container-orgf1d1ed0" class="outline-4">
-<h4 id="orgf1d1ed0">Shader Variants</h4>
-<div class="outline-text-4" id="text-orgf1d1ed0">
+<div id="outline-container-org3f8fc63" class="outline-4">
+<h4 id="org3f8fc63">Shader Variants</h4>
+<div class="outline-text-4" id="text-org3f8fc63">
 </div>
 <div id="outline-container-orgd8b4711" class="outline-5">
 <h5 id="orgd8b4711">Useage</h5>
@@ -2274,9 +2335,9 @@ o.<span style="color: #4f97d7; font-weight: bold;">Specular</span> = <span style
 </div>
 </div>
 </div>
-<div id="outline-container-org673599b" class="outline-4">
-<h4 id="org673599b">参考资料</h4>
-<div class="outline-text-4" id="text-org673599b">
+<div id="outline-container-org1788c1f" class="outline-4">
+<h4 id="org1788c1f">参考资料</h4>
+<div class="outline-text-4" id="text-org1788c1f">
 <p>
 菲涅耳反射 互动百科:<br />
 <a href="http://www.baike.com/wiki/%E8%8F%B2%E6%B6%85%E5%B0%94%E5%8F%8D%E5%B0%84">http://www.baike.com/wiki/%E8%8F%B2%E6%B6%85%E5%B0%94%E5%8F%8D%E5%B0%84</a><br />
@@ -2443,6 +2504,8 @@ Double 的计算与此类似，double 的符号位为 63 位，指数为 62～52
 <a href="https://docs.unity3d.com/Manual/SL-DataTypesAndPrecision.html">SL-DataTypesAndPrecision</a><br />
 <a href="https://www.jianshu.com/p/c1ad09b690b2">https://www.jianshu.com/p/c1ad09b690b2</a><br />
 <a href="https://blog.csdn.net/KLFTESPACE/article/details/81150481">https://blog.csdn.net/KLFTESPACE/article/details/81150481</a><br />
+<a href="https://www.khronos.org/opengl/wiki/Small_Float_Formats">https://www.khronos.org/opengl/wiki/Small_Float_Formats</a><br />
+<a href="https://bartwronski.com/2017/04/02/small-float-formats-r11g11b10f-precision/">https://bartwronski.com/2017/04/02/small-float-formats-r11g11b10f-precision/</a><br />
 </p>
 </div>
 </div>
@@ -2530,15 +2593,15 @@ Shader.globalMaximumLOD 和 someShader.maximumLOD 并不会随着到摄像机距
 </ul>
 </div>
 </div>
-<div id="outline-container-orgcfca8c1" class="outline-3">
-<h3 id="orgcfca8c1">Shader Variants</h3>
-<div class="outline-text-3" id="text-orgcfca8c1">
+<div id="outline-container-org854f662" class="outline-3">
+<h3 id="org854f662">Shader Variants</h3>
+<div class="outline-text-3" id="text-org854f662">
 </div>
 <div id="outline-container-orgcf16193" class="outline-4">
 <h4 id="orgcf16193">scriptable shader variants stripping</h4>
 <div class="outline-text-4" id="text-orgcf16193">
 
-<div id="org268eb32" class="figure">
+<div id="org141d735" class="figure">
 <p><img src="./UnityShaderAndEffectCookbook/scriptable-shader-variant-stripping.png" alt="scriptable-shader-variant-stripping.png" /><br />
 </p>
 </div>
@@ -2592,9 +2655,22 @@ Shader.globalMaximumLOD 和 someShader.maximumLOD 并不会随着到摄像机距
 </div>
 </div>
 </div>
-<div id="outline-container-org0402aef" class="outline-3">
-<h3 id="org0402aef">参考资料</h3>
-<div class="outline-text-3" id="text-org0402aef">
+<div id="outline-container-orgb714a4b" class="outline-3">
+<h3 id="orgb714a4b">Pixel Local Storage and FrameBufferFetch</h3>
+<div class="outline-text-3" id="text-orgb714a4b">
+<ul class="org-ul">
+<li><a href="https://forum.unity.com/threads/pixel-local-storage-and-frame-buffer-fetch-on-mobile-devices.604186/">https://forum.unity.com/threads/pixel-local-storage-and-frame-buffer-fetch-on-mobile-devices.604186/</a><br /></li>
+<li><a href="https://docs.unity3d.com/ScriptReference/Rendering.ScriptableRenderContext.BeginRenderPass.html">https://docs.unity3d.com/ScriptReference/Rendering.ScriptableRenderContext.BeginRenderPass.html</a><br /></li>
+<li><a href="https://www.cnblogs.com/minggoddess/p/11471369.html">https://www.cnblogs.com/minggoddess/p/11471369.html</a><br /></li>
+<li><a href="https://docs.unity3d.com/Manual/SL-PlatformDifferences.html">https://docs.unity3d.com/Manual/SL-PlatformDifferences.html</a><br /></li>
+<li><a href="https://forum.unity.com/threads/getting-black-when-using-framebuffer-fetch-on-android.867922/">https://forum.unity.com/threads/getting-black-when-using-framebuffer-fetch-on-android.867922/</a><br /></li>
+<li>framebuffer fetch 的兼容性梳理 <a href="https://zhuanlan.zhihu.com/p/456973432">https://zhuanlan.zhihu.com/p/456973432</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org3d6a0d3" class="outline-3">
+<h3 id="org3d6a0d3">参考资料</h3>
+<div class="outline-text-3" id="text-org3d6a0d3">
 <p>
 <a href="https://docs.unity3d.com/Manual/SL-SurfaceShaders.html">Shader 编译指令</a><br />
 <a href="https://docs.unity3d.com/Manual/MobileOptimizationPracticalGuide.html">Mobile Optimize Doc</a><br />
@@ -2687,9 +2763,9 @@ Normal Map 又叫 Ramp Map，其实就是法线贴图。<br />
 UnpackNormal 的作用是将 0-1 范围的数值(法线贴图存储的颜色值)映射为-1-1 范围的数值（法线向量）。<br />
 </p>
 </div>
-<div id="outline-container-orgf25aa2d" class="outline-4">
-<h4 id="orgf25aa2d">参考资料</h4>
-<div class="outline-text-4" id="text-orgf25aa2d">
+<div id="outline-container-org59e6a72" class="outline-4">
+<h4 id="org59e6a72">参考资料</h4>
+<div class="outline-text-4" id="text-org59e6a72">
 <p>
 <a href="http://www.songho.ca/opengl/gl_normaltransform.html">Normal 变换矩阵推导</a><br />
 <a href="http://blog.csdn.net/candycat1992/article/details/41605257">Unity 中的 Normal Map</a><br />
@@ -2732,6 +2808,174 @@ Alt+鼠标右键点击 连线的端点。（注意：点击连线无用）<br />
 </div>
 <div id="outline-container-org689ff7d" class="outline-2">
 <h2 id="org689ff7d">CommandBuffer</h2>
+<div class="outline-text-2" id="text-org689ff7d">
+</div>
+<div id="outline-container-orga954b9b" class="outline-3">
+<h3 id="orga954b9b">Misc</h3>
+<div class="outline-text-3" id="text-orga954b9b">
+</div>
+<div id="outline-container-org74ef4b5" class="outline-4">
+<h4 id="org74ef4b5">URP Camera CommandBuffer 没有效果</h4>
+<div class="outline-text-4" id="text-org74ef4b5">
+<p>
+URP Camera 上不支持挂载 CommandBuffer。<br />
+URP Light 上也不支持挂载 CommandBuffer。<br />
+</p>
+
+<ul class="org-ul">
+<li><a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.0/manual/universalrp-builtin-feature-comparison.html">https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.0/manual/universalrp-builtin-feature-comparison.html</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org999d5f7" class="outline-2">
+<h2 id="org999d5f7">ERROR</h2>
+<div class="outline-text-2" id="text-org999d5f7">
+</div>
+<div id="outline-container-orga594d27" class="outline-3">
+<h3 id="orga594d27">Effect</h3>
+<div class="outline-text-3" id="text-orga594d27">
+</div>
+<div id="outline-container-org7674f9c" class="outline-4">
+<h4 id="org7674f9c">线性空间下，Unity 中 UI 半透明图片显示和 Photoshop 中效果不一致</h4>
+<div class="outline-text-4" id="text-org7674f9c">
+<p>
+开启线性空间后，Unity Overlay UI RT 的格式也是 sRGB，UI 贴图本身是 sRGB，引擎会将 sRGB 贴图的颜色转换为线性颜色，但是 alpha 通道值不会进行转换。<br />
+假设原来 sRGB RT 中的值为(0, 0, 0, 0)，默认 UI shader 的混合方式为 Blend SrcAlpha OneMinusSrcAlpha，则有：<br />
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">贴图颜色值</th>
+<th scope="col" class="org-left">在 shader 中采样出来后的值</th>
+<th scope="col" class="org-left">Blend 后的值</th>
+<th scope="col" class="org-left">写入 sRGB RT 的颜色值</th>
+<th scope="col" class="org-left">显示出来后的值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">(0.5, 0.5, 0.5, 1)</td>
+<td class="org-left">(0.218, 0.218, 0.218, 1)</td>
+<td class="org-left">(0.218, 0.218, 0.218, 1)</td>
+<td class="org-left">(0.5, 0.5, 0.5, 1)</td>
+<td class="org-left">(0.5, 0.5, 0.5)</td>
+</tr>
+
+<tr>
+<td class="org-left">(1.0, 1.0, 1.0, 0.36078)</td>
+<td class="org-left">(1.0, 1.0, 1.0, 0.36078)</td>
+<td class="org-left">(0.36078, 0.36078, 0.36078, 0.36078)</td>
+<td class="org-left">(0.62917, 0.62917, 0.62917, 0.36078)</td>
+<td class="org-left">((0.62917, 0.62917, 0.62917)</td>
+</tr>
+</tbody>
+</table>
+<p>
+因此，为了让<br />
+</p>
+
+<p>
+Tips:<br />
+0.5^2.2 = 0.2176<br />
+0.2176^0.4545 = 0.5<br />
+0.36078^0.4545 = 0.62917<br />
+</p>
+
+<p>
+在 Photoshop 中默认情况下，alpha 通道填充 0.5，而 PS 文件实际存储的 alpha 通道的值为 0.36078。将 PS 文件 alpha 通道固化到 RGB 通道时，Photoshop 会对 alpha 值进行 Gamma 2.2 编码，再用于 RGB 颜色值混合。<br />
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">各个通道填充颜色值</th>
+<th scope="col" class="org-left">PS 实际存储的颜色值</th>
+<th scope="col" class="org-left">将 PS 文件 alpha 通道固化到 RGB 通道</th>
+<th scope="col" class="org-left">显示出来后的值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">(0.5, 0.5, 0.5, 1.0)</td>
+<td class="org-left">(0.5, 0.5, 0.5, 1.0)</td>
+<td class="org-left">(0.5, 0.5, 0.5, 1.0)</td>
+<td class="org-left">(0.5, 0.5, 0.5, 1)</td>
+</tr>
+
+<tr>
+<td class="org-left">(1.0, 1.0, 1.0, 0.5)</td>
+<td class="org-left">(1.0, 1.0, 1.0, 0.36078)</td>
+<td class="org-left">(0.36078, 0.36078, 0.36078)</td>
+<td class="org-left">(0.36078, 0.36078, 0.36078)</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+Tips:<br />
+Photoshop 实际存储的颜色值是指，将 PS 文件存储为 TGA 后，预览 TGA 各个通道的颜色值，使用取色工具取到的颜色值，并不是真正存储到文件中的颜色值。<br />
+</p>
+
+<p>
+从上面可以看出，如果要让 Unity 中显示效果和 Photoshop 一致，需要再 UI shader 中，对 alpha 进行 Gamma 2.2 编码。<br />
+</p>
+
+<p>
+可以参考 unitycatlikecoding\unitycatlike\Assets\MyTest\URP_SRP\07_UIGamma 工程，进行验证。<br />
+</p>
+
+
+<div id="org692eb8d" class="figure">
+<p><img src="./UnityShaderAndEffectCookbook/ui-srgb-test.jpg" alt="ui-srgb-test.jpg" width="400px" /><br />
+</p>
+</div>
+
+<ul class="org-ul">
+<li><a href="https://zhuanlan.zhihu.com/p/348382979">https://zhuanlan.zhihu.com/p/348382979</a><br /></li>
+</ul>
+</div>
+<div id="outline-container-org84aab37" class="outline-5">
+<h5 id="org84aab37">为什么 Photoshop 中 alpha 通道填充 0.5，而 PS 文件实际存储的 alpha 通道的值为 0.36078 ?</h5>
+<div class="outline-text-5" id="text-org84aab37">
+<p>
+alpha 通道是 grayscale color space，PS 默认情况下 grayscale color space 为 Dot Gain 15%，实际存储到 alpha 通道的值会进行转换。查看 灰度系数与网点增大 文章，可以找到，转换的算法。<br />
+</p>
+
+<ul class="org-ul">
+<li><a href="https://www.zhihu.com/question/23186844">https://www.zhihu.com/question/23186844</a><br /></li>
+<li><a href="https://community.adobe.com/t5/photoshop-ecosystem-discussions/how-does-invert-work-in-terms-of-luminance/m-p/11014571">https://community.adobe.com/t5/photoshop-ecosystem-discussions/how-does-invert-work-in-terms-of-luminance/m-p/11014571</a><br /></li>
+<li><a href="https://en.wikipedia.org/wiki/Dot_gain">https://en.wikipedia.org/wiki/Dot_gain</a><br /></li>
+<li>灰度系数与网点增大 <a href="https://www.cnblogs.com/zyl910/archive/2007/07/20/2186626.html">https://www.cnblogs.com/zyl910/archive/2007/07/20/2186626.html</a> (有道备份)<br /></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="outline-container-org77e1aec" class="outline-2">
 <h2 id="org77e1aec">Q&amp;A</h2>
@@ -2824,9 +3068,9 @@ material.SetShaderPassEnabled(<span style="color: #2d9574;">"ShadowCaster"</span
 </ul>
 </div>
 </div>
-<div id="outline-container-org4d69bf7" class="outline-4">
-<h4 id="org4d69bf7">Tips</h4>
-<div class="outline-text-4" id="text-org4d69bf7">
+<div id="outline-container-orgae65d2a" class="outline-4">
+<h4 id="orgae65d2a">Tips</h4>
+<div class="outline-text-4" id="text-orgae65d2a">
 <ul class="org-ul">
 <li>需要注意的是，SurfaceShader 中定义多个 Pass 时，不需要写 Pass{}，因为 SurfaceShader 编译时，会自动添加 Pass{}.具体信息可以参考如下链接：<br /></li>
 </ul>
@@ -2902,9 +3146,9 @@ Deferred lighting 是对 Deferred Shading 的一种修改。该技术使用了�
 </p>
 </div>
 </div>
-<div id="outline-container-orgc12431e" class="outline-4">
-<h4 id="orgc12431e">参考资料</h4>
-<div class="outline-text-4" id="text-orgc12431e">
+<div id="outline-container-org8bc37d1" class="outline-4">
+<h4 id="org8bc37d1">参考资料</h4>
+<div class="outline-text-4" id="text-org8bc37d1">
 <p>
 <a href="http://chengkehan.github.io/DeferredRendering.html">http://chengkehan.github.io/DeferredRendering.html</a><br />
 <a href="http://blog.csdn.net/bugrunner/article/details/7436600">http://blog.csdn.net/bugrunner/article/details/7436600</a><br />
@@ -2972,9 +3216,9 @@ photoshop 中贴图 UV 坐标系原点在 左上角。<br />
 </div>
 </div>
 </div>
-<div id="outline-container-orge37e990" class="outline-2">
-<h2 id="orge37e990">参考资料</h2>
-<div class="outline-text-2" id="text-orge37e990">
+<div id="outline-container-org68e480a" class="outline-2">
+<h2 id="org68e480a">参考资料</h2>
+<div class="outline-text-2" id="text-org68e480a">
 <p>
 Unity3D Shader 入门 <a href="https://onevcat.com/2013/07/shader-tutorial-1/">https://onevcat.com/2013/07/shader-tutorial-1/</a><br />
 </p>

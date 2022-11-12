@@ -3,11 +3,11 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2022-09-07 Wed 11:15 -->
+<!-- 2022-11-12 Sat 13:08 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>D3DRaytracing</title>
-<meta name="generator" content="Org mode" />
+<meta name="generator" content="Org Mode" />
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
          <meta name="viewport" content="width=device-width, initial-scale=1" />
          <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/worg_theme/css/worg.css" type="text/css" />
@@ -15,106 +15,84 @@
          <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/worg_theme/css/worg-classic.css" type="text/css" />
          <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
          <script type="text/javascript" src="https://wolfand11.gitee.io/res/blog-tools.js"></script>
-<script type="text/javascript">
-// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
-<!--/*--><![CDATA[/*><!--*/
-     function CodeHighlightOn(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.add("code-highlighted");
-         target.classList.add("code-highlighted");
-       }
-     }
-     function CodeHighlightOff(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.remove("code-highlighted");
-         target.classList.remove("code-highlighted");
-       }
-     }
-    /*]]>*///-->
-// @license-end
-</script>
 </head>
 <body>
 <div id="org-div-home-and-up">
  <a accesskey="h" href=""> UP </a>
  |
  <a accesskey="H" href="https://wolfand11.gitee.io"> HOME </a>
-</div><div id="content">
+</div><div id="content" class="content">
 <h1 class="title">D3DRaytracing</h1>
-<div id="table-of-contents">
+<div id="table-of-contents" role="doc-toc">
 <h2>Table of Contents</h2>
-<div id="text-table-of-contents">
+<div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org2690258">D3D</a>
+<li><a href="#org13f14c1">D3D</a>
 <ul>
-<li><a href="#org280577a">Conception</a></li>
+<li><a href="#org2c8188c">Conception</a></li>
 </ul>
 </li>
-<li><a href="#org31f8729">D3DRaytracing</a>
+<li><a href="#orgf0c679f">D3DRaytracing</a>
 <ul>
-<li><a href="#orge2d16c8">hello world</a>
+<li><a href="#org0411532">hello world</a>
 <ul>
-<li><a href="#org1511c97">Acceleration Structures</a></li>
-<li><a href="#org7d51cf4">Raytracing Pipeline State</a>
+<li><a href="#org3bcb84a">Acceleration Structures</a></li>
+<li><a href="#org95c88c3">Raytracing Pipeline State</a>
 <ul>
-<li><a href="#org880d938">Shader-Libraries</a></li>
-<li><a href="#org7674be3">Ray-Tracing Shaders</a></li>
-<li><a href="#orgcb1de29">Creating RT Pipeline State Object</a></li>
+<li><a href="#org934ab5c">Shader-Libraries</a></li>
+<li><a href="#orga77c94e">Ray-Tracing Shaders</a></li>
+<li><a href="#orgf1de323">Creating RT Pipeline State Object</a></li>
 </ul>
 </li>
-<li><a href="#org66fce80">ShaderTable</a>
+<li><a href="#org0301b2e">ShaderTable</a>
 <ul>
-<li><a href="#org48710e8">Shader Table Records</a></li>
-<li><a href="#org5db31b2">Shader Table Layout</a></li>
+<li><a href="#orge192468">Shader Table Records</a></li>
+<li><a href="#org46d9a75">Shader Table Layout</a></li>
 </ul>
 </li>
-<li><a href="#orgb685496">Raytrace</a>
+<li><a href="#org0a67971">Raytrace</a>
 <ul>
-<li><a href="#org275be88">Shader Resources</a></li>
+<li><a href="#orgbac0b65">Shader Resources</a></li>
 </ul>
 </li>
-<li><a href="#orgb3297c8">BasicShaders</a>
+<li><a href="#orgdc3a4e0">BasicShaders</a>
 <ul>
-<li><a href="#org8d435cb">A Very Simplified Execution Description</a></li>
-<li><a href="#org547b715">Tracing Rays</a></li>
+<li><a href="#orgc4f57fd">A Very Simplified Execution Description</a></li>
+<li><a href="#org5406c72">Tracing Rays</a></li>
 </ul>
 </li>
-<li><a href="#org76900c2">Instancing</a></li>
-<li><a href="#orgcb028d6">ConstantBuffer</a></li>
-<li><a href="#org03a288f">PerInstanceConstantBuffer</a></li>
-<li><a href="#org967a44c">SecondGeometry</a></li>
-<li><a href="#org4613b5b">PerGeometryHitShader</a></li>
-<li><a href="#org0f3d3c4">SecondRayType</a></li>
-<li><a href="#org2809433">Refit</a></li>
+<li><a href="#org24c3107">Instancing</a></li>
+<li><a href="#org0625eda">ConstantBuffer</a></li>
+<li><a href="#org2843fac">PerInstanceConstantBuffer</a></li>
+<li><a href="#org8923975">SecondGeometry</a></li>
+<li><a href="#orgafb2e4a">PerGeometryHitShader</a></li>
+<li><a href="#org4295be3">SecondRayType</a></li>
+<li><a href="#org032badc">Refit</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#orga30dafd">参考资料</a></li>
+<li><a href="#org0aa7236">参考资料</a></li>
 </ul>
 </div>
 </div>
 <p>
 D3DRaytracing note.<br />
 </p>
-<div class="HTML" id="org6dcfbc4">
+<div class="HTML" id="orgfdc63e5">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
 
 </div>
 
-<div id="outline-container-org2690258" class="outline-2">
-<h2 id="org2690258">D3D</h2>
-<div class="outline-text-2" id="text-org2690258">
+<div id="outline-container-org13f14c1" class="outline-2">
+<h2 id="org13f14c1">D3D</h2>
+<div class="outline-text-2" id="text-org13f14c1">
 </div>
-<div id="outline-container-org280577a" class="outline-3">
-<h3 id="org280577a">Conception</h3>
-<div class="outline-text-3" id="text-org280577a">
+<div id="outline-container-org2c8188c" class="outline-3">
+<h3 id="org2c8188c">Conception</h3>
+<div class="outline-text-3" id="text-org2c8188c">
 <p>
 CBV  constant buffer view<br />
 SRV  shader resource view<br />
@@ -123,40 +101,40 @@ UAV  unordered access view<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org31f8729" class="outline-2">
-<h2 id="org31f8729">D3DRaytracing</h2>
-<div class="outline-text-2" id="text-org31f8729">
+<div id="outline-container-orgf0c679f" class="outline-2">
+<h2 id="orgf0c679f">D3DRaytracing</h2>
+<div class="outline-text-2" id="text-orgf0c679f">
 </div>
-<div id="outline-container-orge2d16c8" class="outline-3">
-<h3 id="orge2d16c8">hello world</h3>
-<div class="outline-text-3" id="text-orge2d16c8">
+<div id="outline-container-org0411532" class="outline-3">
+<h3 id="org0411532">hello world</h3>
+<div class="outline-text-3" id="text-org0411532">
 </div>
-<div id="outline-container-org1511c97" class="outline-4">
-<h4 id="org1511c97">Acceleration Structures</h4>
-<div class="outline-text-4" id="text-org1511c97">
+<div id="outline-container-org3bcb84a" class="outline-4">
+<h4 id="org3bcb84a">Acceleration Structures</h4>
+<div class="outline-text-4" id="text-org3bcb84a">
 <p>
 加速结构是不透明的数据结构，其表示了场景几何。渲染时，该结构用于射线相交检测。有两类加速结构：Bottom-Level Acceleration Structure, Top-Level Acceleration Structure。BLAS 表示 local-space mesh, 其不包含顶点的世界空间位置信息或实例信息。TLAS 表示整个场景，TLAS 会引用 BLAS，并存储了每个引用的 BLAS 对应的 local-to-world 变换矩阵。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org7d51cf4" class="outline-4">
-<h4 id="org7d51cf4">Raytracing Pipeline State</h4>
-<div class="outline-text-4" id="text-org7d51cf4">
+<div id="outline-container-org95c88c3" class="outline-4">
+<h4 id="org95c88c3">Raytracing Pipeline State</h4>
+<div class="outline-text-4" id="text-org95c88c3">
 <p>
 和光栅化一样，Raytracing 也需要创建一个 pipleline state 来控制 fixed-function units，以及描述将会使用哪些 shader。<br />
 </p>
 </div>
-<div id="outline-container-org880d938" class="outline-5">
-<h5 id="org880d938">Shader-Libraries</h5>
-<div class="outline-text-5" id="text-org880d938">
+<div id="outline-container-org934ab5c" class="outline-5">
+<h5 id="org934ab5c">Shader-Libraries</h5>
+<div class="outline-text-5" id="text-org934ab5c">
 <p>
 dxcompiler 是新的 SM6.x 的编译器，其引入了 Shader-libraries 这个新的概念。Libraries 允许我们编译一个包含多个 shaders 的文件，并且不指定一个 entry point。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org7674be3" class="outline-5">
-<h5 id="org7674be3">Ray-Tracing Shaders</h5>
-<div class="outline-text-5" id="text-org7674be3">
+<div id="outline-container-orga77c94e" class="outline-5">
+<h5 id="orga77c94e">Ray-Tracing Shaders</h5>
+<div class="outline-text-5" id="text-orga77c94e">
 <p>
 DXR 引入了 5 种新的 shader 类型：ray-generation, miss, closet-hit, any-hit, intersection。<br />
 </p>
@@ -184,9 +162,9 @@ Tips 2: 当找到多个 intersection 时，any-hit shaders 的执行顺序是不
 </ul>
 </div>
 </div>
-<div id="outline-container-orgcb1de29" class="outline-5">
-<h5 id="orgcb1de29">Creating RT Pipeline State Object</h5>
-<div class="outline-text-5" id="text-orgcb1de29">
+<div id="outline-container-orgf1de323" class="outline-5">
+<h5 id="orgf1de323">Creating RT Pipeline State Object</h5>
+<div class="outline-text-5" id="text-orgf1de323">
 <p>
 创建 RT Pipeline State Object 和 Pipeline State Object 不同，ID3D12StateObjectPtr 对象是新的 DXR 的 state interface。没有使用类似 D3D12_GRAPHICS_PIPELINE_STATE_DESC 这样的结构体，来构建 RTPSO，我们需要构建一个 D3D12_STATE_SUBOBJECT 数组。每个 sub-object 描述了单个元素的状态。<br />
 </p>
@@ -221,9 +199,9 @@ desc.Type = D3D12_STATE_OBJECT_TYPE_RAYTRACING_PIPELINE;
 </div>
 </div>
 </div>
-<div id="outline-container-org66fce80" class="outline-4">
-<h4 id="org66fce80">ShaderTable</h4>
-<div class="outline-text-4" id="text-org66fce80">
+<div id="outline-container-org0301b2e" class="outline-4">
+<h4 id="org0301b2e">ShaderTable</h4>
+<div class="outline-text-4" id="text-org0301b2e">
 <p>
 Shader-Table 是 GPU 可见的 buffer，该 buffer 由 application 所拥有和管理(由 application 进行分配、数据上传等)。shader-table 是 records 的数组，其有两个职责：<br />
 </p>
@@ -236,9 +214,9 @@ Shader-Table 是 GPU 可见的 buffer，该 buffer 由 application 所拥有和�
 Tips: 当个 DispatchRays() 调用中，可以使用多个 shader-tables。<br />
 </p>
 </div>
-<div id="outline-container-org48710e8" class="outline-5">
-<h5 id="org48710e8">Shader Table Records</h5>
-<div class="outline-text-5" id="text-org48710e8">
+<div id="outline-container-orge192468" class="outline-5">
+<h5 id="orge192468">Shader Table Records</h5>
+<div class="outline-text-5" id="text-orge192468">
 <p>
 每个 shader table record 有两段。一个不透明的 shader program identifier，加一个 root table，root table 中包含了该 shader 的资源绑定。<br />
 这里的 root table 和 光栅化 pipeline 中的 root table 非常类似。不同点在于，我们直接设置 root table 中的条目，而不是使用 setter 方法。<br />
@@ -254,9 +232,9 @@ Tips: root-descriptors 必须被存储到 8 字节对其的地址中。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org5db31b2" class="outline-5">
-<h5 id="org5db31b2">Shader Table Layout</h5>
-<div class="outline-text-5" id="text-org5db31b2">
+<div id="outline-container-org46d9a75" class="outline-5">
+<h5 id="org46d9a75">Shader Table Layout</h5>
+<div class="outline-text-5" id="text-org46d9a75">
 <p>
 shader-table 是 shader-table records 的数组。没有规则限定 records 应该如何排布。有一系列参数可以决定 indexing 如何进行。<br />
 </p>
@@ -267,38 +245,38 @@ shader-table 中所有的 shader-table records 必须有相同的尺寸, 因此�
 </div>
 </div>
 </div>
-<div id="outline-container-orgb685496" class="outline-4">
-<h4 id="orgb685496">Raytrace</h4>
-<div class="outline-text-4" id="text-orgb685496">
+<div id="outline-container-org0a67971" class="outline-4">
+<h4 id="org0a67971">Raytrace</h4>
+<div class="outline-text-4" id="text-org0a67971">
 </div>
-<div id="outline-container-org275be88" class="outline-5">
-<h5 id="org275be88">Shader Resources</h5>
+<div id="outline-container-orgbac0b65" class="outline-5">
+<h5 id="orgbac0b65">Shader Resources</h5>
 </div>
 </div>
-<div id="outline-container-orgb3297c8" class="outline-4">
-<h4 id="orgb3297c8">BasicShaders</h4>
-<div class="outline-text-4" id="text-orgb3297c8">
+<div id="outline-container-orgdc3a4e0" class="outline-4">
+<h4 id="orgdc3a4e0">BasicShaders</h4>
+<div class="outline-text-4" id="text-orgdc3a4e0">
 </div>
-<div id="outline-container-org8d435cb" class="outline-5">
-<h5 id="org8d435cb">A Very Simplified Execution Description</h5>
-<div class="outline-text-5" id="text-org8d435cb">
+<div id="outline-container-orgc4f57fd" class="outline-5">
+<h5 id="orgc4f57fd">A Very Simplified Execution Description</h5>
+<div class="outline-text-5" id="text-orgc4f57fd">
 <p>
 在 ray-generation shader 中，创建 rays。每条 ray 会和 acceleration structure 做相交测试。如果 ray 没有碰到任何物体，miss shader 将会被调用。如果 ray 碰到了物体，则会为最近的 intersection 调用 closest hit shader。遍历和相交测试发生在 fixed-function unit。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org547b715" class="outline-5">
-<h5 id="org547b715">Tracing Rays</h5>
-<div class="outline-text-5" id="text-org547b715">
+<div id="outline-container-org5406c72" class="outline-5">
+<h5 id="org5406c72">Tracing Rays</h5>
+<div class="outline-text-5" id="text-org5406c72">
 <p>
 DXR 引入了新的 HLSL 结构体-RayDesc, 以及新的内置函数 TraceRay()，该函数用于初始化一个 ray-tracing query.<br />
 </p>
 <div class="org-src-container">
 <pre class="src src-shader"><span style="color: #4f97d7; font-weight: bold;">struct</span> RayDesc
 {
-    <span style="color: #ce537a; font-weight: bold;">float3</span> Origin;    <span style="color: #2aa1ae; background-color: #292e34;">// &#19990;&#30028;&#31354;&#38388;&#20013;ray &#30340;&#21407;&#28857;</span>
+    <span style="color: #ce537a; font-weight: bold;">float3</span> Origin;    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19990;&#30028;&#31354;&#38388;&#20013;ray &#30340;&#21407;&#28857;</span>
     <span style="color: #ce537a; font-weight: bold;">float</span>  TMin;
-    <span style="color: #ce537a; font-weight: bold;">float3</span> Direction; <span style="color: #2aa1ae; background-color: #292e34;">// &#19990;&#30028;&#31354;&#38388;&#20013;ray&#30340;&#26041;&#21521;</span>
+    <span style="color: #ce537a; font-weight: bold;">float3</span> Direction; <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19990;&#30028;&#31354;&#38388;&#20013;ray&#30340;&#26041;&#21521;</span>
     <span style="color: #ce537a; font-weight: bold;">float</span>  TMax;
 };
 </pre>
@@ -327,14 +305,14 @@ TraceRay 其实是一个模板函数，其会根据不同 RayPayload 生成不�
 下面为整个 raytracing 的 shader：<br />
 </p>
 <div class="org-src-container">
-<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// TLAS </span>
+<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">TLAS </span>
 RaytracingAccelerationStructure gRtScene : <span style="color: #4f97d7; font-weight: bold;">register</span>(t0);
-<span style="color: #2aa1ae; background-color: #292e34;">// UAV</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">UAV</span>
 RWTexture2D&lt;<span style="color: #ce537a; font-weight: bold;">float4</span>&gt; gOutput : <span style="color: #4f97d7; font-weight: bold;">register</span>(u0);
 
 <span style="color: #ce537a; font-weight: bold;">float3</span> <span style="color: #bc6ec5; font-weight: bold;">linearToSrgb</span>(<span style="color: #ce537a; font-weight: bold;">float3</span> c)
 {
-    <span style="color: #2aa1ae; background-color: #292e34;">// Based on http://chilliant.blogspot.com/2012/08/srgb-approximations-for-hlsl.html</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Based on http://chilliant.blogspot.com/2012/08/srgb-approximations-for-hlsl.html</span>
     <span style="color: #ce537a; font-weight: bold;">float3</span> sq1 = <span style="color: #4f97d7;">sqrt</span>(c);
     <span style="color: #ce537a; font-weight: bold;">float3</span> sq2 = <span style="color: #4f97d7;">sqrt</span>(sq1);
     <span style="color: #ce537a; font-weight: bold;">float3</span> sq3 = <span style="color: #4f97d7;">sqrt</span>(sq2);
@@ -350,9 +328,9 @@ RWTexture2D&lt;<span style="color: #ce537a; font-weight: bold;">float4</span>&gt
 [shader(<span style="color: #2d9574;">"raygeneration"</span>)]
 <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">rayGen</span>()
 {
-    <span style="color: #2aa1ae; background-color: #292e34;">// &#21457;&#23556; Rays &#30340;&#32034;&#24341;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21457;&#23556; Rays &#30340;&#32034;&#24341;</span>
     uint3 launchIndex = DispatchRaysIndex();
-    <span style="color: #2aa1ae; background-color: #292e34;">// &#21457;&#23556; Rays &#30340;&#33539;&#22260;&#65288;width&#65292;height&#65292;depth&#65289;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21457;&#23556; Rays &#30340;&#33539;&#22260;&#65288;width&#65292;height&#65292;depth&#65289;</span>
     uint3 launchDim = DispatchRaysDimensions();
 
     <span style="color: #ce537a; font-weight: bold;">float2</span> crd = <span style="color: #ce537a; font-weight: bold;">float2</span>(launchIndex.xy);
@@ -398,32 +376,32 @@ RWTexture2D&lt;<span style="color: #ce537a; font-weight: bold;">float4</span>&gt
 </div>
 </div>
 
-<div id="outline-container-org76900c2" class="outline-4">
-<h4 id="org76900c2">Instancing</h4>
+<div id="outline-container-org24c3107" class="outline-4">
+<h4 id="org24c3107">Instancing</h4>
 </div>
-<div id="outline-container-orgcb028d6" class="outline-4">
-<h4 id="orgcb028d6">ConstantBuffer</h4>
+<div id="outline-container-org0625eda" class="outline-4">
+<h4 id="org0625eda">ConstantBuffer</h4>
 </div>
-<div id="outline-container-org03a288f" class="outline-4">
-<h4 id="org03a288f">PerInstanceConstantBuffer</h4>
+<div id="outline-container-org2843fac" class="outline-4">
+<h4 id="org2843fac">PerInstanceConstantBuffer</h4>
 </div>
-<div id="outline-container-org967a44c" class="outline-4">
-<h4 id="org967a44c">SecondGeometry</h4>
+<div id="outline-container-org8923975" class="outline-4">
+<h4 id="org8923975">SecondGeometry</h4>
 </div>
-<div id="outline-container-org4613b5b" class="outline-4">
-<h4 id="org4613b5b">PerGeometryHitShader</h4>
+<div id="outline-container-orgafb2e4a" class="outline-4">
+<h4 id="orgafb2e4a">PerGeometryHitShader</h4>
 </div>
-<div id="outline-container-org0f3d3c4" class="outline-4">
-<h4 id="org0f3d3c4">SecondRayType</h4>
+<div id="outline-container-org4295be3" class="outline-4">
+<h4 id="org4295be3">SecondRayType</h4>
 </div>
-<div id="outline-container-org2809433" class="outline-4">
-<h4 id="org2809433">Refit</h4>
+<div id="outline-container-org032badc" class="outline-4">
+<h4 id="org032badc">Refit</h4>
 </div>
 </div>
 </div>
-<div id="outline-container-orga30dafd" class="outline-2">
-<h2 id="orga30dafd">参考资料</h2>
-<div class="outline-text-2" id="text-orga30dafd">
+<div id="outline-container-org0aa7236" class="outline-2">
+<h2 id="org0aa7236">参考资料</h2>
+<div class="outline-text-2" id="text-org0aa7236">
 <ul class="org-ul">
 <li><a href="https://github.com/NVIDIAGameWorks/DxrTutorials">https://github.com/NVIDIAGameWorks/DxrTutorials</a><br /></li>
 <li><a href="https://microsoft.github.io/DirectX-Specs/d3d/Raytracing.html">https://microsoft.github.io/DirectX-Specs/d3d/Raytracing.html</a><br /></li>

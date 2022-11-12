@@ -3,11 +3,11 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2022-11-01 Tue 19:45 -->
+<!-- 2022-11-12 Sat 13:09 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>TileBasedDeferredRendering</title>
-<meta name="generator" content="Org mode" />
+<meta name="generator" content="Org Mode" />
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
          <meta name="viewport" content="width=device-width, initial-scale=1" />
          <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/worg_theme/css/worg.css" type="text/css" />
@@ -15,81 +15,59 @@
          <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/worg_theme/css/worg-classic.css" type="text/css" />
          <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
          <script type="text/javascript" src="https://wolfand11.gitee.io/res/blog-tools.js"></script>
-<script type="text/javascript">
-// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
-<!--/*--><![CDATA[/*><!--*/
-     function CodeHighlightOn(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.add("code-highlighted");
-         target.classList.add("code-highlighted");
-       }
-     }
-     function CodeHighlightOff(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.remove("code-highlighted");
-         target.classList.remove("code-highlighted");
-       }
-     }
-    /*]]>*///-->
-// @license-end
-</script>
 </head>
 <body>
 <div id="org-div-home-and-up">
  <a accesskey="h" href=""> UP </a>
  |
  <a accesskey="H" href="https://wolfand11.gitee.io"> HOME </a>
-</div><div id="content">
+</div><div id="content" class="content">
 <h1 class="title">TileBasedDeferredRendering</h1>
-<div id="table-of-contents">
+<div id="table-of-contents" role="doc-toc">
 <h2>Table of Contents</h2>
-<div id="text-table-of-contents">
+<div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orga951912">Immediate Mode Rendering (IMR)</a></li>
-<li><a href="#org3e1015a">Tile Based Rendering (TBR)</a></li>
-<li><a href="#org6c619e6">Tile Based Deferred Rendering (TBDR)</a>
+<li><a href="#orgf1a93c2">Immediate Mode Rendering (IMR)</a></li>
+<li><a href="#org1e62bc9">Tile Based Rendering (TBR)</a></li>
+<li><a href="#org03d5d7d">Tile Based Deferred Rendering (TBDR)</a>
 <ul>
-<li><a href="#org9981f43">Use Tile-Based Deferred Rendering Efficiently</a>
+<li><a href="#orgfcfc3d1">Use Tile-Based Deferred Rendering Efficiently</a>
 <ul>
-<li><a href="#org80f61b1">避免 Logical Buffer Load 和 Store 操作</a></li>
-<li><a href="#orgb378108">Use Hidden Surface Removal Effectively</a></li>
+<li><a href="#orgb4af0b9">避免 Logical Buffer Load 和 Store 操作</a></li>
+<li><a href="#org4a62073">Use Hidden Surface Removal Effectively</a></li>
 </ul>
 </li>
-<li><a href="#org9517cf9">Q&amp;A</a>
+<li><a href="#org1e1afae">Q&amp;A</a>
 <ul>
-<li><a href="#orgc9a61ad">为什么 TBDR 可以实现 hidden surface removal ？</a></li>
+<li><a href="#orgc21480d">为什么 TBDR 可以实现 hidden surface removal ？</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#orgaa526b0">参考资料</a></li>
+<li><a href="#orgbdd8594">参考资料</a></li>
 </ul>
 </div>
 </div>
 <p>
 TileBasedDeferredRendering note.<br />
 </p>
-<div class="HTML" id="org2839877">
+<div class="HTML" id="org68483cd">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
 
 </div>
 
-<div id="outline-container-orga951912" class="outline-2">
-<h2 id="orga951912">Immediate Mode Rendering (IMR)</h2>
-<div class="outline-text-2" id="text-orga951912">
+<div id="outline-container-orgf1a93c2" class="outline-2">
+<h2 id="orgf1a93c2">Immediate Mode Rendering (IMR)</h2>
+<div class="outline-text-2" id="text-orgf1a93c2">
 
-<div id="orgc36f80d" class="figure">
+<div id="org06b6260" class="figure">
 <p><img src="./TileBasedDeferredRendering/00_imr_pipeline.jpg" alt="00_imr_pipeline.jpg" width="768px" /><br />
 </p>
 </div>
 
-<div id="org014806e" class="figure">
+<div id="org06dfc7d" class="figure">
 <p><img src="./TileBasedDeferredRendering/00_imr_tbr_tbdr_pipeline.png" alt="00_imr_tbr_tbdr_pipeline.png" width="1400px" /><br />
 </p>
 </div>
@@ -107,30 +85,30 @@ Early Z 失效<br />
 </div>
 </div>
 
-<div id="outline-container-org3e1015a" class="outline-2">
-<h2 id="org3e1015a">Tile Based Rendering (TBR)</h2>
+<div id="outline-container-org1e62bc9" class="outline-2">
+<h2 id="org1e62bc9">Tile Based Rendering (TBR)</h2>
 </div>
 
-<div id="outline-container-org6c619e6" class="outline-2">
-<h2 id="org6c619e6">Tile Based Deferred Rendering (TBDR)</h2>
-<div class="outline-text-2" id="text-org6c619e6">
+<div id="outline-container-org03d5d7d" class="outline-2">
+<h2 id="org03d5d7d">Tile Based Deferred Rendering (TBDR)</h2>
+<div class="outline-text-2" id="text-org03d5d7d">
 </div>
-<div id="outline-container-org9981f43" class="outline-3">
-<h3 id="org9981f43">Use Tile-Based Deferred Rendering Efficiently</h3>
-<div class="outline-text-3" id="text-org9981f43">
+<div id="outline-container-orgfcfc3d1" class="outline-3">
+<h3 id="orgfcfc3d1">Use Tile-Based Deferred Rendering Efficiently</h3>
+<div class="outline-text-3" id="text-orgfcfc3d1">
 </div>
-<div id="outline-container-org80f61b1" class="outline-4">
-<h4 id="org80f61b1">避免 Logical Buffer Load 和 Store 操作</h4>
-<div class="outline-text-4" id="text-org80f61b1">
+<div id="outline-container-orgb4af0b9" class="outline-4">
+<h4 id="orgb4af0b9">避免 Logical Buffer Load 和 Store 操作</h4>
+<div class="outline-text-4" id="text-orgb4af0b9">
 <p>
 TBDR 图形处理器在绘制一个 Tile 时，会先将 framebuffer 对应的块从共享内存传输到 tile 内存中。这种内存的传输操作被称为 Logical Buffer Load。通常，在渲染下一帧时是不需要前一帧的内容的。为了避免加载前一帧缓冲区内容，可以在开始渲染新的一帧前调用 glClear。<br />
 类似的，当 GPU 结束一个 Tile 的渲染后，必须将 tile 的像素数据写回共享内存。这种内存的传输操作被称为 Logical Buffer Store。渲染每帧必须至少有一次这样的数据传输，被显示在屏幕上的颜色渲染缓冲区必须被传输到共享内存，这样才会被 CoreAnimation 展示，其他的帧缓冲区（例如 depth stencil multisampling buffers）不需要保留，因为这些缓冲区的内容在下一帧会被重新创建。OpenGL ES 会自动将这些缓冲区写回共享内存，这会导致性能消耗。可以调用 glInvalidateFramebuffer（OpenGL ES 3.0）或者 glDiscardFramebufferEXT(OpenGL 1.1 or 2.0)来显示指定不写回共享内存。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgb378108" class="outline-4">
-<h4 id="orgb378108">Use Hidden Surface Removal Effectively</h4>
-<div class="outline-text-4" id="text-orgb378108">
+<div id="outline-container-org4a62073" class="outline-4">
+<h4 id="org4a62073">Use Hidden Surface Removal Effectively</h4>
+<div class="outline-text-4" id="text-org4a62073">
 <p>
 当 blending 或者 alpha testing 开启，或者 fragment shader 中使用了 discard 或者使用 gl_FragDepth 输出变量。此时，GPU 无法使用深度缓冲区断定片段的可见性，因此必须为所有图元覆盖的每个像素点执行片段着色器。<br />
 如果无法避免使用 blending、alpha testing、discard 指令，可以通过使用下面的策略来减少性能消耗：<br />
@@ -145,13 +123,13 @@ TBDR 图形处理器在绘制一个 Tile 时，会先将 framebuffer 对应的�
 </div>
 </div>
 </div>
-<div id="outline-container-org9517cf9" class="outline-3">
-<h3 id="org9517cf9">Q&amp;A</h3>
-<div class="outline-text-3" id="text-org9517cf9">
+<div id="outline-container-org1e1afae" class="outline-3">
+<h3 id="org1e1afae">Q&amp;A</h3>
+<div class="outline-text-3" id="text-org1e1afae">
 </div>
-<div id="outline-container-orgc9a61ad" class="outline-4">
-<h4 id="orgc9a61ad">为什么 TBDR 可以实现 hidden surface removal ？</h4>
-<div class="outline-text-4" id="text-orgc9a61ad">
+<div id="outline-container-orgc21480d" class="outline-4">
+<h4 id="orgc21480d">为什么 TBDR 可以实现 hidden surface removal ？</h4>
+<div class="outline-text-4" id="text-orgc21480d">
 <p>
 因为 TBDR 中，当提交渲染指令到硬件后，渲染指令会被缓存到一个列表中。硬件不会处理这些指令，直到你显示 renderbuffer 或者 flush 指令 buff 时，才会开始处理顶点并且对像素着色。所以 TBDR 一次性处理了场景的所有顶点，这样 GPU 就可以在片段被处理之前知道场景中所有对象的遮挡关系从而进行隐藏表面消除。<br />
 </p>
@@ -159,9 +137,9 @@ TBDR 图形处理器在绘制一个 Tile 时，会先将 framebuffer 对应的�
 </div>
 </div>
 </div>
-<div id="outline-container-orgaa526b0" class="outline-2">
-<h2 id="orgaa526b0">参考资料</h2>
-<div class="outline-text-2" id="text-orgaa526b0">
+<div id="outline-container-orgbdd8594" class="outline-2">
+<h2 id="orgbdd8594">参考资料</h2>
+<div class="outline-text-2" id="text-orgbdd8594">
 <ul class="org-ul">
 <li><a href="https://developer.apple.com/library/archive/documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/Performance/Performance.html">https://developer.apple.com/library/archive/documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/Performance/Performance.html</a><br /></li>
 <li><a href="http://prog3.com/sbdm/blog/u013467442/article/details/40684479">http://prog3.com/sbdm/blog/u013467442/article/details/40684479</a><br /></li>

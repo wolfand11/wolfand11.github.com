@@ -1,0 +1,1742 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2022-12-21 Wed 22:27 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>UnityCatLikeCoding-PseudorandomNoise</title>
+<meta name="generator" content="Org Mode" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+         <meta name="viewport" content="width=device-width, initial-scale=1" />
+         <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/worg_theme/css/worg.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/worg_theme/css/worg-zenburn.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/worg_theme/css/worg-classic.css" type="text/css" />
+         <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/blog-tools.js"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href=""> UP </a>
+ |
+ <a accesskey="H" href="https://wolfand11.gitee.io"> HOME </a>
+</div><div id="content" class="content">
+<h1 class="title">UnityCatLikeCoding-PseudorandomNoise</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#orgab76f1f">Pseudorandom Noise</a>
+<ul>
+<li><a href="#orgc9464c2">Unity4 Noise</a>
+<ul>
+<li><a href="#org72989dd">Noise Derivatives</a></li>
+</ul>
+</li>
+<li><a href="#org0c96e4f">Unity2010 Noise</a>
+<ul>
+<li><a href="#orgb2d9a12">Hashing</a></li>
+<li><a href="#orgb58902e">Hashing Space</a>
+<ul>
+<li><a href="#orgcbf8d65">Sample Shapes</a></li>
+<li><a href="#org30e36ef">Manual Vectorization</a>
+<ul>
+<li><a href="#org815525b">向量化 SmallXXHash</a></li>
+<li><a href="#org1292373">向量化 HashJob</a></li>
+<li><a href="#org6ee243b">向量化 ShapeJob</a></li>
+<li><a href="#org0e17248">Q&amp;A</a></li>
+</ul>
+</li>
+<li><a href="#orgcb689c3">Octaheron and Octaheron Sphere</a></li>
+</ul>
+</li>
+<li><a href="#orgc5fc93c">Value Noise</a>
+<ul>
+<li><a href="#org4b2d707">1D Noise</a></li>
+<li><a href="#org71428d1">2D Noise</a></li>
+<li><a href="#org2744984">Smooth Noise</a></li>
+</ul>
+</li>
+<li><a href="#orga7d1651">Perlin Noise</a>
+<ul>
+<li><a href="#org44ce1be">Perlin Noise</a></li>
+<li><a href="#orgfe6a575">1D Gradients</a></li>
+<li><a href="#org380008c">Variable Gradients</a></li>
+<li><a href="#org58f4f7d">2D Gradients</a></li>
+<li><a href="#orgde9b086">Normalized 2D Noise</a></li>
+<li><a href="#org42083bd">3D Gradients</a></li>
+</ul>
+</li>
+<li><a href="#org6a5083d">Noise Variants</a>
+<ul>
+<li><a href="#org234eee2">Fractal Noise</a></li>
+<li><a href="#org82a714a">Turbulence</a></li>
+<li><a href="#org6055a58">Tiling</a></li>
+</ul>
+</li>
+<li><a href="#org4e201d5">Voronoi Noise</a>
+<ul>
+<li><a href="#orgbef60f5">Distance to Nearest Point</a>
+<ul>
+<li><a href="#org8fc8289">Incoporating Adjacent Spans</a></li>
+<li><a href="#orgda1b970">Tiling</a></li>
+<li><a href="#org1bd348d">Two points per Lattice Square</a></li>
+</ul>
+</li>
+<li><a href="#orgb498852">Distance to Second-Nearest Point</a></li>
+<li><a href="#org05a299a">Distance Metrics</a>
+<ul>
+<li><a href="#org9359b35">Chebyshev</a></li>
+<li><a href="#org73c8a5c">Other Metrics</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org0ef037e">Simplex Noise</a>
+<ul>
+<li><a href="#orga6185a3">Simplex Value Noise</a>
+<ul>
+<li><a href="#org53f89d6">1D Simplex Value Noise</a></li>
+<li><a href="#orgfe87d3e">Radially-symmetrical Falloff</a></li>
+<li><a href="#orgc84e33b">2D Kernels</a></li>
+<li><a href="#org00ea9f2">2D Simplexes</a></li>
+<li><a href="#org840b8bc">Only Three Kernels</a></li>
+<li><a href="#orgce751fd">3D Simplexes</a></li>
+<li><a href="#orge096c92">Four Kernels</a></li>
+</ul>
+</li>
+<li><a href="#org334291b">Simplex Gradient Noise</a>
+<ul>
+<li><a href="#org8be4129">Base Gradients</a></li>
+<li><a href="#orgb4215fb">1D Simplex Noise</a></li>
+<li><a href="#org1aa9a6a">2D Simplex Noise</a></li>
+<li><a href="#orgd9652bb">3D Simplex Noise</a></li>
+</ul>
+</li>
+<li><a href="#org800df77">参考资料</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<p>
+UnityCatLikeCoding PseudorandomNoise note.<br />
+</p>
+<div class="HTML" id="orgfd2bfbd">
+<p>
+&lt;!&#x2013; more &#x2013;&gt;<br />
+</p>
+
+</div>
+
+<div id="outline-container-orgab76f1f" class="outline-2">
+<h2 id="orgab76f1f">Pseudorandom Noise</h2>
+<div class="outline-text-2" id="text-orgab76f1f">
+</div>
+<div id="outline-container-orgc9464c2" class="outline-3">
+<h3 id="orgc9464c2">Unity4 Noise</h3>
+<div class="outline-text-3" id="text-orgc9464c2">
+</div>
+<div id="outline-container-org72989dd" class="outline-4">
+<h4 id="org72989dd">Noise Derivatives</h4>
+<div class="outline-text-4" id="text-org72989dd">
+<iframe src="https://player.bilibili.com/player.html?aid=814779136&bvid=BV1YG4y1r7f7&cid=812366825&page=1" width="640" height="360" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+<ul class="org-ul">
+<li>Curl Noise <a href="https://www.cnblogs.com/idovelemon/p/12775127.html">https://www.cnblogs.com/idovelemon/p/12775127.html</a><br /></li>
+<li>Noise Derivatives <a href="https://catlikecoding.com/unity/tutorials/noise-derivatives/">https://catlikecoding.com/unity/tutorials/noise-derivatives/</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org0c96e4f" class="outline-3">
+<h3 id="org0c96e4f">Unity2010 Noise</h3>
+<div class="outline-text-3" id="text-org0c96e4f">
+</div>
+<div id="outline-container-orgb2d9a12" class="outline-4">
+<h4 id="orgb2d9a12">Hashing</h4>
+<div class="outline-text-4" id="text-orgb2d9a12">
+<p>
+需要随机性才能使事物变得不可预测、变化多端并显得自然。感知到的现象是真正随机的还是只是看起来随机并不重要。因此，我们可以使用完全确定性的东西，只要其不是显而易见的。软件本质上是确定性的, 设计不良的多线程代码可能会导致竞争条件，从而导致不可预测的结果，但这并不是随机性的可靠来源。真正可靠的随机性只能来源于外部（例如对大气噪声进行采样的硬件），而这些来源通常是不可用的。<br />
+</p>
+
+<p>
+通常不需要真正的随机性。真随机产生的任何东西都是一次性事件，无法重现。每次结果都会不同。理想的情况是，有一个过程，对于任何特定的输入，都会产生一个独特且固定的明显随机的输出。哈希函数可以做到。<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">resolution = 32</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">invResolution = 1.0/32.0</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">x = 32 y = 32</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">index = [0, 32*32-1]</span>
+<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Execute</span>(<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">index</span>)
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">v = [0, resolution-1] = [0, 31] &#24403;&#21069;&#30340;&#34892;&#21495;</span>
+    <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">v</span> = (<span style="color: #ce537a; font-weight: bold;">int</span>)<span style="color: #bc6ec5; font-weight: bold;">floor</span>(invResolution * index + 0.00001f);
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">u = [0, resolution-1] &#24403;&#21069;&#21015;&#21495;</span>
+    <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">u</span> = index - resolution * v;
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23545;uv&#22352;&#26631;&#36827;&#34892;Hash&#36816;&#31639;</span>
+    hashes[index] = hash.<span style="color: #bc6ec5; font-weight: bold;">Eat</span>(u).<span style="color: #bc6ec5; font-weight: bold;">Eat</span>(v);
+}
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgb58902e" class="outline-4">
+<h4 id="orgb58902e">Hashing Space</h4>
+<div class="outline-text-4" id="text-orgb58902e">
+<p>
+在之前的教程中，我们在 HashJob 中将 index 值转化为整数 UV 坐标，然后对整数 UV 进行 Hash 运算, 得到平面上对应点的 Hash 值。在本教程中，我们直接将空间位置传递给 HashJob，直接使用 index 获取对应的空间位置。这样就可以将空间位置和 Hash 值生成分离开，让 Hash 值生成适用于任意的形状和分辨率。<br />
+</p>
+</div>
+
+<div id="outline-container-orgcbf8d65" class="outline-5">
+<h5 id="orgcbf8d65">Sample Shapes</h5>
+<div class="outline-text-5" id="text-orgcbf8d65">
+<p>
+下面代码表示一个平面形状, 执行 Job 会生成一系列 position 和 normal, 这些 position 都在同一个平面上， normal 为对应点的法线。当然，所有点的法线都相同，就是平面的法线。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Shapes</span>
+{
+    [<span style="color: #bc6ec5; font-weight: bold;">BurstCompile</span>(FloatPrecision.<span style="color: #ce537a; font-weight: bold;">Standard</span>, FloatMode.<span style="color: #ce537a; font-weight: bold;">Fast</span>, CompileSynchronously = <span style="color: #a45bad;">true</span>)]
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">struct</span> Job : <span style="color: #ce537a; font-weight: bold;">IJobFor</span> {
+
+        [<span style="color: #7590db;">WriteOnly</span>]
+        <span style="color: #ce537a; font-weight: bold;">NativeArray</span>&lt;float3&gt; positions;
+        [<span style="color: #7590db;">WriteOnly</span>]
+        <span style="color: #ce537a; font-weight: bold;">NativeArray</span>&lt;float3&gt; normals;
+
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #7590db;">resolution</span>, <span style="color: #7590db;">invResolution</span>;
+
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float3x4</span> <span style="color: #7590db;">positionTRS</span>;
+
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Execute</span> (<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">i</span>)
+        {
+            <span style="color: #ce537a; font-weight: bold;">float2</span> <span style="color: #7590db;">uv</span>;
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">y = [0, resolution-1] &#34892;&#21495;</span>
+            uv.y = <span style="color: #bc6ec5; font-weight: bold;">floor</span>(invResolution * i + 0.00001f);
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">i - resolution * uv.y &#21015;&#21495;</span>
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">x = [-0.5, 0.5]</span>
+            uv.x = invResolution * (i - resolution * uv.y + 0.5f) - 0.5f;
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">y = [-0.5, 0.5]</span>
+            uv.y = invResolution * (uv.y + 0.5f) - 0.5f;
+
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23545; position &#36827;&#34892;&#21464;&#25442;</span>
+            positions[i] = <span style="color: #bc6ec5; font-weight: bold;">mul</span>(<span style="color: #ce537a; font-weight: bold;">positionTRS</span>, <span style="color: #bc6ec5; font-weight: bold;">float4</span>(uv.<span style="color: #ce537a; font-weight: bold;">x</span>, 0f, uv.<span style="color: #ce537a; font-weight: bold;">y</span>, 1f));
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23545; normal &#36827;&#34892;&#21464;&#25442;</span>
+            normals[i] = <span style="color: #bc6ec5; font-weight: bold;">normalize</span>(<span style="color: #bc6ec5; font-weight: bold;">mul</span>(<span style="color: #ce537a; font-weight: bold;">positionTRS</span>, <span style="color: #bc6ec5; font-weight: bold;">float4</span>(0f, 1f, 0f, 1f)));
+        }
+    }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org30e36ef" class="outline-5">
+<h5 id="org30e36ef">Manual Vectorization</h5>
+<div class="outline-text-5" id="text-org30e36ef">
+<p>
+如前所述，在我们引入向量类型后，我们的 Job 自动向量化失败了。典型的自动向量化工作是将对 float、int 和其他此类原始值执行的操作替换为对 float4、int4 等执行的相同操作。然后，利用 SIMD 指令并行执行四次迭代。 不幸的是，这不再适用于我们的 Job，因为我们使用 float3 值作为位置和法线向量。但是通过一些工作进行手动向量化是可行的。<br />
+</p>
+</div>
+
+<div id="outline-container-org815525b" class="outline-6">
+<h6 id="org815525b">向量化 SmallXXHash</h6>
+<div class="outline-text-6" id="text-org815525b">
+<p>
+实现 SmallXXHash4，其支持包含 4 个分量的向量数据。<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org1292373" class="outline-6">
+<h6 id="org1292373">向量化 HashJob</h6>
+<div class="outline-text-6" id="text-org1292373">
+<div class="org-src-container">
+<pre class="src src-csharp">[<span style="color: #bc6ec5; font-weight: bold;">BurstCompile</span>(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = <span style="color: #a45bad;">true</span>)]
+<span style="color: #4f97d7; font-weight: bold;">struct</span> HashJob : <span style="color: #ce537a; font-weight: bold;">IJobFor</span>
+{
+    [<span style="color: #7590db;">ReadOnly</span>]
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#36755;&#20837;&#25968;&#25454;&#20174; float3 &#21464;&#20026; float3x4</span>
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">NativeArray</span>&lt;float3x4&gt; positions;
+    [<span style="color: #7590db;">WriteOnly</span>]
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#36755;&#20986;&#25968;&#25454;&#20174; uint &#21464;&#20026; uint4</span>
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">NativeArray</span>&lt;uint4&gt; hashes;
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">SmallXXHash4</span> <span style="color: #7590db;">hash</span>;
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float3x4</span> <span style="color: #7590db;">domainTRS</span>;
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25903;&#25345;4x3 &#39030;&#28857;&#30340;&#21464;&#25442;</span>
+    <span style="color: #ce537a; font-weight: bold;">float4x3</span> <span style="color: #bc6ec5; font-weight: bold;">TransformPositions</span>(<span style="color: #ce537a; font-weight: bold;">float3x4</span> <span style="color: #7590db;">trs</span>, <span style="color: #ce537a; font-weight: bold;">float4x3</span> <span style="color: #7590db;">p</span>) =&gt; <span style="color: #bc6ec5; font-weight: bold;">float4x3</span>(
+        trs.c0.x * p.c0 + trs.c1.x * p.c1 + trs.c2.x * p.c2 + trs.c3.x,
+        trs.c0.y * p.c0 + trs.c1.y * p.c1 + trs.c2.y * p.c2 + trs.c3.y,
+        trs.c0.z * p.c0 + trs.c1.z * p.c1 + trs.c2.z * p.c2 + trs.c3.z
+    );
+
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Execute</span>(<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">index</span>)
+    {
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;3x4 &#30340;&#25968;&#25454;&#21464;&#20026; 4x3 &#30340;&#25968;&#25454;</span>
+        <span style="color: #ce537a; font-weight: bold;">float4x3</span> <span style="color: #7590db;">p</span> = <span style="color: #bc6ec5; font-weight: bold;">transpose</span>(positions[index]);
+        p = <span style="color: #bc6ec5; font-weight: bold;">TransformPositions</span>(domainTRS, p);
+
+        <span style="color: #ce537a; font-weight: bold;">int4</span> <span style="color: #7590db;">u</span> = (<span style="color: #ce537a; font-weight: bold;">int4</span>)<span style="color: #bc6ec5; font-weight: bold;">floor</span>(p.c0);
+        <span style="color: #ce537a; font-weight: bold;">int4</span> <span style="color: #7590db;">v</span> = (<span style="color: #ce537a; font-weight: bold;">int4</span>)<span style="color: #bc6ec5; font-weight: bold;">floor</span>(p.c1);
+        <span style="color: #ce537a; font-weight: bold;">int4</span> <span style="color: #7590db;">w</span> = (<span style="color: #ce537a; font-weight: bold;">int4</span>)<span style="color: #bc6ec5; font-weight: bold;">floor</span>(p.c2);
+
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21033;&#29992;&#21521;&#37327;&#21270;&#21518;&#30340;SmallXXHash4 &#35745;&#31639; hash &#20540;</span>
+        hashes[index] = hash.<span style="color: #bc6ec5; font-weight: bold;">Eat</span>(u).<span style="color: #bc6ec5; font-weight: bold;">Eat</span>(v).<span style="color: #bc6ec5; font-weight: bold;">Eat</span>(w);
+    }
+}
+</pre>
+</div>
+
+
+<div id="orge5dc301" class="figure">
+<p><img src="./UnityCatLikeCoding/05_vectorization_01.png" alt="05_vectorization_01.png" width="300px" /><br />
+</p>
+</div>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Update</span>()
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">......</span>
+    <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">HashJob</span>{
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558; NativeArray&lt;uint&gt; &#35299;&#37322;&#20026;NativeArray&lt;uint4&gt;</span>
+        <span style="color: #7590db;">hashes</span> = hashes.<span style="color: #bc6ec5; font-weight: bold;">Reinterpret</span>&lt;uint4&gt;(4),
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558; NativeArray&lt;float3&gt; &#35299;&#37322;&#20026; NativeArray&lt;float3x4&gt;</span>
+        <span style="color: #7590db;">positions</span> = positions.<span style="color: #bc6ec5; font-weight: bold;">Reinterpret</span>&lt;float3x4&gt;(3*4),
+        <span style="color: #7590db;">hash</span> = SmallXXHashX.<span style="color: #bc6ec5; font-weight: bold;">Seed</span>(seed),
+        <span style="color: #7590db;">domainTRS</span> = domain.Matrix
+    }.<span style="color: #bc6ec5; font-weight: bold;">ScheduleParallel</span>(hashes.Length / 4, resolution, handle).<span style="color: #bc6ec5; font-weight: bold;">Complete</span>();
+}
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org6ee243b" class="outline-6">
+<h6 id="org6ee243b">向量化 ShapeJob</h6>
+<div class="outline-text-6" id="text-org6ee243b">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Shapes</span>
+{
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">struct</span> <span style="color: #ce537a; font-weight: bold;">Job</span> : <span style="color: #ce537a; font-weight: bold;">IJobFor</span>
+    {
+        [<span style="color: #7590db;">WriteOnly</span>]
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#36755;&#20837;&#25968;&#25454;&#20174; float3 &#21464;&#20026; float3x4</span>
+            <span style="color: #ce537a; font-weight: bold;">NativeArray</span>&lt;float3x4&gt; positions;
+
+        [<span style="color: #7590db;">WriteOnly</span>]
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#36755;&#20837;&#25968;&#25454;&#20174; float3 &#21464;&#20026; float3x4</span>
+            <span style="color: #ce537a; font-weight: bold;">NativeArray</span>&lt;float3x4&gt; normals;
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #7590db;">resolution</span>;
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #7590db;">invResolution</span>;
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float3x4</span> <span style="color: #7590db;">positionTRS</span>;
+
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Execute</span>(<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">index</span>)
+        {
+            <span style="color: #ce537a; font-weight: bold;">float4x2</span> <span style="color: #7590db;">uv</span>;
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">index = [0, resolution/4]</span>
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19968;&#27425;&#22788;&#29702;&#30456;&#37051;&#30340;4&#20010;&#28857;</span>
+            <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">i4</span> = 4f * index + <span style="color: #bc6ec5; font-weight: bold;">float4</span>(0f, 1f, 2f, 3f);
+            uv.c1 = <span style="color: #bc6ec5; font-weight: bold;">floor</span>(invResolution * i4 + 0.00001f);
+            uv.c0 = invResolution * (i4 - resolution * uv.c1 + 0.5f) - 0.5f;
+            uv.c1 = invResolution * (uv.c1 + 0.5f) - 0.5f;
+
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23545;4&#32452;&#20301;&#32622;&#36827;&#34892;&#21464;&#25442;</span>
+            positions[index] = <span style="color: #bc6ec5; font-weight: bold;">transpose</span>(<span style="color: #bc6ec5; font-weight: bold;">TransformVectors</span>(<span style="color: #ce537a; font-weight: bold;">positionTRS</span>, <span style="color: #bc6ec5; font-weight: bold;">float4x3</span>(uv.<span style="color: #ce537a; font-weight: bold;">c0</span>, 0f, uv.<span style="color: #ce537a; font-weight: bold;">c1</span>)));
+            <span style="color: #ce537a; font-weight: bold;">float3x4</span> <span style="color: #7590db;">n</span> = <span style="color: #bc6ec5; font-weight: bold;">transpose</span>(<span style="color: #bc6ec5; font-weight: bold;">TransformVectors</span>(<span style="color: #ce537a; font-weight: bold;">positionTRS</span>, <span style="color: #bc6ec5; font-weight: bold;">float4x3</span>(0f, 1f, 0f), 0f));
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23545;4&#32452;normal&#36827;&#34892;&#21464;&#25442;</span>
+            normals[index] = <span style="color: #bc6ec5; font-weight: bold;">float3x4</span>(<span style="color: #bc6ec5; font-weight: bold;">normalize</span>(n.<span style="color: #ce537a; font-weight: bold;">c0</span>), <span style="color: #bc6ec5; font-weight: bold;">normalize</span>(n.<span style="color: #ce537a; font-weight: bold;">c1</span>), <span style="color: #bc6ec5; font-weight: bold;">normalize</span>(n.<span style="color: #ce537a; font-weight: bold;">c2</span>), <span style="color: #bc6ec5; font-weight: bold;">normalize</span>(n.<span style="color: #ce537a; font-weight: bold;">c3</span>));
+        }
+
+        <span style="color: #ce537a; font-weight: bold;">float4x3</span> <span style="color: #bc6ec5; font-weight: bold;">TransformVectors</span>(<span style="color: #ce537a; font-weight: bold;">float3x4</span> <span style="color: #7590db;">trs</span>, <span style="color: #ce537a; font-weight: bold;">float4x3</span> <span style="color: #7590db;">p</span>, <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #7590db;">w</span> = 1f) =&gt; <span style="color: #bc6ec5; font-weight: bold;">float4x3</span>(
+            trs.c0.x * p.c0 + trs.c1.x * p.c1 + trs.c2.x * p.c2 + trs.c3.x * w,
+            trs.c0.y * p.c0 + trs.c1.y * p.c1 + trs.c2.y * p.c2 + trs.c3.y * w,
+            trs.c0.z * p.c0 + trs.c1.z * p.c1 + trs.c2.z * p.c2 + trs.c3.z * w
+            );
+    }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org0e17248" class="outline-6">
+<h6 id="org0e17248">Q&amp;A</h6>
+<div class="outline-text-6" id="text-org0e17248">
+</div>
+<ul class="org-ul">
+<li><a id="orgf3afe1e"></a>向量化后数据都是以 4 个分量一组，若 resolution*resolution 不是 4 的倍数，如何处理?<br />
+<div class="outline-text-7" id="text-orgf3afe1e">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">length</span> = resolution * resolution;
+length = length / 4 + (length &amp; 1);
+</pre>
+</div>
+<p>
+假设 resolution = 3 则 length = 9, 9/4+(9&amp;1)=2+1=3，一次调用处理 4 个一共处理 12 个，有 3 个是无意义的。<br />
+</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgcb689c3" class="outline-5">
+<h5 id="orgcb689c3">Octaheron and Octaheron Sphere</h5>
+<div class="outline-text-5" id="text-orgcb689c3">
+<p>
+通过对平面进行变形可以得到 Octaheron, 由 Octaheron 可以得到 Octaheron Sphere。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">Point4</span> <span style="color: #7590db;">p</span>;
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19979;&#38754;&#30340;&#28857;p &#32452;&#25104;&#19968;&#20010;&#24179;&#38754;</span>
+p.positions.c0 = uv.c0 - 0.5f;
+p.positions.c1 = uv.c1 - 0.5f;
+p.positions.c2 = 0f;
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23545;c2 &#36827;&#34892;&#35843;&#25972;&#65292;&#21363;&#21487;&#24471;&#21040;&#21322;&#23553;&#38381;&#30340; &#27491;&#20843;&#38754;&#20307;</span>
+p.positions.c2 = 0.5f - <span style="color: #bc6ec5; font-weight: bold;">abs</span>(p.positions.c0) - <span style="color: #bc6ec5; font-weight: bold;">abs</span>(p.positions.c1);
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20877;&#36827;&#34892;&#35843;&#25972;&#65292;&#24471;&#21040; &#23553;&#38381;&#30340;&#27491;&#20843;&#38754;&#20307;</span>
+<span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">offset</span> = <span style="color: #bc6ec5; font-weight: bold;">max</span>(-p.positions.c2, 0f);
+p.positions.c0 += <span style="color: #4f97d7; font-weight: bold;">select</span>(-offset, offset, p.positions.c0&lt;0f);
+p.positions.c1 += <span style="color: #4f97d7; font-weight: bold;">select</span>(-offset, offset, p.positions.c1&lt;0f);
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#23558;&#27491;&#20843;&#38754;&#20307;&#36716;&#25442;&#20026;&#29699;</span>
+<span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">scale</span> = 0.5f * <span style="color: #bc6ec5; font-weight: bold;">rsqrt</span>(
+    p.positions.c0 * p.positions.c0 +
+    p.positions.c1 * p.positions.c1 +
+    p.positions.c2 * p.positions.c2
+    );
+p.positions.c0 *= scale;
+p.positions.c1 *= scale;
+p.positions.c2 *= scale;
+p.normals = p.positions;
+<span style="color: #4f97d7; font-weight: bold;">return</span> p;
+</pre>
+</div>
+
+<p>
+Tips:<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">c &#20026; true &#36820;&#22238; b&#65292;&#21542;&#21017;&#36820;&#22238; a</span>
+int4 <span style="color: #4f97d7; font-weight: bold;">select</span>(<span style="color: #ce537a; font-weight: bold;">int4</span> <span style="color: #7590db;">a</span>, <span style="color: #ce537a; font-weight: bold;">int4</span> <span style="color: #7590db;">b</span>, <span style="color: #ce537a; font-weight: bold;">bool4</span> <span style="color: #7590db;">c</span>)
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc5fc93c" class="outline-4">
+<h4 id="orgc5fc93c">Value Noise</h4>
+<div class="outline-text-4" id="text-orgc5fc93c">
+</div>
+<div id="outline-container-org4b2d707" class="outline-5">
+<h5 id="org4b2d707">1D Noise</h5>
+<div class="outline-text-5" id="text-org4b2d707">
+<p>
+前面我们使用 Hashing 可以为整数坐标生成独立的 hash 值。为了让 noise 平滑并且连续，我们需要在整数坐标之间混合 hash 值。<br />
+</p>
+
+<div id="org657c511" class="figure">
+<p><img src="./UnityCatLikeCoding/noise_1d-lattice.png" alt="noise_1d-lattice.png" width="256px" /><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org71428d1" class="outline-5">
+<h5 id="org71428d1">2D Noise</h5>
+<div class="outline-text-5" id="text-org71428d1">
+
+<div id="org4c2a660" class="figure">
+<p><img src="./UnityCatLikeCoding/noise_2d-lattice.png" alt="noise_2d-lattice.png" width="256px" /><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org2744984" class="outline-5">
+<h5 id="org2744984">Smooth Noise</h5>
+<div class="outline-text-5" id="text-org2744984">
+<p>
+虽然我们有一个连续的 2D 图案，但它还不平滑。格子之间的过渡是线性插值，因此沿着格子正方形的边缘会发生突然变化。为了使这个平滑，我们需要考虑噪声的变化率。如果我们有一个函数，那么它的一阶导函数描述了它的变化率。由于线性插值产生一条直线，它的导数是一个常数值。二阶导函数是一阶导数的导数。可以将其视为曲率的变化率，或噪声的加速度。线性插值的二阶导数始终为零。<br />
+</p>
+
+<p>
+例如，在下图中,两个一维的 Spans 在-1，0，1 之间，一维噪声值显示为黑色实线，其一阶导数为橙色虚线，其二阶导数为紫色虚线。导数除以 6 以按比例缩小，以便更容易看到。请注意，中间格点处的橙色线存在不连续性，噪声突然改变方向。<br />
+</p>
+
+<div id="org0f59a81" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_linear-graph.png" alt="noise03_linear-graph.png" width="400px" /><br />
+</p>
+</div>
+
+<p>
+对插值系数使用 smoothstep (smoothstep 对应的函数为 \(3t^2 - 2t^3\) )可以保证一阶导数连续（一阶导数为 \(6t-6t^2\) ），但是二阶导数依然不连续(二阶导数为 \(6-12t\) )：<br />
+</p>
+
+<div id="org508665e" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_smoothstep-graph.png" alt="noise03_smoothstep-graph.png" width="400px" /><br />
+</p>
+</div>
+
+<p>
+使用 \(6t^5 - 15t^4 + 10t^3\) 可以保证一阶导数连续( \(30t^4-60t^3 + 30t^2\) )，同时二阶导数也连续( \(120t^3-180t^2+60t\) )。对于输入值 0 和 1，一阶导数和二阶导数的值都为 0。<br />
+</p>
+
+
+<div id="orgff7e06d" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_c2-continuous-graph.png" alt="noise03_c2-continuous-graph.png" width="400px" /><br />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orga7d1651" class="outline-4">
+<h4 id="orga7d1651">Perlin Noise</h4>
+<div class="outline-text-4" id="text-orga7d1651">
+<p>
+Value Noise 属于 Lattice Noise，在 Lattice 点处定义的都是常数值。在这些常数值之间进行插值，从而得到平滑的模式，这种噪声 Lattice (格子) 依然很明显。<br />
+另一种方法是在函数之间进行插值，而不是在常量值之间进行插值。 这意味着每个格子点处都有自己的函数。 为了保持简单和统一，所有点都应该使用相同的函数，只是参数有所不同。 最简单的函数是一个常数值，这就是 Value Noise(值噪声)。更复杂一点的是一个线性函数，该函数线性依赖于相对于格子点的样本的坐标。最简单直接的函数是 f(x)=x，其中 x 是相对格子点的坐标。 这将产生以格子点为中心的线性梯度。因此，这种类型的噪声被称为梯度噪声。<br />
+</p>
+
+<p>
+Tips:<br />
+梯度的本意是一个向量（矢量），表示某一函数在该点处的方向导数沿着该方向取得最大值，即函数在该点处沿着该方向（此梯度的方向）变化最快，变化率最大（为该梯度的模）。<br />
+</p>
+
+<p>
+在下图中，插值方式采用 smoothstep，让 Value.Evaluate(SmallXXHash4 hash, float4 x) 直接返回 x (即，Value.Evaluate 变为了简单的梯度函数 f(x) = x), 黑色线为对梯度进行插值得到的值，红绿蓝三条线为梯度。在 Lattice 点处的梯度都为 0，在 Lattice 点之间的 Span 的中点，梯度也为 0。<br />
+</p>
+
+<div id="orgf74ece0" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_gradients-graph.png" alt="noise03_gradients-graph.png" width="400px" /><br />
+</p>
+</div>
+
+<p>
+看下面文件，会更加直观一些（其实上面，红线为[-1,0]区间内的点对应的-1 晶格点的梯度值，蓝线为[0,1]区间内的点对应的 1 晶格点的梯度值, 绿线为[-1,1]区间内的点对应的 0 晶格点的梯度值）。<br />
+</p>
+<p width="400px">
+<img src="./UnityCatLikeCoding/noise03_gradient-graph1.png" alt="noise03_gradient-graph1.png" width="400px" /><br />
+<a href="./UnityCatLikeCoding/noise03_gradient_graph.ggb">./UnityCatLikeCoding/noise03_gradient_graph.ggb</a><br />
+</p>
+
+<p>
+值噪声可以被认为是梯度噪声的简单情况（值噪声的梯度函数为固定的值，不会随样本点位置而变化）。<br />
+</p>
+</div>
+<div id="outline-container-org44ce1be" class="outline-5">
+<h5 id="org44ce1be">Perlin Noise</h5>
+<div class="outline-text-5" id="text-org44ce1be">
+<p>
+Ken Perlin 提出了梯度噪声的第一个版本，因此这种经典版本的噪声被称为 Perlin 噪声。 前面我们提到的梯度噪声相比，Perlin 噪声增加了梯度向量可以有不同方向的想法。这些不同梯度的插值产生了比值噪声更多样化和更少块状的图案。<br />
+</p>
+
+<p>
+Perlin noise 是基于 permutation table 来为每个格子生成随机值的。permutation table (排列表) 并不是生成伪随机值的唯一方法。这种方法适用于简单的硬件，但是域小, 不支持 seed，也无法矢量化（其需要多个数组查询，该操作没有对应的 SIMD 指令）。因此，本节我们基于 SmallXXHash4 来为每个格子生成随机值。<br />
+</p>
+
+<ul class="org-ul">
+<li><a href="https://en.wikipedia.org/wiki/Perlin_noise">https://en.wikipedia.org/wiki/Perlin_noise</a><br /></li>
+<li>Understanding Perlin Noise <a href="http://adrianb.io/2014/08/09/perlinnoise.html">http://adrianb.io/2014/08/09/perlinnoise.html</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgfe6a575" class="outline-5">
+<h5 id="orgfe6a575">1D Gradients</h5>
+<div class="outline-text-5" id="text-orgfe6a575">
+<p>
+Ken Perlin 并没有创造一个 1D Noise 变体，因为，1D Noise 并没有什么用，但是，1维的 Noise 可以帮助我们更容易地理解高维度 Noise。前面我们使用了固定的梯度函数 f(x) = x。按照 Perlin Noise 的思想，lattice points 的梯度可以是不同的。1维的情况下，很显然另一个不同的简单的梯度为：f(x) = -x.<br />
+</p>
+
+<p>
+让 Perlin.Evaluate(SmallXXHash4 hash, float4 x) 的返回值为 select(-x, x, ((uint4)hash &amp; 1) == 0), 这样格子点之间的每个 Span 就会有 4 种插值可能性：positive-positive, negative-negative, positive-negative, 以及 negative-positive。因为，positive 和 negative 互为镜像，所以，只有两种情况：梯度相同和梯度不同。<br />
+</p>
+
+<p>
+下图为 (-1, 0) 区间为 negative-positive, (0, 1)区间为 positive-negative:<br />
+</p>
+
+<div id="org5c77185" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_n-p-n-graph.png" alt="noise03_n-p-n-graph.png" width="400px" /><br />
+</p>
+</div>
+
+<p>
+下图为 (-1, 0) 区间为 positive-positive, (0, 1)区间为 positive-negative:<br />
+</p>
+
+<div id="orgfe09dfd" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_p-p-n-graph.png" alt="noise03_p-p-n-graph.png" width="400px" /><br />
+</p>
+</div>
+
+<p>
+最终我们得到的 1D 的 binary Perlin noise 如下图（domains scale 16，resolution 256）：<br />
+</p>
+
+<div id="org9b64983" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_1d-binary.png" alt="noise03_1d-binary.png" width="400px" /><br />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #bc6ec5; font-weight: bold;">Evaluate</span> (<span style="color: #ce537a; font-weight: bold;">SmallXXHash4</span> <span style="color: #7590db;">hash</span>, <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">x</span>) =&gt; 2f * <span style="color: #4f97d7; font-weight: bold;">select</span>(-x, x, ((<span style="color: #ce537a; font-weight: bold;">uint4</span>)hash &amp; 1) == 0);
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org380008c" class="outline-5">
+<h5 id="org380008c">Variable Gradients</h5>
+<div class="outline-text-5" id="text-org380008c">
+<p>
+我之所以将上面得到的 Perlin Noise 称为 Binary Perlin Noise, 是因为其梯度只有两种状态。因此，噪声由所有指向同一方向的梯度序列组成，除非存在符号翻转。 翻转处显示为最大振幅波，而图案的其余部分由相同的小波组成。 这看起来很死板。<br />
+</p>
+
+<p>
+将 Perlin.Evaluate 修改如下, 不再是执行一个 binary 选择，我们使用 hash 来缩放相对坐标并使其在(-1,1)范围内 (Tips: ，x的范围为[0, 1])：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #bc6ec5; font-weight: bold;">Evaluate</span> (<span style="color: #ce537a; font-weight: bold;">SmallXXHash4</span> <span style="color: #7590db;">hash</span>, <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">x</span>) =&gt; 2f * (hash.Floats01A * 2f - 1f) * x;
+</pre>
+</div>
+
+
+<div id="org0fa4804" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_1d-variable.png" alt="noise03_1d-variable.png" width="400px" /><br />
+</p>
+</div>
+
+<p>
+经过上面的修改，图中包含了变化很大的梯度，且振幅也不同。使得只有很少的波能达到最大振幅，因此 Noise 整体的振幅减弱了。我们可以将 variable 和 binary 方式结合起来，使用第一位来选择符号并且使用 hash 来缩放选择结果,将 Perlin.Evaluate 修改如下:<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #bc6ec5; font-weight: bold;">Evaluate</span> (<span style="color: #ce537a; font-weight: bold;">SmallXXHash4</span> <span style="color: #7590db;">hash</span>, <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">x</span>) =&gt; 2f * hash.Floats01A * <span style="color: #4f97d7; font-weight: bold;">select</span>(-x, x, ((<span style="color: #ce537a; font-weight: bold;">uint4</span>)hash &amp; 1) == 0);
+</pre>
+</div>
+<p>
+但是，上面在两次选择中都使用了第一位数据(hash.Floats01A 会使用第一位数据)，这引入了一些相关性。为了使两次选择更加独立，我们使用第 9 位来确定符号：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #bc6ec5; font-weight: bold;">Evaluate</span> (<span style="color: #ce537a; font-weight: bold;">SmallXXHash4</span> <span style="color: #7590db;">hash</span>, <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">x</span>) =&gt; 2f * hash.Floats01A * <span style="color: #4f97d7; font-weight: bold;">select</span>(-x, x, ((<span style="color: #ce537a; font-weight: bold;">uint4</span>)hash &amp; 1 &lt;&lt; 8) == 0);
+</pre>
+</div>
+
+<div id="org6c10786" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_1d-variable-different.png" alt="noise03_1d-variable-different.png" width="400px" /><br />
+</p>
+</div>
+
+<p>
+这种方法的优点是我们可以引入最小振幅，而不用管梯度方向如何。通过这种方式，我们可以防止出现退化区域，在退化区域多个连续格点处的值被缩放后最终接近于零，这会产生一个平坦区域。最简单的方法是将最小振幅设置为 1 并将 hash 浮点值叠加到最小振幅上。如下：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #bc6ec5; font-weight: bold;">Evaluate</span> (<span style="color: #ce537a; font-weight: bold;">SmallXXHash4</span> <span style="color: #7590db;">hash</span>, <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">x</span>) =&gt; (1f + hash.Floats01A) * <span style="color: #4f97d7; font-weight: bold;">select</span>(-x, x, ((<span style="color: #ce537a; font-weight: bold;">uint4</span>)hash &amp; 1 &lt;&lt; 8) == 0);
+</pre>
+</div>
+
+<p>
+整体的逻辑如下图所示<br />
+</p>
+
+<div id="org8cb30ca" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_1d-perlin-noise.png" alt="noise03_1d-perlin-noise.png" width="800px" /><br />
+</p>
+</div>
+
+<p>
+下面文件中展示了多种版本的 1d perlin noise 的生成过程：<br />
+<a href="./UnityCatLikeCoding/noise03_1d-perlin.ggb">./UnityCatLikeCoding/noise03_1d-perlin.ggb</a><br />
+</p>
+
+
+<div id="orgb52460a" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_1d-mix.png" alt="noise03_1d-mix.png" width="400px" /><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org58f4f7d" class="outline-5">
+<h5 id="org58f4f7d">2D Gradients</h5>
+<div class="outline-text-5" id="text-org58f4f7d">
+<p>
+2D 的情况下，梯度不再只是轴对齐的了，梯度向量可以旋转 360 度。为了生成这样的一个向量，我们可以使用我们在生成 octahedron-sphere 形状时，类似的方法。下图展示了创建 Cube 的过程：<br />
+</p>
+<p width="400px">
+<img src="./UnityCatLikeCoding/noise03_create-cube.png" alt="noise03_create-cube.png" width="400px" /><br />
+Tips: 图中注释错误，应该为 x[-1, -0.5] 被映射为 [0, 0.5]。（注释中少了一个负号）<br />
+</p>
+
+<p>
+最终 2D 的 Perlin Noise 为:<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #bc6ec5; font-weight: bold;">Evaluate</span> (<span style="color: #ce537a; font-weight: bold;">SmallXXHash4</span> <span style="color: #7590db;">hash</span>, <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">x</span>, <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">y</span>)
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21033;&#29992;SmallXXHash4&#29983;&#25104;2D&#26799;&#24230;&#21521;&#37327; (gx, gy)</span>
+    <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">gx</span> = hash.Floats01A * 2f - 1f;
+    <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">gy</span> = 0.5f - <span style="color: #bc6ec5; font-weight: bold;">abs</span>(gx);
+    gx -= <span style="color: #bc6ec5; font-weight: bold;">floor</span>(gx + 0.5f);
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#35745;&#31639;&#26799;&#24230;&#21521;&#37327;&#21644;&#20301;&#32622;&#21521;&#37327;&#30340;&#28857;&#31215;</span>
+    <span style="color: #4f97d7; font-weight: bold;">return</span> (gx * x + gy * y) * 2f;
+}
+</pre>
+</div>
+<p>
+整体的逻辑如下图所示<br />
+</p>
+
+<div id="org9ccfb75" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_2d-perlin-noise.png" alt="noise03_2d-perlin-noise.png" width="800px" /><br />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgde9b086" class="outline-5">
+<h5 id="orgde9b086">Normalized 2D Noise</h5>
+<div class="outline-text-5" id="text-orgde9b086">
+<p>
+为了标准化噪声，我们需要确定其当前的最大振幅。如果一个格子正方形有四个梯度都指向它的中心，那么它的最大值将在中间达到。 因为这将是四个相等梯度的平均值，所以我们只需要计算那个点的单个梯度的值。 完美的对角梯度是 f(x,y)=(x+y)/2，所以中间的振幅是 f(0.5,0.5)=1/2。 然而，这并不是整个噪声的最大振幅。 还有另一种具有更大振幅的梯度配置。<br />
+</p>
+
+<p>
+下面文件展示了归一化 2D Noise 的流程：<br />
+</p>
+<p width="400px">
+<img src="./UnityCatLikeCoding/noise03_2d-perlin-noise-norm.png" alt="noise03_2d-perlin-noise-norm.png" width="400px" /><br />
+<a href="./UnityCatLikeCoding/noise03_2d-perlin-normalize.ggb">./UnityCatLikeCoding/noise03_2d-perlin-normalize.ggb</a><br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org42083bd" class="outline-5">
+<h5 id="org42083bd">3D Gradients</h5>
+<div class="outline-text-5" id="text-org42083bd">
+<p>
+使用生成八面体的方式来生成 3D 梯度向量，如下图：<br />
+</p>
+
+<div id="org617b76c" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_3d-perlin-noise-gradients-create.png" alt="noise03_3d-perlin-noise-gradients-create.png" width="300px" /><br />
+</p>
+</div>
+
+<p>
+同样也要进行归一化，原理和 2D Noise 一样。最终 3D Perlin Noise 为：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">public</span> float4 Evaluate(<span style="color: #ce537a; font-weight: bold;">SmallXXHash4</span> <span style="color: #7590db;">hash</span>, <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">x</span>, <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">y</span>, <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">z</span>)
+{
+    <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">gx</span> = hash.Floats01A * 2f - 1f;
+    <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">gy</span> = hash.Floats01D * 2f - 1f;
+    <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">gz</span> = 1.0f - abs(gx) - abs(gy);
+    <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">offset</span> = max(-gz, 0f);
+    gx += select(-offset, offset, gx &lt; 0f);
+    gy += select(-offset, offset, gy &lt; 0f);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> (gx * x + gy * y + gz * z) * (1f / 0.56290f);
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org6a5083d" class="outline-4">
+<h4 id="org6a5083d">Noise Variants</h4>
+<div class="outline-text-4" id="text-org6a5083d">
+</div>
+<div id="outline-container-org234eee2" class="outline-5">
+<h5 id="org234eee2">Fractal Noise</h5>
+<div class="outline-text-5" id="text-org234eee2">
+<p>
+Frequency   : 原来默认的周期为 1（每个格子之间的间隔为 1），使用 frequency 对位置进行缩放，就可以支持不同频率。<br />
+Octaves     : 音乐简谱的音符 1 2 3 4 5 6 7 i 第一个 1 就是最后一个 1 的低八度, 最后一个 1 就是第一个 1 的高八度。<br />
+Lacunarity  : 间隙。Octaves 之间，频率变化的比例。<br />
+Persistence : 余辉。Octaves 之间，振幅变化的比例。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org82a714a" class="outline-5">
+<h5 id="org82a714a">Turbulence</h5>
+<div class="outline-text-5" id="text-org82a714a">
+<p>
+分形 Perlin 噪声的一个常见变体是对每个 octave 得到的值的绝对值求和。这会导致 Octave 在它们在通过零的地方反弹，从而产生折痕。将多个这样的 Octaves 分层会产生 Turbulence Pattern，因此也将这种噪声称为 Perlin 噪声的 Turbulence 变体。当然，值噪声也支持这种 Turbulence 变体。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org6055a58" class="outline-5">
+<h5 id="org6055a58">Tiling</h5>
+<div class="outline-text-5" id="text-org6055a58">
+<p>
+原本 Lattices 的间隔为 1，经过 Fractal 后，[0, 1] 范围变为[0, frequency-1], 因此将 coordinates 变换到 [0, frequency-1] 范围, 就可以实现 Tiling。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">LatticeSpan4</span> <span style="color: #bc6ec5; font-weight: bold;">GetLatticeSpan4</span>(<span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">coordinates</span>, <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">frequency</span>)
+{
+    coordinates *= frequency;
+    <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">points</span> = <span style="color: #bc6ec5; font-weight: bold;">floor</span>(coordinates);
+    <span style="color: #ce537a; font-weight: bold;">LatticeSpan4</span> <span style="color: #7590db;">span</span>;
+    span.p0 = (<span style="color: #ce537a; font-weight: bold;">int4</span>)points;
+    span.p1 = span.p0 + 1;
+    span.g0 = coordinates - span.p0;
+    span.g1 = span.g0 - 1f;
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19979;&#38754;&#21462;&#20313;&#35745;&#31639;&#19981;&#25903;&#25345;&#30690;&#37327;&#21270;</span>
+    span.p0 %= frequency;
+    span.p0 = <span style="color: #4f97d7; font-weight: bold;">select</span>(span.p0, span.p0 + frequency, span.p0&lt;0);
+    span.p1 = (span.p0 + 1) % frequency;
+
+    span.t = coordinates - points;
+    <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">span.t = smoothstep(0, 1, span.t);</span>
+    span.t = span.t * span.t * span.t * (span.t * (span.t * 6f - 15f) + 10f);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> span;
+}
+</pre>
+</div>
+<p>
+上面代码中，整数余数的计算是通过整数除法完成的，其不支持矢量化。我们可以使用浮点数除法来代替取余操作，浮点数除法是支持矢量化的，如下：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">LatticeSpan4</span> <span style="color: #bc6ec5; font-weight: bold;">GetLatticeSpan4</span>(<span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">coordinates</span>, <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">frequency</span>)
+{
+    coordinates *= frequency;
+    <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">points</span> = <span style="color: #bc6ec5; font-weight: bold;">floor</span>(coordinates);
+    <span style="color: #ce537a; font-weight: bold;">LatticeSpan4</span> <span style="color: #7590db;">span</span>;
+    span.p0 = (<span style="color: #ce537a; font-weight: bold;">int4</span>)points;
+    span.p1 = span.p0 + 1;
+    span.g0 = coordinates - span.p0;
+    span.g1 = span.g0 - 1f;
+
+    <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">span.p0 %= frequency;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20351;&#29992;&#28014;&#28857;&#25968;&#38500;&#27861;&#26469;&#20195;&#26367;&#25972;&#25968;&#21462;&#20313;&#25805;&#20316;</span>
+    span.p0 -= (<span style="color: #ce537a; font-weight: bold;">int4</span>)(points / frequency) * frequency;
+    span.p0 = <span style="color: #4f97d7; font-weight: bold;">select</span>(span.p0, span.p0 + frequency, span.p0&lt;0);
+    span.p1 = span.p0 + 1;
+    span.p1 = <span style="color: #4f97d7; font-weight: bold;">select</span>(span.p1, 0, span.p1==frequency);
+
+    span.t = coordinates - points;
+    <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">span.t = smoothstep(0, 1, span.t);</span>
+    span.t = span.t * span.t * span.t * (span.t * (span.t * 6f - 15f) + 10f);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> span;
+}
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#26356;&#36827;&#19968;&#27493;&#65292;&#20351;&#29992;ceil&#26041;&#27861;&#26469;&#36991;&#20813;&#28014;&#28857;&#25968;&#31934;&#24230;&#38382;&#39064;&#21644;&#33293;&#20837;&#38382;&#39064;</span>
+<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">LatticeSpan4</span> <span style="color: #bc6ec5; font-weight: bold;">GetLatticeSpan4</span>(<span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">coordinates</span>, <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">frequency</span>)
+{
+    coordinates *= frequency;
+    <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">points</span> = <span style="color: #bc6ec5; font-weight: bold;">floor</span>(coordinates);
+    <span style="color: #ce537a; font-weight: bold;">LatticeSpan4</span> <span style="color: #7590db;">span</span>;
+    span.p0 = (<span style="color: #ce537a; font-weight: bold;">int4</span>)points;
+    span.p1 = span.p0 + 1;
+    span.g0 = coordinates - span.p0;
+    span.g1 = span.g0 - 1f;
+
+    <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">span.p0 %= frequency;</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20351;&#29992;&#28014;&#28857;&#25968;&#38500;&#27861;&#26469;&#20195;&#26367;&#25972;&#25968;&#21462;&#20313;&#25805;&#20316;</span>
+    span.p0 -= (<span style="color: #ce537a; font-weight: bold;">int4</span>)<span style="color: #bc6ec5; font-weight: bold;">ceil</span>(points / frequency) * frequency;
+    span.p0 = <span style="color: #4f97d7; font-weight: bold;">select</span>(span.p0, span.p0 + frequency, span.p0&lt;0);
+    span.p1 = span.p0 + 1;
+    span.p1 = <span style="color: #4f97d7; font-weight: bold;">select</span>(span.p1, 0, span.p1==frequency);
+
+    span.t = coordinates - points;
+    <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">span.t = smoothstep(0, 1, span.t);</span>
+    span.t = span.t * span.t * span.t * (span.t * (span.t * 6f - 15f) + 10f);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> span;
+}
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">example:</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">points = 15.0f frequency = 4</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">15 % 4 = 3                            // version0 &#25972;&#25968;&#21462;&#20313;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">15-(int)(15.0f/4)*4 = 15-12 = 3       // version1 &#28014;&#28857;&#25968;&#38500;&#27861;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">15-(int)ceil(15.0f/4)*4 = 15-16 = -1  // version2 &#28014;&#28857;&#25968;&#38500;&#27861; + ceil</span>
+</pre>
+</div>
+
+<p>
+下图为未矢量化和矢量化后的对比：<br />
+</p>
+
+<div id="org6682789" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_unvectorizor-int-divide.png" alt="noise03_unvectorizor-int-divide.png" width="600px" /><br />
+</p>
+</div>
+
+<ul class="org-ul">
+<li>编程语言中，取余和取模的区别到底是什么？ <a href="https://www.zhihu.com/question/30526656">https://www.zhihu.com/question/30526656</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org4e201d5" class="outline-4">
+<h4 id="org4e201d5">Voronoi Noise</h4>
+<div class="outline-text-4" id="text-org4e201d5">
+</div>
+<div id="outline-container-orgbef60f5" class="outline-5">
+<h5 id="orgbef60f5">Distance to Nearest Point</h5>
+<div class="outline-text-5" id="text-orgbef60f5">
+<p>
+除了值噪声和梯度噪声之外，还有第三种常见类型的噪声。其基本思想为，用任意点填充空间，然后寻找和当前点距离最近的填充点，将他们之间的距离作为当前点的噪声值。其生成的图案看起来像一个 Voronoi 图，因此它被称为 Voronoi 噪声或细胞噪声（Cell Noise）。 这种类型的噪声最早是由 Steven Worley 提出的，因此也被称为 Worley 噪声。<br />
+</p>
+</div>
+<div id="outline-container-org8fc8289" class="outline-6">
+<h6 id="org8fc8289">Incoporating Adjacent Spans</h6>
+<div class="outline-text-6" id="text-org8fc8289">
+<p>
+之前的噪声只考虑当前格子。Voronoi 噪声值是当前点到最近的填充点的距离，如果不考虑相邻的格子，噪声就会不连续。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #bc6ec5; font-weight: bold;">GetNoise4</span> (<span style="color: #ce537a; font-weight: bold;">float4x3</span> <span style="color: #7590db;">positions</span>, <span style="color: #ce537a; font-weight: bold;">SmallXXHash4</span> <span style="color: #7590db;">hash</span>, <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">frequency</span>)
+{
+    <span style="color: #ce537a; font-weight: bold;">LatticeSpan4</span> <span style="color: #7590db;">x</span> = <span style="color: #4f97d7; font-weight: bold;">default</span>(L).<span style="color: #bc6ec5; font-weight: bold;">GetLatticeSpan4</span>(positions.c0, frequency);
+
+    <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">minima</span> = 2f;
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#32771;&#34385;&#30456;&#37051;&#30340;&#26684;&#23376;</span>
+    <span style="color: #4f97d7; font-weight: bold;">for</span> (<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">u</span> = -1; u &lt;= 1; u++) {
+        <span style="color: #ce537a; font-weight: bold;">SmallXXHash4</span> <span style="color: #7590db;">h</span> = hash.<span style="color: #bc6ec5; font-weight: bold;">Eat</span>(x.p0 + u);
+        minima = <span style="color: #bc6ec5; font-weight: bold;">UpdateVoronoiMinima</span>(minima, <span style="color: #bc6ec5; font-weight: bold;">abs</span>(h.Floats01A + u - x.g0));
+    }
+    <span style="color: #4f97d7; font-weight: bold;">return</span> minima;
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgda1b970" class="outline-6">
+<h6 id="orgda1b970">Tiling</h6>
+<div class="outline-text-6" id="text-orgda1b970">
+<p>
+由于计算噪声值时会考虑相邻的格子，因此按照 frequency 进行 Tiling 可能会导致边界上不连续，这种不连续的情况分为两种：<br />
+</p>
+<ol class="org-ol">
+<li>相邻的格子位置小于 0<br /></li>
+<li>相邻的格子位置大于(freqency-1)，即等于 freqency<br /></li>
+</ol>
+
+<p>
+小于 0 时，将坐标设置为 freqency-1 即可。<br />
+等于 freqency 时，只需要将坐标重置为 0 即可。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org1bd348d" class="outline-6">
+<h6 id="org1bd348d">Two points per Lattice Square</h6>
+<div class="outline-text-6" id="text-org1bd348d">
+<p>
+当前我们生成噪声值的方式，会产生超过 1 的噪声值（当前生成的最大噪声值为√2）。<br />
+</p>
+<p width="200px">
+<img src="./UnityCatLikeCoding/noise03_voronoi-distance-max.png" alt="noise03_voronoi-distance-max.png" width="200px" /><br />
+不过超过 1 的噪声占比并不大，将超 1 的噪声值设置为 1，没超过 1 的噪声值设置为 0，可以直观地看到超过 1 的噪声所占比例：<br />
+</p>
+
+<div id="orgc3742ac" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_voronoi-select01.png" alt="noise03_voronoi-select01.png" width="200px" /><br />
+</p>
+</div>
+
+<p>
+允许噪声值超过 1，意味着距离当前点的最近填充点可能在相邻的格子之外，如下图所示(中心的格子是当前处理的点所在的格子)，为了求出最近点，需要便利 21 个格子。<br />
+</p>
+<p width="400px">
+<img src="./UnityCatLikeCoding/noise03_voronoi-dis-exceed-1-01.png" alt="noise03_voronoi-dis-exceed-1-01.png" width="400px" /><br />
+遍历 21 个格子消耗太大了，不太现实。我们可以将计算得到的距离 Clamp 到 [0, 1] 范围。此时在距离超过 1 的区域，噪声值都会为 1。下图展示了，限制最大距离后，最近填充点所占区域范围:<br />
+</p>
+
+<div id="orge1a948f" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_voronoi-dis-exceed-1-02.png" alt="noise03_voronoi-dis-exceed-1-02.png" width="400px" /><br />
+</p>
+</div>
+
+<p>
+虽然，无法完全避免这种情况，但是我们可以通过增加每个格子内填充点的数量来减少这种情况。SmallXXHash4 一次会生成 4 个 0-1 范围的随机值，因此我们可以通过下面方法，增加一个填充点：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #bc6ec5; font-weight: bold;">GetNoise4</span>(<span style="color: #ce537a; font-weight: bold;">float4x3</span> <span style="color: #7590db;">positions</span>, <span style="color: #ce537a; font-weight: bold;">SmallXXHash4</span> <span style="color: #7590db;">hash</span>, <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">frequency</span>)
+{
+    <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">l</span> = <span style="color: #4f97d7; font-weight: bold;">default</span>(L);
+    <span style="color: #ce537a; font-weight: bold;">LatticeSpan4</span> <span style="color: #7590db;">x</span> = l.<span style="color: #bc6ec5; font-weight: bold;">GetLatticeSpan4</span>(positions.c0, frequency);
+    <span style="color: #ce537a; font-weight: bold;">LatticeSpan4</span> <span style="color: #7590db;">z</span> = l.<span style="color: #bc6ec5; font-weight: bold;">GetLatticeSpan4</span>(positions.c2, frequency);
+    <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">minima</span> = 2f;
+    <span style="color: #4f97d7; font-weight: bold;">for</span>(<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">u</span>=-1; u&lt;=1; u++)
+    {
+        <span style="color: #ce537a; font-weight: bold;">SmallXXHash4</span> <span style="color: #7590db;">hx</span> = hash.<span style="color: #bc6ec5; font-weight: bold;">Eat</span>(l.<span style="color: #bc6ec5; font-weight: bold;">ValidateSingleStep</span>(x.p0 + u, frequency));
+        <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">xOffset</span> = u - x.g0;
+        <span style="color: #4f97d7; font-weight: bold;">for</span>(<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">v</span>=-1; v&lt;=1; v++)
+        {
+            <span style="color: #ce537a; font-weight: bold;">SmallXXHash4</span> <span style="color: #7590db;">h</span> = hx.<span style="color: #bc6ec5; font-weight: bold;">Eat</span>(l.<span style="color: #bc6ec5; font-weight: bold;">ValidateSingleStep</span>(z.p0 + v, frequency));
+            <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">zOffset</span> = v - z.g0;
+            minima = <span style="color: #bc6ec5; font-weight: bold;">UpdateVoronoiMinima</span>(minima, <span style="color: #bc6ec5; font-weight: bold;">GetDistance</span>(h.Floats01A + xOffset, h.Floats01B + zOffset));
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22686;&#21152;&#19968;&#20010;&#22635;&#20805;&#28857;</span>
+            minima = <span style="color: #bc6ec5; font-weight: bold;">UpdateVoronoiMinima</span>(minima, <span style="color: #bc6ec5; font-weight: bold;">GetDistance</span>(h.Floats01C + xOffset, h.Floats01D + zOffset));
+        }
+    }
+    <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #bc6ec5; font-weight: bold;">min</span>(minima, 1f);
+}
+}
+</pre>
+</div>
+
+
+<div id="org78d59b9" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_voronoi-two-points.png" alt="noise03_voronoi-two-points.png" width="300px" /><br />
+</p>
+</div>
+
+<p>
+每个格子中随机填充两个点，噪声值为当前点到最近填充点的距离。因此上图中每个格子内有两个黑点, 每两个黑点之间的中垂线是白色亮线，黑点到白色亮线亮度逐渐增加。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgb498852" class="outline-5">
+<h5 id="orgb498852">Distance to Second-Nearest Point</h5>
+<div class="outline-text-5" id="text-orgb498852">
+<p width="600px">
+<img src="./UnityCatLikeCoding/noise03_voronoi-two-points-second-nearest01.png" alt="noise03_voronoi-two-points-second-nearest01.png" width="600px" /><br />
+上面右图中，噪声值为当前点到第二最近填充点的距离。填充点中垂线上的值最小(这里的颜色值虽然看起来暗，却和左边相同位置看起来亮的颜色值相同)，白色的亮线经过填充点。<br />
+</p>
+
+<p width="900px">
+<img src="./UnityCatLikeCoding/noise03_voronoi-two-points-second-nearest02.png" alt="noise03_voronoi-two-points-second-nearest02.png" width="900px" /><br />
+上面右图为中间图减去左边图的效果。左边图和中间图中填充点中垂线上的值相同，中垂线是左边图噪声值最大的地方，确实中间图噪声值最小的地方，所以中间图减去左边图，就会让中垂线更加暗。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org05a299a" class="outline-5">
+<h5 id="org05a299a">Distance Metrics</h5>
+<div class="outline-text-5" id="text-org05a299a">
+<p>
+前面度量距离的方式是欧几里得距离的平方。还可以使用其他方式度量距离。<br />
+</p>
+</div>
+<div id="outline-container-org9359b35" class="outline-6">
+<h6 id="org9359b35">Chebyshev</h6>
+<div class="outline-text-6" id="text-org9359b35">
+
+<div id="orgfd063c0" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_voronoi-chebychev-dis.png" alt="noise03_voronoi-chebychev-dis.png" width="300px" /><br />
+</p>
+</div>
+
+<p>
+Chebyshev 距离为国际象棋中，国王的棋盘距离，其描述了一个国王需要多少步才能达到棋盘上的目的地（对于国王来说对角线运动与轴对齐运动相同，即一个回合只能在轴对齐和对角线方向移动一格），Chebyshev 距离等于各个维度的欧几里得距离中最大的欧几里得距离，这意味着 Chebyshev 距离在所有维度上都是相同的。由于该性质，我们不需要限制最小值（格子范围为[0, 1]，在任意维度上，距离都不会超过 1，因此不需要在噪声值和 1 之间去最小值）。<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">struct</span> <span style="color: #ce537a; font-weight: bold;">Chebyshev</span> : <span style="color: #ce537a; font-weight: bold;">IVoronoiDistance</span>
+{
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #bc6ec5; font-weight: bold;">GetDistance</span> (<span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">x</span>) =&gt; <span style="color: #bc6ec5; font-weight: bold;">abs</span>(x);
+
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #bc6ec5; font-weight: bold;">GetDistance</span> (<span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">x</span>, <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">y</span>) =&gt; <span style="color: #bc6ec5; font-weight: bold;">max</span>(<span style="color: #bc6ec5; font-weight: bold;">abs</span>(x), <span style="color: #bc6ec5; font-weight: bold;">abs</span>(y));
+
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #bc6ec5; font-weight: bold;">GetDistance</span> (<span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">x</span>, <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">y</span>, <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">z</span>) =&gt; <span style="color: #bc6ec5; font-weight: bold;">max</span>(<span style="color: #bc6ec5; font-weight: bold;">max</span>(<span style="color: #bc6ec5; font-weight: bold;">abs</span>(x), <span style="color: #bc6ec5; font-weight: bold;">abs</span>(y)), <span style="color: #bc6ec5; font-weight: bold;">abs</span>(z));
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19981;&#38656;&#35201;&#25191;&#34892; min(minima.c0, 1) min(minima.c1, 1)</span>
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float4x2</span> <span style="color: #bc6ec5; font-weight: bold;">Finalize1D</span> (<span style="color: #ce537a; font-weight: bold;">float4x2</span> <span style="color: #7590db;">minima</span>) =&gt; minima;
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float4x2</span> <span style="color: #bc6ec5; font-weight: bold;">Finalize2D</span> (<span style="color: #ce537a; font-weight: bold;">float4x2</span> <span style="color: #7590db;">minima</span>) =&gt; minima;
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float4x2</span> <span style="color: #bc6ec5; font-weight: bold;">Finalize3D</span> (<span style="color: #ce537a; font-weight: bold;">float4x2</span> <span style="color: #7590db;">minima</span>) =&gt; minima;
+}
+</pre>
+</div>
+
+<p>
+下图为 3D Chebyshev Voronoi 噪声，从左到右依次为 VoronoiChebychevF1 VoronoiChebychevF2 VoronoiChebychevF2MinusF1:<br />
+</p>
+
+<div id="org6c90973" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_voronoi-chebychev.png" alt="noise03_voronoi-chebychev.png" width="900px" /><br />
+</p>
+</div>
+
+<p>
+Chebyshev Voronoi 噪声的 Cell 具有对角线或轴对齐的边缘，它们的内部梯度形成方形图案。 与 Worley 噪声更 organic 的外观相比，其具有人工化的外观。 此外，轴对齐平面采样 3D 噪声会产生颜色均匀的方形区域(上图就是 3D Chebyshev Voronoi 噪声)，此时最大的距离在第 3 个维度上，所以上图方形区域内的噪声值都相同。<br />
+</p>
+
+<p>
+下图为 2D Chebyshev Voronoi 噪声，从左到右依次为 VoronoiChebychevF1 VoronoiChebychevF2 VoronoiChebychevF2MinusF1:<br />
+</p>
+<p width="900px">
+<img src="./UnityCatLikeCoding/noise03_voronoi-chebychev-2d.png" alt="noise03_voronoi-chebychev-2d.png" width="900px" /><br />
+上面左图中最黑的十字中心为填充点。可以看到每个格子内有两个填充点。由于 Chebyshev 距离是各个维度中，最大的距离。与 x 轴平行的线上在 y 方向上距离某个填充点的距离是相同的，与 y 轴平行的线上在 x 方向上距离某个填充点的距离是相同的，因此形成了轴对齐的边缘和方形的图案。过填充点的十字线上的点，到填充点的 x 方向距离和 y 方向距离相同，并且距离填充点越远，Chebyshev 值越大，因此形成了渐变增量的十字黑线。如下图所示：<br />
+</p>
+<p width="300px">
+<img src="./UnityCatLikeCoding/noise03_voronoi-chebychev-2d-analysis.png" alt="noise03_voronoi-chebychev-2d-analysis.png" width="300px" /><br />
+白色的 45 度或 135 度斜线，则是由于到两个填充点的 x 距离和 y 距离相同形成的，如下图所示(黄色线表示当前点到右边填充点的 y 方向距离，橙色线表示当前点到左边填充点的 x 方向距离)：<br />
+</p>
+
+<div id="org3119484" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_voronoi-chebychev-2d-analysis02.png" alt="noise03_voronoi-chebychev-2d-analysis02.png" width="300px" /><br />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org73c8a5c" class="outline-6">
+<h6 id="org73c8a5c">Other Metrics</h6>
+<div class="outline-text-6" id="text-org73c8a5c">
+</div>
+<ul class="org-ul">
+<li><a id="orgd2267d0"></a>Worley Squared<br />
+<div class="outline-text-7" id="text-orgd2267d0">
+<p>
+使用欧几里得距离的平方来度量距离，可以得到类似 Worley 的噪声，其平均振幅更小。这种距离度量方式计算消耗更小。<br />
+</p>
+
+
+<div id="org4ee0c5e" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_voronoi-worley-squared.png" alt="noise03_voronoi-worley-squared.png" width="600px" /><br />
+</p>
+</div>
+</div>
+</li>
+<li><a id="orgac3bf86"></a>Manhattan Distance<br />
+<div class="outline-text-7" id="text-orgac3bf86">
+<p>
+这种距离度量方式对应于国际象棋中的车移动方式(和中国象棋中的车一样，只能左右上下移动，不能斜着移动)<br />
+</p>
+
+
+<div id="orge7eb381" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_voronoi-manhattan.png" alt="noise03_voronoi-manhattan.png" width="600px" /><br />
+</p>
+</div>
+</div>
+</li>
+<li><a id="org73a0db5"></a>Cell Hash<br />
+<div class="outline-text-7" id="text-org73a0db5">
+<p>
+为每个 Cell 生成一个唯一的值，来显示 Cell。<br />
+2D noise 中，从 Hash 中取 4 位数据做 Cell 颜色值，还剩下 28(32-4=28) 位数据，28 位数据分配给两个填充点，一个填充点 14 位，每个填充点对应一个 2D 的坐标，因此每个坐标分量需要 7 位(14/2)。<br />
+3D noise 中，从 Hash 中取 4 位数据做 Cell 颜色值，还剩下 28(32-4=28) 位数据，28 位数据分配给两个填充点，一个填充点 14 位，每个填充点对应一个 3D 的坐标，因此每个坐标分量需要 4 位(14/3)。<br />
+</p>
+
+
+<div id="org36c7d5b" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_voronoi-hash.png" alt="noise03_voronoi-hash.png" width="600px" /><br />
+</p>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org0ef037e" class="outline-4">
+<h4 id="org0ef037e">Simplex Noise</h4>
+<div class="outline-text-4" id="text-org0ef037e">
+<p>
+Ken Perlin 创建了 Perlin Noise 之后，又开发出了另一种形式的 Noise，他将这种 Noise 命名为 Simplex Noise。这种 Noise 使用 kernel summation 来代替插值，使用 simplex grid 来代替 hypercube grid。这里 kernel 可以被认为是一个 stamp 或一个 mask 来限制一个 pattern 的影响。将多个 kernel 样本(每个样本的中心在不同的位置)加在一起生成最终的噪声值。<br />
+</p>
+
+<p>
+Simplex 是最简单的多胞形（多胞形是一类由平的边界构成的几何对象。多胞形可以存在于任意维中。多边形为二维多胞形，多面体为三维多胞形，也可以延伸到三维以上的空间，如多胞体（英语：polyhedron）即为四维多胞形。），它占据所有可用维度的空间。 直线段是一维 Simplex。 三角形是二维 Simplex。 正方形不是 2D Simplex，因为它比三角形多一个角和一个边，因此不是最简单的形状。 直线段也不是 2D Simplex，因为，无论它在 2D 空间中朝向如何，都只有一个维度。四面体是 3D Simplex。<br />
+</p>
+
+<p>
+Simplex Noise 是梯度类型的噪声，但是我们也可以为其创建 Value 类型的变体。下面我们会先实现 Simplex Value Noise，因为其比梯度类型的变体更容易。<br />
+</p>
+</div>
+
+<div id="outline-container-orga6185a3" class="outline-5">
+<h5 id="orga6185a3">Simplex Value Noise</h5>
+<div class="outline-text-5" id="text-orga6185a3">
+</div>
+<div id="outline-container-org53f89d6" class="outline-6">
+<h6 id="org53f89d6">1D Simplex Value Noise</h6>
+<div class="outline-text-6" id="text-org53f89d6">
+<p>
+1D Simplex noise 和常规的值噪声一样，使用相同的线段空间分区。没有 ILattice 类型用来生成所需的数据，因此，我们直接在 Simplex1D.GetNoise4 中来生成 lattice point。如下：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">struct</span> <span style="color: #ce537a; font-weight: bold;">Simplex1D</span>&lt;<span style="color: #ce537a; font-weight: bold;">G</span>&gt; : <span style="color: #ce537a; font-weight: bold;">INoise</span> <span style="color: #4f97d7; font-weight: bold;">where</span> G : <span style="color: #4f97d7; font-weight: bold;">struct</span>, IGradient
+{
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #bc6ec5; font-weight: bold;">GetNoise4</span>(<span style="color: #ce537a; font-weight: bold;">float4x3</span> <span style="color: #7590db;">positions</span>, <span style="color: #ce537a; font-weight: bold;">SmallXXHash4</span> <span style="color: #7590db;">hash</span>, <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">frequency</span>)
+    {
+        positions *= frequency;
+        <span style="color: #ce537a; font-weight: bold;">int4</span> <span style="color: #7590db;">x0</span> = (<span style="color: #ce537a; font-weight: bold;">int4</span>)<span style="color: #bc6ec5; font-weight: bold;">floor</span>(positions.c0);
+        <span style="color: #ce537a; font-weight: bold;">int4</span> <span style="color: #7590db;">x1</span> = x0 + 1;
+        <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #4f97d7; font-weight: bold;">default</span>(G).<span style="color: #bc6ec5; font-weight: bold;">EvaluateAfterInterpolation</span>(
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">simplex noise sums kernels</span>
+            <span style="color: #bc6ec5; font-weight: bold;">Kernel</span>(hash.<span style="color: #bc6ec5; font-weight: bold;">Eat</span>(x0), x0, positions) + <span style="color: #bc6ec5; font-weight: bold;">Kernel</span>(hash.<span style="color: #bc6ec5; font-weight: bold;">Eat</span>(x1), x1, positions)
+        );
+    }
+
+    <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #bc6ec5; font-weight: bold;">Kernel</span>(<span style="color: #ce537a; font-weight: bold;">SmallXXHash4</span> <span style="color: #7590db;">hash</span>, <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">lx</span>, <span style="color: #ce537a; font-weight: bold;">float4x3</span> <span style="color: #7590db;">positions</span>)
+    {
+        <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">x</span> = positions.c0 - lx;
+        <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #4f97d7; font-weight: bold;">default</span>(G).<span style="color: #bc6ec5; font-weight: bold;">Evaluate</span>(hash, x);
+    }
+}
+</pre>
+</div>
+
+
+<div id="org071c37b" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_simplex_1d-01.png" alt="noise03_simplex_1d-01.png" width="600px" /><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgfe87d3e" class="outline-6">
+<h6 id="orgfe87d3e">Radially-symmetrical Falloff</h6>
+<div class="outline-text-6" id="text-orgfe87d3e">
+<p>
+上面方式生成的噪声是不连续的，为了将其变为连续的形式，我们需要在一个 lattice point 到下一个 lattice point 的过程中引入平滑变换。常规的 Lattice Noise 通过插值来在 lattice points 之间进行混合，Simplex Noise 则是通过限制每个 Lattice Point 的影响来实现的。实施这样的限制是 Kernel 的职责，其定义了一个衰减函数，在当前 lattice point 上时，函数值为 1，到达相邻的 Lattice Point 时，函数值减少为 0 (从左右两个方向都是如此)。因此，该 Kernel 为对称的 Kernel。<br />
+</p>
+
+<p>
+最简单的衰减函数为 f(x) = 1 - |x|, 该函数从 1 开始，在相邻的 Lattice Point 时衰减为 0. 用其缩放生成的梯度得到最终的 Kernel 样本。这样得到的 1D 噪声图如下：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #bc6ec5; font-weight: bold;">Kernel</span>(<span style="color: #ce537a; font-weight: bold;">SmallXXHash4</span> <span style="color: #7590db;">hash</span>, <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">lx</span>, <span style="color: #ce537a; font-weight: bold;">float4x3</span> <span style="color: #7590db;">positions</span>)
+{
+    <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">x</span> = positions.c0 - lx;
+    <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">f</span> = 1f - <span style="color: #bc6ec5; font-weight: bold;">abs</span>(x);
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">use f scale gradient</span>
+    <span style="color: #4f97d7; font-weight: bold;">return</span> f * <span style="color: #4f97d7; font-weight: bold;">default</span>(G).<span style="color: #bc6ec5; font-weight: bold;">Evaluate</span>(hash, x);
+}
+</pre>
+</div>
+
+<div id="org29bf4cf" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_simplex_1d-02.png" alt="noise03_simplex_1d-02.png" width="600px" /><br />
+</p>
+</div>
+
+<p>
+上面的噪声是连续的，其等价于简单的线性插值，因此其不平滑(smooth)。为了得到平滑的常规的值噪声，我们需要使用二阶连续的插值方法。同样地，我们可以使用二阶连续的衰减函数，从而使得 Simplex Noise 平滑。<br />
+</p>
+
+<p>
+将函数 \(f(x) = 1 - x^2\) 作为衰减函数，可以引入引入弯曲，其一阶导数为 \(f'(x)=-2x\) ，二阶导数为 \(f"(x)=-2\) ，这两个函数在 x=1 和 x=-1 两个端点都不为 0。因此，该衰减函数在两个端点处依然是不连续的。另外，在 lattice point 中间位置，f(1/2) = 1-0.25 = 0.75，噪声值为两个 Kernel 样本叠加，因此，噪声值此时可能会超过 1。函数 \(f(x) = 1 - x^2\) 作为衰减函数对应的噪声图如下：<br />
+</p>
+
+<div id="org886ae48" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_simplex_1d-03.png" alt="noise03_simplex_1d-03.png" width="600px" /><br />
+</p>
+</div>
+
+<p>
+将函数 \(f(x) = (1 - x^2)^2\) 作为衰减函数，其一阶导数为 \(f'(x)=4x^3-4x\) ，二阶导数为 \(f"(x)=12x^2-4\) ，f'(1)=0 f'(-1)=0 f"(1)=8 f"(-1)=8，因此，该衰减函数在 -1，1 处一阶连续，但是二阶不连续。其对应的噪声图如下：<br />
+</p>
+
+<div id="org1604eea" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_simplex_1d-04.png" alt="noise03_simplex_1d-04.png" width="600px" /><br />
+</p>
+</div>
+
+<p>
+将函数 \(f(x) = (1 - x^2)^3\) 作为衰减函数，其一阶导数为 \(f'(x)=-6x^5+12x^3-6x\) ，二阶导数为 \(f"(x)=-30x^4+36x^2-6\) ，f'(1)=0 f'(-1)=0 f'(0)=0 f"(1)=0 f"(-1)=0 f"(0)=-6，因此，该衰减函数在 0，-1，1 处一阶连续，在-1，1 处二阶连续，但在 0 处二阶不连续。在 Lattice Point 处二阶导数不为 0 没关系，这是 Kernel 衰减函数切换方向的地方，Kernel 影响 Lattice Point 的两边，只需要在 Kernel 边缘达到 0 即可。其对应的噪声图如下：<br />
+</p>
+
+
+<div id="org9d74117" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_simplex_1d-05.png" alt="noise03_simplex_1d-05.png" width="600px" /><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc84e33b" class="outline-6">
+<h6 id="orgc84e33b">2D Kernels</h6>
+<div class="outline-text-6" id="text-orgc84e33b">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">struct</span> <span style="color: #ce537a; font-weight: bold;">Simplex2D</span>&lt;<span style="color: #ce537a; font-weight: bold;">G</span>&gt; : <span style="color: #ce537a; font-weight: bold;">INoise</span> <span style="color: #4f97d7; font-weight: bold;">where</span> G : <span style="color: #4f97d7; font-weight: bold;">struct</span>, IGradient
+{
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #bc6ec5; font-weight: bold;">GetNoise4</span>(<span style="color: #ce537a; font-weight: bold;">float4x3</span> <span style="color: #7590db;">positions</span>, <span style="color: #ce537a; font-weight: bold;">SmallXXHash4</span> <span style="color: #7590db;">hash</span>, <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">frequency</span>)
+    {
+        positions *= frequency;
+        <span style="color: #ce537a; font-weight: bold;">int4</span> <span style="color: #7590db;">x0</span> = (<span style="color: #ce537a; font-weight: bold;">int4</span>)<span style="color: #bc6ec5; font-weight: bold;">floor</span>(positions.c0);
+        <span style="color: #ce537a; font-weight: bold;">int4</span> <span style="color: #7590db;">x1</span> = x0 + 1;
+        <span style="color: #ce537a; font-weight: bold;">int4</span> <span style="color: #7590db;">z0</span> = (<span style="color: #ce537a; font-weight: bold;">int4</span>)<span style="color: #bc6ec5; font-weight: bold;">floor</span>(positions.c2);
+        <span style="color: #ce537a; font-weight: bold;">int4</span> <span style="color: #7590db;">z1</span> = z0 + 1;
+
+        <span style="color: #ce537a; font-weight: bold;">SmallXXHash4</span> <span style="color: #7590db;">h0</span> = hash.<span style="color: #bc6ec5; font-weight: bold;">Eat</span>(x0);
+        <span style="color: #ce537a; font-weight: bold;">SmallXXHash4</span> <span style="color: #7590db;">h1</span> = hash.<span style="color: #bc6ec5; font-weight: bold;">Eat</span>(x1);
+
+        <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #4f97d7; font-weight: bold;">default</span>(G).<span style="color: #bc6ec5; font-weight: bold;">EvaluateCombined</span>(
+            <span style="color: #bc6ec5; font-weight: bold;">Kernel</span>(h0.<span style="color: #bc6ec5; font-weight: bold;">Eat</span>(z0), x0, z0, positions) +
+            <span style="color: #bc6ec5; font-weight: bold;">Kernel</span>(h0.<span style="color: #bc6ec5; font-weight: bold;">Eat</span>(z1), x0, z1, positions) +
+            <span style="color: #bc6ec5; font-weight: bold;">Kernel</span>(h1.<span style="color: #bc6ec5; font-weight: bold;">Eat</span>(z0), x1, z0, positions) +
+            <span style="color: #bc6ec5; font-weight: bold;">Kernel</span>(h1.<span style="color: #bc6ec5; font-weight: bold;">Eat</span>(z1), x1, z1, positions)
+        );
+    }
+
+    <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #bc6ec5; font-weight: bold;">Kernel</span>(<span style="color: #ce537a; font-weight: bold;">SmallXXHash4</span> <span style="color: #7590db;">hash</span>, <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">lx</span>, <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">lz</span>, <span style="color: #ce537a; font-weight: bold;">float4x3</span> <span style="color: #7590db;">positions</span>)
+    {
+        <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">x</span> = positions.c0 - lx;
+        <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">z</span> = positions.c2 - lz;
+
+        <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">f</span> = 1 - x * x - z * z;
+        f = f * f * f;
+        <span style="color: #4f97d7; font-weight: bold;">return</span> f;
+    }
+}
+</pre>
+</div>
+
+<p>
+使用上面 Kernel 函数得到的图形如下:<br />
+</p>
+
+<div id="org71e9a71" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_simplex_2d-kernel01.png" alt="noise03_simplex_2d-kernel01.png" width="400px" /><br />
+</p>
+</div>
+
+<p>
+上图边界点上是黑色，是由于 f(0,0)=(1-0-0)^3=1 f(1,0)=(1-1-0)^3=0 f(0,1)=(1-0-1)^3=0 f(1,1)=(1-1-1)^3=-1 因此，f(0,0)+f(1,0)+f(0,1)+f(1,1)=0 ，通过对 Kernel 做 Clamp 可以修复该问题，此时得到的图形如下：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #bc6ec5; font-weight: bold;">Kernel</span>(<span style="color: #ce537a; font-weight: bold;">SmallXXHash4</span> <span style="color: #7590db;">hash</span>, <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">lx</span>, <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">lz</span>, <span style="color: #ce537a; font-weight: bold;">float4x3</span> <span style="color: #7590db;">positions</span>)
+{
+    <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">x</span> = positions.c0 - lx;
+    <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">z</span> = positions.c2 - lz;
+
+    <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">f</span> = 1 - x * x - z * z;
+    f = f * f * f;
+    <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #bc6ec5; font-weight: bold;">max</span>(0f, f);
+}
+</pre>
+</div>
+
+<div id="orgaa0c332" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_simplex_2d-kernel02.png" alt="noise03_simplex_2d-kernel02.png" width="400px" /><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org00ea9f2" class="outline-6">
+<h6 id="org00ea9f2">2D Simplexes</h6>
+<div class="outline-text-6" id="text-org00ea9f2">
+<p>
+2D Simplexes 是三角形。使用等边三角形网格可以平铺（tile）二维空间。我们可以将基于方块的方式转化为三角形 lattice 的方式。首先，将一个方块沿着 XZ 对角线进行缩放（这种变形操作被称为切变），得到一个菱形。再将该菱形沿着 XZ 对角线分割，得到两个朝向相反的三角形。下图展示了从正方形切变为菱形：<br />
+</p>
+
+<div id="org2829212" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_simplex_2d-skew01.png" alt="noise03_simplex_2d-skew01.png" width="250px" /><br />
+</p>
+</div>
+
+<p>
+上面切变将所有点沿着 XZ 对角线方向移动，并且移动的距离和被移动点的 XZ 坐标和有关系，假设移动距离为 v(x+z)。<br />
+</p>
+
+<p>
+从正方形切变为菱形：<br />
+</p>
+
+<div id="org78127ff" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_simplex_2d-skewMatrix0.png" alt="noise03_simplex_2d-skewMatrix0.png" width="450px" /><br />
+</p>
+</div>
+
+<p>
+从菱形切变为正方形：<br />
+</p>
+
+<div id="org5ba4e5c" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_simplex_2d-skewMatrix1.png" alt="noise03_simplex_2d-skewMatrix1.png" width="450px" /><br />
+</p>
+</div>
+</div>
+
+<ul class="org-ul">
+<li><a id="org6ff818b"></a>另一种切变<br />
+<div class="outline-text-7" id="text-org6ff818b">
+<p>
+下面文件可视化展示了另一种切变矩阵(切变后的菱形和正方形面积相等)：<br />
+</p>
+<p width="250px">
+<img src="./UnityCatLikeCoding/noise03_simplex_2d-skewMatrix.png" alt="noise03_simplex_2d-skewMatrix.png" width="250px" /><br />
+<a href="./UnityCatLikeCoding/noise03_simplex_2d-skewMatrix.ggb">./UnityCatLikeCoding/noise03_simplex_2d-skewMatrix.ggb</a><br />
+下图展示了从正方形切变为菱形的切变矩阵推导：<br />
+</p>
+
+<div id="orgcf75426" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_simplex_2d-skew02.png" alt="noise03_simplex_2d-skew02.png" width="450px" /><br />
+</p>
+</div>
+</div>
+</li>
+
+<li><a id="org763f0ed"></a>三角形 lattice<br />
+<div class="outline-text-7" id="text-org763f0ed">
+<p>
+Simplex2D 使用三角形 lattice，我们需要利用前面得出的 skew 变换将菱形变换为正方形，来构建三角形格子。这样可得到如下 2D Kernel 图形：<br />
+</p>
+
+<div id="org0b0ce10" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_simplex_2d_01.png" alt="noise03_simplex_2d_01.png" width="250px" /><br />
+</p>
+</div>
+
+<p>
+上面虽然构建出正确的菱形格子了，但是计算 Kernel 时使用的是切变为正方形的坐标，因此噪声值不连续。将坐标再变换回菱形后，得到如下 2D Kernel 图形:<br />
+</p>
+
+<div id="org87187e2" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_simplex_2d_02.png" alt="noise03_simplex_2d_02.png" width="250px" /><br />
+</p>
+</div>
+
+<p>
+从上图可以看出，Kernel 的影响范围过大了，这是因为三角形区域比正方形区域小很多。对于某个晶格点来说，衰减值应该该晶格点所对的边的中点处变为零。我们可以通过将 Kernel 的起始强度降低到 0.5 来做到这一点（因为，三角形的高的平方为 0.5，具体推导如下）。得到如下 2D Kernel 图形：<br />
+</p>
+
+<div id="org1b36a95" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_simplex_2d_03.png" alt="noise03_simplex_2d_03.png" width="650px" /><br />
+</p>
+</div>
+
+<p>
+上面将 Kernel 的起始强度降低为 0.5，导致最终计算出的 Kernel 值被减弱了 8 倍( f(0,0)=0.5^3=1/8 )。对最终 Kernel 值进行放大 8 被后得到如下 2D Kernal 图形：<br />
+</p>
+
+<div id="org733f54f" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_simplex_2d_04.png" alt="noise03_simplex_2d_04.png" width="250px" /><br />
+</p>
+</div>
+
+<p>
+由于 Simplex 2D 的三角形晶格比正方形面积小，Simplex 2D 噪声频率显得比基于正方形晶格的噪声要高。菱形面积比正方形面积缩小√3，因此将频率缩小 1/√3，可以使两者频率看起来近似。<br />
+</p>
+
+<div id="org875e81a" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_simplex_2d_05.png" alt="noise03_simplex_2d_05.png" width="250px" /><br />
+</p>
+</div>
+
+<p>
+下面使 Simplex 2D 噪声和常规值噪声的对比：<br />
+</p>
+
+<div id="org73a0467" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_simplex_2d_compare01.png" alt="noise03_simplex_2d_compare01.png" width="500px" /><br />
+</p>
+</div>
+
+
+<div id="org001fcee" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_simplex_2d_compare02.png" alt="noise03_simplex_2d_compare02.png" width="500px" /><br />
+</p>
+</div>
+
+<p>
+Simplex 2D 噪声将噪声模式变形为类似蜂巢格子的形状，并且 Simplex 2D 噪声整体更弱一些。模式上的差别在 Turbulence 变体中更加明显。<br />
+</p>
+</div>
+</li>
+</ul>
+</div>
+
+<div id="outline-container-org840b8bc" class="outline-6">
+<h6 id="org840b8bc">Only Three Kernels</h6>
+<div class="outline-text-6" id="text-org840b8bc">
+<p>
+上面计算 Simplex 2D 噪声时，使用了 4 个 Kernels，实际上每个三角形只需要 3 个 Kernels 就够了。Kernel00 Kernel11 是组成菱形的两个三角形都使用的 Kernel，Kernel01 和 Kernel10，则只被用于其中一个三角形。<br />
+</p>
+
+
+<div id="org3eba3f1" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_simplex_2d_kernel-select.png" alt="noise03_simplex_2d_kernel-select.png" width="250px" /><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgce751fd" class="outline-6">
+<h6 id="orgce751fd">3D Simplexes</h6>
+<div class="outline-text-6" id="text-orgce751fd">
+<p>
+生成 3D Simplex lattice 的方式和生成 2D Simplex lattice 类似。对比如下:<br />
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">2D Simplex</th>
+<th scope="col" class="org-left">3D Simplex</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">将正方形变为菱形(rhombohedron)</td>
+<td class="org-left">将立方体变为菱面体(rhombohedron)</td>
+</tr>
+
+<tr>
+<td class="org-left">将 1 个正方形划分为 2 个三角形</td>
+<td class="org-left">将 1 个正方体划分为 6 个四面体(tetrahedra)</td>
+</tr>
+</tbody>
+</table>
+
+
+<div id="org2614bbf" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_simplex_3d_skew.png" alt="noise03_simplex_3d_skew.png" width="550px" /><br />
+</p>
+</div>
+
+<p>
+从立方体变为菱面体：<br />
+</p>
+
+<div id="orgf3cb7f9" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_simplex_3d_skew01.png" alt="noise03_simplex_3d_skew01.png" width="550px" /><br />
+</p>
+</div>
+
+<p>
+从菱面体变为立方体：<br />
+</p>
+
+<div id="orgfbe5e15" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_simplex_3d_skew02.png" alt="noise03_simplex_3d_skew02.png" width="550px" /><br />
+</p>
+</div>
+
+<p>
+菱面体体积比正方体体积缩小 1/2。下面文件展示了菱面体体积求解过程。需要注意的是原文中是通过计算 XZ 直线上两个晶格点的距离来推算缩放系数的，其计算的缩放系数为 0.6，这可以保证 2D 形状下，Simplexes2D 和 Simplexes3D 的频率一致。<br />
+<a href="./UnityCatLikeCoding/noise03_simplex_3d_tetrahedraVolume.ggb">./UnityCatLikeCoding/noise03_simplex_3d_tetrahedraVolume.ggb</a><br />
+</p>
+</div>
+</div>
+<div id="outline-container-orge096c92" class="outline-6">
+<h6 id="orge096c92">Four Kernels</h6>
+<div class="outline-text-6" id="text-orge096c92">
+<p>
+立方体有 8 个顶点，对应 8 个 Kernels，而四面体只有 4 个顶点，因此只需要在 8 个 Kernels 中选择 4 个 Kernels 即可。其中(0,0,0) 和 (1,1,1) 这两个顶点 6 个四面体都会用到，只需要根据当前点坐标来选择另外两个顶点就可以了。下图展示了，选择另外两个顶点的方法：<br />
+</p>
+
+<div id="org247377f" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_simplex_3d_kernels-select.png" alt="noise03_simplex_3d_kernels-select.png" width="550px" /><br />
+</p>
+</div>
+
+<p>
+Simplexes 3D Kernels 有明显的对角线模式（Pattern），如下图。这是由于 3D 切变导致的，平面上样本点到晶格点的 Y 维度距离在不断变化。<br />
+</p>
+<p width="250px">
+<img src="./UnityCatLikeCoding/noise03_simplex_3d_kernel-pattern.png" alt="noise03_simplex_3d_kernel-pattern.png" width="250px" /><br />
+Pattern 的形状依赖于 2D 切片的朝向，如下分别展示了绕 XYZ 旋转 45 度得到的 Kernels 的 Pattern：<br />
+</p>
+<p width="550px">
+<img src="./UnityCatLikeCoding/noise03_simplex_3d_kernel-pattern1.png" alt="noise03_simplex_3d_kernel-pattern1.png" width="550px" /><br />
+下图为同时绕 XY 旋转 45 度得到的 Kernels 的 Pattern：<br />
+</p>
+
+<div id="org9789d85" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_simplex_3d_kernel-pattern2.png" alt="noise03_simplex_3d_kernel-pattern2.png" width="250px" /><br />
+</p>
+</div>
+
+<p>
+下图为 3D Simplex value Noise：<br />
+</p>
+
+<div id="org364951a" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_simplex_3d_noise01.png" alt="noise03_simplex_3d_noise01.png" width="500px" /><br />
+</p>
+</div>
+
+<p>
+下图为 3D Simplex Value Noise 和 Value Noise 的对比：<br />
+</p>
+
+<div id="orge368291" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_simplex_3d_noise02.png" alt="noise03_simplex_3d_noise02.png" width="500px" /><br />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org334291b" class="outline-5">
+<h5 id="org334291b">Simplex Gradient Noise</h5>
+<div class="outline-text-5" id="text-org334291b">
+</div>
+<div id="outline-container-org8be4129" class="outline-6">
+<h6 id="org8be4129">Base Gradients</h6>
+<div class="outline-text-6" id="text-org8be4129">
+<p>
+在 Perlin 噪声中，我们是基于正方形和八面体来生成梯度向量的，这种方式适用于正方形和立方体的格子空间。对于单形噪声来说，其格子空间是非轴对齐的，因此需要使用圆形和球体来生成梯度向量。<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">BaseGradients</span>
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#29983;&#25104;1&#32500;&#20540;</span>
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #bc6ec5; font-weight: bold;">Line</span>(<span style="color: #ce537a; font-weight: bold;">SmallXXHash4</span> <span style="color: #7590db;">hash</span>, <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">x</span>)
+    {
+        <span style="color: #4f97d7; font-weight: bold;">return</span> (1 + hash.Floats01A) * <span style="color: #4f97d7; font-weight: bold;">select</span>(-x, <span style="color: #ce537a; font-weight: bold;">x</span>, ((<span style="color: #ce537a; font-weight: bold;">uint4</span>)hash&amp;1 &lt;&lt; 8) == 0);
+    }
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#29983;&#25104;2&#32500;&#21521;&#37327;</span>
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">float4x2</span> <span style="color: #bc6ec5; font-weight: bold;">SquareVectors</span>(<span style="color: #ce537a; font-weight: bold;">SmallXXHash4</span> <span style="color: #7590db;">hash</span>)
+    {
+        <span style="color: #ce537a; font-weight: bold;">float4x2</span> <span style="color: #7590db;">v</span>;
+        v.c0 = hash.Floats01A * 2f - 1f;
+        v.c1 = 0.5f - <span style="color: #bc6ec5; font-weight: bold;">abs</span>(v.<span style="color: #ce537a; font-weight: bold;">c0</span>);
+        v.c0 -= <span style="color: #bc6ec5; font-weight: bold;">floor</span>(v.c0 + 0.5f);
+        <span style="color: #4f97d7; font-weight: bold;">return</span> v;
+    }
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#29983;&#25104;3&#32500;&#21521;&#37327;</span>
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">float4x3</span> <span style="color: #bc6ec5; font-weight: bold;">OctahedronVectors</span>(<span style="color: #ce537a; font-weight: bold;">SmallXXHash4</span> <span style="color: #7590db;">hash</span>)
+    {
+        <span style="color: #ce537a; font-weight: bold;">float4x3</span> <span style="color: #7590db;">g</span>;
+        g.c0 = hash.Floats01A * 2f - 1f;
+        g.c1 = hash.Floats01D * 2f - 1f;
+        g.c2 = 1f - <span style="color: #bc6ec5; font-weight: bold;">abs</span>(g.<span style="color: #ce537a; font-weight: bold;">c0</span>) - <span style="color: #bc6ec5; font-weight: bold;">abs</span>(g.<span style="color: #ce537a; font-weight: bold;">c1</span>);
+        <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">offset</span> = <span style="color: #bc6ec5; font-weight: bold;">max</span>(-g.c2, 0f);
+        g.c0 += <span style="color: #4f97d7; font-weight: bold;">select</span>(-offset, <span style="color: #ce537a; font-weight: bold;">offset</span>, g.c0 &lt; 0f);
+        g.c1 += <span style="color: #4f97d7; font-weight: bold;">select</span>(-offset, <span style="color: #ce537a; font-weight: bold;">offset</span>, g.c1 &lt; 0f);
+        <span style="color: #4f97d7; font-weight: bold;">return</span> g;
+    }
+
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #bc6ec5; font-weight: bold;">Square</span>(<span style="color: #ce537a; font-weight: bold;">SmallXXHash4</span> <span style="color: #7590db;">hash</span>, <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">x</span>, <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">y</span>)
+    {
+        <span style="color: #ce537a; font-weight: bold;">float4x2</span> <span style="color: #7590db;">v</span> = <span style="color: #bc6ec5; font-weight: bold;">SquareVectors</span>(<span style="color: #ce537a; font-weight: bold;">hash</span>);
+        <span style="color: #4f97d7; font-weight: bold;">return</span> v.c0 * x + v.c1 * y;
+    }
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">x, y &#36755;&#20837;&#21487;&#20197;&#26159;&#20219;&#20309;&#24418;&#29366;&#30340;&#26684;&#23376;&#65292;&#22240;&#20026;&#36825;&#37324;&#23545;&#26799;&#24230;&#21521;&#37327;&#36827;&#34892;&#20102;&#24402;&#19968;&#21270;</span>
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #bc6ec5; font-weight: bold;">Circle</span>(<span style="color: #ce537a; font-weight: bold;">SmallXXHash4</span> <span style="color: #7590db;">hash</span>, <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">x</span>, <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">y</span>)
+    {
+        <span style="color: #ce537a; font-weight: bold;">float4x2</span> <span style="color: #7590db;">v</span> = <span style="color: #bc6ec5; font-weight: bold;">SquareVectors</span>(<span style="color: #ce537a; font-weight: bold;">hash</span>);
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">* rsqrt(v.c0 * v.c0 + v.c1 * v.c1) &#23601;&#26159;&#23545;2&#32500;&#21521;&#37327;&#36827;&#34892;&#24402;&#19968;&#21270;</span>
+        <span style="color: #4f97d7; font-weight: bold;">return</span> (v.c0 * x + v.c1 * y) * <span style="color: #bc6ec5; font-weight: bold;">rsqrt</span>(v.c0 * v.c0 + v.c1 * v.c1);
+    }
+
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #bc6ec5; font-weight: bold;">Octahedron</span>(<span style="color: #ce537a; font-weight: bold;">SmallXXHash4</span> <span style="color: #7590db;">hash</span>, <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">x</span>, <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">y</span>, <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">z</span>)
+    {
+        <span style="color: #ce537a; font-weight: bold;">float4x3</span> <span style="color: #7590db;">v</span> = <span style="color: #bc6ec5; font-weight: bold;">OctahedronVectors</span>(<span style="color: #ce537a; font-weight: bold;">hash</span>);
+        <span style="color: #4f97d7; font-weight: bold;">return</span> v.c0 * x + v.c1 * y + v.c2 * z;
+    }
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">x, y, z &#36755;&#20837;&#21487;&#20197;&#26159;&#20219;&#20309;&#24418;&#29366;&#30340;&#26684;&#23376;&#65292;&#22240;&#20026;&#36825;&#37324;&#23545;&#26799;&#24230;&#21521;&#37327;&#36827;&#34892;&#20102;&#24402;&#19968;&#21270;</span>
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #bc6ec5; font-weight: bold;">Sphere</span>(<span style="color: #ce537a; font-weight: bold;">SmallXXHash4</span> <span style="color: #7590db;">hash</span>, <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">x</span>, <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">y</span>, <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">z</span>)
+    {
+        <span style="color: #ce537a; font-weight: bold;">float4x3</span> <span style="color: #7590db;">v</span> = <span style="color: #bc6ec5; font-weight: bold;">OctahedronVectors</span>(<span style="color: #ce537a; font-weight: bold;">hash</span>);
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">* rsqrt(v.c0 * v.c0 + v.c1 * v.c1 + v.c2 * v.c2) &#23601;&#26159;&#23545;3&#32500;&#21521;&#37327;&#36827;&#34892;&#24402;&#19968;&#21270;</span>
+        <span style="color: #4f97d7; font-weight: bold;">return</span> (v.c0 * x + v.c1 * y + v.c2 * z) * <span style="color: #bc6ec5; font-weight: bold;">rsqrt</span>(v.c0 * v.c0 + v.c1 * v.c1 + v.c2 * v.c2);
+    }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgb4215fb" class="outline-6">
+<h6 id="orgb4215fb">1D Simplex Noise</h6>
+<div class="outline-text-6" id="text-orgb4215fb">
+<p>
+1D Simplex Noise 值归一化：<br />
+</p>
+
+<div id="org180fe86" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_simplex_1d_noise_normalize.png" alt="noise03_simplex_1d_noise_normalize.png" width="450px" /><br />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org1aa9a6a" class="outline-6">
+<h6 id="org1aa9a6a">2D Simplex Noise</h6>
+<div class="outline-text-6" id="text-org1aa9a6a">
+<p>
+2D 情况下，有两个最大值候选: 边的中点和三角形的中心<br />
+</p>
+
+
+<div id="orgd5d9dea" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_simplex_2d_noise_normalize.png" alt="noise03_simplex_2d_noise_normalize.png" width="450px" /><br />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgd9652bb" class="outline-6">
+<h6 id="orgd9652bb">3D Simplex Noise</h6>
+<div class="outline-text-6" id="text-orgd9652bb">
+
+<div id="org9d410e4" class="figure">
+<p><img src="./UnityCatLikeCoding/noise03_simplex_3d_noise_normalize.png" alt="noise03_simplex_3d_noise_normalize.png" width="450px" /><br />
+</p>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org800df77" class="outline-5">
+<h5 id="org800df77">参考资料</h5>
+<div class="outline-text-5" id="text-org800df77">
+<ul class="org-ul">
+<li>单形 <a href="https://zhuanlan.zhihu.com/p/360696236">https://zhuanlan.zhihu.com/p/360696236</a> 有道云笔记备份<br /></li>
+<li>多胞形 polytope <a href="https://baike.baidu.com/item/%E5%A4%9A%E8%83%9E%E5%BD%A2">https://baike.baidu.com/item/%E5%A4%9A%E8%83%9E%E5%BD%A2</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<div id="vssue"></div>
+        <link rel="stylesheet" href="https://unpkg.com/vssue/dist/vssue.min.css">
+        <script src="https://unpkg.com/vue@2.7.10/dist/vue.runtime.min.js"></script>
+        <script src="https://unpkg.com/vssue/dist/vssue.github.min.js"></script>
+        <script>
+          new Vue({
+            el: '#vssue',
+            render: h => h('Vssue', {
+              props: {
+                // 在这里设置当前页面对应的 Issue 标题
+                title: 'UnityCatLikeCoding-PseudorandomNoise',
+
+                // 在这里设置你使用的平台的 OAuth App 配置
+                options: {
+                    owner: 'wolfand11',
+                    repo: 'blog_comments',
+                    clientId: 'a02b49185d85859cb92c',
+                    clientSecret: '6f123085c6f1ce339e2517d24e5b099fa1dc9c85', // 只有在使用某些平台时需要
+                },
+              }
+            })
+          })
+        </script>
+</div>
+</body>
+</html>

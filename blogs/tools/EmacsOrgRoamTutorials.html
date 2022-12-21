@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2022-12-21 Wed 22:28 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>org-roam-tutorials</title>
+<meta name="generator" content="Org Mode" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+         <meta name="viewport" content="width=device-width, initial-scale=1" />
+         <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/worg_theme/css/worg.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/worg_theme/css/worg-zenburn.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/worg_theme/css/worg-classic.css" type="text/css" />
+         <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/blog-tools.js"></script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href=""> UP </a>
+ |
+ <a accesskey="H" href="https://wolfand11.gitee.io"> HOME </a>
+</div><div id="content" class="content">
+<h1 class="title">org-roam-tutorials</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#org2b11d6e">Org Roam Manual</a>
+<ul>
+<li><a href="#org3c09b44">Base</a>
+<ul>
+<li><a href="#org0f5fdab">setup</a></li>
+<li><a href="#org6d1e65d">create node</a>
+<ul>
+<li><a href="#org8cae7b3">Common methods</a></li>
+<li><a href="#orge445312">Creating a heading node</a></li>
+</ul>
+</li>
+<li><a href="#orgbbe559a">delete node</a></li>
+<li><a href="#orgfc19ca0">add node link</a>
+<ul>
+<li><a href="#org5a6aa24">auto</a></li>
+<li><a href="#orga535b9e">manual</a></li>
+</ul>
+</li>
+<li><a href="#org31a3705">自定义 Completions buffer 中 node 的显示</a></li>
+<li><a href="#org74a2815">node properties</a>
+<ul>
+<li><a href="#orgf1f8be7">standard org properties</a></li>
+<li><a href="#org07d067c">titles and aliases</a></li>
+<li><a href="#orgd85f3e4">tags</a></li>
+<li><a href="#orgfaa344f">refs</a></li>
+</ul>
+</li>
+<li><a href="#orgb77e86c">org roam buffer</a>
+<ul>
+<li><a href="#orgab69c21">激活 org-roam-buffer</a></li>
+<li><a href="#orgd0a04a4">org roam buffer 快捷键</a></li>
+<li><a href="#org577f419">配置 org roam buffer 的内容</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org632d82f">Org Roam UI</a>
+<ul>
+<li><a href="#org85c1522">setup</a></li>
+</ul>
+</li>
+<li><a href="#orge3fea92">Usage</a></li>
+<li><a href="#orgd91903a">参考链接</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org2b11d6e" class="outline-2">
+<h2 id="org2b11d6e">Org Roam Manual</h2>
+<div class="outline-text-2" id="text-org2b11d6e">
+</div>
+<div id="outline-container-org3c09b44" class="outline-3">
+<h3 id="org3c09b44">Base</h3>
+<div class="outline-text-3" id="text-org3c09b44">
+</div>
+<div id="outline-container-org0f5fdab" class="outline-4">
+<h4 id="org0f5fdab">setup</h4>
+<div class="outline-text-4" id="text-org0f5fdab">
+<p>
+设置 org-roam 的根目录, org-roam 会递归搜索该目录下的所有文件。
+</p>
+<div class="org-src-container">
+<pre class="src src-elisp">(<span style="color: #4f97d7; font-weight: bold;">setq</span> org-roam-directory (file-truename <span style="color: #2d9574;">"~/org-roam"</span>))
+</pre>
+</div>
+
+<p>
+开启 org-roam db 自动同步，从而保证 org-roam 缓存内容和文件修改的一致性。
+</p>
+<pre class="example" id="org597f3a4">
+M-x org-roam-db-autosync-mode
+</pre>
+</div>
+</div>
+
+<div id="outline-container-org6d1e65d" class="outline-4">
+<h4 id="org6d1e65d">create node</h4>
+<div class="outline-text-4" id="text-org6d1e65d">
+</div>
+<div id="outline-container-org8cae7b3" class="outline-5">
+<h5 id="org8cae7b3">Common methods</h5>
+<div class="outline-text-5" id="text-org8cae7b3">
+<p>
+org-roam-node-insert: 如果 Node 不存在则创建，并且在点插入一个到新 node 的链接
+org-roam-node-find: 如果 Node 不存在则创建，并且会访问该 node
+org-roam-capture: 如果 Node 不存在则创建，完成后恢复当前窗口配置
+</p>
+</div>
+</div>
+
+<div id="outline-container-orge445312" class="outline-5">
+<h5 id="orge445312">Creating a heading node</h5>
+<div class="outline-text-5" id="text-orge445312">
+<pre class="example" id="orgc664af2">
+执行下面命令可以为 Heading 添加ID
+
+M-x org-id-get-create
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgbbe559a" class="outline-4">
+<h4 id="orgbbe559a">delete node</h4>
+<div class="outline-text-4" id="text-orgbbe559a">
+<p>
+只需要删除 node 对应的文件或 headline, 然后执行 M-x org-roam-db-sync 命令
+</p>
+
+<ul class="org-ul">
+<li>how to delete a node <a href="https://www.reddit.com/r/OrgRoam/comments/smqq7t/how_to_delete_a_node/">https://www.reddit.com/r/OrgRoam/comments/smqq7t/how_to_delete_a_node/</a></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgfc19ca0" class="outline-4">
+<h4 id="orgfc19ca0">add node link</h4>
+<div class="outline-text-4" id="text-orgfc19ca0">
+</div>
+<div id="outline-container-org5a6aa24" class="outline-5">
+<h5 id="org5a6aa24">auto</h5>
+<div class="outline-text-5" id="text-org5a6aa24">
+<p>
+org-roam-node-insert 会列出所有 node，选择你要链接的 node，就会自动添加链接。如下：
+</p>
+
+<pre class="example" id="orgf35e615">
+[[id:5981fab1-59a5-4cec-b1f5-89f3a69de7da][emacs]
+</pre>
+</div>
+</div>
+<div id="outline-container-orga535b9e" class="outline-5">
+<h5 id="orga535b9e">manual</h5>
+<div class="outline-text-5" id="text-orga535b9e">
+<pre class="example" id="org43bd93f">
+[[roam:emacs][emacs]]
+org-roam会将上面链接自动转化为下面链接
+[[id:5981fab1-59a5-4cec-b1f5-89f3a69de7da][emacs]
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org31a3705" class="outline-4">
+<h4 id="org31a3705">自定义 Completions buffer 中 node 的显示</h4>
+<div class="outline-text-4" id="text-org31a3705">
+<p>
+org-roam-node-display-template 可以控制 node 的展示格式.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-elisp"><span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">&#26174;&#31034;node &#30340;tags, tags &#23383;&#31526;&#25968;&#37327;&#26368;&#39640;&#20026;100&#20010;&#23383;&#31526;</span>
+(<span style="color: #4f97d7; font-weight: bold;">setq</span> org-roam-node-display-template
+      (concat <span style="color: #2d9574;">"${title:*} "</span>
+              (propertize <span style="color: #2d9574;">"${tags:100}"</span> 'face 'org-tag)))
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org74a2815" class="outline-4">
+<h4 id="org74a2815">node properties</h4>
+<div class="outline-text-4" id="text-org74a2815">
+</div>
+<div id="outline-container-orgf1f8be7" class="outline-5">
+<h5 id="orgf1f8be7">standard org properties</h5>
+<div class="outline-text-5" id="text-orgf1f8be7">
+<p>
+org-roam 会缓存大部分标准的 org 属性。如下面的属性列表：
+</p>
+
+<p>
+outline level
+todo state
+priority
+scheduled
+deadline
+tags
+</p>
+</div>
+</div>
+<div id="outline-container-org07d067c" class="outline-5">
+<h5 id="org07d067c">titles and aliases</h5>
+<div class="outline-text-5" id="text-org07d067c">
+<p>
+每个 node 有单独一个 title。对于 file node 来说，通过 “#+title” 属性来指定。对于 headline node 来说，就是其文本内容。
+</p>
+
+<p>
+node 可以有多个别名(aliases). 如下：
+</p>
+<pre class="example" id="org83e76d2">
+~*~ Artificial Intelligence
+
+:PROPERTIES:
+:ROAM_ALIASES: AI
+:END:
+</pre>
+
+<p>
+org-roam-alias-add     添加 alias 命令
+org-roam-alias-remove  删除 alias 命令
+</p>
+</div>
+</div>
+<div id="outline-container-orgd85f3e4" class="outline-5">
+<h5 id="orgd85f3e4">tags</h5>
+<div class="outline-text-5" id="text-orgd85f3e4">
+<p>
+file node 的 tags 来自于 ‘#+filetags’
+headline 的 tags 就是常规的 org tags
+</p>
+
+<p>
+headline node 会继承 file node 的 tags。
+</p>
+</div>
+</div>
+<div id="outline-container-orgfaa344f" class="outline-5">
+<h5 id="orgfaa344f">refs</h5>
+<div class="outline-text-5" id="text-orgfaa344f">
+<p>
+refs 是 node 的唯一标识，可以将 refs 当作 node 的多个关键字。这些 keys 允许对该 key 的引用显示在 Org-roam 缓冲区内。例如，一个网站的节点可以使用 URL 作为 ref，而一篇论文的节点可以使用 Org-ref citation key。如下面，Google 网站节点使用 URL 作为 ref：
+</p>
+<pre class="example" id="orgc74ddd1">
+某篇文章中，
+~* Google
+:PROPERTIES:
+:ID:       xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+:ROAM_REFS: https://www.google.com/
+:END:
+
+另一篇文章中：
+[[https://www.google.com/][google website]]
+</pre>
+
+<p>
+你可以给一个 node 指定多个 ref，例如，当你想让一个系列的多篇论文共享同一个注解，或者一篇文章同时有一个 citation key and a URL。
+</p>
+
+<p>
+org-roam-ref-add     为当前 node 添加 ref
+org-roam-ref-remove  为当前 node 删除 ref
+</p>
+
+<p>
+Tips: 需要先为 node 添加 id，然后再执行上面命令，才能为当前鼠标所在的 node 添加 ref。
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgb77e86c" class="outline-4">
+<h4 id="orgb77e86c">org roam buffer</h4>
+<div class="outline-text-4" id="text-orgb77e86c">
+</div>
+<div id="outline-container-orgab69c21" class="outline-5">
+<h5 id="orgab69c21">激活 org-roam-buffer</h5>
+<div class="outline-text-5" id="text-orgab69c21">
+<p>
+执行 org-roam-buffer-toggle 命令，会打开 org-roam-buffer。其中会展示当前文件对应的 node 信息。
+</p>
+
+<p>
+org-roam-buffer-toggle: 开启一个当前 node 对应的 Org-roam buffer. 当前对应的 node 变化时，该 buffer 内容会变化。
+org-roam-buffer-display-dedicated: 为一个特定的 node 开启一个 org roam buffer, 并不访问其对应的文件. 可以有多个这样的专有 buffer，其内容不会随当前 node 的变化而变化。
+</p>
+</div>
+</div>
+<div id="outline-container-orgd0a04a4" class="outline-5">
+<h5 id="orgd0a04a4">org roam buffer 快捷键</h5>
+<div class="outline-text-5" id="text-orgd0a04a4">
+<p>
+M-{N}: magit-section-show-level-{N}-all
+n:     magit-section-forward
+&lt;TAB&gt;: magit-section-toggle
+&lt;RET&gt;: org-roam-buffer-visit-thing
+r:     org-roam-buffer-refresh
+</p>
+</div>
+</div>
+<div id="outline-container-org577f419" class="outline-5">
+<h5 id="org577f419">配置 org roam buffer 的内容</h5>
+<div class="outline-text-5" id="text-org577f419">
+<p>
+org roam buffer 可以展示一下三类内容
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">section type</th>
+<th scope="col" class="org-left">description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">backlinks-section</td>
+<td class="org-left">链接到当前 node 的 node</td>
+</tr>
+
+<tr>
+<td class="org-left">reflinks-section</td>
+<td class="org-left">链接到当前 node 的 reference link node</td>
+</tr>
+
+<tr>
+<td class="org-left">unlinked-references-section</td>
+<td class="org-left">和当前节点的 title 或 alias 相匹配但是并没有通过 reference link node 链接到当前 node</td>
+</tr>
+</tbody>
+</table>
+
+<div class="org-src-container">
+<pre class="src src-elisp">(<span style="color: #4f97d7; font-weight: bold;">setq</span> org-roam-mode-sections
+      (list #'org-roam-backlinks-section
+            #'org-roam-reflinks-section
+            <span style="color: #2aa1ae; background-color: #292e34;">;; </span><span style="color: #2aa1ae; background-color: #292e34;">#'org-roam-unlinked-references-section</span>
+            ))
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org632d82f" class="outline-3">
+<h3 id="org632d82f">Org Roam UI</h3>
+<div class="outline-text-3" id="text-org632d82f">
+</div>
+<div id="outline-container-org85c1522" class="outline-4">
+<h4 id="org85c1522">setup</h4>
+<div class="outline-text-4" id="text-org85c1522">
+<div class="org-src-container">
+<pre class="src src-elisp">
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orge3fea92" class="outline-3">
+<h3 id="orge3fea92">Usage</h3>
+<div class="outline-text-3" id="text-orge3fea92">
+<p>
+使用 org roam 的目的是让 blog 能互相关联起来，形成知识网络。并且利用 org roam 提供的工具可以快速可视化这个知识网络。
+</p>
+
+<p>
+当前记录笔记时，会将相关的内容都放到一个 org 文件中，导致单个 org 文件非常大，之后可以采用小文件方式来记录笔记，笔记通过 link 关联起来。下面以 unitycatlikecoding 系列笔记来说明。unitycatlikecoding 目前为一个非常大的 org 文件，可以将 unitycatlikecoding 系列的笔记类似原教程的组织方式拆分为多个主题，每个主题一个 org 文件，并按照下面方式来组织：
+</p>
+<ol class="org-ol">
+<li>利用 tag 组织。这些 org 文件都分配 unitycatlikecoding tag，这样就可以利用该 tag 筛选出所有 unitycatlikecoding 相关的笔记。</li>
+<li>利用 link 组织。有些 org 之间有相同的内容，可以通过 link 索引（为了让 org roam 识别这些关系，需要将索引的节点转化为 node）。</li>
+</ol>
+
+<p>
+后续记录 gpu gem 笔记，gpu pro 笔记，都可以每一篇文章单独一个 org 文件。
+</p>
+</div>
+</div>
+<div id="outline-container-orgd91903a" class="outline-3">
+<h3 id="orgd91903a">参考链接</h3>
+<div class="outline-text-3" id="text-orgd91903a">
+<ul class="org-ul">
+<li><a href="https://www.orgroam.com/manual.html">https://www.orgroam.com/manual.html</a></li>
+<li><a href="https://www.yanboyang.com/orgroam/">https://www.yanboyang.com/orgroam/</a></li>
+<li><a href="https://jethrokuan.github.io/org-roam-guide/">https://jethrokuan.github.io/org-roam-guide/</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<div id="vssue"></div>
+        <link rel="stylesheet" href="https://unpkg.com/vssue/dist/vssue.min.css">
+        <script src="https://unpkg.com/vue@2.7.10/dist/vue.runtime.min.js"></script>
+        <script src="https://unpkg.com/vssue/dist/vssue.github.min.js"></script>
+        <script>
+          new Vue({
+            el: '#vssue',
+            render: h => h('Vssue', {
+              props: {
+                // 在这里设置当前页面对应的 Issue 标题
+                title: 'org-roam-tutorials',
+
+                // 在这里设置你使用的平台的 OAuth App 配置
+                options: {
+                    owner: 'wolfand11',
+                    repo: 'blog_comments',
+                    clientId: 'a02b49185d85859cb92c',
+                    clientSecret: '6f123085c6f1ce339e2517d24e5b099fa1dc9c85', // 只有在使用某些平台时需要
+                },
+              }
+            })
+          })
+        </script>
+</div>
+</body>
+</html>

@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2022-11-12 Sat 13:10 -->
+<!-- 2022-12-21 Wed 22:27 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>URP</title>
@@ -48,84 +48,90 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org9921d5c">URP</a>
+<li><a href="#orgb4cf694">URP</a>
 <ul>
-<li><a href="#org0ee373f">Base</a>
+<li><a href="#orge739f4f">Base</a>
 <ul>
-<li><a href="#orgbe0c1ba">源码分析</a></li>
-<li><a href="#orgfe6f60a">Native RenderPass</a></li>
-<li><a href="#org9d010ab">URPAsset</a>
+<li><a href="#orgc61ef84">源码分析</a></li>
+<li><a href="#org9804c6b">Native RenderPass</a></li>
+<li><a href="#orgb2a5e9a">URPAsset</a>
 <ul>
-<li><a href="#org50fac3c">Runtime 修改 URPAsset 设置</a></li>
+<li><a href="#orge9dc466">Runtime 修改 URPAsset 设置</a></li>
 </ul>
 </li>
-<li><a href="#org09a1198">RenderFeature</a>
+<li><a href="#org2d603a3">RenderFeature</a>
 <ul>
-<li><a href="#org86c9830">Disable/Enable RenderFeature Runtime</a></li>
-<li><a href="#orgb9525c1">Custom RenderFeature</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#org68babe1">Shader</a>
+<li><a href="#orgd81cff0">Disable/Enable RenderFeature Runtime</a></li>
+<li><a href="#org8eef992">Custom RenderFeature</a>
 <ul>
-<li><a href="#orgc366963">Lightmap 烘培</a></li>
-</ul>
-</li>
-<li><a href="#orgfa8079f">Misc</a>
-<ul>
-<li><a href="#orgd80a266">Upgrade Buildin Shader To URP</a>
-<ul>
-<li><a href="#org67a803f">Point Light Effect Error</a></li>
-<li><a href="#org979f7b6">Common</a></li>
-</ul>
-</li>
-<li><a href="#org539f871">Unity Buildin 和 URP 支持的 Feature 对比</a></li>
-<li><a href="#orgb3f942c">创建一个 Lit Shader Graph 默认文件，生成的 shader 代码</a></li>
-<li><a href="#orgce59cd2">URP Buildin GI 比较</a></li>
+<li><a href="#orgbc5acda">template</a></li>
+<li><a href="#orgc6893e0">kawase blur</a></li>
+<li><a href="#org1888f90">len flares</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#org18567f6">HDRP</a>
-<ul>
-<li><a href="#orgf29089c">Setup</a></li>
 </ul>
 </li>
-<li><a href="#orgc008d19">ERROR</a>
+<li><a href="#orgfb7501c">Shader</a>
+<ul>
+<li><a href="#org79bb383">Lightmap 烘培</a></li>
+</ul>
+</li>
+<li><a href="#org6751e26">Misc</a>
+<ul>
+<li><a href="#org378ab87">Upgrade Buildin Shader To URP</a>
+<ul>
+<li><a href="#org01b19c4">Point Light Effect Error</a></li>
+<li><a href="#orgf8a9d15">Common</a></li>
+</ul>
+</li>
+<li><a href="#orge9f53ea">Unity Buildin 和 URP 支持的 Feature 对比</a></li>
+<li><a href="#org4682d78">创建一个 Lit Shader Graph 默认文件，生成的 shader 代码</a></li>
+<li><a href="#org96d2c06">URP Buildin GI 比较</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org7183aad">HDRP</a>
+<ul>
+<li><a href="#org40fe590">Setup</a></li>
+</ul>
+</li>
+<li><a href="#org9647968">ERROR</a>
 <ul>
 <li>
 <ul>
-<li><a href="#org6bf692f">Material 'Liquid' with Shader 'Custom/MyEffect/Unlit/Liquid' doesn't have a texture property '_MainTex' UnityEngine.GUIUtility:ProcessEvent (int,intptr,bool&amp;)</a></li>
+<li><a href="#org075b550">Material 'Liquid' with Shader 'Custom/MyEffect/Unlit/Liquid' doesn't have a texture property '_MainTex' UnityEngine.GUIUtility:ProcessEvent (int,intptr,bool&amp;)</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#org5ae274f">参考资料</a></li>
+<li><a href="#orgf43c405">参考资料</a></li>
 </ul>
 </div>
 </div>
 <p>
 URP note.<br />
 </p>
-<div class="HTML" id="org8d64e31">
+<div class="HTML" id="orgedbfcd2">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
 
 </div>
 
-<div id="outline-container-org9921d5c" class="outline-2">
-<h2 id="org9921d5c">URP</h2>
-<div class="outline-text-2" id="text-org9921d5c">
+<div id="outline-container-orgb4cf694" class="outline-2">
+<h2 id="orgb4cf694">URP</h2>
+<div class="outline-text-2" id="text-orgb4cf694">
 </div>
-<div id="outline-container-org0ee373f" class="outline-3">
-<h3 id="org0ee373f">Base</h3>
-<div class="outline-text-3" id="text-org0ee373f">
+<div id="outline-container-orge739f4f" class="outline-3">
+<h3 id="orge739f4f">Base</h3>
+<div class="outline-text-3" id="text-orge739f4f">
 </div>
-<div id="outline-container-orgbe0c1ba" class="outline-4">
-<h4 id="orgbe0c1ba">源码分析</h4>
-<div class="outline-text-4" id="text-orgbe0c1ba">
+<div id="outline-container-orgc61ef84" class="outline-4">
+<h4 id="orgc61ef84">源码分析</h4>
+<div class="outline-text-4" id="text-orgc61ef84">
 <p>
 <a href="./URP/Unity URP.xmind">./URP/Unity URP.xmind</a><br />
 </p>
@@ -139,22 +145,22 @@ URP 12.1.6 版本中 ForwardRenderer 变为了 UniversalRenderer<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-orgfe6f60a" class="outline-4">
-<h4 id="orgfe6f60a">Native RenderPass</h4>
-<div class="outline-text-4" id="text-orgfe6f60a">
+<div id="outline-container-org9804c6b" class="outline-4">
+<h4 id="org9804c6b">Native RenderPass</h4>
+<div class="outline-text-4" id="text-org9804c6b">
 <ul class="org-ul">
 <li><a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@13.1/manual/urp-universal-renderer.html">https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@13.1/manual/urp-universal-renderer.html</a><br /></li>
 <li><a href="https://forum.unity.com/threads/what-is-the-issue-with-native-renderpass-and-xr.1141285/">https://forum.unity.com/threads/what-is-the-issue-with-native-renderpass-and-xr.1141285/</a><br /></li>
 </ul>
 </div>
 </div>
-<div id="outline-container-org9d010ab" class="outline-4">
-<h4 id="org9d010ab">URPAsset</h4>
-<div class="outline-text-4" id="text-org9d010ab">
+<div id="outline-container-orgb2a5e9a" class="outline-4">
+<h4 id="orgb2a5e9a">URPAsset</h4>
+<div class="outline-text-4" id="text-orgb2a5e9a">
 </div>
-<div id="outline-container-org50fac3c" class="outline-5">
-<h5 id="org50fac3c">Runtime 修改 URPAsset 设置</h5>
-<div class="outline-text-5" id="text-org50fac3c">
+<div id="outline-container-orge9dc466" class="outline-5">
+<h5 id="orge9dc466">Runtime 修改 URPAsset 设置</h5>
+<div class="outline-text-5" id="text-orge9dc466">
 <div class="org-src-container">
 <pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">System</span>.<span style="color: #7590db;">Collections</span>;
 <span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">System</span>.<span style="color: #7590db;">Collections</span>.<span style="color: #7590db;">Generic</span>;
@@ -192,7 +198,7 @@ URP 12.1.6 版本中 ForwardRenderer 变为了 UniversalRenderer<br />
 
         <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #a45bad;">null</span>;
     }
-    
+
     <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">ScriptableRendererFeature</span> <span style="color: #bc6ec5; font-weight: bold;">SetRenderFeatureEnable</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt;(<span style="color: #4f97d7; font-weight: bold;">this</span> <span style="color: #ce537a; font-weight: bold;">UniversalRenderPipelineAsset</span> <span style="color: #7590db;">asset</span>, <span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #7590db;">name</span>, <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #7590db;">enable</span>) <span style="color: #4f97d7; font-weight: bold;">where</span> T : ScriptableRendererFeature
     {
         <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">feature</span> = <span style="color: #bc6ec5; font-weight: bold;">GetRenderFeature</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt;(<span style="color: #ce537a; font-weight: bold;">asset</span>, <span style="color: #ce537a; font-weight: bold;">name</span>);
@@ -230,13 +236,13 @@ URP 12.1.6 版本中 ForwardRenderer 变为了 UniversalRenderer<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org09a1198" class="outline-4">
-<h4 id="org09a1198">RenderFeature</h4>
-<div class="outline-text-4" id="text-org09a1198">
+<div id="outline-container-org2d603a3" class="outline-4">
+<h4 id="org2d603a3">RenderFeature</h4>
+<div class="outline-text-4" id="text-org2d603a3">
 </div>
-<div id="outline-container-org86c9830" class="outline-5">
-<h5 id="org86c9830">Disable/Enable RenderFeature Runtime</h5>
-<div class="outline-text-5" id="text-org86c9830">
+<div id="outline-container-orgd81cff0" class="outline-5">
+<h5 id="orgd81cff0">Disable/Enable RenderFeature Runtime</h5>
+<div class="outline-text-5" id="text-orgd81cff0">
 <div class="org-src-container">
 <pre class="src src-csharp">screenShotRendererFeature.<span style="color: #bc6ec5; font-weight: bold;">SetActive</span>(<span style="color: #ce537a; font-weight: bold;">enableSSRF</span>);
 </pre>
@@ -247,13 +253,19 @@ URP 12.1.6 版本中 ForwardRenderer 变为了 UniversalRenderer<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-orgb9525c1" class="outline-5">
-<h5 id="orgb9525c1">Custom RenderFeature</h5>
-<div class="outline-text-5" id="text-orgb9525c1">
+<div id="outline-container-org8eef992" class="outline-5">
+<h5 id="org8eef992">Custom RenderFeature</h5>
+<div class="outline-text-5" id="text-org8eef992">
+</div>
+<div id="outline-container-orgbc5acda" class="outline-6">
+<h6 id="orgbc5acda">template</h6>
+<div class="outline-text-6" id="text-orgbc5acda">
 <div class="org-src-container">
 <pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">UnityEngine</span>;
 <span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">UnityEngine</span>.<span style="color: #7590db;">Rendering</span>;
-<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">UnityEngine</span>.<span style="color: #7590db;">Rendering</span>.<span style="color: #7590db;">LWRP</span>;
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">old version namespace</span>
+<span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">using UnityEngine.Rendering.LWRP;</span>
+<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">UnityEngine</span>.<span style="color: #7590db;">Rendering</span>.<span style="color: #7590db;">Universal</span>;
 
 <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">CustomRenderPassFeature</span> : <span style="color: #ce537a; font-weight: bold;">ScriptableRendererFeature</span>
 {
@@ -269,9 +281,9 @@ URP 12.1.6 版本中 ForwardRenderer 变为了 UniversalRenderer<br />
         <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">You should never call CommandBuffer.SetRenderTarget. Instead call &lt;c&gt;ConfigureTarget&lt;/c&gt; and &lt;c&gt;ConfigureClear&lt;/c&gt;.</span>
         <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">OnCameraSetup</span>(<span style="color: #ce537a; font-weight: bold;">CommandBuffer</span> <span style="color: #7590db;">cmd</span>, <span style="color: #4f97d7; font-weight: bold;">ref</span> <span style="color: #ce537a; font-weight: bold;">RenderingData</span> <span style="color: #7590db;">renderingData</span>)
         {
-            
+
         }
-        
+
         <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">This method is called before executing the render pass.</span>
         <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">It can be used to configure render targets and their clear state. Also to create temporary render target textures.</span>
         <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">When empty this render pass will render to the active camera render target.</span>
@@ -325,41 +337,191 @@ URP 12.1.6 版本中 ForwardRenderer 变为了 UniversalRenderer<br />
 </div>
 </div>
 </div>
+<div id="outline-container-orgc6893e0" class="outline-6">
+<h6 id="orgc6893e0">kawase blur</h6>
+<div class="outline-text-6" id="text-orgc6893e0">
+<ul class="org-ul">
+<li><a href="https://github.com/sebastianhein/urp_kawase_blur/">https://github.com/sebastianhein/urp_kawase_blur/</a><br /></li>
+</ul>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">System</span>.<span style="color: #7590db;">Collections</span>.<span style="color: #7590db;">Generic</span>;
+<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">UnityEngine</span>;
+<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">UnityEngine</span>.<span style="color: #7590db;">Rendering</span>;
+<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">UnityEngine</span>.<span style="color: #7590db;">Rendering</span>.<span style="color: #7590db;">Universal</span>;
+
+<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">KawaseBlur</span> : <span style="color: #ce537a; font-weight: bold;">ScriptableRendererFeature</span>
+{
+    [System.Serializable]
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> KawaseBlurSettings
+    {
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">RenderPassEvent</span> <span style="color: #7590db;">renderPassEvent</span> = RenderPassEvent.AfterRenderingTransparents;
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">Material</span> <span style="color: #7590db;">blurMaterial</span> = <span style="color: #a45bad;">null</span>;
+
+        [<span style="color: #bc6ec5; font-weight: bold;">Range</span>(2,15)]
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">int</span> blurPasses = 1;
+
+        [<span style="color: #bc6ec5; font-weight: bold;">Range</span>(1,4)]
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">int</span> downsample = 1;
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #7590db;">copyToFramebuffer</span>;
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #7590db;">targetName</span> = <span style="color: #2d9574;">"_blurTexture"</span>;
+    }
+
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">KawaseBlurSettings</span> <span style="color: #7590db;">settings</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">KawaseBlurSettings</span>();
+
+    <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">CustomRenderPass</span> : <span style="color: #ce537a; font-weight: bold;">ScriptableRenderPass</span>
+    {
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">Material</span> <span style="color: #7590db;">blurMaterial</span>;
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">passes</span>;
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">downsample</span>;
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #7590db;">copyToFramebuffer</span>;
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #7590db;">targetName</span>;
+        <span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #7590db;">profilerTag</span>;
+
+        <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">tmpId1</span>;
+        <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">tmpId2</span>;
+
+        <span style="color: #ce537a; font-weight: bold;">RenderTargetIdentifier</span> <span style="color: #7590db;">tmpRT1</span>;
+        <span style="color: #ce537a; font-weight: bold;">RenderTargetIdentifier</span> <span style="color: #7590db;">tmpRT2</span>;
+
+        <span style="color: #4f97d7; font-weight: bold;">private</span> <span style="color: #ce537a; font-weight: bold;">RenderTargetIdentifier</span> <span style="color: #7590db;">source</span> { <span style="color: #4f97d7; font-weight: bold;">get</span>; <span style="color: #4f97d7; font-weight: bold;">set</span>; }
+
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Setup</span>(<span style="color: #ce537a; font-weight: bold;">RenderTargetIdentifier</span> <span style="color: #7590db;">source</span>) {
+            <span style="color: #4f97d7; font-weight: bold;">this</span>.source = source;
+        }
+
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #bc6ec5; font-weight: bold;">CustomRenderPass</span>(<span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #7590db;">profilerTag</span>)
+        {
+            <span style="color: #4f97d7; font-weight: bold;">this</span>.profilerTag = profilerTag;
+        }
+
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Configure</span>(<span style="color: #ce537a; font-weight: bold;">CommandBuffer</span> <span style="color: #7590db;">cmd</span>, <span style="color: #ce537a; font-weight: bold;">RenderTextureDescriptor</span> <span style="color: #7590db;">cameraTextureDescriptor</span>)
+        {
+            <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">width</span> = cameraTextureDescriptor.width / downsample;
+            <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">height</span> = cameraTextureDescriptor.height / downsample;
+
+            tmpId1 = Shader.<span style="color: #bc6ec5; font-weight: bold;">PropertyToID</span>(<span style="color: #2d9574;">"tmpBlurRT1"</span>);
+            tmpId2 = Shader.<span style="color: #bc6ec5; font-weight: bold;">PropertyToID</span>(<span style="color: #2d9574;">"tmpBlurRT2"</span>);
+            cmd.<span style="color: #bc6ec5; font-weight: bold;">GetTemporaryRT</span>(tmpId1, width, height, 0, FilterMode.Bilinear, RenderTextureFormat.ARGB32);
+            cmd.<span style="color: #bc6ec5; font-weight: bold;">GetTemporaryRT</span>(tmpId2, width, height, 0, FilterMode.Bilinear, RenderTextureFormat.ARGB32);
+
+            tmpRT1 = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">RenderTargetIdentifier</span>(tmpId1);
+            tmpRT2 = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">RenderTargetIdentifier</span>(tmpId2);
+
+            <span style="color: #bc6ec5; font-weight: bold;">ConfigureTarget</span>(tmpRT1);
+            <span style="color: #bc6ec5; font-weight: bold;">ConfigureTarget</span>(tmpRT2);
+        }
+
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Execute</span>(<span style="color: #ce537a; font-weight: bold;">ScriptableRenderContext</span> <span style="color: #7590db;">context</span>, <span style="color: #4f97d7; font-weight: bold;">ref</span> <span style="color: #ce537a; font-weight: bold;">RenderingData</span> <span style="color: #7590db;">renderingData</span>)
+        {
+            <span style="color: #ce537a; font-weight: bold;">CommandBuffer</span> <span style="color: #7590db;">cmd</span> = CommandBufferPool.<span style="color: #bc6ec5; font-weight: bold;">Get</span>(profilerTag);
+
+            <span style="color: #ce537a; font-weight: bold;">RenderTextureDescriptor</span> <span style="color: #7590db;">opaqueDesc</span> = renderingData.cameraData.cameraTargetDescriptor;
+            opaqueDesc.depthBufferBits = 0;
+
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">first pass</span>
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">cmd.GetTemporaryRT(tmpId1, opaqueDesc, FilterMode.Bilinear);</span>
+            cmd.<span style="color: #bc6ec5; font-weight: bold;">SetGlobalFloat</span>(<span style="color: #2d9574;">"_offset"</span>, 1.5f);
+            cmd.<span style="color: #bc6ec5; font-weight: bold;">Blit</span>(source, tmpRT1, blurMaterial);
+
+            <span style="color: #4f97d7; font-weight: bold;">for</span> (<span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">i</span>=1; i&lt;passes-1; i++) {
+                cmd.<span style="color: #bc6ec5; font-weight: bold;">SetGlobalFloat</span>(<span style="color: #2d9574;">"_offset"</span>, 0.5f + i);
+                cmd.<span style="color: #bc6ec5; font-weight: bold;">Blit</span>(tmpRT1, tmpRT2, blurMaterial);
+
+                <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">pingpong</span>
+                <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">rttmp</span> = tmpRT1;
+                tmpRT1 = tmpRT2;
+                tmpRT2 = rttmp;
+            }
+
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">final pass</span>
+            cmd.<span style="color: #bc6ec5; font-weight: bold;">SetGlobalFloat</span>(<span style="color: #2d9574;">"_offset"</span>, 0.5f + passes - 1f);
+            <span style="color: #4f97d7; font-weight: bold;">if</span> (copyToFramebuffer) {
+                cmd.<span style="color: #bc6ec5; font-weight: bold;">Blit</span>(tmpRT1, source, blurMaterial);
+            } <span style="color: #4f97d7; font-weight: bold;">else</span> {
+                cmd.<span style="color: #bc6ec5; font-weight: bold;">Blit</span>(tmpRT1, tmpRT2, blurMaterial);
+                cmd.<span style="color: #bc6ec5; font-weight: bold;">SetGlobalTexture</span>(targetName, tmpRT2);
+            }
+
+            context.<span style="color: #bc6ec5; font-weight: bold;">ExecuteCommandBuffer</span>(cmd);
+            cmd.<span style="color: #bc6ec5; font-weight: bold;">Clear</span>();
+
+            CommandBufferPool.<span style="color: #bc6ec5; font-weight: bold;">Release</span>(cmd);
+        }
+
+        <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">FrameCleanup</span>(<span style="color: #ce537a; font-weight: bold;">CommandBuffer</span> <span style="color: #7590db;">cmd</span>)
+        {
+        }
+    }
+
+    <span style="color: #ce537a; font-weight: bold;">CustomRenderPass</span> <span style="color: #7590db;">scriptablePass</span>;
+
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Create</span>()
+    {
+        scriptablePass = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">CustomRenderPass</span>(<span style="color: #2d9574;">"KawaseBlur"</span>);
+        scriptablePass.blurMaterial = settings.blurMaterial;
+        scriptablePass.passes = settings.blurPasses;
+        scriptablePass.downsample = settings.downsample;
+        scriptablePass.copyToFramebuffer = settings.copyToFramebuffer;
+        scriptablePass.targetName = settings.targetName;
+
+        scriptablePass.renderPassEvent = settings.renderPassEvent;
+    }
+
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">AddRenderPasses</span>(<span style="color: #ce537a; font-weight: bold;">ScriptableRenderer</span> <span style="color: #7590db;">renderer</span>, <span style="color: #4f97d7; font-weight: bold;">ref</span> <span style="color: #ce537a; font-weight: bold;">RenderingData</span> <span style="color: #7590db;">renderingData</span>)
+    {
+        <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">src</span> = renderer.cameraColorTarget;
+        scriptablePass.<span style="color: #bc6ec5; font-weight: bold;">Setup</span>(src);
+        renderer.<span style="color: #bc6ec5; font-weight: bold;">EnqueuePass</span>(scriptablePass);
+    }
+}
+</pre>
 </div>
 </div>
-<div id="outline-container-org68babe1" class="outline-3">
-<h3 id="org68babe1">Shader</h3>
-<div class="outline-text-3" id="text-org68babe1">
 </div>
-<div id="outline-container-orgc366963" class="outline-4">
-<h4 id="orgc366963">Lightmap 烘培</h4>
-<div class="outline-text-4" id="text-orgc366963">
+<div id="outline-container-org1888f90" class="outline-6">
+<h6 id="org1888f90">len flares</h6>
+<div class="outline-text-6" id="text-org1888f90">
+<ul class="org-ul">
+<li><a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.1/manual/containers/create-custom-renderer-feature-1.html">https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.1/manual/containers/create-custom-renderer-feature-1.html</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgfb7501c" class="outline-3">
+<h3 id="orgfb7501c">Shader</h3>
+<div class="outline-text-3" id="text-orgfb7501c">
+</div>
+<div id="outline-container-org79bb383" class="outline-4">
+<h4 id="org79bb383">Lightmap 烘培</h4>
+<div class="outline-text-4" id="text-org79bb383">
 <p>
-<a href="./UnityCatLikeCoding.html#org866cb95">Lightmap 烘培</a><br />
+<a href="./UnityCatLikeCoding.html#org05f9fb8">Lightmap 烘培</a><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgfa8079f" class="outline-3">
-<h3 id="orgfa8079f">Misc</h3>
-<div class="outline-text-3" id="text-orgfa8079f">
+<div id="outline-container-org6751e26" class="outline-3">
+<h3 id="org6751e26">Misc</h3>
+<div class="outline-text-3" id="text-org6751e26">
 </div>
-<div id="outline-container-orgd80a266" class="outline-4">
-<h4 id="orgd80a266">Upgrade Buildin Shader To URP</h4>
-<div class="outline-text-4" id="text-orgd80a266">
+<div id="outline-container-org378ab87" class="outline-4">
+<h4 id="org378ab87">Upgrade Buildin Shader To URP</h4>
+<div class="outline-text-4" id="text-org378ab87">
 </div>
-<div id="outline-container-org67a803f" class="outline-5">
-<h5 id="org67a803f">Point Light Effect Error</h5>
-<div class="outline-text-5" id="text-org67a803f">
+<div id="outline-container-org01b19c4" class="outline-5">
+<h5 id="org01b19c4">Point Light Effect Error</h5>
+<div class="outline-text-5" id="text-org01b19c4">
 <ul class="org-ul">
 <li><a href="http://www.kittehface.com/2020/05/light-universal-render-pipeline-to.html">http://www.kittehface.com/2020/05/light-universal-render-pipeline-to.html</a><br /></li>
 <li><a href="https://forum.unity.com/threads/lwrp-urp-point-light-issues.809382/">https://forum.unity.com/threads/lwrp-urp-point-light-issues.809382/</a><br /></li>
 </ul>
 </div>
 </div>
-<div id="outline-container-org979f7b6" class="outline-5">
-<h5 id="org979f7b6">Common</h5>
-<div class="outline-text-5" id="text-org979f7b6">
+<div id="outline-container-orgf8a9d15" class="outline-5">
+<h5 id="orgf8a9d15">Common</h5>
+<div class="outline-text-5" id="text-orgf8a9d15">
 <p>
 URP 提供了下面工具，实现自动将 Buildin Shader 升级为 URP。<br />
 Edit/Render Pipeline/Universal Render Pipeline/Upgrade Selected Materials to UniversalRP Materials<br />
@@ -376,18 +538,18 @@ com.unity.render-pipelines.universal@10.5.0\Editor\UniversalRenderPipelineMateri
 </div>
 </div>
 </div>
-<div id="outline-container-org539f871" class="outline-4">
-<h4 id="org539f871">Unity Buildin 和 URP 支持的 Feature 对比</h4>
-<div class="outline-text-4" id="text-org539f871">
+<div id="outline-container-orge9f53ea" class="outline-4">
+<h4 id="orge9f53ea">Unity Buildin 和 URP 支持的 Feature 对比</h4>
+<div class="outline-text-4" id="text-orge9f53ea">
 <ul class="org-ul">
 <li><a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.0/manual/universalrp-builtin-feature-comparison.html">https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.0/manual/universalrp-builtin-feature-comparison.html</a><br /></li>
 <li>Upgrading shaders from Built-in <a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.0/manual/upgrading-your-shaders.html">https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.0/manual/upgrading-your-shaders.html</a><br /></li>
 </ul>
 </div>
 </div>
-<div id="outline-container-orgb3f942c" class="outline-4">
-<h4 id="orgb3f942c">创建一个 Lit Shader Graph 默认文件，生成的 shader 代码</h4>
-<div class="outline-text-4" id="text-orgb3f942c">
+<div id="outline-container-org4682d78" class="outline-4">
+<h4 id="org4682d78">创建一个 Lit Shader Graph 默认文件，生成的 shader 代码</h4>
+<div class="outline-text-4" id="text-org4682d78">
 <p>
 下面文件是对 Lit Shader Graph 默认文件简化后的 shader 代码。<br />
 <a href="./URP/urp_lit_shader_graph.shader">./URP/urp_lit_shader_graph.shader</a><br />
@@ -426,8 +588,8 @@ shader 的 vert frag 入口函数被定义在 com.unity.render-pipelines.univers
 
     InputData inputData;
     InitializeInputData(unpacked, surfaceDescription, inputData);
-    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">TODO: Mip debug modes would require this, open question how to do this on ShaderGraph.</span>
-    <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">SETUP_DEBUG_TEXTURE_DATA(inputData, unpacked.texCoord1.xy, _MainTex);</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// TODO: Mip debug modes would require this, open question how to do this on ShaderGraph.</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">//SETUP_DEBUG_TEXTURE_DATA(inputData, unpacked.texCoord1.xy, _MainTex);</span>
 
 <span style="color: #bc6ec5;">    #ifdef</span> <span style="color: #7590db;">_SPECULAR_SETUP</span>
         <span style="color: #ce537a; font-weight: bold;">float3</span> specular = surfaceDescription.<span style="color: #4f97d7; font-weight: bold;">Specular</span>;
@@ -475,15 +637,15 @@ shader 的 vert frag 入口函数被定义在 com.unity.render-pipelines.univers
 </p>
 </div>
 </div>
-<div id="outline-container-orgce59cd2" class="outline-4">
-<h4 id="orgce59cd2">URP Buildin GI 比较</h4>
-<div class="outline-text-4" id="text-orgce59cd2">
+<div id="outline-container-org96d2c06" class="outline-4">
+<h4 id="org96d2c06">URP Buildin GI 比较</h4>
+<div class="outline-text-4" id="text-org96d2c06">
 <p>
 下图为图 1<br />
 </p>
 
 
-<div id="orgf2cfcde" class="figure">
+<div id="org1ca5156" class="figure">
 <p><img src="./URP/gi_compare_01.png" alt="gi_compare_01.png" width="1500px" /><br />
 </p>
 </div>
@@ -492,7 +654,7 @@ shader 的 vert frag 入口函数被定义在 com.unity.render-pipelines.univers
 下图为图 2<br />
 </p>
 
-<div id="org8bf6672" class="figure">
+<div id="orge556e98" class="figure">
 <p><img src="./URP/gi_compare_02.png" alt="gi_compare_02.png" width="1500px" /><br />
 </p>
 </div>
@@ -501,7 +663,7 @@ shader 的 vert frag 入口函数被定义在 com.unity.render-pipelines.univers
 下图为图 3<br />
 </p>
 
-<div id="org140031f" class="figure">
+<div id="orgd5d2478" class="figure">
 <p><img src="./URP/gi_compare_03.png" alt="gi_compare_03.png" width="1500px" /><br />
 </p>
 </div>
@@ -510,7 +672,7 @@ shader 的 vert frag 入口函数被定义在 com.unity.render-pipelines.univers
 下图为图 4<br />
 </p>
 
-<div id="org08df632" class="figure">
+<div id="orge4bdb49" class="figure">
 <p><img src="./URP/gi_compare_04.png" alt="gi_compare_04.png" width="1500px" /><br />
 </p>
 </div>
@@ -519,7 +681,7 @@ shader 的 vert frag 入口函数被定义在 com.unity.render-pipelines.univers
 下图为图 5<br />
 </p>
 
-<div id="org289b376" class="figure">
+<div id="org37e8b8f" class="figure">
 <p><img src="./URP/gi_compare_05.png" alt="gi_compare_05.png" width="1500px" /><br />
 </p>
 </div>
@@ -538,13 +700,13 @@ LightProbe 数据来自 AmbientColor，场景中方向光，场景中物体反�
 </div>
 </div>
 </div>
-<div id="outline-container-org18567f6" class="outline-2">
-<h2 id="org18567f6">HDRP</h2>
-<div class="outline-text-2" id="text-org18567f6">
+<div id="outline-container-org7183aad" class="outline-2">
+<h2 id="org7183aad">HDRP</h2>
+<div class="outline-text-2" id="text-org7183aad">
 </div>
-<div id="outline-container-orgf29089c" class="outline-3">
-<h3 id="orgf29089c">Setup</h3>
-<div class="outline-text-3" id="text-orgf29089c">
+<div id="outline-container-org40fe590" class="outline-3">
+<h3 id="org40fe590">Setup</h3>
+<div class="outline-text-3" id="text-org40fe590">
 <ol class="org-ol">
 <li>安装 HDRP package<br /></li>
 <li>打开 HDRP 设置向导 Window/Rendering/HDRP Wizard, 如果有设置错误，直接点击 FixAll<br /></li>
@@ -553,22 +715,22 @@ LightProbe 数据来自 AmbientColor，场景中方向光，场景中物体反�
 </div>
 </div>
 
-<div id="outline-container-orgc008d19" class="outline-2">
-<h2 id="orgc008d19">ERROR</h2>
-<div class="outline-text-2" id="text-orgc008d19">
+<div id="outline-container-org9647968" class="outline-2">
+<h2 id="org9647968">ERROR</h2>
+<div class="outline-text-2" id="text-org9647968">
 </div>
-<div id="outline-container-org6bf692f" class="outline-4">
-<h4 id="org6bf692f">Material 'Liquid' with Shader 'Custom/MyEffect/Unlit/Liquid' doesn't have a texture property '_MainTex' UnityEngine.GUIUtility:ProcessEvent (int,intptr,bool&amp;)</h4>
-<div class="outline-text-4" id="text-org6bf692f">
+<div id="outline-container-org075b550" class="outline-4">
+<h4 id="org075b550">Material 'Liquid' with Shader 'Custom/MyEffect/Unlit/Liquid' doesn't have a texture property '_MainTex' UnityEngine.GUIUtility:ProcessEvent (int,intptr,bool&amp;)</h4>
+<div class="outline-text-4" id="text-org075b550">
 <p>
 URP 中使用_BaseMap 代替了_MainTex。并在_BaseMap 的前面标记了[MainTexture]。Editor 中有代码依赖_MainTex 命名，所以导致了该错误。<br />
 在 Shader 'Custom/MyEffect/Unlit/Liquid' 的 Property 部分添加如下代码就可以解决该问题<br />
 </p>
 
 <div class="org-src-container">
-<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">ObsoleteProperties</span>
-<span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">[HideInInspector] _MainTex("BaseMap", 2D) = "white" {}</span>
-<span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">[HideInInspector] _Color("Base Color", Color) = (1, 1, 1, 1)</span>
+<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// ObsoleteProperties</span>
+<span style="color: #2aa1ae; background-color: #292e34;">//[HideInInspector] _MainTex("BaseMap", 2D) = "white" {}</span>
+<span style="color: #2aa1ae; background-color: #292e34;">//[HideInInspector] _Color("Base Color", Color) = (1, 1, 1, 1)</span>
 </pre>
 </div>
 
@@ -579,9 +741,9 @@ URP 中使用_BaseMap 代替了_MainTex。并在_BaseMap 的前面标记了[Main
 </div>
 </div>
 
-<div id="outline-container-org5ae274f" class="outline-2">
-<h2 id="org5ae274f">参考资料</h2>
-<div class="outline-text-2" id="text-org5ae274f">
+<div id="outline-container-orgf43c405" class="outline-2">
+<h2 id="orgf43c405">参考资料</h2>
+<div class="outline-text-2" id="text-orgf43c405">
 <ul class="org-ul">
 <li><a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.0/manual/index.html">https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.0/manual/index.html</a><br /></li>
 </ul>

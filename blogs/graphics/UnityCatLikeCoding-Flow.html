@@ -1,0 +1,1474 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2022-12-21 Wed 22:27 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>UnityCatLikeCoding-Flow</title>
+<meta name="generator" content="Org Mode" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+         <meta name="viewport" content="width=device-width, initial-scale=1" />
+         <link rel="stylesheet" title="Standard" href="https://wolfand11.gitee.io/res/worg_theme/css/worg.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.gitee.io/res/worg_theme/css/worg-zenburn.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.gitee.io/res/worg_theme/css/worg-classic.css" type="text/css" />
+         <link rel="icon" href="https://wolfand11.gitee.io/res/favicon.ico" type="image/ico" />
+         <script type="text/javascript" src="https://wolfand11.gitee.io/res/blog-tools.js"></script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href=""> UP </a>
+ |
+ <a accesskey="H" href="https://wolfand11.gitee.io"> HOME </a>
+</div><div id="content" class="content">
+<h1 class="title">UnityCatLikeCoding-Flow</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#org947a761">Flow</a>
+<ul>
+<li><a href="#org5c9ab12">Texture Distortion</a>
+<ul>
+<li><a href="#org05594cb">Animating UV</a>
+<ul>
+<li><a href="#orgce21354">直接沿着特定方向移动 UV</a></li>
+<li><a href="#org3da1c7d">使用 FlowMap 表示液体流动方向</a></li>
+</ul>
+</li>
+<li><a href="#org48903dd">Seamless Looping</a>
+<ul>
+<li><a href="#org5343c70">Blend Weight &amp; Seesaw</a></li>
+<li><a href="#orge127a3d">Time Offset</a></li>
+<li><a href="#orga0313ce">Combining Two Distortions</a></li>
+<li><a href="#org4b9643c">Jumping UV</a></li>
+<li><a href="#org2428cb4">Analyzing Jumps</a></li>
+</ul>
+</li>
+<li><a href="#org574338f">Animation Tweaks</a>
+<ul>
+<li><a href="#org42bbf5a">Tiling</a></li>
+<li><a href="#org43fcbfa">支持 FlowStrength FlowOffset</a></li>
+</ul>
+</li>
+<li><a href="#org04ba68f">Texturing</a>
+<ul>
+<li><a href="#org8162b09">Abstract Water</a></li>
+<li><a href="#orgeab053d">Normal Map</a></li>
+<li><a href="#org34325c3">Derivative Map</a></li>
+<li><a href="#org1748e98">Height Scale</a></li>
+<li><a href="#org69ada9b">Flow Plus Speed</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org0b4b2d5">Directional Flow</a>
+<ul>
+<li><a href="#org0c14102">Anisotropic Patterns</a>
+<ul>
+<li><a href="#orgeb4bdea">Rippling Water</a></li>
+</ul>
+</li>
+<li><a href="#orga5091cf">Aligning With the Flow</a>
+<ul>
+<li><a href="#org801bc08">UV for Directional Flow</a></li>
+<li><a href="#orgc60f6cc">Texture Rotation</a></li>
+<li><a href="#org708012c">Rotating Derivatives</a></li>
+<li><a href="#org1848a49">Sampling the Flow</a></li>
+</ul>
+</li>
+<li><a href="#orgb538a57">Tiled Flow</a>
+<ul>
+<li><a href="#orga18a371">Flow Grid</a></li>
+<li><a href="#orgfe2283b">Blending Cells</a></li>
+<li><a href="#org14c11bb">Overlapping Cells</a></li>
+<li><a href="#org74431fe">Sampling At Cell Centers</a></li>
+<li><a href="#org6867e46">Scaling the Waves</a></li>
+</ul>
+</li>
+<li><a href="#org659c913">Hiding Artifacts</a>
+<ul>
+<li><a href="#org9654873">Nearly Uniform Flow</a></li>
+<li><a href="#org466b4c1">Spotting the Grid</a></li>
+<li><a href="#orgf82a164">Mixing Grids</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org04cab33">Waves</a></li>
+<li><a href="#org1e89dd9">Looking Through Water</a></li>
+</ul>
+</li>
+<li><a href="#org29461ae">参考资料</a></li>
+</ul>
+</div>
+</div>
+<p>
+UnityCatLikeCoding-Flow note.<br />
+</p>
+<div class="HTML" id="org30cf4ee">
+<p>
+&lt;!&#x2013; more &#x2013;&gt;<br />
+</p>
+
+</div>
+
+<div id="outline-container-org947a761" class="outline-2">
+<h2 id="org947a761">Flow</h2>
+<div class="outline-text-2" id="text-org947a761">
+</div>
+<div id="outline-container-org5c9ab12" class="outline-3">
+<h3 id="org5c9ab12">Texture Distortion</h3>
+<div class="outline-text-3" id="text-org5c9ab12">
+</div>
+<div id="outline-container-org05594cb" class="outline-4">
+<h4 id="org05594cb">Animating UV</h4>
+<div class="outline-text-4" id="text-org05594cb">
+<p>
+当液体不动时，其看起来和固体没差别。你在看的是水、果冻还是玻璃？ 游泳池是否结冰？ 为了确定这些问题，你可以扰乱你观察的物质，看其是否会变形，如果变形，其是如何变形的。只是创建一个材质，使其看起来像流动的水是不够的，其必须真的流动起来。否则，其看起来会像是像水的玻璃雕塑，或是时间暂停下的水。<br />
+</p>
+
+<p>
+大多数时候我们只是希望表面看起来像液体，其是由水或泥浆或者熔浆组成的。这样的液体表面不需要有交互，只需要在漫不经心地观察时看起来真实就可以了。因此，我们不需要进行复杂的物理模拟。我只需要在常规的材质上添加移动性就够了，可以通过对 uv 坐标添加动画来实现这种移动性。<br />
+</p>
+</div>
+<div id="outline-container-orgce21354" class="outline-5">
+<h5 id="orgce21354">直接沿着特定方向移动 UV</h5>
+<div class="outline-text-5" id="text-orgce21354">
+<p>
+shader 实现如下：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">float2</span> <span style="color: #bc6ec5; font-weight: bold;">FlowUV</span>(<span style="color: #ce537a; font-weight: bold;">float2</span> uv, <span style="color: #ce537a; font-weight: bold;">float2</span> flowDir, <span style="color: #ce537a; font-weight: bold;">float</span> time)
+{
+    <span style="color: #4f97d7; font-weight: bold;">return</span> uv + flowDir * time * <span style="color: #7590db;">_FlowStrength</span>;
+}
+
+<span style="color: #ce537a; font-weight: bold;">half4</span> <span style="color: #bc6ec5; font-weight: bold;">frag</span> (v2f i) : <span style="color: #a45bad;">SV_Target</span>
+{
+    <span style="color: #ce537a; font-weight: bold;">float2</span> flowDir = <span style="color: #ce537a; font-weight: bold;">half2</span>(0, 1);
+
+    <span style="color: #ce537a; font-weight: bold;">float2</span> uv = FlowUV(i.uv, flowDir, <span style="color: #7590db;">_Time</span>.y * <span style="color: #7590db;">_TimeSpeed</span>);
+    <span style="color: #ce537a; font-weight: bold;">half4</span> albedo = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_MainTex</span>, sampler_MainTex, uv) * <span style="color: #7590db;">_Color</span>;
+
+    <span style="color: #ce537a; font-weight: bold;">half3</span> normalTS = <span style="color: #ce537a; font-weight: bold;">half3</span>(0, 1, 0);
+    InputData inputData;
+    InitializeInputData(i, normalTS, inputData);
+    <span style="color: #ce537a; font-weight: bold;">half4</span> col = UniversalFragmentPBR(inputData, albedo, <span style="color: #7590db;">_Metallic</span>, 0, <span style="color: #7590db;">_Smoothness</span>, 0, 0, 1);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> col;
+}
+</pre>
+</div>
+
+<p>
+可以得到如下效果：<br />
+</p>
+<iframe src="https://player.bilibili.com/player.html?aid=729833431&bvid=BV1BD4y1z7YZ&cid=813070935&page=1" width="640" height="360" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+</div>
+</div>
+<div id="outline-container-org3da1c7d" class="outline-5">
+<h5 id="org3da1c7d">使用 FlowMap 表示液体流动方向</h5>
+<div class="outline-text-5" id="text-org3da1c7d">
+<p>
+shader 实现如下：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">float2</span> <span style="color: #bc6ec5; font-weight: bold;">FlowUV</span>(<span style="color: #ce537a; font-weight: bold;">float2</span> uv, <span style="color: #ce537a; font-weight: bold;">float2</span> flowDir, <span style="color: #ce537a; font-weight: bold;">float</span> time)
+{
+    <span style="color: #4f97d7; font-weight: bold;">return</span> uv + flowDir * time * <span style="color: #7590db;">_FlowStrength</span>;
+}
+
+<span style="color: #ce537a; font-weight: bold;">half4</span> <span style="color: #bc6ec5; font-weight: bold;">frag</span> (v2f i) : <span style="color: #a45bad;">SV_Target</span>
+{
+    <span style="color: #ce537a; font-weight: bold;">float2</span> flowDir = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_FlowMap</span>, sampler_FlowMap, i.uv).rg * 2 - 1;
+
+    <span style="color: #ce537a; font-weight: bold;">float2</span> uv = FlowUV(i.uv, flowDir, <span style="color: #7590db;">_CustomTime</span>.y * <span style="color: #7590db;">_TimeSpeed</span>);
+    <span style="color: #ce537a; font-weight: bold;">half4</span> albedo = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_MainTex</span>, sampler_MainTex, uv) * <span style="color: #7590db;">_Color</span>;
+
+    <span style="color: #ce537a; font-weight: bold;">half3</span> normalTS = <span style="color: #ce537a; font-weight: bold;">half3</span>(0, 1, 0);
+    InputData inputData;
+    InitializeInputData(i, normalTS, inputData);
+    <span style="color: #ce537a; font-weight: bold;">half4</span> col = UniversalFragmentPBR(inputData, albedo, <span style="color: #7590db;">_Metallic</span>, 0, <span style="color: #7590db;">_Smoothness</span>, 0, 0, 1);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> col;
+}
+</pre>
+</div>
+<p>
+可以得到如下效果:<br />
+</p>
+<iframe src="https://player.bilibili.com/player.html?aid=899857895&bvid=BV1VN4y1c7ep&cid=813133736&page=1" width="640" height="360" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+<p>
+上面视频展示了，使用 FlowMap 来控制 uv 移动方向得到的效果，一开始_CustomTime.y 会被重置为 0，之后逐步增加。由于每个位置上 flowDir 方向各不相同，随着时间的推移图像拉伸和挤压越严重。为了避免图像最终乱作一团，我们可以每隔一段时间就重置一次时间，最简单的方法是只取时间的小数部分来做动画。这样，整个画面就会重复播放，每次播放的持续时间为 1 秒。<br />
+</p>
+
+
+<div id="org0c8ad16" class="figure">
+<p><img src="./UnityCatLikeCoding/flow01_sawtooth_progress.png" alt="flow01_sawtooth_progress.png" width="300px" /><br />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">float2</span> <span style="color: #bc6ec5; font-weight: bold;">FlowUV</span>(<span style="color: #ce537a; font-weight: bold;">float2</span> uv, <span style="color: #ce537a; font-weight: bold;">float2</span> flowDir, <span style="color: #ce537a; font-weight: bold;">float</span> time)
+{
+    <span style="color: #ce537a; font-weight: bold;">float</span> progress = <span style="color: #4f97d7;">frac</span>(time);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> uv + flowDir * progress * <span style="color: #7590db;">_FlowStrength</span>;
+}
+
+<span style="color: #ce537a; font-weight: bold;">half4</span> <span style="color: #bc6ec5; font-weight: bold;">frag</span> (v2f i) : <span style="color: #a45bad;">SV_Target</span>
+{
+    <span style="color: #ce537a; font-weight: bold;">float2</span> flowDir = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_FlowMap</span>, sampler_FlowMap, i.uv).rg * 2 - 1;
+
+    <span style="color: #ce537a; font-weight: bold;">float2</span> uv = FlowUV(i.uv, flowDir, <span style="color: #7590db;">_CustomTime</span>.y * <span style="color: #7590db;">_TimeSpeed</span>);
+    <span style="color: #ce537a; font-weight: bold;">half4</span> albedo = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_MainTex</span>, sampler_MainTex, uv) * <span style="color: #7590db;">_Color</span>;
+
+    <span style="color: #ce537a; font-weight: bold;">half3</span> normalTS = <span style="color: #ce537a; font-weight: bold;">half3</span>(0, 1, 0);
+    InputData inputData;
+    InitializeInputData(i, normalTS, inputData);
+    <span style="color: #ce537a; font-weight: bold;">half4</span> col = UniversalFragmentPBR(inputData, albedo, <span style="color: #7590db;">_Metallic</span>, 0, <span style="color: #7590db;">_Smoothness</span>, 0, 0, 1);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> col;
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org48903dd" class="outline-4">
+<h4 id="org48903dd">Seamless Looping</h4>
+<div class="outline-text-4" id="text-org48903dd">
+<p>
+上面我们实现了非统一流向的流体的流动，但是每秒都会重置流动效果。为了让流动效果可以循环不中断，开始下一次流动之前，我们必须通过某种方式让 UV 恢复为原始值。当然不能将扭曲倒回去，这样看起来只会是来回流动，而不是有一致的流动方向。<br />
+</p>
+</div>
+<div id="outline-container-org5343c70" class="outline-5">
+<h5 id="org5343c70">Blend Weight &amp; Seesaw</h5>
+<div class="outline-text-5" id="text-org5343c70">
+<p>
+一个流动周期内，我们可以从 black 渐变为扭曲最大，然后再从扭曲最大渐变为 black。<br />
+</p>
+
+
+<div id="org9d45cd3" class="figure">
+<p><img src="./UnityCatLikeCoding/flow01_sawtooth_progress01.png" alt="flow01_sawtooth_progress01.png" width="300px" /><br />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">float3</span> <span style="color: #bc6ec5; font-weight: bold;">FlowUVW</span>(<span style="color: #ce537a; font-weight: bold;">float2</span> uv, <span style="color: #ce537a; font-weight: bold;">float2</span> flowDir, <span style="color: #ce537a; font-weight: bold;">float</span> time)
+{
+    <span style="color: #ce537a; font-weight: bold;">float</span> progress = <span style="color: #4f97d7;">frac</span>(time);
+    <span style="color: #ce537a; font-weight: bold;">float3</span> uvw;
+    uvw.xy = uv - flowDir * progress * <span style="color: #7590db;">_FlowStrength</span>;
+    uvw.z = 1 - <span style="color: #4f97d7;">abs</span>(1 - 2 * progress);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> uvw;
+}
+
+<span style="color: #ce537a; font-weight: bold;">half4</span> <span style="color: #bc6ec5; font-weight: bold;">frag</span>(v2f i) : <span style="color: #a45bad;">SV_Target</span>
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">//float2 flowDir = half2(0, 1);</span>
+    <span style="color: #ce537a; font-weight: bold;">float2</span> flowDir = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_FlowMap</span>, sampler_FlowMap, i.uv).rg * 2 - 1;
+
+    <span style="color: #ce537a; font-weight: bold;">float3</span> uvw = FlowUVW(i.uv, flowDir, <span style="color: #7590db;">_CustomTime</span>.y * <span style="color: #7590db;">_TimeSpeed</span>);
+    <span style="color: #ce537a; font-weight: bold;">half4</span> albedo = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_MainTex</span>, sampler_MainTex, uvw.xy) * uvw.z * <span style="color: #7590db;">_Color</span>;
+
+    <span style="color: #ce537a; font-weight: bold;">half3</span> normalTS = <span style="color: #ce537a; font-weight: bold;">half3</span>(0, 1, 0);
+    InputData inputData;
+    InitializeInputData(i, normalTS, inputData);
+    <span style="color: #ce537a; font-weight: bold;">half4</span> col = UniversalFragmentPBR(inputData, albedo, <span style="color: #7590db;">_Metallic</span>, 0, <span style="color: #7590db;">_Smoothness</span>, 0, 0, 1);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> col;
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orge127a3d" class="outline-5">
+<h5 id="orge127a3d">Time Offset</h5>
+<div class="outline-text-5" id="text-orge127a3d">
+<p>
+虽然从技术上讲，我们消除了视觉上的不连续性，但我们引入了黑色脉冲效果。脉动非常明显，因为它同时发生在画面每个地方。如果我们可以将不同位置的黑色脉冲散布在不同时间点上，它可能就不那么明显了。 我们可以通过在表面上以不同的时间偏移来做到这一点。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">half4</span> <span style="color: #bc6ec5; font-weight: bold;">frag</span>(v2f i) : <span style="color: #a45bad;">SV_Target</span>
+{
+    <span style="color: #ce537a; font-weight: bold;">float2</span> flowDir = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_FlowMap</span>, sampler_FlowMap, i.uv).rg * 2 - 1;
+    <span style="color: #2aa1ae; background-color: #292e34;">// a&#36890;&#36947;&#23384;&#20648; Perlin Noise&#65292;&#29992;&#20110;timeOffset</span>
+    <span style="color: #ce537a; font-weight: bold;">float</span> timeOffset = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_FlowMap</span>, sampler_FlowMap, i.uv).a;
+
+    <span style="color: #ce537a; font-weight: bold;">float3</span> uvw = FlowUVW(i.uv, flowDir, (<span style="color: #7590db;">_CustomTime</span>.y+timeOffset) * <span style="color: #7590db;">_TimeSpeed</span>);
+    <span style="color: #ce537a; font-weight: bold;">half4</span> albedo = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_MainTex</span>, sampler_MainTex, uvw.xy) * uvw.z * <span style="color: #7590db;">_Color</span>;
+
+    <span style="color: #ce537a; font-weight: bold;">half3</span> normalTS = <span style="color: #ce537a; font-weight: bold;">half3</span>(0, 1, 0);
+    InputData inputData;
+    InitializeInputData(i, normalTS, inputData);
+    <span style="color: #ce537a; font-weight: bold;">half4</span> col = UniversalFragmentPBR(inputData, albedo, <span style="color: #7590db;">_Metallic</span>, 0, <span style="color: #7590db;">_Smoothness</span>, 0, 0, 1);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> col;
+}
+</pre>
+</div>
+<p>
+黑色脉冲仍然存在，但它已经变成了一种波浪，以一种自然的方式在表面蔓延。 时间偏移也使扭曲更多样化。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orga0313ce" class="outline-5">
+<h5 id="orga0313ce">Combining Two Distortions</h5>
+<div class="outline-text-5" id="text-orga0313ce">
+<p>
+除了和 black 进行混合外，我们还可以和其他的内容进行混合。例如，我们可以和原始未扭曲的贴图进行混合，这样的我们会看到一个固定的贴图渐隐渐显，这会破坏流动的视觉效果。我们可以和另外的扭曲贴图混合，来避免该问题。我们可以使用两个脉冲模式，A和 B。当 A 的权重为 0 时，B的权重为 1；当 A 的权重为 1 时，B的权重为 0。其原理如下：<br />
+</p>
+
+<div id="orgea704b7" class="figure">
+<p><img src="./UnityCatLikeCoding/flow01_blend_two_tex.png" alt="flow01_blend_two_tex.png" width="400px" /><br />
+</p>
+</div>
+
+<p>
+<a href="./UnityCatLikeCoding/flow01_blend_two_tex.ggb">./UnityCatLikeCoding/flow01_blend_two_tex.ggb</a><br />
+</p>
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">float3</span> <span style="color: #bc6ec5; font-weight: bold;">FlowUVW</span>(<span style="color: #ce537a; font-weight: bold;">float2</span> uv, <span style="color: #ce537a; font-weight: bold;">float2</span> flowDir, <span style="color: #ce537a; font-weight: bold;">float</span> time, <span style="color: #ce537a; font-weight: bold;">bool</span> flowB)
+{
+    <span style="color: #ce537a; font-weight: bold;">float</span> phaseOffset = flowB ? 0.5 : 0;
+    <span style="color: #ce537a; font-weight: bold;">float</span> progress = <span style="color: #4f97d7;">frac</span>(time + phaseOffset);
+    <span style="color: #ce537a; font-weight: bold;">float3</span> uvw;
+    uvw.xy = uv - flowDir * progress * <span style="color: #7590db;">_FlowStrength</span>;
+    uvw.z = 1 - <span style="color: #4f97d7;">abs</span>(1 - 2 * progress);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> uvw;
+}
+
+<span style="color: #ce537a; font-weight: bold;">half4</span> <span style="color: #bc6ec5; font-weight: bold;">frag</span>(v2f i) : <span style="color: #a45bad;">SV_Target</span>
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">//float2 flowDir = half2(0, 1);</span>
+    <span style="color: #ce537a; font-weight: bold;">float2</span> flowDir = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_FlowMap</span>, sampler_FlowMap, i.uv).rg * 2 - 1;
+    <span style="color: #ce537a; font-weight: bold;">float</span> timeOffset = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_FlowMap</span>, sampler_FlowMap, i.uv).a;
+
+    <span style="color: #ce537a; font-weight: bold;">float3</span> uvwA = FlowUVW(i.uv, flowDir, (<span style="color: #7590db;">_CustomTime</span>.y+timeOffset) * <span style="color: #7590db;">_TimeSpeed</span>, <span style="color: #a45bad;">false</span>);
+    <span style="color: #ce537a; font-weight: bold;">float3</span> uvwB = FlowUVW(i.uv, flowDir, (<span style="color: #7590db;">_CustomTime</span>.y+timeOffset) * <span style="color: #7590db;">_TimeSpeed</span>, <span style="color: #a45bad;">true</span>);
+
+    <span style="color: #ce537a; font-weight: bold;">half4</span> albedoA = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_MainTex</span>, sampler_MainTex, uvwA.xy) * uvwA.z;
+    <span style="color: #ce537a; font-weight: bold;">half4</span> albedoB = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_MainTex</span>, sampler_MainTex, uvwB.xy) * uvwB.z;
+    <span style="color: #ce537a; font-weight: bold;">half4</span> albedo = (albedoA + albedoB) * <span style="color: #7590db;">_Color</span>;
+
+    <span style="color: #ce537a; font-weight: bold;">half3</span> normalTS = <span style="color: #ce537a; font-weight: bold;">half3</span>(0, 1, 0);
+    InputData inputData;
+    InitializeInputData(i, normalTS, inputData);
+    <span style="color: #ce537a; font-weight: bold;">half4</span> col = UniversalFragmentPBR(inputData, albedo, <span style="color: #7590db;">_Metallic</span>, 0, <span style="color: #7590db;">_Smoothness</span>, 0, 0, 1);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> col;
+}
+</pre>
+</div>
+
+<p>
+在两个模式之间进行混合，使得动画的持续时间减少了一半。它现在每秒循环两次(A 一次，B一次)。但是我们不必两次都使用相同的模式。我们可以将 B 的 UV 坐标偏移半个单位, 这使得模式不同(虽然使用的是同一张贴图)，但不会引入任何方向偏差。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">float3</span> <span style="color: #bc6ec5; font-weight: bold;">FlowUVW</span>(<span style="color: #ce537a; font-weight: bold;">float2</span> uv, <span style="color: #ce537a; font-weight: bold;">float2</span> flowDir, <span style="color: #ce537a; font-weight: bold;">float</span> time, <span style="color: #ce537a; font-weight: bold;">bool</span> flowB)
+{
+    <span style="color: #ce537a; font-weight: bold;">float</span> phaseOffset = flowB ? 0.5 : 0;
+    <span style="color: #ce537a; font-weight: bold;">float</span> progress = <span style="color: #4f97d7;">frac</span>(time + phaseOffset);
+    <span style="color: #ce537a; font-weight: bold;">float3</span> uvw;
+    uvw.xy = uv - flowDir * progress * <span style="color: #7590db;">_FlowStrength</span> + phaseOffset;
+    uvw.z = 1 - <span style="color: #4f97d7;">abs</span>(1 - 2 * progress);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> uvw;
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org4b9643c" class="outline-5">
+<h5 id="org4b9643c">Jumping UV</h5>
+<div class="outline-text-5" id="text-org4b9643c">
+<p>
+除了将 B 的 UV 偏移半个单位外，还可以按相位偏移 UV。 这会加长动画持续时间，循环回到完全相同的状态需要更长的时间。<br />
+</p>
+
+<p>
+我们可以简单地根据时间滑动 UV 坐标，但这会导致整个动画滑动，从而引入方向偏差。 我们可以通过在每个阶段保持 UV 偏移不变，并在阶段之间跳转到新的偏移来避免视觉滑动。 换句话说，每次权重为零时，我们都会进行 UV 跳跃。 通过向 UV 添加一些跳跃偏移量乘以时间的整数部分可以达到这种目的。<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">float3</span> <span style="color: #bc6ec5; font-weight: bold;">FlowUVW</span>(<span style="color: #ce537a; font-weight: bold;">float2</span> uv, <span style="color: #ce537a; font-weight: bold;">float2</span> flowDir, <span style="color: #ce537a; font-weight: bold;">float2</span> jump, <span style="color: #ce537a; font-weight: bold;">float</span> time, <span style="color: #ce537a; font-weight: bold;">bool</span> flowB)
+{
+    <span style="color: #ce537a; font-weight: bold;">float</span> phaseOffset = flowB ? 0.5 : 0;
+    <span style="color: #ce537a; font-weight: bold;">float</span> progress = <span style="color: #4f97d7;">frac</span>(time + phaseOffset);
+    <span style="color: #ce537a; font-weight: bold;">float3</span> uvw;
+    uvw.xy = uv - flowDir * progress * <span style="color: #7590db;">_FlowStrength</span> + phaseOffset;
+    uvw.xy += (time - progress) * jump;
+    uvw.z = 1 - <span style="color: #4f97d7;">abs</span>(1 - 2 * progress);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> uvw;
+}
+
+<span style="color: #ce537a; font-weight: bold;">half4</span> <span style="color: #bc6ec5; font-weight: bold;">frag</span>(v2f i) : <span style="color: #a45bad;">SV_Target</span>
+{
+    <span style="color: #ce537a; font-weight: bold;">float2</span> flowDir = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_FlowMap</span>, sampler_FlowMap, i.uv).rg * 2 - 1;
+    <span style="color: #ce537a; font-weight: bold;">float</span> timeOffset = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_FlowMap</span>, sampler_FlowMap, i.uv).a;
+
+    <span style="color: #ce537a; font-weight: bold;">float</span> time = (<span style="color: #7590db;">_CustomTime</span>.y + timeOffset) * <span style="color: #7590db;">_TimeSpeed</span>;
+    <span style="color: #ce537a; font-weight: bold;">float2</span> jump = <span style="color: #ce537a; font-weight: bold;">float2</span>(<span style="color: #7590db;">_UJump</span>, <span style="color: #7590db;">_VJump</span>);
+    <span style="color: #ce537a; font-weight: bold;">float3</span> uvwA = FlowUVW(i.uv, flowDir, jump, time, <span style="color: #a45bad;">false</span>);
+    <span style="color: #ce537a; font-weight: bold;">float3</span> uvwB = FlowUVW(i.uv, flowDir, jump, time, <span style="color: #a45bad;">true</span>);
+
+    <span style="color: #ce537a; font-weight: bold;">half4</span> albedoA = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_MainTex</span>, sampler_MainTex, uvwA.xy) * uvwA.z;
+    <span style="color: #ce537a; font-weight: bold;">half4</span> albedoB = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_MainTex</span>, sampler_MainTex, uvwB.xy) * uvwB.z;
+    <span style="color: #ce537a; font-weight: bold;">half4</span> albedo = (albedoA + albedoB) * <span style="color: #7590db;">_Color</span>;
+
+    <span style="color: #ce537a; font-weight: bold;">half3</span> normalTS = <span style="color: #ce537a; font-weight: bold;">half3</span>(0, 1, 0);
+    InputData inputData;
+    InitializeInputData(i, normalTS, inputData);
+    <span style="color: #ce537a; font-weight: bold;">half4</span> col = UniversalFragmentPBR(inputData, albedo, <span style="color: #7590db;">_Metallic</span>, 0, <span style="color: #7590db;">_Smoothness</span>, 0, 0, 1);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> col;
+}
+</pre>
+</div>
+
+<p>
+设置 jump 为不同的值时，最终 uv 的偏移量变化如下表所示：<br />
+</p>
+
+<div id="org5c600d0" class="figure">
+<p><img src="./UnityCatLikeCoding/flow01_jumpuv.png" alt="flow01_jumpuv.png" width="600px" /><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org2428cb4" class="outline-5">
+<h5 id="org2428cb4">Analyzing Jumps</h5>
+<div class="outline-text-5" id="text-org2428cb4">
+<figure>
+  <iframe src='https://gfycat.com/ifr/TightRelievedGoa' frameborder='0' scrolling='no' allowfullscreen width='640' height='328'></iframe>
+  <figcaption>Jump 0, duration 1s.</figcaption>
+</figure>
+<p>
+上面视频中，将 FlowSpeed 设置为 0，Jump 也设置为 0。此时，可以看到每个正方形在两种颜色之间交替。还可以看到，B将相同的纹理偏移了一半，但这并不是很明显，另外，色彩方块没有表现出方向性移动。<br />
+</p>
+
+<figure>
+  <iframe src='https://gfycat.com/ifr/FakeUnknownDassierat' frameborder='0' scrolling='no' allowfullscreen width='640' height='328'></iframe>
+  <figcaption>Jump 0.25, duration 4s.</figcaption>
+</figure>
+<p>
+上面视频中，将 FlowSpeed 设置为 0，Jump 设置为 1/4。Jump 为 1/4 会使的纹理的网格线移动，在正方形和十字之间交替。 白线仍然没有显示方向性移动，但彩色方块现在显示了方向性移动。 彩色方块图案沿对角线移动，但不是以一种立即明显的方式移动。它需要向前半步，然后向后退四分之一步，重复。 如果我们 Jump 使用 -1/4，那么它将向前走半步，然后向前走四分之一步，重复。使用不对称的跳跃，可使方向性移动更加明显，例如 0.2。<br />
+</p>
+
+<figure>
+  <iframe src='https://gfycat.com/ifr/RequiredIckyEnglishsetter' frameborder='0' scrolling='no' allowfullscreen width='640' height='328'></iframe>
+  <figcaption>Jump 0.2, duration 2.5s.</figcaption>
+</figure>
+<p>
+上面视频中，将 FlowSpeed 设置为 0，Jump 设置为 0.2。在这种情况下，白色网格线也会出现移动。但是因为我们仍在使用相当接近对称的大跳跃，所以可以将运动解释为向多个方向进行，具体取决于您对图像的关注方式。如果你改变你的焦点，你很容易忘记你认为它正在流动的方向。<br />
+因为我们使用了 0.2 的 Jump，所以动画在五个阶段后会重复，也就持续时间有 5 秒。但是，因为我们在两个偏移阶段之间进行混合，所以每个阶段的中间都有一个潜在的交叉点。如果动画将在奇数个阶段后循环，它实际上会在阶段中途交叉时循环两次。所以在这种情况下，持续时间只有 2.5 秒。<br />
+</p>
+
+<p>
+U 和 V 方向的 Jump 可以是不相同的量。除了改变移动方向外，每个维度使用不同的跳跃值也会影响循环持续时间。例如，考虑 0.25 的 U 跳跃和 0.1 的 V 跳跃。 U 每四个循环循环一次，而 V 每十循环循环一次。所以在四个周期后，U 已经循环了，但 V 还没有，所以动画也没有完成一个循环。只有当 U 和 V 在同一阶段结束时都完成一个循环时，我们才能到达动画的结尾。当使用有理数进行跳转时，循环持续时间等于其分母的最小公倍数。在 0.25 和 0.1 的情况下，即 4 和 10，其最小公倍数是 20。<br />
+</p>
+
+<p>
+没有明显的方法来选择一个跳转向量，使得你最终会得到一个很长的循环持续时间。例如，如果我们使用 0.25 和 0.2 而不是 0.25 和 0.1，我们会得到更长还是更短的持续时间？由于 4 和 5 的最小公倍数也是 20，因此持续时间相同。此外，虽然理论上可以提出可以单词循环需要很长时间甚至永远不循环的值，但大多数实际上并没有用。我们无法感知太小的变化，再加上数值精度的限制，这可能导致理论上好的跳跃值在随意观察下看起来没有变化，或者循环速度比预期的快得多。<br />
+</p>
+
+<p>
+6/25 = 0.24 和 5/24 是一对不错的 Jump 值。第一个值完成 6 次循环需要 25 个 phase，第二个值完成 5 次循环需要 24 个 phase。理论上循环一次需要 600 个 phase（25 和 24 的最小公倍数为 600），如果 1 个 phase 1 秒的话，循环一次需要 10 分钟。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org574338f" class="outline-4">
+<h4 id="org574338f">Animation Tweaks</h4>
+<div class="outline-text-4" id="text-org574338f">
+</div>
+<div id="outline-container-org42bbf5a" class="outline-5">
+<h5 id="org42bbf5a">Tiling</h5>
+<div class="outline-text-5" id="text-org42bbf5a">
+<p>
+对扭曲的纹理进行 tiling。 不能通过_MainTex 的 tiling 来实现，因为其也会影响 FlowMap。 我们只需要额外的 Tiling 属性，因为只有扭曲方形纹理才有意义，所以我们只需要一个 Tiling 值。<br />
+为了保证 tiling 不影响流动效果，我们需要在流动之后，在叠加 phaseOffset 之前，应用 tiling。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">float3</span> <span style="color: #bc6ec5; font-weight: bold;">FlowUVW</span>(<span style="color: #ce537a; font-weight: bold;">float2</span> uv, <span style="color: #ce537a; font-weight: bold;">float2</span> flowDir, <span style="color: #ce537a; font-weight: bold;">float2</span> jump, <span style="color: #ce537a; font-weight: bold;">float</span> tiling, <span style="color: #ce537a; font-weight: bold;">float</span> time, <span style="color: #ce537a; font-weight: bold;">bool</span> flowB)
+{
+    <span style="color: #ce537a; font-weight: bold;">float</span> phaseOffset = flowB ? 0.5 : 0;
+    <span style="color: #ce537a; font-weight: bold;">float</span> progress = <span style="color: #4f97d7;">frac</span>(time + phaseOffset);
+    <span style="color: #ce537a; font-weight: bold;">float3</span> uvw;
+    uvw.xy = uv - flowDir * progress * <span style="color: #7590db;">_FlowStrength</span>;
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#27969;&#21160;&#20043;&#21518;&#20877;&#24212;&#29992;tiling</span>
+    uvw.xy *= tiling;
+    uvw.xy += phaseOffset;
+    uvw.xy += (time - progress) * jump;
+    uvw.z = 1 - <span style="color: #4f97d7;">abs</span>(1 - 2 * progress);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> uvw;
+}
+
+<span style="color: #ce537a; font-weight: bold;">half4</span> <span style="color: #bc6ec5; font-weight: bold;">frag</span>(v2f i) : <span style="color: #a45bad;">SV_Target</span>
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">//float2 flowDir = half2(0, 1);</span>
+    <span style="color: #ce537a; font-weight: bold;">float2</span> flowDir = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_FlowMap</span>, sampler_FlowMap, i.uv).rg * 2 - 1;
+    <span style="color: #ce537a; font-weight: bold;">float</span> timeOffset = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_FlowMap</span>, sampler_FlowMap, i.uv).a;
+
+    <span style="color: #ce537a; font-weight: bold;">float</span> time = (<span style="color: #7590db;">_CustomTime</span>.y + timeOffset) * <span style="color: #7590db;">_TimeSpeed</span>;
+    <span style="color: #ce537a; font-weight: bold;">float2</span> jump = <span style="color: #ce537a; font-weight: bold;">float2</span>(<span style="color: #7590db;">_UJump</span>, <span style="color: #7590db;">_VJump</span>);
+    <span style="color: #ce537a; font-weight: bold;">float3</span> uvwA = FlowUVW(i.uv, flowDir, jump, <span style="color: #7590db;">_Tiling</span>, time, <span style="color: #a45bad;">false</span>);
+    <span style="color: #ce537a; font-weight: bold;">float3</span> uvwB = FlowUVW(i.uv, flowDir, jump, <span style="color: #7590db;">_Tiling</span>, time, <span style="color: #a45bad;">true</span>);
+
+    <span style="color: #ce537a; font-weight: bold;">half4</span> albedoA = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_MainTex</span>, sampler_MainTex, uvwA.xy) * uvwA.z;
+    <span style="color: #ce537a; font-weight: bold;">half4</span> albedoB = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_MainTex</span>, sampler_MainTex, uvwB.xy) * uvwB.z;
+    <span style="color: #ce537a; font-weight: bold;">half4</span> albedo = (albedoA + albedoB) * <span style="color: #7590db;">_Color</span>;
+
+    <span style="color: #ce537a; font-weight: bold;">half3</span> normalTS = <span style="color: #ce537a; font-weight: bold;">half3</span>(0, 1, 0);
+    InputData inputData;
+    InitializeInputData(i, normalTS, inputData);
+    <span style="color: #ce537a; font-weight: bold;">half4</span> col = UniversalFragmentPBR(inputData, albedo, <span style="color: #7590db;">_Metallic</span>, 0, <span style="color: #7590db;">_Smoothness</span>, 0, 0, 1);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> col;
+}
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org43fcbfa" class="outline-5">
+<h5 id="org43fcbfa">支持 FlowStrength FlowOffset</h5>
+<div class="outline-text-5" id="text-org43fcbfa">
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">float3</span> <span style="color: #bc6ec5; font-weight: bold;">FlowUVW</span>(<span style="color: #ce537a; font-weight: bold;">float2</span> uv, <span style="color: #ce537a; font-weight: bold;">float2</span> flowDir, <span style="color: #ce537a; font-weight: bold;">float2</span> jump, <span style="color: #ce537a; font-weight: bold;">float</span> flowOffset, <span style="color: #ce537a; font-weight: bold;">float</span> tiling, <span style="color: #ce537a; font-weight: bold;">float</span> time, <span style="color: #ce537a; font-weight: bold;">bool</span> flowB)
+{
+    <span style="color: #ce537a; font-weight: bold;">float</span> phaseOffset = flowB ? 0.5 : 0;
+    <span style="color: #ce537a; font-weight: bold;">float</span> progress = <span style="color: #4f97d7;">frac</span>(time + phaseOffset);
+    <span style="color: #ce537a; font-weight: bold;">float3</span> uvw;
+    uvw.xy = uv - flowDir * (progress + flowOffset);
+    uvw.xy *= tiling;
+    uvw.xy += phaseOffset;
+    uvw.xy += (time - progress) * jump;
+    uvw.z = 1 - <span style="color: #4f97d7;">abs</span>(1 - 2 * progress);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> uvw;
+}
+
+<span style="color: #ce537a; font-weight: bold;">half4</span> <span style="color: #bc6ec5; font-weight: bold;">frag</span>(v2f i) : <span style="color: #a45bad;">SV_Target</span>
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">//float2 flowDir = half2(0, 1);</span>
+    <span style="color: #ce537a; font-weight: bold;">float2</span> flowDir = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_FlowMap</span>, sampler_FlowMap, i.uv).rg * 2 - 1;
+    <span style="color: #2aa1ae; background-color: #292e34;">// FlowStrength &#30452;&#25509;&#20316;&#29992;&#22312; flowDir &#19978;&#12290;</span>
+    flowDir = flowDir * <span style="color: #7590db;">_FlowStrength</span>;
+
+    <span style="color: #ce537a; font-weight: bold;">float</span> timeOffset = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_FlowMap</span>, sampler_FlowMap, i.uv).a;
+    <span style="color: #2aa1ae; background-color: #292e34;">//float timeOffset = 0;</span>
+
+    <span style="color: #ce537a; font-weight: bold;">float</span> time = (<span style="color: #7590db;">_CustomTime</span>.y + timeOffset) * <span style="color: #7590db;">_TimeSpeed</span>;
+    <span style="color: #ce537a; font-weight: bold;">float2</span> jump = <span style="color: #ce537a; font-weight: bold;">float2</span>(<span style="color: #7590db;">_UJump</span>, <span style="color: #7590db;">_VJump</span>);
+    <span style="color: #ce537a; font-weight: bold;">float3</span> uvwA = FlowUVW(i.uv, flowDir, jump, <span style="color: #7590db;">_FlowOffset</span>, <span style="color: #7590db;">_Tiling</span>, time, <span style="color: #a45bad;">false</span>);
+    <span style="color: #ce537a; font-weight: bold;">float3</span> uvwB = FlowUVW(i.uv, flowDir, jump, <span style="color: #7590db;">_FlowOffset</span>, <span style="color: #7590db;">_Tiling</span>, time, <span style="color: #a45bad;">true</span>);
+
+    <span style="color: #ce537a; font-weight: bold;">half4</span> albedoA = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_MainTex</span>, sampler_MainTex, uvwA.xy) * uvwA.z;
+    <span style="color: #ce537a; font-weight: bold;">half4</span> albedoB = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_MainTex</span>, sampler_MainTex, uvwB.xy) * uvwB.z;
+    <span style="color: #ce537a; font-weight: bold;">half4</span> albedo = (albedoA + albedoB) * <span style="color: #7590db;">_Color</span>;
+
+    <span style="color: #ce537a; font-weight: bold;">half3</span> normalTS = <span style="color: #ce537a; font-weight: bold;">half3</span>(0, 1, 0);
+    InputData inputData;
+    InitializeInputData(i, normalTS, inputData);
+    <span style="color: #ce537a; font-weight: bold;">half4</span> col = UniversalFragmentPBR(inputData, albedo, <span style="color: #7590db;">_Metallic</span>, 0, <span style="color: #7590db;">_Smoothness</span>, 0, 0, 1);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> col;
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org04ba68f" class="outline-4">
+<h4 id="org04ba68f">Texturing</h4>
+<div class="outline-text-4" id="text-org04ba68f">
+</div>
+<div id="outline-container-org8162b09" class="outline-5">
+<h5 id="org8162b09">Abstract Water</h5>
+<div class="outline-text-5" id="text-org8162b09">
+<p>
+扭曲效果的最常见用途是用于模拟水面。但是因为扭曲可以在任何方向，因此，我们不能使用特定暗含流动方向的纹理。不包含流动方向就不可能做出真实正确的波浪，不过我们不需要真实。当纹理被扭曲和混合时，它只需要看起来像水就可以。 下面的是一个简单的噪声纹理，它结合了一个八度的低频 Perlin 和 Voronoi 噪声。 它是水的抽象灰度表示，深色表示底部，浅色表示顶部。<br />
+</p>
+
+
+<div id="org2ad090a" class="figure">
+<p><img src="./UnityCatLikeCoding/flow01_water.png" alt="flow01_water.png" width="256px" /><br />
+</p>
+</div>
+
+<p>
+将 MainTex 换为上图，调整参数可以得到如下效果。尽管噪声贴图本身看起来不像水，扭曲运动起来后，开始看起来像水了。<br />
+</p>
+<figure>
+  <iframe src='https://gfycat.com/ifr/CaringWideeyedGoa' frameborder='0' scrolling='no' allowfullscreen width='640' height='328'></iframe>
+  <figcaption>Flowing Water</figcaption>
+</figure>
+<p>
+将 FlowStrength 设置为 0，这移除了扭曲效果，可以表示静止的水，如下面视频所示，看起来确实像静态的水。<br />
+</p>
+<figure>
+  <iframe src='https://gfycat.com/ifr/WigglyOrganicDogwoodtwigborer' frameborder='0' scrolling='no' allowfullscreen width='640' height='328'></iframe>
+  <figcaption>Stationary Water</figcaption>
+</figure>
+</div>
+</div>
+<div id="outline-container-orgeab053d" class="outline-5">
+<h5 id="orgeab053d">Normal Map</h5>
+<div class="outline-text-5" id="text-orgeab053d">
+<p>
+Albedo 贴图只是一个预览，主要是通过水的表面在垂直方向上变化的情况来定义流动的水，垂直方向上的变化会改变水表面与光的交互。为此，我们需要一张法线贴图。下图通过将反照率纹理解释为高度图，并将高度按 0.1 缩放（避免法线效果太强），生成了法线贴图。<br />
+</p>
+
+
+<div id="org3a3ce8d" class="figure">
+<p><img src="./UnityCatLikeCoding/flow01_water-normal.png" alt="flow01_water-normal.png" width="256px" /><br />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">half4</span> <span style="color: #bc6ec5; font-weight: bold;">frag</span>(v2f i) : <span style="color: #a45bad;">SV_Target</span>
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">//float2 flowDir = half2(0, 1);</span>
+    <span style="color: #ce537a; font-weight: bold;">float2</span> flowDir = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_FlowMap</span>, sampler_FlowMap, i.uv).rg * 2 - 1;
+    flowDir = flowDir * <span style="color: #7590db;">_FlowStrength</span>;
+
+    <span style="color: #ce537a; font-weight: bold;">float</span> timeOffset = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_FlowMap</span>, sampler_FlowMap, i.uv).a;
+
+    <span style="color: #ce537a; font-weight: bold;">float</span> time = (<span style="color: #7590db;">_CustomTime</span>.y + timeOffset) * <span style="color: #7590db;">_TimeSpeed</span>;
+    <span style="color: #ce537a; font-weight: bold;">float2</span> jump = <span style="color: #ce537a; font-weight: bold;">float2</span>(<span style="color: #7590db;">_UJump</span>, <span style="color: #7590db;">_VJump</span>);
+    <span style="color: #ce537a; font-weight: bold;">float3</span> uvwA = FlowUVW(i.uv, flowDir, jump, <span style="color: #7590db;">_FlowOffset</span>, <span style="color: #7590db;">_Tiling</span>, time, <span style="color: #a45bad;">false</span>);
+    <span style="color: #ce537a; font-weight: bold;">float3</span> uvwB = FlowUVW(i.uv, flowDir, jump, <span style="color: #7590db;">_FlowOffset</span>, <span style="color: #7590db;">_Tiling</span>, time, <span style="color: #a45bad;">true</span>);
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#28155;&#21152;Normal Map</span>
+    <span style="color: #ce537a; font-weight: bold;">float3</span> normalA = UnpackNormal(SAMPLE_TEXTURE2D(<span style="color: #7590db;">_NormalMap</span>, sampler_NormalMap, uvwA.xy)) * uvwA.z;
+    <span style="color: #ce537a; font-weight: bold;">float3</span> normalB = UnpackNormal(SAMPLE_TEXTURE2D(<span style="color: #7590db;">_NormalMap</span>, sampler_NormalMap, uvwB.xy)) * uvwB.z;
+    <span style="color: #ce537a; font-weight: bold;">half3</span> normalTS = <span style="color: #4f97d7;">normalize</span>(normalA + normalB);
+
+    <span style="color: #ce537a; font-weight: bold;">half4</span> albedoA = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_MainTex</span>, sampler_MainTex, uvwA.xy) * uvwA.z;
+    <span style="color: #ce537a; font-weight: bold;">half4</span> albedoB = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_MainTex</span>, sampler_MainTex, uvwB.xy) * uvwB.z;
+    <span style="color: #ce537a; font-weight: bold;">half4</span> albedo = (albedoA + albedoB) * <span style="color: #7590db;">_Color</span>;
+
+    InputData inputData;
+    InitializeInputData(i, normalTS, inputData);
+    <span style="color: #ce537a; font-weight: bold;">half4</span> col = UniversalFragmentPBR(inputData, albedo, <span style="color: #7590db;">_Metallic</span>, 0, <span style="color: #7590db;">_Smoothness</span>, 0, 0, 1);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> col;
+}
+</pre>
+</div>
+
+<p>
+将 Color 修改为黑色，调整方向光方向，使得有足够多的镜面反射光到达摄像机（当镜面反射光很少时，表面的法线效果就会很弱，所以，很多游戏会增加摄像机点光源来增强法线效果）。这样可以得到如下的画面：<br />
+</p>
+<figure>
+<iframe src='https://gfycat.com/ifr/TimelyMajorArchaeopteryx' frameborder='0' scrolling='no' allowfullscreen width='640' height='328'></iframe>
+<figcaption>Color Black, Flowing Water</figcaption>
+</figure>
+
+<p>
+再将 FlowStrength 设置为 0，得到静态的水：<br />
+</p>
+<figure>
+<iframe src='https://gfycat.com/ifr/SomeCornyIriomotecat' frameborder='0' scrolling='no' allowfullscreen width='640' height='328'></iframe>
+<figcaption>Color Black, Stationary Water</figcaption>
+</figure>
+
+<p>
+乍一看，它可能看起来不错，但如果你专注于特定的高光，很快就会发现高光是在两种状态之间交替出现。 幸运的是，这可以通过使用非零的跳跃值来解决。如下：<br />
+</p>
+<figure>
+<iframe src='https://gfycat.com/ifr/SomeCornyIriomotecat' frameborder='0' scrolling='no' allowfullscreen width='640' height='328'></iframe>
+<figcaption>Color Black, Stationary Water, Jump 0.25</figcaption>
+</figure>
+</div>
+</div>
+<div id="outline-container-org34325c3" class="outline-5">
+<h5 id="org34325c3">Derivative Map</h5>
+<div class="outline-text-5" id="text-org34325c3">
+<p>
+直接平均法线是不合理的。 <a href="./UnityCatLikeCoding.html#org343ea68">Bumpiness</a> 一节中解释过，正确的方法是将法线向量转换为高度（也就是斜率），将斜率相加，然后再转换回法线向量。对于经过表面的波尤其需要如此操作。<br />
+</p>
+
+<p>
+由于我们通常使用 DXT5nm 格式来压缩法线贴图，因此我们首先必须重建两条法线的 Z 分量，然后转换为斜率(高度的导数就是斜率)、再叠加，最后归一化。由于我们不需要原始的法线向量，因此我们也可以通过将斜率(导数)存储在贴图中，这样就可以省去从法线转换为导数的步骤。<br />
+导数贴图存储了 X 方向和 Y 方向上高度的导数，如果不对其中存储的值进行缩放，其支持的表面倾斜的最大角度为 45 度，此时对应的导数为 1。不过通常不会用到如此陡的波，这个限制还是可以接受的。下图将 X 方向导数存储在 A 通道，Y方向导数存储在 G 通道，同时将原始高度存储在 B 通道，导数是将高度缩放了 0.1 倍之后计算的来的。<br />
+</p>
+
+
+<div id="orga5bb65a" class="figure">
+<p><img src="./UnityCatLikeCoding/flow01_water-derivative-height.png" alt="flow01_water-derivative-height.png" width="512px" /><br />
+</p>
+<p><span class="figure-number">Figure 1: </span>water derivative &amp; height</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">float3</span> <span style="color: #bc6ec5; font-weight: bold;">UnpackDerivativeHeight</span>(<span style="color: #ce537a; font-weight: bold;">float4</span> textureData)
+{
+    <span style="color: #ce537a; font-weight: bold;">float3</span> dh = textureData.agb;
+    dh.xy = dh.xy * 2 - 1;
+    <span style="color: #4f97d7; font-weight: bold;">return</span> dh;
+}
+
+<span style="color: #2aa1ae; background-color: #292e34;">// .......</span>
+
+<span style="color: #ce537a; font-weight: bold;">half4</span> <span style="color: #bc6ec5; font-weight: bold;">frag</span>(v2f i) : <span style="color: #a45bad;">SV_Target</span>
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">//float2 flowDir = half2(0, 1);</span>
+    <span style="color: #ce537a; font-weight: bold;">float2</span> flowDir = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_FlowMap</span>, sampler_FlowMap, i.uv).rg * 2 - 1;
+    flowDir = flowDir * <span style="color: #7590db;">_FlowStrength</span>;
+
+    <span style="color: #ce537a; font-weight: bold;">float</span> timeOffset = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_FlowMap</span>, sampler_FlowMap, i.uv).a;
+
+    <span style="color: #ce537a; font-weight: bold;">float</span> time = (<span style="color: #7590db;">_CustomTime</span>.y + timeOffset) * <span style="color: #7590db;">_TimeSpeed</span>;
+    <span style="color: #ce537a; font-weight: bold;">float2</span> jump = <span style="color: #ce537a; font-weight: bold;">float2</span>(<span style="color: #7590db;">_UJump</span>, <span style="color: #7590db;">_VJump</span>);
+    <span style="color: #ce537a; font-weight: bold;">float3</span> uvwA = FlowUVW(i.uv, flowDir, jump, <span style="color: #7590db;">_FlowOffset</span>, <span style="color: #7590db;">_Tiling</span>, time, <span style="color: #a45bad;">false</span>);
+    <span style="color: #ce537a; font-weight: bold;">float3</span> uvwB = FlowUVW(i.uv, flowDir, jump, <span style="color: #7590db;">_FlowOffset</span>, <span style="color: #7590db;">_Tiling</span>, time, <span style="color: #a45bad;">true</span>);
+
+    <span style="color: #ce537a; font-weight: bold;">float3</span> dhA = UnpackDerivativeHeight(SAMPLE_TEXTURE2D(<span style="color: #7590db;">_DerivHeightMap</span>, sampler_DerivHeightMap, uvwA.xy)) * uvwA.z;
+    <span style="color: #ce537a; font-weight: bold;">float3</span> dhB = UnpackDerivativeHeight(SAMPLE_TEXTURE2D(<span style="color: #7590db;">_DerivHeightMap</span>, sampler_DerivHeightMap, uvwB.xy)) * uvwB.z;
+    <span style="color: #2aa1ae; background-color: #292e34;">// half3 normalTS = half3(0, 0, 1);</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#26012;&#29575;(&#39640;&#24230;&#30340;&#23548;&#25968;) &#21472;&#21152;&#24471;&#21040;&#21472;&#21152;&#21518;&#30340; normal</span>
+    <span style="color: #ce537a; font-weight: bold;">half3</span> normalTS = <span style="color: #4f97d7;">normalize</span>(<span style="color: #ce537a; font-weight: bold;">float3</span>(-(dhA.xy + dhB.xy), 1));
+
+    <span style="color: #ce537a; font-weight: bold;">half4</span> albedoA = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_MainTex</span>, sampler_MainTex, uvwA.xy) * uvwA.z;
+    <span style="color: #ce537a; font-weight: bold;">half4</span> albedoB = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_MainTex</span>, sampler_MainTex, uvwB.xy) * uvwB.z;
+    <span style="color: #ce537a; font-weight: bold;">half4</span> albedo = (albedoA + albedoB) * <span style="color: #7590db;">_Color</span>;
+
+    InputData inputData;
+    InitializeInputData(i, normalTS, inputData);
+    <span style="color: #2aa1ae; background-color: #292e34;">//return half4((inputData.normalWS + 1) / 2, 1);</span>
+    <span style="color: #ce537a; font-weight: bold;">half4</span> col = UniversalFragmentPBR(inputData, albedo, <span style="color: #7590db;">_Metallic</span>, 0, <span style="color: #7590db;">_Smoothness</span>, 0, 0, 1);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> col;
+}
+</pre>
+</div>
+
+<p>
+我们也可以使用存储的高度来为表面着色。这对于调试很有用，所以让暂时使用高度替换原来的反照率。表面看起来比使用反照率纹理时更亮，即使两者都包含相同的高度数据。这是不同的，因为我们现在使用线性数据，而反照率纹理被解释为 sRGB 数据。为了获得相同的结果，我们必须手动将高度数据从伽马转换为线性颜色空间。 我们可以通过简单的平方来近似它。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-shader">o.Albedo = c.rgb;
+<span style="color: #2aa1ae; background-color: #292e34;">//o.Albedo = dhA.z + dhB.z;</span>
+o.Albedo = <span style="color: #4f97d7;">pow</span>(dhA.z + dhB.z, 2);
+</pre>
+</div>
+
+<ul class="org-ul">
+<li><a href="https://computergraphics.stackexchange.com/questions/4937/derivative-maps-vs-tangent-space-normal-maps">https://computergraphics.stackexchange.com/questions/4937/derivative-maps-vs-tangent-space-normal-maps</a><br /></li>
+<li>Derivative Maps <a href="https://www.rorydriscoll.com/2012/01/11/derivative-maps/">https://www.rorydriscoll.com/2012/01/11/derivative-maps/</a>  有道笔记<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org1748e98" class="outline-5">
+<h5 id="org1748e98">Height Scale</h5>
+<div class="outline-text-5" id="text-org1748e98">
+<p>
+使用导数而不是法线向量的另一个好处是它们可以轻松缩放。从缩放后的导数推导出的法线会匹配调整后的表面，这样就可以正确地缩放波浪的高度了。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #7590db;">_HeightScale</span> (<span style="color: #2d9574;">"Height Scale"</span>, <span style="color: #4f97d7; font-weight: bold;">Float</span>) = 1
+
+<span style="color: #ce537a; font-weight: bold;">half4</span> <span style="color: #bc6ec5; font-weight: bold;">frag</span>(v2f i) :<span style="color: #a45bad;">SV_Target</span>
+{
+    <span style="color: #ce537a; font-weight: bold;">float3</span> dhA = UnpackDerivativeHeight(<span style="color: #4f97d7;">tex2D</span>(<span style="color: #7590db;">_DerivHeightMap</span>, uvwA.xy)) * (uvwA.z * <span style="color: #7590db;">_HeightScale</span>);
+    <span style="color: #ce537a; font-weight: bold;">float3</span> dhB = UnpackDerivativeHeight(<span style="color: #4f97d7;">tex2D</span>(<span style="color: #7590db;">_DerivHeightMap</span>, uvwB.xy)) * (uvwB.z * <span style="color: #7590db;">_HeightScale</span>);
+}
+</pre>
+</div>
+
+<p>
+更进一步，我们可以根据流速使高度缩放是可变的。当流速大时，你会得到更高的波，而当流速小时，你会得到更低的波。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">half4</span> <span style="color: #bc6ec5; font-weight: bold;">frag</span>(v2f i) : <span style="color: #a45bad;">SV_Target</span>
+{
+    <span style="color: #ce537a; font-weight: bold;">float2</span> flowDir = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_FlowMap</span>, sampler_FlowMap, i.uv).rg * 2 - 1;
+    flowDir = flowDir * <span style="color: #7590db;">_FlowStrength</span>;
+
+    <span style="color: #ce537a; font-weight: bold;">float</span> timeOffset = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_FlowMap</span>, sampler_FlowMap, i.uv).a;
+
+    <span style="color: #ce537a; font-weight: bold;">float</span> time = (<span style="color: #7590db;">_CustomTime</span>.y + timeOffset) * <span style="color: #7590db;">_TimeSpeed</span>;
+    <span style="color: #ce537a; font-weight: bold;">float2</span> jump = <span style="color: #ce537a; font-weight: bold;">float2</span>(<span style="color: #7590db;">_UJump</span>, <span style="color: #7590db;">_VJump</span>);
+    <span style="color: #ce537a; font-weight: bold;">float3</span> uvwA = FlowUVW(i.uv, flowDir, jump, <span style="color: #7590db;">_FlowOffset</span>, <span style="color: #7590db;">_Tiling</span>, time, <span style="color: #a45bad;">false</span>);
+    <span style="color: #ce537a; font-weight: bold;">float3</span> uvwB = FlowUVW(i.uv, flowDir, jump, <span style="color: #7590db;">_FlowOffset</span>, <span style="color: #7590db;">_Tiling</span>, time, <span style="color: #a45bad;">true</span>);
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#32771;&#34385;&#27969;&#21160;&#36895;&#24230;, flowDir&#27169;&#38271;&#36234;&#22823;&#65292;&#34920;&#31034;&#27969;&#21160;&#36895;&#24230;&#36234;&#22823;</span>
+    <span style="color: #ce537a; font-weight: bold;">float</span> finalHeightScale = <span style="color: #4f97d7;">length</span>(flowDir) * <span style="color: #7590db;">_HeightScaleModulated</span> + <span style="color: #7590db;">_HeightScale</span>;
+    <span style="color: #ce537a; font-weight: bold;">float3</span> dhA = UnpackDerivativeHeight(SAMPLE_TEXTURE2D(<span style="color: #7590db;">_DerivHeightMap</span>, sampler_DerivHeightMap, uvwA.xy)) * (uvwA.z * finalHeightScale);
+    <span style="color: #ce537a; font-weight: bold;">float3</span> dhB = UnpackDerivativeHeight(SAMPLE_TEXTURE2D(<span style="color: #7590db;">_DerivHeightMap</span>, sampler_DerivHeightMap, uvwB.xy)) * (uvwB.z * finalHeightScale);
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// ......</span>
+    <span style="color: #ce537a; font-weight: bold;">half4</span> col = UniversalFragmentPBR(inputData, albedo, <span style="color: #7590db;">_Metallic</span>, 0, <span style="color: #7590db;">_Smoothness</span>, 0, 0, 1);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> col;
+}
+</pre>
+</div>
+
+<p>
+虽然可以将高度缩放纯粹基于流速，但最好使用至少一个小的恒定缩放，这样在没有流动的地方表面就不会变平。 例如，使用 0.1 的恒定缩放和 9 的调制缩放。它们不需要加起来为 1。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org69ada9b" class="outline-5">
+<h5 id="org69ada9b">Flow Plus Speed</h5>
+<div class="outline-text-5" id="text-org69ada9b">
+<p>
+我们可以将流动速度存储在 FlowMap 中，而不需要在 shader 中实时计算。虽然采样期间的滤波可以非线性地改变向量的长度，但这种差异只有在插值两个非常不同的向量时才会变得显著。只有在 FlowMap 中出现突然的方向变化时才会出现这种情况。只要我们没有这些情况，将流动速度存储在贴图中和实时计算相比几乎得到相同的结果。 另外，在调制高度比例时获得精确匹配并不是必需的。<br />
+</p>
+
+<p>
+下图将流动速度存储在 FlowMap 的 B 通道：<br />
+</p>
+
+<div id="org180afa4" class="figure">
+<p><img src="./UnityCatLikeCoding/flow01_flow-speed-noise.png" alt="flow01_flow-speed-noise.png" width="512px" /><br />
+</p>
+<p><span class="figure-number">Figure 2: </span>Flow map with speed in B channel.</p>
+</div>
+
+<p>
+真实水效果的最重要品质是其水面法线的动画有多好。在此基础上可以添加更高级的反射、透明度和折射等效果。但即使没有这些附加特性，表面也会像水。<br />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org0b4b2d5" class="outline-3">
+<h3 id="org0b4b2d5">Directional Flow</h3>
+<div class="outline-text-3" id="text-org0b4b2d5">
+</div>
+<div id="outline-container-org0c14102" class="outline-4">
+<h4 id="org0c14102">Anisotropic Patterns</h4>
+<div class="outline-text-4" id="text-org0c14102">
+<p>
+当扭曲纹理以模拟流动时，最终纹理可能会在任何方向上被拉伸或挤压。 这意味着无论纹理如何变形，它都必须看起来不错。 这仅适用于各向同性的模式。 各向同性意味着图像在所有方向上看起来都相似。 在上一个教程中使用的水纹理就是这样的。<br />
+</p>
+</div>
+<div id="outline-container-orgeb4bdea" class="outline-5">
+<h5 id="orgeb4bdea">Rippling Water</h5>
+<div class="outline-text-5" id="text-orgeb4bdea">
+<p>
+虽然流动的视觉效果令人信服，但通过扭曲各向同性图案而产生的图案看起来并不像真正的水。观察静止的图片而不是运动的画面时最为明显。 如下图，你无法说出水流方向应该是什么。那是因为波浪和涟漪的排列是错误的。它们沿流动方向拉长，而不是垂直于流动方向。<br />
+</p>
+
+<div id="org404c0d7" class="figure">
+<p><img src="./UnityCatLikeCoding/flow02_still_water.png" alt="flow02_still_water.png" width="512px" /><br />
+</p>
+<p><span class="figure-number">Figure 3: </span>Distorting an isotropic pattern</p>
+</div>
+
+<p>
+扭曲效果对于非常湍流或非常缓慢流动的情况都很适合。它不适用于表现出清晰波纹图案的更平静的流动，因为这些波纹有明确的方向，它们是各向异性的。下图是是包含此类波纹的水的高度纹理。它的制作方式与前一节用的纹理相同，但图案不同，另外其导数数据是对高度数据缩放了 0.025 倍计算得到的。<br />
+</p>
+
+<div id="org8443828" class="figure">
+<p><img src="./UnityCatLikeCoding/flow02_ripples-derivative-height.png" alt="flow02_ripples-derivative-height.png" width="512px" /><br />
+</p>
+<p><span class="figure-number">Figure 4: </span>Derivative plus height map for ripples.</p>
+</div>
+
+<p>
+将上面贴图应用与现在的水面得到如下画面，现在即使画面没有动起来，也可以看出有一个明确的流动方向。 但是，图案与流动没有对齐，因此隐含的方向是不正确。如果我们想展示正确的涟漪，我们必须使用不同的方法。<br />
+</p>
+
+<div id="org3410d2b" class="figure">
+<p><img src="./UnityCatLikeCoding/flow02_still_water_01.png" alt="flow02_still_water_01.png" width="512px" /><br />
+</p>
+<p><span class="figure-number">Figure 5: </span>Distorting an anisotropic pattern.</p>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orga5091cf" class="outline-4">
+<h4 id="orga5091cf">Aligning With the Flow</h4>
+<div class="outline-text-4" id="text-orga5091cf">
+<p>
+现在我们有一个各项异性的图案了，我们需要找到一种方式，使得它和流动方向能对齐。我们先使用一个固定的可控的流动方向来进行试验，一旦可行，再过度到使用 FlowMap 来指定流动方向。<br />
+</p>
+</div>
+<div id="outline-container-org801bc08" class="outline-5">
+<h5 id="org801bc08">UV for Directional Flow</h5>
+<div class="outline-text-5" id="text-org801bc08">
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">float3</span> <span style="color: #bc6ec5; font-weight: bold;">UnpackDerivativeHeight</span>(<span style="color: #ce537a; font-weight: bold;">float4</span> textureData)
+{
+    <span style="color: #ce537a; font-weight: bold;">float3</span> dh = textureData.agb;
+    dh.xy = dh.xy * 2 - 1;
+    <span style="color: #4f97d7; font-weight: bold;">return</span> dh;
+}
+
+<span style="color: #ce537a; font-weight: bold;">float2</span> <span style="color: #bc6ec5; font-weight: bold;">DirectionalFlowUV</span>(<span style="color: #ce537a; font-weight: bold;">float2</span> uv, <span style="color: #ce537a; font-weight: bold;">float2</span> flowDir, <span style="color: #ce537a; font-weight: bold;">float</span> tiling, <span style="color: #ce537a; font-weight: bold;">float</span> time)
+{
+    uv += time * flowDir;
+    <span style="color: #4f97d7; font-weight: bold;">return</span> uv * tiling;
+}
+
+<span style="color: #ce537a; font-weight: bold;">half4</span> <span style="color: #bc6ec5; font-weight: bold;">frag</span>(v2f i) : <span style="color: #a45bad;">SV_Target</span>
+{
+    <span style="color: #ce537a; font-weight: bold;">float</span> time = <span style="color: #7590db;">_CustomTime</span>.y * <span style="color: #7590db;">_TimeSpeed</span>;
+    <span style="color: #ce537a; font-weight: bold;">float2</span> uvFlow = DirectionalFlowUV(i.uv, <span style="color: #ce537a; font-weight: bold;">float2</span>(0, 1), <span style="color: #7590db;">_Tiling</span>, time);
+
+    <span style="color: #ce537a; font-weight: bold;">float3</span> dh = UnpackDerivativeHeight(SAMPLE_TEXTURE2D(<span style="color: #7590db;">_MainTex</span>, sampler_MainTex, uvFlow));
+    <span style="color: #ce537a; font-weight: bold;">half4</span> albedo = dh.z * dh.z * <span style="color: #7590db;">_Color</span>;
+    <span style="color: #ce537a; font-weight: bold;">float3</span> normalTS = <span style="color: #4f97d7;">normalize</span>(<span style="color: #ce537a; font-weight: bold;">float3</span>(-dh.xy, 1));
+
+    InputData inputData;
+    InitializeInputData(i, normalTS, inputData);
+    <span style="color: #ce537a; font-weight: bold;">half4</span> col = UniversalFragmentPBR(inputData, albedo, <span style="color: #7590db;">_Metallic</span>, 0, <span style="color: #7590db;">_Smoothness</span>, 0, 0, 1);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> col;
+}
+</pre>
+</div>
+<p>
+使用 float2(0,1) 作为流动方向，来控制图案移动得到如下画面：<br />
+</p>
+<figure>
+<iframe src='https://gfycat.com/ifr/EqualLankyBrahmanbull' frameborder='0' scrolling='no' allowfullscreen width='640' height='328'></iframe>
+<figcaption>caption for video</figcaption>
+</figure>
+</div>
+</div>
+<div id="outline-container-orgc60f6cc" class="outline-5">
+<h5 id="orgc60f6cc">Texture Rotation</h5>
+<div class="outline-text-5" id="text-orgc60f6cc">
+<p>
+贴图是 2D 的，因此只需要一个 2x2 矩阵就可以对贴图进行旋转。假设旋转角度为θ，则旋转矩阵如下：<br />
+</p>
+<pre class="example" id="org9f1e4f8">
+| cos(θ)  -sin(θ) |
+| sin(θ)   cos(θ) |
+</pre>
+<p>
+上一节中，flowDir = float2(0, 1)，刚好匹配不旋转的贴图，也就是说 flowDir 和贴图的 v 方向一致。因此，改变 flowDir，我们需要对应地旋转贴图。如下图所示，假设 flowDir 从(0, 1)变为（x, y），归一化后为 normalizeFlowDir (x',y')，对应的贴图旋转角度为 φ, 则 (-sin(φ), cos(φ)) = (x', y')，从而可以得出我们需要对贴图进行旋转的矩阵为:<br />
+</p>
+<pre class="example" id="org4227bf2">
+| cos(φ)  -sin(φ)| = |y'  x'|
+| sin(φ)   cos(φ)|   |-x' y'|
+</pre>
+
+<div id="org8825deb" class="figure">
+<p><img src="./UnityCatLikeCoding/flow02_rot_matrix.png" alt="flow02_rot_matrix.png" width="300px" /><br />
+</p>
+<p><span class="figure-number">Figure 6: </span>rot img matrix</p>
+</div>
+
+<p>
+在代码中我们旋转的是 uv 而不是图案，因此我们需要反向旋转的矩阵，因此最终用于旋转 uv 的矩阵为：<br />
+</p>
+<pre class="example" id="orgcd5afe2">
+| cos(φ)   sin(φ)| = |y'  -x'|
+| -sin(φ)  cos(φ)|   |x'   y'|
+</pre>
+
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">float3</span> <span style="color: #bc6ec5; font-weight: bold;">UnpackDerivativeHeight</span>(<span style="color: #ce537a; font-weight: bold;">float4</span> textureData)
+{
+    <span style="color: #ce537a; font-weight: bold;">float3</span> dh = textureData.agb;
+    dh.xy = dh.xy * 2 - 1;
+    <span style="color: #4f97d7; font-weight: bold;">return</span> dh;
+}
+
+<span style="color: #ce537a; font-weight: bold;">float2</span> <span style="color: #bc6ec5; font-weight: bold;">DirectionalFlowUV</span>(<span style="color: #ce537a; font-weight: bold;">float2</span> uv, <span style="color: #ce537a; font-weight: bold;">float2</span> flowDir, <span style="color: #ce537a; font-weight: bold;">float</span> tiling, <span style="color: #ce537a; font-weight: bold;">float</span> time)
+{
+    <span style="color: #ce537a; font-weight: bold;">float2</span> dir = <span style="color: #4f97d7;">normalize</span>(flowDir);
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#22240;&#20026;&#31227;&#21160;&#30340;&#26159;uv&#65292;&#25152;&#20197;&#35201;&#21453;&#36716;&#26041;&#21521;</span>
+    uv -= time * flowDir;
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#22240;&#20026;&#26059;&#36716;&#30340;&#26159;uv&#65292;&#25152;&#20197;&#35201;&#21453;&#21521;&#26059;&#36716;&#30697;&#38453;</span>
+    uv = <span style="color: #4f97d7;">mul</span>(<span style="color: #ce537a; font-weight: bold;">float2x2</span>(dir.y, -dir.x, dir.x, dir.y), uv);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> uv * tiling;
+}
+
+<span style="color: #ce537a; font-weight: bold;">half4</span> <span style="color: #bc6ec5; font-weight: bold;">frag</span>(v2f i) : <span style="color: #a45bad;">SV_Target</span>
+{
+    <span style="color: #ce537a; font-weight: bold;">float</span> time = <span style="color: #7590db;">_CustomTime</span>.y * <span style="color: #7590db;">_TimeSpeed</span>;
+    <span style="color: #ce537a; font-weight: bold;">float2</span> uvFlow = DirectionalFlowUV(i.uv, <span style="color: #ce537a; font-weight: bold;">float2</span>(1, 1), <span style="color: #7590db;">_Tiling</span>, time);
+
+    <span style="color: #ce537a; font-weight: bold;">float3</span> dh = UnpackDerivativeHeight(SAMPLE_TEXTURE2D(<span style="color: #7590db;">_MainTex</span>, sampler_MainTex, uvFlow));
+    <span style="color: #ce537a; font-weight: bold;">half4</span> albedo = dh.z * dh.z * <span style="color: #7590db;">_Color</span>;
+    <span style="color: #ce537a; font-weight: bold;">float3</span> normalTS = <span style="color: #4f97d7;">normalize</span>(<span style="color: #ce537a; font-weight: bold;">float3</span>(-dh.xy, 1));
+
+    InputData inputData;
+    InitializeInputData(i, normalTS, inputData);
+    <span style="color: #ce537a; font-weight: bold;">half4</span> col = UniversalFragmentPBR(inputData, albedo, <span style="color: #7590db;">_Metallic</span>, 0, <span style="color: #7590db;">_Smoothness</span>, 0, 0, 1);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> col;
+}
+</pre>
+</div>
+
+<p>
+将 uv 移动去掉（即注释掉： uv-=time*flowDir），只保留旋转，可以得到如下画面：<br />
+</p>
+<figure>
+<iframe src='https://gfycat.com/ifr/WarlikeRecentGuernseycow' frameborder='0' scrolling='no' allowfullscreen width='640' height='328'></iframe>
+<figcaption>Rotating clockwise.</figcaption>
+</figure>
+</div>
+</div>
+<div id="outline-container-org708012c" class="outline-5">
+<h5 id="org708012c">Rotating Derivatives</h5>
+<div class="outline-text-5" id="text-org708012c">
+<p>
+尽管图案旋转是正确的，但是 normal 向量不正确。由于图案的显示，无法明显观察到该问题。将代码修改如下进行观察。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">float3</span> dh = UnpackDerivativeHeight(SAMPLE_TEXTURE2D(<span style="color: #7590db;">_MainTex</span>, sampler_MainTex, uvFlow));
+<span style="color: #2aa1ae; background-color: #292e34;">//half4 albedo = dh.z * dh.z * _Color;</span>
+<span style="color: #ce537a; font-weight: bold;">half4</span> albedo = <span style="color: #ce537a; font-weight: bold;">half4</span>(dh.rg, 0 , 0);
+</pre>
+</div>
+
+<figure>
+<iframe
+    src="https://player.bilibili.com/player.html?aid=857378530&bvid=BV1aV4y1W7Ec&cid=815363384&page=1"
+    scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" width='640' height='328'>
+</iframe><figcaption>rotate derivation map</figcaption>
+</figure>
+
+<p>
+从上面视频可以看出，旋转过程中，导数贴图内容是没有改变的。导数贴图中存储的是高度的变化量，旋转 90 度后，x方向高度变化量和 y 方向高度变化量刚好会交换。导数贴图内容的旋转矩阵和 uv 旋转矩阵相同。修改后画面如下:<br />
+</p>
+<figure>
+<iframe
+    src="https://player.bilibili.com/player.html?aid=302436423&bvid=BV1wP411L7ZG&cid=815388934&page=1"
+    scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" width='640' height='328'>
+</iframe><figcaption>rotate derivation map</figcaption>
+</figure>
+</div>
+</div>
+
+<div id="outline-container-org1848a49" class="outline-5">
+<h5 id="org1848a49">Sampling the Flow</h5>
+<div class="outline-text-5" id="text-org1848a49">
+<p>
+前面使用的都是固定可控的流动方向，下面代码使用 FlowMap 来控制流动方向。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">float3</span> <span style="color: #bc6ec5; font-weight: bold;">UnpackDerivativeHeight</span>(<span style="color: #ce537a; font-weight: bold;">float4</span> textureData)
+{
+    <span style="color: #ce537a; font-weight: bold;">float3</span> dh = textureData.agb;
+    dh.xy = dh.xy * 2 - 1;
+    <span style="color: #4f97d7; font-weight: bold;">return</span> dh;
+}
+
+<span style="color: #ce537a; font-weight: bold;">float2</span> <span style="color: #bc6ec5; font-weight: bold;">DirectionalFlowUV</span>(<span style="color: #ce537a; font-weight: bold;">float2</span> uv, <span style="color: #ce537a; font-weight: bold;">float3</span> flowDirAndSpeed, <span style="color: #ce537a; font-weight: bold;">float</span> tiling, <span style="color: #ce537a; font-weight: bold;">float</span> time, <span style="color: #4f97d7; font-weight: bold;">out</span> <span style="color: #ce537a; font-weight: bold;">float2x2</span> rotation)
+{
+    <span style="color: #ce537a; font-weight: bold;">float2</span> dir = <span style="color: #4f97d7;">normalize</span>(flowDirAndSpeed.xy);
+    uv -= time * flowDirAndSpeed.xy * flowDirAndSpeed.z;
+    rotation = <span style="color: #ce537a; font-weight: bold;">float2x2</span>(dir.y, -dir.x, dir.x, dir.y);
+    uv = <span style="color: #4f97d7;">mul</span>(rotation, uv);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> uv * tiling;
+}
+
+<span style="color: #ce537a; font-weight: bold;">half4</span> <span style="color: #bc6ec5; font-weight: bold;">frag</span>(v2f i) : <span style="color: #a45bad;">SV_Target</span>
+{
+    <span style="color: #ce537a; font-weight: bold;">float</span> time = <span style="color: #7590db;">_CustomTime</span>.y * <span style="color: #7590db;">_TimeSpeed</span>;
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#20351;&#29992; flowmap &#25511;&#21046;&#27969;&#21521;</span>
+    <span style="color: #ce537a; font-weight: bold;">float3</span> flowDirAndSpeed = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_FlowMap</span>, sampler_FlowMap, i.uv);
+    flowDirAndSpeed.xy = flowDirAndSpeed.rg * 2 - 1;
+    flowDirAndSpeed.z *= <span style="color: #7590db;">_FlowStrength</span>;
+
+    <span style="color: #ce537a; font-weight: bold;">float2x2</span> derivRotation;
+    <span style="color: #ce537a; font-weight: bold;">float2</span> uvFlow = DirectionalFlowUV(i.uv, flowDirAndSpeed, <span style="color: #7590db;">_Tiling</span>, time, derivRotation);
+
+    <span style="color: #ce537a; font-weight: bold;">float3</span> dh = UnpackDerivativeHeight(SAMPLE_TEXTURE2D(<span style="color: #7590db;">_MainTex</span>, sampler_MainTex, uvFlow));
+    dh.xy = <span style="color: #4f97d7;">mul</span>(derivRotation, dh.xy);
+    <span style="color: #ce537a; font-weight: bold;">half4</span> albedo = dh.z * dh.z * <span style="color: #7590db;">_Color</span>;
+    <span style="color: #2aa1ae; background-color: #292e34;">//half4 albedo = half4(dh.rg, 0 , 0);</span>
+    <span style="color: #ce537a; font-weight: bold;">float3</span> normalTS = <span style="color: #4f97d7;">normalize</span>(<span style="color: #ce537a; font-weight: bold;">float3</span>(-dh.xy, 1));
+
+    InputData inputData;
+    InitializeInputData(i, normalTS, inputData);
+    <span style="color: #ce537a; font-weight: bold;">half4</span> col = UniversalFragmentPBR(inputData, albedo, <span style="color: #7590db;">_Metallic</span>, 0, <span style="color: #7590db;">_Smoothness</span>, 0, 0, 1);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> col;
+}
+</pre>
+</div>
+
+<p>
+和前一节（Texture Distortion）一样，随着时间的推移图像拉伸和挤压越严重。并且独立旋转每个片段会将图案撕开。当我们使用统一方向时，不会有该问题。 我们必须想出一个解决方案。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgb538a57" class="outline-4">
+<h4 id="orgb538a57">Tiled Flow</h4>
+<div class="outline-text-4" id="text-orgb538a57">
+<p>
+扭曲图案方法有时域问题，为了保证图案不乱作一团，我们不得不在某个时候重置扭曲的图案。 我们通过跨时间混合两个不同阶段的扭曲图案来隐藏这种重置操作。 定向流动方法也有这个问题，但性质不同。虽然随着时间的推移图案会更多地分解，但对于定向流动方法来说，在零时间点，还没任何动画时，图案已经被破坏了。 所以重置时间无济于事。<br />
+</p>
+
+<p>
+定向流动方法中，在方向不同的地方存在不连续性。这是一个空间问题，而不是时间问题。 解决方案是再次通过混合来隐藏该问题。但现在我们必须在空间上进行混合，而不是时间。 我们处理的是 2D 表面，而不是 1D 时间，所以它更复杂。<br />
+</p>
+
+<p>
+我们要做的是尝试在均匀流动的完美结果和每个片段使用不同流动方向的期望结果之间找到折衷。 该折衷方案是将表面划分为多个区域。 我们将简单地使用方形 tiling 网格。 每个 tile 都有一个均匀的流动，所以不会受到任何扭曲。 然后我们将每块 tile 与它的邻居混合，以隐藏它们之间的不连续性。 这种方法首先由 Frans van Hoesel 在 2010 年公开描述为 Tiled Directional Flow 算法。 我们将创建它的一个变体。<br />
+</p>
+
+<ul class="org-ul">
+<li><a href="https://github.com/Scrawk/Tiled-Directional-Flow">https://github.com/Scrawk/Tiled-Directional-Flow</a><br /></li>
+</ul>
+</div>
+<div id="outline-container-orga18a371" class="outline-5">
+<h5 id="orga18a371">Flow Grid</h5>
+<div class="outline-text-5" id="text-orga18a371">
+<p>
+可以按照下面公式来将 FlowMap 划分指定分辨率的块，并且每个块内，对应的 uv 相同。此时就可以保证每个 tiling 内流动方向是相同的。<br />
+</p>
+
+<div id="org3d53d4a" class="figure">
+<p><img src="./UnityCatLikeCoding/flow2_tiling_flowmap.png" alt="flow2_tiling_flowmap.png" width="512px" /><br />
+</p>
+<p><span class="figure-number">Figure 7: </span>tiling flowmap, resolution=4.</p>
+</div>
+
+<p>
+<a href="./UnityCatLikeCoding/flow2_tile_flowmap.ggb">./UnityCatLikeCoding/flow2_tile_flowmap.ggb</a><br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgfe2283b" class="outline-5">
+<h5 id="orgfe2283b">Blending Cells</h5>
+<div class="outline-text-5" id="text-orgfe2283b">
+<p>
+现在我们可以得到清晰可辨的网格单元了，每个网格单元都包含一个不会扭曲的图案。下一步就是进行混合。我们需要在每个片段中采样多个单元。通过对 uv 进行偏移可以找到不同的 cell。例如，下面代码是在水平方向上对两个 cell 进行混合，每个 cell 的权重为 0.5。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">float3</span> <span style="color: #bc6ec5; font-weight: bold;">FlowCell</span>(<span style="color: #ce537a; font-weight: bold;">float2</span> uv, <span style="color: #ce537a; font-weight: bold;">float2</span> offset, <span style="color: #ce537a; font-weight: bold;">float</span> time)
+{
+    <span style="color: #ce537a; font-weight: bold;">float2x2</span> derivRotation;
+    <span style="color: #ce537a; font-weight: bold;">float2</span> uvTiled = <span style="color: #4f97d7;">floor</span>(uv * <span style="color: #7590db;">_GridResolution</span> + offset) / <span style="color: #7590db;">_GridResolution</span>;
+    <span style="color: #ce537a; font-weight: bold;">float3</span> flowDirAndSpeed = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_FlowMap</span>, sampler_FlowMap, uvTiled);
+    flowDirAndSpeed.xy = flowDirAndSpeed.rg * 2 - 1;
+    flowDirAndSpeed.z *= <span style="color: #7590db;">_FlowStrength</span>;
+
+    <span style="color: #ce537a; font-weight: bold;">float2</span> uvFlow = DirectionalFlowUV(uv, flowDirAndSpeed, <span style="color: #7590db;">_Tiling</span>, time, derivRotation);
+    <span style="color: #ce537a; font-weight: bold;">float3</span> dh = UnpackDerivativeHeight(SAMPLE_TEXTURE2D(<span style="color: #7590db;">_MainTex</span>, sampler_MainTex, uvFlow));
+    dh.xy = <span style="color: #4f97d7;">mul</span>(derivRotation, dh.xy);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> dh;
+}
+
+<span style="color: #ce537a; font-weight: bold;">half4</span> <span style="color: #bc6ec5; font-weight: bold;">frag</span>(v2f i) : <span style="color: #a45bad;">SV_Target</span>
+{
+    <span style="color: #ce537a; font-weight: bold;">float</span> time = <span style="color: #7590db;">_CustomTime</span>.y * <span style="color: #7590db;">_TimeSpeed</span>;
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#22312;&#27700;&#24179;&#26041;&#21521;&#19978;&#28151;&#21512;&#20004;&#20010;&#30456;&#37051;&#30340;cell</span>
+    <span style="color: #ce537a; font-weight: bold;">float3</span> dhA = FlowCell(i.uv, <span style="color: #ce537a; font-weight: bold;">float2</span>(0, 0), time);
+    <span style="color: #ce537a; font-weight: bold;">float3</span> dhB = FlowCell(i.uv, <span style="color: #ce537a; font-weight: bold;">float2</span>(1, 0), time);
+    <span style="color: #ce537a; font-weight: bold;">float3</span> dh = dhA * 0.5 + dhB * 0.5;
+
+    <span style="color: #ce537a; font-weight: bold;">half4</span> albedo = dh.z * dh.z * <span style="color: #7590db;">_Color</span>;
+    <span style="color: #ce537a; font-weight: bold;">float3</span> normalTS = <span style="color: #4f97d7;">normalize</span>(<span style="color: #ce537a; font-weight: bold;">float3</span>(-dh.xy, 1));
+
+    InputData inputData;
+    InitializeInputData(i, normalTS, inputData);
+    <span style="color: #ce537a; font-weight: bold;">half4</span> col = UniversalFragmentPBR(inputData, albedo, <span style="color: #7590db;">_Metallic</span>, 0, <span style="color: #7590db;">_Smoothness</span>, 0, 0, 1);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> col;
+}
+</pre>
+</div>
+<p>
+我们可以使用更加合理的混合权重，根据 uv 来计算混合权重，离 cell B 越远的地方 cellA 的权重越大 cellB 权重越小，离 cell B 越近的地方 cellA 权重越小，cellB 权重越大，如下代码所示：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">float3</span> dhA = FlowCell(uv, <span style="color: #ce537a; font-weight: bold;">float2</span>(0, 0), time);
+<span style="color: #ce537a; font-weight: bold;">float3</span> dhB = FlowCell(uv, <span style="color: #ce537a; font-weight: bold;">float2</span>(1, 0), time);
+
+<span style="color: #ce537a; font-weight: bold;">float</span> t = <span style="color: #4f97d7;">frac</span>(uv.x * <span style="color: #7590db;">_GridResolution</span>);
+<span style="color: #ce537a; font-weight: bold;">float</span> wA = 1 - t;
+<span style="color: #ce537a; font-weight: bold;">float</span> wB = t;
+
+<span style="color: #ce537a; font-weight: bold;">float3</span> dh = dhA * wA + dhB * wB;
+<span style="color: #ce537a; font-weight: bold;">fixed4</span> c = dh.z * dh.z * <span style="color: #7590db;">_Color</span>;
+o.Albedo = c.rgb;
+</pre>
+</div>
+<p>
+这样我们就可以使得 cell 之间在水平方向上是连续的了，但是在水平方向上 cell 之间有明显的一条线，该问题下小节进行分析。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org14c11bb" class="outline-5">
+<h5 id="org14c11bb">Overlapping Cells</h5>
+<div class="outline-text-5" id="text-org14c11bb">
+<p>
+尽管单元格之间的插值应该消除水平不连续性，但我们仍然可以看到使网格明显的线条。 这些线条是用于采样 FlowMap 的 UV 坐标突然跳跃造成的 artifacts。突然变大的 UV 增量会触发 GPU 沿网格线选择不同的 mipmap 级别(采样 FlowMap 使用的 uv 有跳变，每个 cell 内 uv 是固定的，相邻 cell 的边界处会跳变)，从而破坏 flow 数据。 虽然我们可以通过消除 mipmap 来消除这些 artifacts，但这是不可取的。如果我们能以其他方式隐藏它们会更好。（Tips: 经过测试，禁用 mipmap 并不会消除该问题，我猜测可能由于精度问题，导致无法确定交界处到底属于哪个 cell 也会导致 artifact 线条）<br />
+我们可以通过确保单元格的权重在其边缘为零来隐藏线条，单元格边缘就是 artifacts 线条所在的位置。 但是权重函数 t 会重置每个图块，所以我们在边缘有 0 和 1 的锯齿波，如下图所示。 因此，尽管一侧总是很好，但另一侧却受到 artifacts 线条的影响。<br />
+</p>
+
+<div id="org443084f" class="figure">
+<p><img src="./UnityCatLikeCoding/flow02_weight_func.png" alt="flow02_weight_func.png" width="400px" /><br />
+</p>
+<p><span class="figure-number">Figure 8: </span>Sawtooth waves are both 0 and 1 at grid lines.</p>
+</div>
+
+<p>
+为了解决这个问题，我们必须使得单元格之间有重叠。 这样我们就可以在它们之间交替，并使用一个 cell 来隐藏另一个 cell 的 artifacts 线条。<br />
+首先，将第二个单元格的偏移量减半。这样 cells 在水平方向上就会有重叠。得到如下画面：<br />
+</p>
+
+<div id="orga1b55c4" class="figure">
+<p><img src="./UnityCatLikeCoding/flow2_offset-compare.png" alt="flow2_offset-compare.png" width="900px" /><br />
+</p>
+<p><span class="figure-number">Figure 9: </span>Offset(1,0) vs Offset(0.5,0)</p>
+</div>
+
+<p>
+然后，我们必须再次正确混合单元格。 这是通过将 t 替换为 |2t - 1| 来完成的，将其变成三角波，该三角波在图块的两侧为零，在中间为 1。如下图。这样 A 的权重现在在每个图块的两侧都为零, 它权重在中间达到最大。 B 则相反，它在每个图块中间的权重为零。 而且因为我们现在只将 B 偏移了半个格子，这正是它的 artifacts 线条出现的地方。<br />
+</p>
+
+<div id="org4a72afd" class="figure">
+<p><img src="./UnityCatLikeCoding/flow02_weight_func01.png" alt="flow02_weight_func01.png" width="400px" /><br />
+</p>
+</div>
+
+<p>
+利用双线性插值的原理，加入竖直方向的混合。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">float2</span> t = <span style="color: #4f97d7;">abs</span>(2 * <span style="color: #4f97d7;">frac</span>(i.uv * <span style="color: #7590db;">_GridResolution</span>) - 1);
+<span style="color: #ce537a; font-weight: bold;">float</span> wA = 1 - t.x;
+<span style="color: #ce537a; font-weight: bold;">float</span> wB = t.x;
+<span style="color: #ce537a; font-weight: bold;">float</span> wC = 1 - t.x;
+<span style="color: #ce537a; font-weight: bold;">float</span> wD = t.x;
+
+<span style="color: #ce537a; font-weight: bold;">float3</span> dh = (dhA * wA + dhB * wB)*(1-t.y) + (dhC * wC + dhD * wD)*t.y;
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org74431fe" class="outline-5">
+<h5 id="org74431fe">Sampling At Cell Centers</h5>
+<div class="outline-text-5" id="text-org74431fe">
+<p>
+目前，我们在每个 cell 的左下角对 Flowmap 进行采样。 但这与我们混合 cell 的方式不一致。 Flow 数据和 cell 混合未对齐，这会使网格更明显。 我们应该在每个单元格的中心对 FlowMap 进行采样，该处 Cell 的权重为 1。对于单元格 A 来说，采样位置应该是中心点，因此 U 方向和 V 方向都需要偏移 0.5。 对于 B 来说，在 U 方向上已经偏移了一半，因此只需要在 V 维度上偏移 0.5。 类似地，C 在 V 维度已经偏移了一半，C 只需要水平偏移，D 已经在 U 方向和 V 方向偏移过了，因此不需要任何偏移。<br />
+</p>
+
+
+<div id="org8542f5a" class="figure">
+<p><img src="./UnityCatLikeCoding/flow2_sample_cell_pos.png" alt="flow2_sample_cell_pos.png" width="400px" /><br />
+</p>
+</div>
+
+<p>
+_GridResolution 越高，流动的曲线越平滑。 但是不能将分辨率设置得太高，因为这样就没有空间让波纹图案显示出来了。增加 tiling 可以使_GridResolution 设置的更高，但也会使波纹更小。 必须找到最适合每种情况的平衡点。 例如，5 的平铺加上 30 的网格分辨率适用于本教程中的图像。这使得可以看到流动，并且没有让波纹变得很小而无法看到。<br />
+</p>
+
+
+<div id="orgfbb1ac3" class="figure">
+<p><img src="./UnityCatLikeCoding/flow2_tiling_resolution.png" alt="flow2_tiling_resolution.png" width="800px" /><br />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org6867e46" class="outline-5">
+<h5 id="org6867e46">Scaling the Waves</h5>
+<div class="outline-text-5" id="text-org6867e46">
+<p>
+和扭曲效果一样，我们可以缩放导数贴图读取出来的导数数据和高度数据（速度越大波浪高度越大 <a href="#org1748e98">Wave Height Scale</a> ）。由于 Tiled Flow 是基于时域的方法，我们还可以依据流动速度来缩放图案的尺寸。水流速度越大的区域涟漪会越小，而速度越小的区域涟漪会越大。tiling 中将速度因素考虑进去就可以模拟这种现象。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">float3</span> <span style="color: #bc6ec5; font-weight: bold;">FlowCell</span>(<span style="color: #ce537a; font-weight: bold;">float2</span> uv, <span style="color: #ce537a; font-weight: bold;">float2</span> offset, <span style="color: #ce537a; font-weight: bold;">float</span> time)
+{
+    <span style="color: #ce537a; font-weight: bold;">float2</span> shift = 1 - offset;
+    shift *= 0.5;
+    offset *= 0.5;
+    <span style="color: #ce537a; font-weight: bold;">float2x2</span> derivRotation;
+    <span style="color: #ce537a; font-weight: bold;">float2</span> uvTiled = (<span style="color: #4f97d7;">floor</span>(uv * <span style="color: #7590db;">_GridResolution</span> + offset) + shift) / <span style="color: #7590db;">_GridResolution</span>;
+    <span style="color: #ce537a; font-weight: bold;">float3</span> flowDirAndSpeed = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_FlowMap</span>, sampler_FlowMap, uvTiled);
+    flowDirAndSpeed.xy = flowDirAndSpeed.rg * 2 - 1;
+    flowDirAndSpeed.z *= <span style="color: #7590db;">_FlowStrength</span>;
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#26681;&#25454;&#36895;&#24230;&#26469;&#32553;&#25918; tiling</span>
+    <span style="color: #ce537a; font-weight: bold;">float</span> tiling = flowDirAndSpeed.z * <span style="color: #7590db;">_TilingModulated</span> + <span style="color: #7590db;">_Tiling</span>;
+    <span style="color: #ce537a; font-weight: bold;">float2</span> uvFlow = DirectionalFlowUV(uv, flowDirAndSpeed, tiling, time, derivRotation);
+    <span style="color: #ce537a; font-weight: bold;">float3</span> dh = UnpackDerivativeHeight(SAMPLE_TEXTURE2D(<span style="color: #7590db;">_MainTex</span>, sampler_MainTex, uvFlow));
+    dh.xy = <span style="color: #4f97d7;">mul</span>(derivRotation, dh.xy);
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#26681;&#25454;&#36895;&#24230;&#26469;&#32553;&#25918; &#39640;&#24230;&#23548;&#25968;&#21644;&#39640;&#24230;</span>
+    dh *= flowDirAndSpeed.z * <span style="color: #7590db;">_HeightScaleModulated</span> + <span style="color: #7590db;">_HeightScale</span>;
+    <span style="color: #4f97d7; font-weight: bold;">return</span> dh;
+}
+</pre>
+</div>
+
+<p>
+得到如下画面:<br />
+</p>
+<figure>
+<iframe src='https://gfycat.com/ifr/SociableSkeletalBlackbuck' frameborder='0' scrolling='no' allowfullscreen width='640' height='328'></iframe>
+<figcaption>Constant(3) and modulated tiling(50).</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div id="outline-container-org659c913" class="outline-4">
+<h4 id="org659c913">Hiding Artifacts</h4>
+<div class="outline-text-4" id="text-org659c913">
+<p>
+到目前为止，我们的 directional flow shader 功能已经完整了，但是依然存在一些 artifacts。虽然它们并不总是很明显，但它们仍然值得关注。<br />
+</p>
+
+<p>
+最明显的 artifacts 是，在流动方向变化相当快的地方，tiling 是可见的。我们使用的 FlowMap 有很多方向变化，因此非常明显。可以通过增加网格分辨率来解决该问题，但也需要增加 tiling。<br />
+</p>
+</div>
+<div id="outline-container-org9654873" class="outline-5">
+<h5 id="org9654873">Nearly Uniform Flow</h5>
+<div class="outline-text-5" id="text-org9654873">
+<p>
+真正有问题的 artifacts 出现在流动没有太大变化的区域。 如果流动真的是均匀的，那么图案的平铺就无法隐藏。要看到这一点，将 tiling 的 UV 坐标强制设置为零，这样在任何地方都会使用相同的 FlowMap 数据。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">float3</span> flowDirAndSpeed = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_FlowMap</span>, sampler_FlowMap, uvTiled*0);
+</pre>
+</div>
+<p>
+如下面画面，tiling 非常明显：<br />
+</p>
+
+<div id="org3eac6d9" class="figure">
+<p><img src="./UnityCatLikeCoding/flow2_uniform-flow-artifact.png" alt="flow2_uniform-flow-artifact.png" width="800px" /><br />
+</p>
+</div>
+
+<p>
+使用一个大一些的涟漪图案，就可以移除可见的 tiling，但这样做有其自身的局限性。真正防止这种问题的唯一方法是确保至少有一些变化，可能在生成流程图时添加噪音，是一个很好的方法，因为液体很少能完全均匀地流动，通常都会存在一些隐藏或淹没的物体会以某种方式影响流动。我们考虑一个基本均匀的流动，比如一个缓慢弯曲的水流。 我们可以通过将 uvTiled 临时缩放 0.1 来模拟这种情况。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">float3</span> flowDirAndSpeed = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_FlowMap</span>, sampler_FlowMap, uvTiled*0.1);
+</pre>
+</div>
+
+
+<div id="orgcd68f55" class="figure">
+<p><img src="./UnityCatLikeCoding/flow2_uniform-flow-artifact1.png" alt="flow2_uniform-flow-artifact1.png" width="800px" /><br />
+</p>
+<p><span class="figure-number">Figure 10: </span>uvTiled scale 0.1</p>
+</div>
+
+<p>
+画面动起来时，可以观察到和流动相匹配的脉冲模式，但是只是很快地瞥一眼是很难法线的。将速度设置为零时会出现此问题的更明显表现，突然，我们可以看到条纹出现，和涟漪图案几乎相同区域，并且轻微偏移、旋转和缩放后重复。flowmap 的压缩和纹理过滤可以在一定程度上帮助掩盖这些 artifacts。 使用未压缩的 flow map 时，artifacts 会发生变化，并且会变得更加明显。<br />
+</p>
+
+<div id="org4656d9c" class="figure">
+<p><img src="./UnityCatLikeCoding/flow2_uniform-flow-artifact2.png" alt="flow2_uniform-flow-artifact2.png" width="600px" /><br />
+</p>
+</div>
+
+<figure>
+<iframe src="https://player.bilibili.com/player.html?aid=260039276&bvid=BV1ia411R7m6&cid=820369635&page=1" frameborder='0' scrolling='no' allowfullscreen width='640' height='328'> </iframe>
+<figcaption>flow artifacts</figcaption>
+</figure>
+
+<p>
+这些问题是由快速的图案重复引起的。 虽然降低网格分辨率有助于减少这种情况，但它也会使流动不那么顺畅。 幸运的是，我们可以通过在对每个单元格的图案进行采样时抖动 UV 坐标来混淆重复。只需在 uv 上添加单元格偏移量抖动效果就足够了。由于这增加了单元格图案之间的差异，它还增加了更明显的运动效果。这使涟漪更加生动。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">float3</span> <span style="color: #bc6ec5; font-weight: bold;">FlowCell</span>(<span style="color: #ce537a; font-weight: bold;">float2</span> uv, <span style="color: #ce537a; font-weight: bold;">float2</span> offset, <span style="color: #ce537a; font-weight: bold;">float</span> time)
+{
+    <span style="color: #ce537a; font-weight: bold;">float2</span> shift = 1 - offset;
+    shift *= 0.5;
+    offset *= 0.5;
+    <span style="color: #ce537a; font-weight: bold;">float2x2</span> derivRotation;
+    <span style="color: #ce537a; font-weight: bold;">float2</span> uvTiled = (<span style="color: #4f97d7;">floor</span>(uv * <span style="color: #7590db;">_GridResolution</span> + offset) + shift) / <span style="color: #7590db;">_GridResolution</span>;
+    <span style="color: #ce537a; font-weight: bold;">float3</span> flowDirAndSpeed = SAMPLE_TEXTURE2D(<span style="color: #7590db;">_FlowMap</span>, sampler_FlowMap, uvTiled*0.1);
+    flowDirAndSpeed.xy = flowDirAndSpeed.rg * 2 - 1;
+    flowDirAndSpeed.z *= <span style="color: #7590db;">_FlowStrength</span>;
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#26681;&#25454;&#36895;&#24230;&#26469;&#32553;&#25918; tiling</span>
+    <span style="color: #ce537a; font-weight: bold;">float</span> tiling = flowDirAndSpeed.z * <span style="color: #7590db;">_TilingModulated</span> + <span style="color: #7590db;">_Tiling</span>;
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#20351;&#29992; offset &#25238;&#21160; uv, &#28151;&#28102;&#28063;&#28458;&#22270;&#26696;&#30340;&#37325;&#22797;</span>
+    <span style="color: #ce537a; font-weight: bold;">float2</span> uvFlow = DirectionalFlowUV(uv+offset, flowDirAndSpeed, tiling, time, derivRotation);
+    <span style="color: #ce537a; font-weight: bold;">float3</span> dh = UnpackDerivativeHeight(SAMPLE_TEXTURE2D(<span style="color: #7590db;">_MainTex</span>, sampler_MainTex, uvFlow));
+    dh.xy = <span style="color: #4f97d7;">mul</span>(derivRotation, dh.xy);
+    <span style="color: #2aa1ae; background-color: #292e34;">// &#26681;&#25454;&#36895;&#24230;&#26469;&#32553;&#25918; &#39640;&#24230;&#23548;&#25968;&#21644;&#39640;&#24230;</span>
+    dh *= flowDirAndSpeed.z * <span style="color: #7590db;">_HeightScaleModulated</span> + <span style="color: #7590db;">_HeightScale</span>;
+    <span style="color: #4f97d7; font-weight: bold;">return</span> dh;
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org466b4c1" class="outline-5">
+<h5 id="org466b4c1">Spotting the Grid</h5>
+<div class="outline-text-5" id="text-org466b4c1">
+<p>
+还存在另外一种 artifact，其是由于 cell 之间的混合引起的。如果方向或速度的差异足够大，tiling 就会变得明显。例如，将网格分辨率设置为 3，仍然放大 FlowMap（即依然对 uvTiled 临时缩放 0.1）。现在有明显可区分的更暗或更亮的 tile。 这是由每块 tile 的流速不同造成的。 但这还不是最成问题的部分。 我们可以通过使用黑色来消除这种情况。如下：<br />
+</p>
+
+<div id="orgb818711" class="figure">
+<p><img src="./UnityCatLikeCoding/flow2_tiling_artifact.png" alt="flow2_tiling_artifact.png" width="1000px" /><br />
+</p>
+</div>
+
+<p>
+当注意镜面反射时，仍然可以看到网格。 这是因为 cell 混合的区域比由单个 cell 控制的区域更平坦。 从而导致镜面反射在网格图案中变化。由于这种模式是静态的，因此当涟漪动起来时它会更加突出。<br />
+</p>
+<figure>
+<iframe src='https://gfycat.com/ifr/RewardingLastFinnishspitz' frameborder='0' scrolling='no' allowfullscreen width='640' height='328'></iframe>
+<figcaption>Watch the highlights.</figcaption>
+</figure>
+</div>
+</div>
+<div id="outline-container-orgf82a164" class="outline-5">
+<h5 id="orgf82a164">Mixing Grids</h5>
+<div class="outline-text-5" id="text-orgf82a164">
+<p>
+就像我们无法完全消除扭曲效果的相位混合 artifacts 一样，没有简单的方法可以消除镜面高光 artifacts，只能用噪声对其进行模糊处理。 在当前情况下，用噪声扰乱网格不会缓解镜面高光的 artifacts。 使用平滑的混合函数也不会消除它们，实际上任何更改都会使它们更加明显。<br />
+</p>
+
+<p>
+消除这种 artifacts 的唯一方法是消除均匀区域和混合区域之间的过渡，但这是不可能的。退而求其次，只能是模糊均匀区域和混合区域之间的差异。我们可以对一个网格进行两次采样，如果我们第二次采样网格时偏移四分之一个 cell，则其最清晰的区域对应于另一个网格的最模糊区域，反之亦然。 然后，平均这两个网格，我们最终就会得到更均匀的混合。其原理如下图所示：<br />
+</p>
+
+
+<div id="org668f0f4" class="figure">
+<p><img src="./UnityCatLikeCoding/flow2_two-grid.png" alt="flow2_two-grid.png" width="1000px" /><br />
+</p>
+</div>
+
+<p>
+<a href="./UnityCatLikeCoding/flow2_cell-blend-alg.ggb">./UnityCatLikeCoding/flow2_cell-blend-alg.ggb</a><br />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org04cab33" class="outline-3">
+<h3 id="org04cab33">Waves</h3>
+</div>
+<div id="outline-container-org1e89dd9" class="outline-3">
+<h3 id="org1e89dd9">Looking Through Water</h3>
+</div>
+</div>
+<div id="outline-container-org29461ae" class="outline-2">
+<h2 id="org29461ae">参考资料</h2>
+<div class="outline-text-2" id="text-org29461ae">
+<ul class="org-ul">
+<li>Flow <a href="https://catlikecoding.com/unity/tutorials/flow/">https://catlikecoding.com/unity/tutorials/flow/</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<div id="vssue"></div>
+        <link rel="stylesheet" href="https://unpkg.com/vssue/dist/vssue.min.css">
+        <script src="https://unpkg.com/vue@2.7.10/dist/vue.runtime.min.js"></script>
+        <script src="https://unpkg.com/vssue/dist/vssue.github.min.js"></script>
+        <script>
+          new Vue({
+            el: '#vssue',
+            render: h => h('Vssue', {
+              props: {
+                // 在这里设置当前页面对应的 Issue 标题
+                title: 'UnityCatLikeCoding-Flow',
+
+                // 在这里设置你使用的平台的 OAuth App 配置
+                options: {
+                    owner: 'wolfand11',
+                    repo: 'blog_comments',
+                    clientId: 'a02b49185d85859cb92c',
+                    clientSecret: '6f123085c6f1ce339e2517d24e5b099fa1dc9c85', // 只有在使用某些平台时需要
+                },
+              }
+            })
+          })
+        </script>
+</div>
+</body>
+</html>

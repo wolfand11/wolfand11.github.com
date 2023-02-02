@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2022-12-22 Thu 00:13 -->
+<!-- 2023-02-02 Thu 11:08 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Vulkan</title>
@@ -27,380 +27,381 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org99d59af">Vulkan Tutorial</a>
+<li><a href="#org0eb644a">Vulkan Tutorial</a>
 <ul>
-<li><a href="#orgfbc303b">Introduction (8)</a>
+<li><a href="#orgb8337e3">Introduction (8)</a>
 <ul>
-<li><a href="#org55060ef">About (8)</a></li>
-<li><a href="#orga49d11a">Tutorial structure (9)</a></li>
+<li><a href="#orgc9c585f">About (8)</a></li>
+<li><a href="#org916a826">Tutorial structure (9)</a></li>
 </ul>
 </li>
-<li><a href="#orga3da744">Overview (11)</a>
+<li><a href="#org38ec7ed">Overview (11)</a>
 <ul>
-<li><a href="#org7c7e19e">Origin of Vulkan (11)</a></li>
-<li><a href="#org888c87b">What it takes to draw a triangle (12)</a>
+<li><a href="#orgbf5c916">Origin of Vulkan (11)</a></li>
+<li><a href="#orgeee2742">What it takes to draw a triangle (12)</a>
 <ul>
-<li><a href="#orgbdfe2fb">Step 1 - Instance and physical device selection</a></li>
-<li><a href="#org68d6566">Step 2 - Logical device and queue families</a></li>
-<li><a href="#org1fa4f96">Step 3 - Window surface and swap chain</a></li>
-<li><a href="#org397c4f8">Step 4 - Image views and framebuffers</a></li>
-<li><a href="#org3e6fea0">Step 5 - Render passes</a></li>
-<li><a href="#org7d824e0">Step 6 - Graphics pipeline</a></li>
-<li><a href="#orga876e43">Step 7 - Command pools and command buffers</a></li>
-<li><a href="#org039029e">Step 8 - Main loop</a></li>
-<li><a href="#org0da23fe">Summary</a></li>
+<li><a href="#orgee4107f">Step 1 - Instance and physical device selection</a></li>
+<li><a href="#org8ab51fa">Step 2 - Logical device and queue families</a></li>
+<li><a href="#org6f38d8e">Step 3 - Window surface and swap chain</a></li>
+<li><a href="#org0f73811">Step 4 - Image views and framebuffers</a></li>
+<li><a href="#orgf63fe0e">Step 5 - Render passes</a></li>
+<li><a href="#org2e6d58c">Step 6 - Graphics pipeline</a></li>
+<li><a href="#org3f39437">Step 7 - Command pools and command buffers</a></li>
+<li><a href="#org1e2001d">Step 8 - Main loop</a></li>
+<li><a href="#org8194c76">Summary</a></li>
 </ul>
 </li>
-<li><a href="#org3ab6bea">API concepts</a>
+<li><a href="#org969a2df">API concepts</a>
 <ul>
-<li><a href="#orgd18205e">Coding Conventions</a></li>
-<li><a href="#org40d7517">Validation layers</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#orgccf67b6">Development environment (18)</a>
-<ul>
-<li><a href="#org45332a0">Windows (18)</a></li>
-<li><a href="#org25b8920">Linux (28)</a></li>
-<li><a href="#orgb077ab6">MacOS (34)</a></li>
-</ul>
-</li>
-<li><a href="#orgaac7515">Drawing a triangle</a>
-<ul>
-<li><a href="#org39e88e1">Setup</a>
-<ul>
-<li><a href="#orgcd1f071">Base code (41)</a></li>
-<li><a href="#orgddcf63a">Instance (46)</a>
-<ul>
-<li><a href="#org53b6906">创建一个 VkInstance</a></li>
-<li><a href="#orgebbe2ac">检查支持的扩展</a></li>
-<li><a href="#org9ec1400">Cleaning up</a></li>
-</ul>
-</li>
-<li><a href="#orgad41c70">Validation layers (50)</a>
-<ul>
-<li><a href="#org60e92c3">What are validation layers?</a></li>
-<li><a href="#org176ea81">Using validation layers</a></li>
-<li><a href="#org9892026">Message callback</a></li>
-<li><a href="#org4fd41fd">Debugging instance creation and destruction</a></li>
-<li><a href="#org27f0b7f">Configuration</a></li>
-</ul>
-</li>
-<li><a href="#org0d4d5ab">Physical devices and queue families (62)</a>
-<ul>
-<li><a href="#org7cfa1cf">Selecting a physical device</a></li>
-<li><a href="#orgda74beb">Queue families</a></li>
-</ul>
-</li>
-<li><a href="#org03f8c87">Logical device and queues (70)</a></li>
-</ul>
-</li>
-<li><a href="#orgddcdfcd">Presentation</a>
-<ul>
-<li><a href="#org7db7413">Window surface (74)</a>
-<ul>
-<li><a href="#org764c1cd">Window surface creation (74)</a></li>
-<li><a href="#orgc3232ae">Querying for presentation support (76)</a></li>
-<li><a href="#orgfc43fda">Creating the presentation queue (77)</a></li>
-</ul>
-</li>
-<li><a href="#org158be92">Swap chain (79)</a>
-<ul>
-<li><a href="#org0bb1226">Checking for swap chain support (79)</a></li>
-<li><a href="#orga1e93c5">Querying details of swap chain support (81)</a></li>
-<li><a href="#org7d9e70a">Choosing the right settings for the swap chain (83)</a></li>
-<li><a href="#org5340afb">Creating the swap chain (86)</a></li>
-</ul>
-</li>
-<li><a href="#org718ac91">Image views (92)</a></li>
-</ul>
-</li>
-<li><a href="#org38bd80f">Graphics pipeline basics</a>
-<ul>
-<li><a href="#orgbb9bd62">Introduction (95)</a></li>
-<li><a href="#org24497b4">Shader modules (99)</a>
-<ul>
-<li><a href="#orgaa328dc">Vertex shader (100)</a></li>
-<li><a href="#org93b371b">Fragment shader (102)</a></li>
-<li><a href="#org8bcda21">Compiling the shaders (104)</a></li>
-<li><a href="#org5479873">Loading a shader (105)</a></li>
-<li><a href="#org0eb629c">Creating shader modules (107)</a></li>
-<li><a href="#orgb0981ed">Shader stage creation (108)</a></li>
-</ul>
-</li>
-<li><a href="#org915818b">Fixed functions (110)</a>
-<ul>
-<li><a href="#org7ff9846">Vertex input (110)</a></li>
-<li><a href="#orgfdd94bc">Input assembly (111)</a></li>
-<li><a href="#orgae45755">Viewports and scissors (111)</a></li>
-<li><a href="#orgead3ee2">Rasterizer (113)</a></li>
-<li><a href="#org67b4c1a">Multisampling (114)</a></li>
-<li><a href="#org1a989a5">Depth and stencil testing (114)</a></li>
-<li><a href="#org24ddb48">Color blending (115)</a></li>
-<li><a href="#orgf3d79c8">Dynamic state (117)</a></li>
-<li><a href="#org9e6b2b7">Pipeline layout (117)</a></li>
-</ul>
-</li>
-<li><a href="#orge3d383e">Render passes (119)</a>
-<ul>
-<li><a href="#org55ea3b6">Attachment description (119)</a></li>
-<li><a href="#orgc347931">Subpasses and attachment references (121)</a></li>
-<li><a href="#org3831564">Render pass (122)</a></li>
-</ul>
-</li>
-<li><a href="#orgcaa7642">Conclusion: Create Graphics Pipeline</a></li>
-</ul>
-</li>
-<li><a href="#org2a49490">Drawing</a>
-<ul>
-<li><a href="#orge2b8662">Framebuffers (127)</a></li>
-<li><a href="#org6a48d80">Command buffers (130)</a>
-<ul>
-<li><a href="#org779e5f2">Command pools (130)</a></li>
-<li><a href="#orgf1192a7">Command buffer allocation (132)</a></li>
-<li><a href="#orgec41299">Starting command buffer recording (133)</a></li>
-<li><a href="#orge43c2f4">Starting a render pass (134)</a></li>
-<li><a href="#orgef95ef5">Basic drawing commands (135)</a></li>
-<li><a href="#org3147502">Finishing up (135)</a></li>
-</ul>
-</li>
-<li><a href="#org7feea43">Rendering and presentation (137)</a>
-<ul>
-<li><a href="#orgaff988e">Semaphores (138)</a></li>
-<li><a href="#orgd990d86">Acquiring an image from the swap chain (139)</a></li>
-<li><a href="#orgb67c34f">Submitting the command buffer (140)</a></li>
-<li><a href="#orgc6e9f99">Subpass dependencies (141)</a></li>
-<li><a href="#org609043f">Presentation (142)</a></li>
-<li><a href="#org5ce91fe">Frames in flight (144)</a></li>
-</ul>
-</li>
-<li><a href="#org9b76c5d">Swap chain recreation (152)</a></li>
+<li><a href="#orge10230c">Coding Conventions</a></li>
+<li><a href="#orgd259455">Validation layers</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#orgf6ea3a8">Vertex buffers</a>
+<li><a href="#orgddef1de">Development environment (18)</a>
 <ul>
-<li><a href="#org4884b6c">Vertex input description (159)</a></li>
-<li><a href="#org2572ef3">Vertex buffer creation (164)</a>
-<ul>
-<li><a href="#org853f686">创建 buffer</a></li>
-<li><a href="#org00e1446">获取 buffer 的内存需求</a></li>
-<li><a href="#org3c6e8d9">为 buffer 分配内存</a></li>
-<li><a href="#org64d6fae">为 buffer 填充数据</a></li>
-<li><a href="#org777b4f7">绑定 commandBuffer 和 vertexBuffer</a></li>
+<li><a href="#org0e6f59a">Windows (18)</a></li>
+<li><a href="#org0aca50e">Linux (28)</a></li>
+<li><a href="#org9cfad62">MacOS (34)</a></li>
 </ul>
 </li>
-<li><a href="#orgc9a3d28">Staging buffer (173)</a>
+<li><a href="#org2808d42">Drawing a triangle</a>
 <ul>
-<li><a href="#org969368c">Transfer queue (173)</a></li>
-<li><a href="#orgb2655ff">Using a staging buffer (175)</a></li>
-<li><a href="#orga26bbab">Conclusion (178)</a></li>
+<li><a href="#org2445b01">Setup</a>
+<ul>
+<li><a href="#org1017415">Base code (41)</a></li>
+<li><a href="#org876df1d">Instance (46)</a>
+<ul>
+<li><a href="#org4ad7e8c">创建一个 VkInstance</a></li>
+<li><a href="#org1e1b916">检查支持的扩展</a></li>
+<li><a href="#orgf3b82cc">Cleaning up</a></li>
 </ul>
 </li>
-<li><a href="#org2e7d9a7">Index buffer (179)</a></li>
+<li><a href="#org024cc41">Validation layers (50)</a>
+<ul>
+<li><a href="#org62708ac">What are validation layers?</a></li>
+<li><a href="#orgdd431e3">Using validation layers</a></li>
+<li><a href="#org3b32787">Message callback</a></li>
+<li><a href="#org290bc18">Debugging instance creation and destruction</a></li>
+<li><a href="#orge48a26d">Configuration</a></li>
 </ul>
 </li>
-<li><a href="#org4c13f5a">Uniform Buffers</a>
+<li><a href="#orgbfd6245">Physical devices and queue families (62)</a>
 <ul>
-<li><a href="#org0e354ba">Descriptor layout and buffer (184)</a>
-<ul>
-<li><a href="#orgc0ee371">Vertex shader (185)</a></li>
-<li><a href="#org4273c69">Descriptor set layout (186)</a></li>
-<li><a href="#org38ea437">Uniform buffer (188)</a></li>
-<li><a href="#orged84e66">Updating uniform data (190)</a></li>
+<li><a href="#orgba86261">Selecting a physical device</a></li>
+<li><a href="#orgb4c97c6">Queue families</a></li>
 </ul>
 </li>
-<li><a href="#org44dd715">Descriptor pool and sets (193)</a>
-<ul>
-<li><a href="#orge90de4d">Descriptor pool (193)</a></li>
-<li><a href="#org66e0fb5">Descriptor set (195)</a></li>
-<li><a href="#orged1b79f">Using descriptor sets (197)</a></li>
-<li><a href="#org959c89e">Alignment requirements (199)</a></li>
-<li><a href="#org199fd34">Multiple descriptor sets (201)</a></li>
+<li><a href="#org9fdaee4">Logical device and queues (70)</a></li>
 </ul>
 </li>
+<li><a href="#org7dd0074">Presentation</a>
+<ul>
+<li><a href="#org0bf984d">Window surface (74)</a>
+<ul>
+<li><a href="#org08f1ee9">Window surface creation (74)</a></li>
+<li><a href="#org202139c">Querying for presentation support (76)</a></li>
+<li><a href="#orgde154ce">Creating the presentation queue (77)</a></li>
 </ul>
 </li>
-<li><a href="#org08449c2">Texture mapping</a>
+<li><a href="#orgfd06c30">Swap chain (79)</a>
 <ul>
-<li><a href="#orga1f5729">Create texture image</a>
-<ul>
-<li><a href="#orgaa9fe6c">Image library (203)</a></li>
-<li><a href="#org5efd1ef">create Image (206)</a></li>
-<li><a href="#org2486f81">Layout transitions (211)</a></li>
-<li><a href="#orgbea00e4">Copying buffer to image (214)</a></li>
-<li><a href="#orge6e7c36">Preparing the texture image (215)</a></li>
+<li><a href="#org8287d10">Checking for swap chain support (79)</a></li>
+<li><a href="#orgf8baa0d">Querying details of swap chain support (81)</a></li>
+<li><a href="#org1d7a4fc">Choosing the right settings for the swap chain (83)</a></li>
+<li><a href="#org1f66595">Creating the swap chain (86)</a></li>
 </ul>
 </li>
-<li><a href="#org8f51584">Image view and sampler (219)</a>
-<ul>
-<li><a href="#orgf89e72e">Texture image view (219)</a></li>
-<li><a href="#org6c3f057">Samplers (221)</a></li>
+<li><a href="#org9c81a8e">Image views (92)</a></li>
 </ul>
 </li>
-<li><a href="#org9a78252">Combined image sampler (227)</a>
+<li><a href="#org10fc802">Graphics pipeline basics</a>
 <ul>
-<li><a href="#org8b94593">Updating the descriptors (227)</a></li>
-<li><a href="#org347fcc3">Texture coordinates and Shaders (231)</a></li>
+<li><a href="#orgef4ed15">Introduction (95)</a></li>
+<li><a href="#org01a5605">Shader modules (99)</a>
+<ul>
+<li><a href="#orgbea1971">Vertex shader (100)</a></li>
+<li><a href="#org63fa719">Fragment shader (102)</a></li>
+<li><a href="#orgab8d439">Compiling the shaders (104)</a></li>
+<li><a href="#org8bdc990">Loading a shader (105)</a></li>
+<li><a href="#orgbb691ca">Creating shader modules (107)</a></li>
+<li><a href="#org5749572">Shader stage creation (108)</a></li>
 </ul>
 </li>
+<li><a href="#org4616ee5">Fixed functions (110)</a>
+<ul>
+<li><a href="#org849fe95">Vertex input (110)</a></li>
+<li><a href="#orgcd1c7af">Input assembly (111)</a></li>
+<li><a href="#org80feabb">Viewports and scissors (111)</a></li>
+<li><a href="#org108b0d5">Rasterizer (113)</a></li>
+<li><a href="#org58e1942">Multisampling (114)</a></li>
+<li><a href="#org425099c">Depth and stencil testing (114)</a></li>
+<li><a href="#orgf78928d">Color blending (115)</a></li>
+<li><a href="#org46631c8">Dynamic state (117)</a></li>
+<li><a href="#org061e4ce">Pipeline layout (117)</a></li>
 </ul>
 </li>
-<li><a href="#orgc17f26a">Depth buffering (236)</a>
+<li><a href="#org34c6a9e">Render passes (119)</a>
 <ul>
-<li><a href="#org32517e3">Depth image and view (239)</a></li>
-<li><a href="#orga480e53">Explicitly transitioning the depth image</a></li>
-<li><a href="#org8b879a0">Render pass (244)</a></li>
-<li><a href="#orga1b960f">Framebuffer (245)</a></li>
-<li><a href="#org5e823d2">Clear values (246)</a></li>
-<li><a href="#orgecad169">Depth and stencil state (246)</a></li>
+<li><a href="#org3b9bf4c">Attachment description (119)</a></li>
+<li><a href="#orgfd95e4d">Subpasses and attachment references (121)</a></li>
+<li><a href="#org7a8f3cf">Render pass (122)</a></li>
 </ul>
 </li>
-<li><a href="#orgf5374a4">Loading models (250)</a>
-<ul>
-<li><a href="#org5a22a7d">Library (250)</a></li>
-<li><a href="#org8e357a6">Loading vertices and indices (252)</a></li>
-<li><a href="#org3cbfc91">Vertex deduplication (256)</a></li>
+<li><a href="#orgf4ef580">Conclusion: Create Graphics Pipeline</a></li>
 </ul>
 </li>
-<li><a href="#org0146f49">Generating Mipmaps (259)</a>
+<li><a href="#org8814f35">Drawing</a>
 <ul>
-<li><a href="#org59b3a09">Generating Mipmaps (261)</a></li>
-<li><a href="#orgfbd808e">Sampler (267)</a></li>
+<li><a href="#org7126d55">Framebuffers (127)</a></li>
+<li><a href="#org71de176">Command buffers (130)</a>
+<ul>
+<li><a href="#org751cec7">Command pools (130)</a></li>
+<li><a href="#orgbbb5e9e">Command buffer allocation (132)</a></li>
+<li><a href="#org1ae809c">Starting command buffer recording (133)</a></li>
+<li><a href="#org13edd67">Starting a render pass (134)</a></li>
+<li><a href="#org215823a">Basic drawing commands (135)</a></li>
+<li><a href="#orgf2e032f">Finishing up (135)</a></li>
 </ul>
 </li>
-<li><a href="#org60b76ca">Multisampling (271)</a>
+<li><a href="#orge9b18e0">Rendering and presentation (137)</a>
 <ul>
-<li><a href="#org92119f3">Adding new attachments (276)</a></li>
-<li><a href="#org1363eb8">Quality improvements (279)</a></li>
+<li><a href="#org266414b">Semaphores (138)</a></li>
+<li><a href="#orga8fe183">Acquiring an image from the swap chain (139)</a></li>
+<li><a href="#org7752d3c">Submitting the command buffer (140)</a></li>
+<li><a href="#org9fe9f53">Subpass dependencies (141)</a></li>
+<li><a href="#org017759f">Presentation (142)</a></li>
+<li><a href="#orgac8a634">Frames in flight (144)</a></li>
 </ul>
 </li>
-<li><a href="#org9242349">Summary</a></li>
-<li><a href="#org8010c88">Q&amp;A</a>
-<ul>
-<li><a href="#orgba87637">VkAllocationCallbacks 的使用示例</a></li>
-<li><a href="#orgea4c896">为什么 depthImageView 可以被多个 command buffer 复用，而 swapChainImageView 不能？</a></li>
-<li><a href="#orga65f1d6">secondary command buffer 的使用示例</a></li>
-<li><a href="#orgf63f1f1">使用惯例</a></li>
-</ul>
-</li>
-<li><a href="#org5c75a85">参考资料</a></li>
-</ul>
-</li>
-<li><a href="#org28bd00e">Vulkan Guide</a>
-<ul>
-<li><a href="#orgb6ffe1c">Vulkan Base</a>
-<ul>
-<li><a href="#org9a26ae6">Initial Setup</a></li>
-<li><a href="#orgfe430e8">Push Constants</a></li>
-<li><a href="#org1689766">Dynamic Descriptor sets</a></li>
-<li><a href="#orgaabdd2b">Storage buffers (shader storage buffer object)</a></li>
-<li><a href="#org6ba1bfe">ERROR</a>
-<ul>
-<li><a href="#orgb577903">ERROR CMake Error: The source "VulkanGuide/base/CMakeLists.txt" does not match the source "VulkanGuide/CMakeLists.txt" used to generate cache.  Re-run cmake with a different source directory.</a></li>
-<li><a href="#org1b42b58">ERROR Error C3646 'm_Lock': unknown override specifier</a></li>
-<li><a href="#org6bec411">ERROR SDL2.dll 不存在</a></li>
-<li><a href="#org70f4bd5">ERROR Validation Error: [ VUID-VkPipelineShaderStageCreateInfo-module-parameter ] Object 0: handle = 0x19ae7186ec0, type = VK_OBJECT_TYPE_INSTANCE; | MessageID = 0xfd71dc70 | Invalid VkShaderModule Object 0xcccccccccccccccc. The Vulkan spec states: module must be a valid VkShaderModule handle</a></li>
-<li><a href="#org4dda523">ERROR LNK2019	unresolved external symbol "public: static struct VertexInputDescription __cdecl Vertex::get_vertex_description(void)" (?get_vertex_description@Vertex@@SA?AUVertexInputDescription@@XZ) referenced in function "private: void __cdecl VulkanEngine::init_pipelines(void)" (?init_pipelines@VulkanEngine@@AEAAXXZ)</a></li>
-<li><a href="#orgf01acd1">ERROR gl_BaseInstance undeclared identifier</a></li>
-<li><a href="#org70a72a9">ERROR Validation Error: [ VUID-VkShaderModuleCreateInfo-pCode-01091 ]</a></li>
+<li><a href="#orgf633d38">Swap chain recreation (152)</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#org1ca7417">GPU Driven Rendering</a>
+<li><a href="#orgcb97e8b">Vertex buffers</a>
 <ul>
-<li><a href="#orgd8b7758">Init Setup</a>
+<li><a href="#org3077ae8">Vertex input description (159)</a></li>
+<li><a href="#orgd45d8a0">Vertex buffer creation (164)</a>
 <ul>
-<li><a href="#orgae22ec8">编译 assimp</a></li>
-<li><a href="#org95b33e1">导出 asset</a></li>
+<li><a href="#orgeaf0e46">创建 buffer</a></li>
+<li><a href="#org7d93d42">获取 buffer 的内存需求</a></li>
+<li><a href="#org15e2269">为 buffer 分配内存</a></li>
+<li><a href="#org95cb060">为 buffer 填充数据</a></li>
+<li><a href="#org27f8f6e">绑定 commandBuffer 和 vertexBuffer</a></li>
 </ul>
 </li>
-<li><a href="#org5bce67b">GPU Driven Rendering Overview</a>
+<li><a href="#org1168af1">Staging buffer (173)</a>
 <ul>
-<li><a href="#orge0985be">Introduction</a></li>
-<li><a href="#org55ca848">Draw Indirect</a></li>
-<li><a href="#orge468364">Bindless Design</a></li>
-<li><a href="#org00dcb23">Overview of Vkguide engine architecture for compute rendering.</a></li>
+<li><a href="#orgf766ab0">Transfer queue (173)</a></li>
+<li><a href="#org23f71d2">Using a staging buffer (175)</a></li>
+<li><a href="#orgc308adb">Conclusion (178)</a></li>
 </ul>
 </li>
-<li><a href="#org6935dc8">Engine architecture overview</a>
-<ul>
-<li><a href="#org40631d2">Asset System</a>
-<ul>
-<li><a href="#org10e4623">Asset Format</a></li>
-<li><a href="#orga93c78c">Texture Asset</a></li>
-<li><a href="#orgd0f7226">Mesh Asset</a></li>
-<li><a href="#orgb1c2016">Material Asset</a></li>
-<li><a href="#org71aa911">Prefab Asset</a></li>
+<li><a href="#org6eb062b">Index buffer (179)</a></li>
 </ul>
 </li>
-<li><a href="#org62fdfe3">Abstraction for descritpor sets</a></li>
-<li><a href="#org1c28333">Configurable options through a CVAR System</a></li>
-<li><a href="#org4ce7752">Multithreading for game engines</a>
+<li><a href="#org6c4cbd2">Uniform Buffers</a>
 <ul>
-<li><a href="#org0dd082d">Ways of using multithreading in game engines</a></li>
-<li><a href="#org8fe6778">In practive</a></li>
-<li><a href="#org89ca88a">Identifying tasks</a></li>
-<li><a href="#org736f723">Multithreading Vulkan</a></li>
-</ul>
-</li>
-<li><a href="#org42ac41a">Render Flow</a></li>
-</ul>
-</li>
-<li><a href="#org3e6e456">Draw Indirect</a></li>
-<li><a href="#org30629d8">Compute Shaders</a></li>
-<li><a href="#orga40856b">Material System</a></li>
-<li><a href="#orgdfc32aa">Mesh Rendering</a></li>
-<li><a href="#org768406a">Compute based Culling</a></li>
-</ul>
-</li>
-<li><a href="#org9e47237">参考资料</a></li>
-</ul>
-</li>
-<li><a href="#orgdff272b">Vulkan vs OpenGL vs OpenGLES vs D3D</a>
+<li><a href="#org780b5c1">Descriptor layout and buffer (184)</a>
 <ul>
-<li><a href="#org6fb74d6">Version</a>
-<ul>
-<li><a href="#orga47cdf0">OpenGL version</a></li>
-<li><a href="#org9109872">Open GLES</a></li>
-<li><a href="#org771ab6c">GLSL Version</a></li>
+<li><a href="#org1f6c8db">Vertex shader (185)</a></li>
+<li><a href="#orgc754984">Descriptor set layout (186)</a></li>
+<li><a href="#org744b299">Uniform buffer (188)</a></li>
+<li><a href="#org6c8e555">Updating uniform data (190)</a></li>
 </ul>
 </li>
-<li><a href="#orgdfd4b68">Compare</a>
+<li><a href="#orgdbc7146">Descriptor pool and sets (193)</a>
 <ul>
-<li><a href="#org1d5130b">EGL DX11 对比</a>
-<ul>
-<li><a href="#orgdea2b3b">EGL and DXGI</a></li>
-<li><a href="#orgcb3fc2f">buffer, uniforms, vertices, texture</a></li>
-<li><a href="#orga340261">pipeline</a></li>
+<li><a href="#orgb0d54b1">Descriptor pool (193)</a></li>
+<li><a href="#org6c3d13a">Descriptor set (195)</a></li>
+<li><a href="#orgca92b4b">Using descriptor sets (197)</a></li>
+<li><a href="#org910438a">Alignment requirements (199)</a></li>
+<li><a href="#orgd4e23c2">Multiple descriptor sets (201)</a></li>
 </ul>
 </li>
-<li><a href="#org4850c03">Vulkan DX12 概念对比</a>
-<ul>
-<li><a href="#org85f81e0">基本的 API 方面</a></li>
-<li><a href="#org32d86d1">Command Buffer and Pool</a></li>
-<li><a href="#org57064c6">Descriptors</a></li>
-<li><a href="#org5654708">Pipeline</a></li>
-<li><a href="#orgcbbd22e">Images and Buffers</a></li>
-<li><a href="#org27e7f5b">RenderPasses/RenderTargets</a></li>
 </ul>
 </li>
-<li><a href="#orgab8c0c6">GLSL vs HLSL</a>
+<li><a href="#org6a446ec">Texture mapping</a>
 <ul>
-<li><a href="#org15c285e">System values &amp; built-in inputs</a></li>
-<li><a href="#org3f3d688">Atomic operations</a></li>
-<li><a href="#org172c56d">Shared/local memory</a></li>
-<li><a href="#org8778259">Barriers</a></li>
-<li><a href="#orgbbb4187">Texture access</a></li>
-<li><a href="#org7d87a65">General math</a></li>
-<li><a href="#org96ae21d">Various functions</a></li>
-<li><a href="#org35f207b">参考资料</a></li>
+<li><a href="#orgbd465b1">Create texture image</a>
+<ul>
+<li><a href="#org6149656">Image library (203)</a></li>
+<li><a href="#org1a0f937">create Image (206)</a></li>
+<li><a href="#org150cba5">Layout transitions (211)</a></li>
+<li><a href="#org468aa18">Copying buffer to image (214)</a></li>
+<li><a href="#orge5adc8d">Preparing the texture image (215)</a></li>
 </ul>
 </li>
-<li><a href="#orgd03038b">参考资料</a></li>
+<li><a href="#org88ad73d">Image view and sampler (219)</a>
+<ul>
+<li><a href="#orgef86c1c">Texture image view (219)</a></li>
+<li><a href="#org72ae52c">Samplers (221)</a></li>
+</ul>
+</li>
+<li><a href="#org0e18554">Combined image sampler (227)</a>
+<ul>
+<li><a href="#org1d48489">Updating the descriptors (227)</a></li>
+<li><a href="#org8a595b1">Texture coordinates and Shaders (231)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org8d7eff8">Depth buffering (236)</a>
+<ul>
+<li><a href="#orgf4242c0">Depth image and view (239)</a></li>
+<li><a href="#org3623c7d">Explicitly transitioning the depth image</a></li>
+<li><a href="#org542fa88">Render pass (244)</a></li>
+<li><a href="#orgedb15ae">Framebuffer (245)</a></li>
+<li><a href="#org4b8b389">Clear values (246)</a></li>
+<li><a href="#org72c2424">Depth and stencil state (246)</a></li>
+</ul>
+</li>
+<li><a href="#orgf4d21e3">Loading models (250)</a>
+<ul>
+<li><a href="#org52c6deb">Library (250)</a></li>
+<li><a href="#org36572f9">Loading vertices and indices (252)</a></li>
+<li><a href="#org20954aa">Vertex deduplication (256)</a></li>
+</ul>
+</li>
+<li><a href="#orgd4e128d">Generating Mipmaps (259)</a>
+<ul>
+<li><a href="#org0925e9d">Generating Mipmaps (261)</a></li>
+<li><a href="#orgc858cbb">Sampler (267)</a></li>
+</ul>
+</li>
+<li><a href="#orgb58093a">Multisampling (271)</a>
+<ul>
+<li><a href="#orgf875fbf">Adding new attachments (276)</a></li>
+<li><a href="#org3fb6ffa">Quality improvements (279)</a></li>
+</ul>
+</li>
+<li><a href="#org2592336">Summary</a></li>
+<li><a href="#org1459fbf">Q&amp;A</a>
+<ul>
+<li><a href="#org52bbd0b">VkAllocationCallbacks 的使用示例</a></li>
+<li><a href="#org31f0c85">为什么 depthImageView 可以被多个 command buffer 复用，而 swapChainImageView 不能？</a></li>
+<li><a href="#org0e3e105">secondary command buffer 的使用示例</a></li>
+<li><a href="#org2ef8f8f">使用惯例</a></li>
+</ul>
+</li>
+<li><a href="#orgfe8227c">参考资料</a></li>
+</ul>
+</li>
+<li><a href="#org4bbf668">Vulkan Guide</a>
+<ul>
+<li><a href="#org009af04">Vulkan Base</a>
+<ul>
+<li><a href="#org8cec245">Initial Setup</a></li>
+<li><a href="#org7624608">Push Constants</a></li>
+<li><a href="#orgefc8f9a">Dynamic Descriptor sets</a></li>
+<li><a href="#org4425b5c">Storage buffers (shader storage buffer object)</a></li>
+<li><a href="#org00d0e20">ERROR</a>
+<ul>
+<li><a href="#orgad05123">ERROR CMake Error: The source "VulkanGuide/base/CMakeLists.txt" does not match the source "VulkanGuide/CMakeLists.txt" used to generate cache.  Re-run cmake with a different source directory.</a></li>
+<li><a href="#orgf316ecf">ERROR Error C3646 'm_Lock': unknown override specifier</a></li>
+<li><a href="#orgf9ae1b1">ERROR SDL2.dll 不存在</a></li>
+<li><a href="#org256d90f">ERROR Validation Error: [ VUID-VkPipelineShaderStageCreateInfo-module-parameter ] Object 0: handle = 0x19ae7186ec0, type = VK_OBJECT_TYPE_INSTANCE; | MessageID = 0xfd71dc70 | Invalid VkShaderModule Object 0xcccccccccccccccc. The Vulkan spec states: module must be a valid VkShaderModule handle</a></li>
+<li><a href="#org1bc783c">ERROR LNK2019	unresolved external symbol "public: static struct VertexInputDescription __cdecl Vertex::get_vertex_description(void)" (?get_vertex_description@Vertex@@SA?AUVertexInputDescription@@XZ) referenced in function "private: void __cdecl VulkanEngine::init_pipelines(void)" (?init_pipelines@VulkanEngine@@AEAAXXZ)</a></li>
+<li><a href="#org3d1a851">ERROR gl_BaseInstance undeclared identifier</a></li>
+<li><a href="#org6131b8c">ERROR Validation Error: [ VUID-VkShaderModuleCreateInfo-pCode-01091 ]</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgc127639">GPU Driven Rendering</a>
+<ul>
+<li><a href="#orgd356bb5">Init Setup</a>
+<ul>
+<li><a href="#org5018046">编译 assimp</a></li>
+<li><a href="#org8c90e1c">导出 asset</a></li>
+</ul>
+</li>
+<li><a href="#orgff7d7cb">GPU Driven Rendering Overview</a>
+<ul>
+<li><a href="#orgf639119">Introduction</a></li>
+<li><a href="#org0a18f2d">Draw Indirect</a></li>
+<li><a href="#orgd856977">Bindless Design</a></li>
+<li><a href="#orgcd2828d">Overview of Vkguide engine architecture for compute rendering.</a></li>
+</ul>
+</li>
+<li><a href="#org6582afd">Engine architecture overview</a>
+<ul>
+<li><a href="#orgf3016d2">Asset System</a>
+<ul>
+<li><a href="#org33d1762">Asset Format</a></li>
+<li><a href="#org5f35246">Texture Asset</a></li>
+<li><a href="#org03da039">Mesh Asset</a></li>
+<li><a href="#orgac9d48d">Material Asset</a></li>
+<li><a href="#org2cdfcbc">Prefab Asset</a></li>
+</ul>
+</li>
+<li><a href="#org536ef8f">Abstraction for descritpor sets</a></li>
+<li><a href="#orgd51e631">Configurable options through a CVAR System</a></li>
+<li><a href="#org476d5d7">Multithreading for game engines</a>
+<ul>
+<li><a href="#orgeaee097">Ways of using multithreading in game engines</a></li>
+<li><a href="#org735f3e4">In practive</a></li>
+<li><a href="#org965a698">Identifying tasks</a></li>
+<li><a href="#org74fa86a">Multithreading Vulkan</a></li>
+</ul>
+</li>
+<li><a href="#orga6b48bf">Render Flow</a></li>
+</ul>
+</li>
+<li><a href="#orgd2e521a">Draw Indirect</a></li>
+<li><a href="#org00ae68c">Compute Shaders</a></li>
+<li><a href="#org462f07a">Material System</a></li>
+<li><a href="#orge95c3cc">Mesh Rendering</a></li>
+<li><a href="#org0544515">Compute based Culling</a></li>
+</ul>
+</li>
+<li><a href="#org4a7a164">参考资料</a></li>
+</ul>
+</li>
+<li><a href="#org88359c3">Vulkan vs OpenGL vs OpenGLES vs D3D</a>
+<ul>
+<li><a href="#org4ef6417">Version</a>
+<ul>
+<li><a href="#orgcb0ce2a">OpenGL version</a></li>
+<li><a href="#orgc0d2d8e">Open GLES</a></li>
+<li><a href="#org325e31b">GLSL Version</a></li>
+</ul>
+</li>
+<li><a href="#orgf6cbd7c">Compare</a>
+<ul>
+<li><a href="#org2cff239">EGL DX11 对比</a>
+<ul>
+<li><a href="#org498e517">EGL and DXGI</a></li>
+<li><a href="#org18daeff">buffer, uniforms, vertices, texture</a></li>
+<li><a href="#orgc7883ed">pipeline</a></li>
+<li><a href="#org0942204">draw</a></li>
+</ul>
+</li>
+<li><a href="#org5335c97">Vulkan DX12 概念对比</a>
+<ul>
+<li><a href="#org5050ca8">基本的 API 方面</a></li>
+<li><a href="#org5ed3350">Command Buffer and Pool</a></li>
+<li><a href="#org12a473a">Descriptors</a></li>
+<li><a href="#orgec4ae09">Pipeline</a></li>
+<li><a href="#org15f653a">Images and Buffers</a></li>
+<li><a href="#orgad2baa2">RenderPasses/RenderTargets</a></li>
+</ul>
+</li>
+<li><a href="#orgc218853">GLSL vs HLSL</a>
+<ul>
+<li><a href="#org6d28e0c">System values &amp; built-in inputs</a></li>
+<li><a href="#org3409604">Atomic operations</a></li>
+<li><a href="#org448d4fb">Shared/local memory</a></li>
+<li><a href="#org3107188">Barriers</a></li>
+<li><a href="#org39cc93e">Texture access</a></li>
+<li><a href="#orgc64be0d">General math</a></li>
+<li><a href="#org3d28c3d">Various functions</a></li>
+<li><a href="#org9d5ff18">参考资料</a></li>
+</ul>
+</li>
+<li><a href="#org8fd3b54">参考资料</a></li>
 </ul>
 </li>
 </ul>
@@ -411,32 +412,32 @@
 <p>
 Vulkan note.<br />
 </p>
-<div class="HTML" id="org4c51681">
+<div class="HTML" id="orga3a23b4">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
 
 </div>
 
-<div id="outline-container-org99d59af" class="outline-2">
-<h2 id="org99d59af">Vulkan Tutorial</h2>
-<div class="outline-text-2" id="text-org99d59af">
+<div id="outline-container-org0eb644a" class="outline-2">
+<h2 id="org0eb644a">Vulkan Tutorial</h2>
+<div class="outline-text-2" id="text-org0eb644a">
 </div>
-<div id="outline-container-orgfbc303b" class="outline-3">
-<h3 id="orgfbc303b">Introduction (8)</h3>
-<div class="outline-text-3" id="text-orgfbc303b">
+<div id="outline-container-orgb8337e3" class="outline-3">
+<h3 id="orgb8337e3">Introduction (8)</h3>
+<div class="outline-text-3" id="text-orgb8337e3">
 </div>
-<div id="outline-container-org55060ef" class="outline-4">
-<h4 id="org55060ef">About (8)</h4>
-<div class="outline-text-4" id="text-org55060ef">
+<div id="outline-container-orgc9c585f" class="outline-4">
+<h4 id="orgc9c585f">About (8)</h4>
+<div class="outline-text-4" id="text-orgc9c585f">
 <p>
 Vulkan 是一个新的 API，其为现代显卡提供了更好的抽象。这套新接口允许你更好地描述你的应用程序想做的事情，因此它拥有比现有的图形 API，比如 OpenGL 和 Direct3D ，更好的性能以及更少的意外行为。Vulkan 背后的思想比较接近 Direct3D 12 和 Metal ，但是 Vulkan 拥有完全跨平台的优点，也就是说，你可以同时为 Windows, Linux 和 Android 平台开发应用程序。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orga49d11a" class="outline-4">
-<h4 id="orga49d11a">Tutorial structure (9)</h4>
-<div class="outline-text-4" id="text-orga49d11a">
+<div id="outline-container-org916a826" class="outline-4">
+<h4 id="org916a826">Tutorial structure (9)</h4>
+<div class="outline-text-4" id="text-org916a826">
 <p>
 该教程每章的结构大致如下：<br />
 </p>
@@ -448,13 +449,13 @@ Vulkan 是一个新的 API，其为现代显卡提供了更好的抽象。这套
 </div>
 </div>
 </div>
-<div id="outline-container-orga3da744" class="outline-3">
-<h3 id="orga3da744">Overview (11)</h3>
-<div class="outline-text-3" id="text-orga3da744">
+<div id="outline-container-org38ec7ed" class="outline-3">
+<h3 id="org38ec7ed">Overview (11)</h3>
+<div class="outline-text-3" id="text-org38ec7ed">
 </div>
-<div id="outline-container-org7c7e19e" class="outline-4">
-<h4 id="org7c7e19e">Origin of Vulkan (11)</h4>
-<div class="outline-text-4" id="text-org7c7e19e">
+<div id="outline-container-orgbf5c916" class="outline-4">
+<h4 id="orgbf5c916">Origin of Vulkan (11)</h4>
+<div class="outline-text-4" id="text-orgbf5c916">
 <p>
 和之前的图形 API 一样，Vulkan 被设计为 GPUs 的跨平台的抽象。大多数这些 API 的问题在于，它们设计的时代，主打图形硬件几乎只限于可配置的固定功能。程序员必须按照标准的格式提供顶点数据，并且在 lighting 和 shading 选项上也受 GPU 制造商所支配。<br />
 </p>
@@ -468,14 +469,14 @@ Vulkan 针对现代图形架构从头开始设计，解决了这些问题。 它
 </p>
 </div>
 </div>
-<div id="outline-container-org888c87b" class="outline-4">
-<h4 id="org888c87b">What it takes to draw a triangle (12)</h4>
-<div class="outline-text-4" id="text-org888c87b">
+<div id="outline-container-orgeee2742" class="outline-4">
+<h4 id="orgeee2742">What it takes to draw a triangle (12)</h4>
+<div class="outline-text-4" id="text-orgeee2742">
 <p>
 下面是在 Vulkan 程序中画一个三角形的所有步骤的总览。这里引入的所有概念在后面章节会详细讲述，这里只是为了给你一个大图，让你可以将所有单独的组件关联起来。下图展示了 Vulkan 中各种对象之间的关系：<br />
 </p>
 
-<div id="orgd6ae2ed" class="figure">
+<div id="orgbb3aead" class="figure">
 <p><img src="./Vulkan/vulkan_objects.jpg" alt="vulkan_objects.jpg" width="600px" /><br />
 </p>
 </div>
@@ -485,25 +486,25 @@ Vulkan 针对现代图形架构从头开始设计，解决了这些问题。 它
 </ul>
 </div>
 
-<div id="outline-container-orgbdfe2fb" class="outline-5">
-<h5 id="orgbdfe2fb">Step 1 - Instance and physical device selection</h5>
-<div class="outline-text-5" id="text-orgbdfe2fb">
+<div id="outline-container-orgee4107f" class="outline-5">
+<h5 id="orgee4107f">Step 1 - Instance and physical device selection</h5>
+<div class="outline-text-5" id="text-orgee4107f">
 <p>
 Vulkan 应用的开始，需要使用一个 VkInstance 实例来设置 Vulkan API。通过描述你的应用程序并指定你想使用的 API 扩展来创建该 VKInstance 实例。创建 VKInstance 实例后，你可以查询支持 Vulkan 的硬件并选择一个或多个 VkPhysicalDevice 来使用。你还可以查询 VRAM 尺寸和设备能力等属性来选择希望使用的设备，例如，优先使用专用显卡(独显)。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org68d6566" class="outline-5">
-<h5 id="org68d6566">Step 2 - Logical device and queue families</h5>
-<div class="outline-text-5" id="text-org68d6566">
+<div id="outline-container-org8ab51fa" class="outline-5">
+<h5 id="org8ab51fa">Step 2 - Logical device and queue families</h5>
+<div class="outline-text-5" id="text-org8ab51fa">
 <p>
 选择了正确的硬件设备后，你需要创建一个 VkDevice(逻辑设备)，对其更明确地描述你将使用哪些 VkPhysicalDeviceFeatures 特性，例如，多视口渲染、64 位浮点数支持等等。你还需要指定你使用哪些 Queue families。使用 Vulkan 执行的大多数操作，如绘制命令、内存操作等，都被提交到一个 VkQueue 来异步执行。Queues 是从 Queue families 分配的，每个 queue family 在其 queues 上提供一组特定的操作。例如，对于图形、计算以及内存转移操作可能有不同的 queue families。queue families 的可用操作也可以作为选择物理设备时的一个区别因素。支持 Vulkan 的设备可以不提供任何图形功能，尽管今天支持 Vulkan 的显卡通常都支持我们感兴趣的所有 queue 操作。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org1fa4f96" class="outline-5">
-<h5 id="org1fa4f96">Step 3 - Window surface and swap chain</h5>
-<div class="outline-text-5" id="text-org1fa4f96">
+<div id="outline-container-org6f38d8e" class="outline-5">
+<h5 id="org6f38d8e">Step 3 - Window surface and swap chain</h5>
+<div class="outline-text-5" id="text-org6f38d8e">
 <p>
 除非你只对离屏渲染感兴趣，否则你需要创建一个窗口来展示渲染的图片。可以使用本地平台的 API 或类似 GLFW 和 SDL 这样的库来创建窗口。<br />
 </p>
@@ -521,27 +522,27 @@ swap chain 是多个 render target 的一个集合。其基本目的是用于保
 </p>
 </div>
 </div>
-<div id="outline-container-org397c4f8" class="outline-5">
-<h5 id="org397c4f8">Step 4 - Image views and framebuffers</h5>
-<div class="outline-text-5" id="text-org397c4f8">
+<div id="outline-container-org0f73811" class="outline-5">
+<h5 id="org0f73811">Step 4 - Image views and framebuffers</h5>
+<div class="outline-text-5" id="text-org0f73811">
 <p>
 从 swap chain 获得一个 image 后，为了渲染到其中，我们需要将该 image 封装到一个 VkImageView 和 VkFramebuffer 中。一个 image view 会引用一个 image 的特定部分，一个 framebuffer 会引用多个 image views，多个 image views 被用于 color，depth 以及 stencil targets。因为 swap chain 中可以有很多不同的 images，我们将为每个 image 预先创建一个 image view 和一个 framebuffer，并在绘制时选择正确的 image。  TODO(framebuffer imageview image rendertarget 关系)<br />
 </p>
 </div>
 </div>
 
-<div id="outline-container-org3e6fea0" class="outline-5">
-<h5 id="org3e6fea0">Step 5 - Render passes</h5>
-<div class="outline-text-5" id="text-org3e6fea0">
+<div id="outline-container-orgf63fe0e" class="outline-5">
+<h5 id="orgf63fe0e">Step 5 - Render passes</h5>
+<div class="outline-text-5" id="text-orgf63fe0e">
 <p>
 Vulkan 中的 render passes 描述了渲染操作期间使用的 images 的类型，它们将被如何使用，以及应该如何对待它们的内容。在我们渲染三角形的应用中，我们告诉 Vulkan，我们将使用单个 image 作为 color target，并且在绘制操作之前我们希望其被清除为纯色。Render Passes 只描述 images 的类型，VkFramebuffer 执行实际的绑定操作，将 images 绑定到对应的 slots。<br />
 </p>
 </div>
 </div>
 
-<div id="outline-container-org7d824e0" class="outline-5">
-<h5 id="org7d824e0">Step 6 - Graphics pipeline</h5>
-<div class="outline-text-5" id="text-org7d824e0">
+<div id="outline-container-org2e6d58c" class="outline-5">
+<h5 id="org2e6d58c">Step 6 - Graphics pipeline</h5>
+<div class="outline-text-5" id="text-org2e6d58c">
 <p>
 通过创建一个 VkPipeline 对象来设置 Vulkan 中的 graphics pipeline。其描述了显卡的可配置状态，例如：viewport 的尺寸，depth buffer 的操作，可编程状态(对应 VkShaderModule)等等。VkShaderModule 对象是由 shader 字节码创建的。驱动还需要知道哪些 render targets 将被 pipeline 所使用，这是我们通过引用 render pass 来指定的。<br />
 </p>
@@ -555,9 +556,9 @@ Vulkan 与现有的其它 API 之间最明显的区别就是，几乎所有 grap
 </p>
 </div>
 </div>
-<div id="outline-container-orga876e43" class="outline-5">
-<h5 id="orga876e43">Step 7 - Command pools and command buffers</h5>
-<div class="outline-text-5" id="text-orga876e43">
+<div id="outline-container-org3f39437" class="outline-5">
+<h5 id="org3f39437">Step 7 - Command pools and command buffers</h5>
+<div class="outline-text-5" id="text-org3f39437">
 <p>
 如前所述，Vulkan 中我们想要执行的许多操作，例如绘图操作，都需要提交到一个 Queue 中。这些操作首先需要记录到 VkCommandBuffer 中，然后才能提交。这些 command buffers 是从 VkCommandPool 分配的，VkCommandPool 和特定的 queue family 相关联。要绘制一个简单的三角形，我们需要将以下操作记录到一个 command buffer 中：<br />
 </p>
@@ -573,9 +574,9 @@ Vulkan 与现有的其它 API 之间最明显的区别就是，几乎所有 grap
 </p>
 </div>
 </div>
-<div id="outline-container-org039029e" class="outline-5">
-<h5 id="org039029e">Step 8 - Main loop</h5>
-<div class="outline-text-5" id="text-org039029e">
+<div id="outline-container-org1e2001d" class="outline-5">
+<h5 id="org1e2001d">Step 8 - Main loop</h5>
+<div class="outline-text-5" id="text-org1e2001d">
 <p>
 现在绘制命令已经被包装到 command buffer 中了，主循环就很简单了。首先，我们使用 vkAcquireNextImageKHR 从 swap chain 获取一个 image。然后，我们为该 image 选择适当的 command buffer，并且使用 vkQueueSubmit 来执行该 command buffer。最后，我们将 image 返回给 swap chain，使用 vkQueuePresentKHR 来将其展示到屏幕上。<br />
 </p>
@@ -585,9 +586,9 @@ Vulkan 与现有的其它 API 之间最明显的区别就是，几乎所有 grap
 </p>
 </div>
 </div>
-<div id="outline-container-org0da23fe" class="outline-5">
-<h5 id="org0da23fe">Summary</h5>
-<div class="outline-text-5" id="text-org0da23fe">
+<div id="outline-container-org8194c76" class="outline-5">
+<h5 id="org8194c76">Summary</h5>
+<div class="outline-text-5" id="text-org8194c76">
 <p>
 请注意，我们采用了作弊的方式，将顶点坐标嵌入顶点着色器，而没有使用 vertex buffer。这是因为管理 vertex buffer 需要先熟悉 command buffers。<br />
 简单来说，绘制我们的第一个三角形需要以下步骤：<br />
@@ -607,13 +608,13 @@ Vulkan 与现有的其它 API 之间最明显的区别就是，几乎所有 grap
 </div>
 </div>
 </div>
-<div id="outline-container-org3ab6bea" class="outline-4">
-<h4 id="org3ab6bea">API concepts</h4>
-<div class="outline-text-4" id="text-org3ab6bea">
+<div id="outline-container-org969a2df" class="outline-4">
+<h4 id="org969a2df">API concepts</h4>
+<div class="outline-text-4" id="text-org969a2df">
 </div>
-<div id="outline-container-orgd18205e" class="outline-5">
-<h5 id="orgd18205e">Coding Conventions</h5>
-<div class="outline-text-5" id="text-orgd18205e">
+<div id="outline-container-orge10230c" class="outline-5">
+<h5 id="orge10230c">Coding Conventions</h5>
+<div class="outline-text-5" id="text-orge10230c">
 <ul class="org-ul">
 <li>函数名的前缀为 vk<br /></li>
 <li>枚举类型名称和结构体类型名称的前缀为 Vk<br /></li>
@@ -647,9 +648,9 @@ createInfo.bar = ...;
 </ul>
 </div>
 </div>
-<div id="outline-container-org40d7517" class="outline-5">
-<h5 id="org40d7517">Validation layers</h5>
-<div class="outline-text-5" id="text-org40d7517">
+<div id="outline-container-orgd259455" class="outline-5">
+<h5 id="orgd259455">Validation layers</h5>
+<div class="outline-text-5" id="text-orgd259455">
 <p>
 如前所述，Vulkan 旨在实现高性能和驱动程序低开销。 因此，默认情况下它将包括非常有限的错误检查和调试功能。 如果你做错了什么，驱动程序通常会崩溃而不是返回错误代码，或者更糟糕的是，它似乎可以在你的显卡上运行而在其他显卡上却完全失败。<br />
 </p>
@@ -665,13 +666,13 @@ Vulkan 允许你通过使用一个被称为 validation layers 的特性来开启
 </div>
 </div>
 </div>
-<div id="outline-container-orgccf67b6" class="outline-3">
-<h3 id="orgccf67b6">Development environment (18)</h3>
-<div class="outline-text-3" id="text-orgccf67b6">
+<div id="outline-container-orgddef1de" class="outline-3">
+<h3 id="orgddef1de">Development environment (18)</h3>
+<div class="outline-text-3" id="text-orgddef1de">
 </div>
-<div id="outline-container-org45332a0" class="outline-4">
-<h4 id="org45332a0">Windows (18)</h4>
-<div class="outline-text-4" id="text-org45332a0">
+<div id="outline-container-org0e6f59a" class="outline-4">
+<h4 id="org0e6f59a">Windows (18)</h4>
+<div class="outline-text-4" id="text-org0e6f59a">
 <ul class="org-ul">
 <li>下载并安装 SDK Installer <a href="https://vulkan.lunarg.com/">https://vulkan.lunarg.com/</a><br /></li>
 <li>运行 Bin/vkcube.exe 来验证当前设备是否支持 Vulkan<br /></li>
@@ -706,37 +707,37 @@ Lib 目录包含了库文件<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org25b8920" class="outline-4">
-<h4 id="org25b8920">Linux (28)</h4>
+<div id="outline-container-org0aca50e" class="outline-4">
+<h4 id="org0aca50e">Linux (28)</h4>
 </div>
-<div id="outline-container-orgb077ab6" class="outline-4">
-<h4 id="orgb077ab6">MacOS (34)</h4>
+<div id="outline-container-org9cfad62" class="outline-4">
+<h4 id="org9cfad62">MacOS (34)</h4>
 </div>
 </div>
-<div id="outline-container-orgaac7515" class="outline-3">
-<h3 id="orgaac7515">Drawing a triangle</h3>
-<div class="outline-text-3" id="text-orgaac7515">
+<div id="outline-container-org2808d42" class="outline-3">
+<h3 id="org2808d42">Drawing a triangle</h3>
+<div class="outline-text-3" id="text-org2808d42">
 </div>
-<div id="outline-container-org39e88e1" class="outline-4">
-<h4 id="org39e88e1">Setup</h4>
-<div class="outline-text-4" id="text-org39e88e1">
+<div id="outline-container-org2445b01" class="outline-4">
+<h4 id="org2445b01">Setup</h4>
+<div class="outline-text-4" id="text-org2445b01">
 </div>
-<div id="outline-container-orgcd1f071" class="outline-5">
-<h5 id="orgcd1f071">Base code (41)</h5>
-<div class="outline-text-5" id="text-orgcd1f071">
+<div id="outline-container-org1017415" class="outline-5">
+<h5 id="org1017415">Base code (41)</h5>
+<div class="outline-text-5" id="text-org1017415">
 <p>
 Vulkan 对象要么是通过使用 vkCreateXXX 函数直接创建，要么是通过另一个对象使用 vkAllocateXXX 函数来分配。一个对象不再使用后，你需要使用对应的函数 vkDestroyXXX 或 vkFreeXXX 来销毁它。对于不同类型的对象，这些函数的参数也各不相同，但是他们都有一个公共的参数：pAllocator。这是一个可选参数，该参数允许你为自定义的分配器指定一个回调函数。 TODO<br />
 </p>
 </div>
 </div>
 
-<div id="outline-container-orgddcf63a" class="outline-5">
-<h5 id="orgddcf63a">Instance (46)</h5>
-<div class="outline-text-5" id="text-orgddcf63a">
+<div id="outline-container-org876df1d" class="outline-5">
+<h5 id="org876df1d">Instance (46)</h5>
+<div class="outline-text-5" id="text-org876df1d">
 </div>
-<div id="outline-container-org53b6906" class="outline-6">
-<h6 id="org53b6906">创建一个 VkInstance</h6>
-<div class="outline-text-6" id="text-org53b6906">
+<div id="outline-container-org4ad7e8c" class="outline-6">
+<h6 id="org4ad7e8c">创建一个 VkInstance</h6>
+<div class="outline-text-6" id="text-org4ad7e8c">
 <p>
 为了创建一个 VkInstance，首先需要创建一个 VkApplicationInfo，将我们应用程序的一些信息填充到该结构体中。技术上来说，这些信息是可选的，但是其可能会给驱动提供一些有用信息来对我们特定的应用程序进行优化。(驱动对于某些特定的行为会使用知名的图形引擎)<br />
 </p>
@@ -782,9 +783,9 @@ Vulkan 对象要么是通过使用 vkCreateXXX 函数直接创建，要么是通
 </div>
 </div>
 </div>
-<div id="outline-container-orgebbe2ac" class="outline-6">
-<h6 id="orgebbe2ac">检查支持的扩展</h6>
-<div class="outline-text-6" id="text-orgebbe2ac">
+<div id="outline-container-org1e1b916" class="outline-6">
+<h6 id="org1e1b916">检查支持的扩展</h6>
+<div class="outline-text-6" id="text-org1e1b916">
 <p>
 在创建 VkInstance 之前可以使用 vkEnumerateInstanceExtensionProperties 函数来获得当前支持的所有扩展的列表。<br />
 </p>
@@ -879,22 +880,22 @@ vkEnumerateInstanceExtensionProperties(<span style="color: #a45bad;">nullptr</sp
 </div>
 </div>
 </div>
-<div id="outline-container-org9ec1400" class="outline-6">
-<h6 id="org9ec1400">Cleaning up</h6>
-<div class="outline-text-6" id="text-org9ec1400">
+<div id="outline-container-orgf3b82cc" class="outline-6">
+<h6 id="orgf3b82cc">Cleaning up</h6>
+<div class="outline-text-6" id="text-orgf3b82cc">
 <p>
 VkInstance 对象需要在应用程序退出之前被销毁。使用 vkDestroyInstance 函数来销毁该对象。<br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgad41c70" class="outline-5">
-<h5 id="orgad41c70">Validation layers (50)</h5>
-<div class="outline-text-5" id="text-orgad41c70">
+<div id="outline-container-org024cc41" class="outline-5">
+<h5 id="org024cc41">Validation layers (50)</h5>
+<div class="outline-text-5" id="text-org024cc41">
 </div>
-<div id="outline-container-org60e92c3" class="outline-6">
-<h6 id="org60e92c3">What are validation layers?</h6>
-<div class="outline-text-6" id="text-org60e92c3">
+<div id="outline-container-org62708ac" class="outline-6">
+<h6 id="org62708ac">What are validation layers?</h6>
+<div class="outline-text-6" id="text-org62708ac">
 <p>
 Vulkan API 的设计理念是将驱动程序开销降至最低。默认情况下，API 中的错误检查非常有限。甚至很简单的错误，如：枚举值不正确或者必须的参数指针为空等等，都没有被显示地处理，并且这些简单错误会简单地导致崩溃或未定义行为。但是，Vulkan 引入了一个优雅的系统用于这些错误检查，该系统就是 validation layers。Validation layers 是可选组件，其 hook 到 Vulkan 函数调用内来执行额外的操作。通常 validation layers 会执行如下操作：<br />
 </p>
@@ -939,9 +940,9 @@ Vulkan 中以前有两种不同类型的 validation layers：instance 类型和�
 </div>
 </div>
 
-<div id="outline-container-org176ea81" class="outline-6">
-<h6 id="org176ea81">Using validation layers</h6>
-<div class="outline-text-6" id="text-org176ea81">
+<div id="outline-container-orgdd431e3" class="outline-6">
+<h6 id="orgdd431e3">Using validation layers</h6>
+<div class="outline-text-6" id="text-orgdd431e3">
 <p>
 和 extensions 一样，需要指定 validation layers 的名称来开启它们。所有有用的标准验证都捆绑在 SDK 中的一个层中，其名称为 VK_LAYER_KHRONOS_validation。<br />
 </p>
@@ -989,8 +990,8 @@ createInfo.ppEnabledExtensionNames = glfwExtensions;
 </div>
 
 <ul class="org-ul">
-<li><a id="org1ff9d7b"></a>ERROR: 支持的 layer 中不包含 VK_LAYER_KHRONOS_validation<br />
-<div class="outline-text-7" id="text-org1ff9d7b">
+<li><a id="org3e1e157"></a>ERROR: 支持的 layer 中不包含 VK_LAYER_KHRONOS_validation<br />
+<div class="outline-text-7" id="text-org3e1e157">
 <p>
 安装最新版本的 VulkanSDK 1.2.189.2，该问题修复。注意，安装时需要使用 administrator 权限运行安装程序。<br />
 </p>
@@ -999,9 +1000,9 @@ createInfo.ppEnabledExtensionNames = glfwExtensions;
 </ul>
 </div>
 
-<div id="outline-container-org9892026" class="outline-6">
-<h6 id="org9892026">Message callback</h6>
-<div class="outline-text-6" id="text-org9892026">
+<div id="outline-container-org3b32787" class="outline-6">
+<h6 id="org3b32787">Message callback</h6>
+<div class="outline-text-6" id="text-org3b32787">
 <p>
 默认情况下，validation layers 会将调试消息打印到标准输出，但我们也可以通过提供显式的回调函数来自己处理调试消息。这也将允许你决定要查看哪种消息，因为并非所有消息都必然是（致命的）错误。为了设置一个回调函数来处理消息，我们需要使用 VK_EXT_debug_utils。<br />
 </p>
@@ -1108,9 +1109,9 @@ createInfo.pUserData = <span style="color: #a45bad;">nullptr</span>; <span style
 </div>
 </div>
 </div>
-<div id="outline-container-org4fd41fd" class="outline-6">
-<h6 id="org4fd41fd">Debugging instance creation and destruction</h6>
-<div class="outline-text-6" id="text-org4fd41fd">
+<div id="outline-container-org290bc18" class="outline-6">
+<h6 id="org290bc18">Debugging instance creation and destruction</h6>
+<div class="outline-text-6" id="text-org290bc18">
 <p>
 vkCreateDebugUtilsMessengerEXT 调用需要一个可用的 instance(VkInstance)，而且必须在 instance 销毁之前调用 vkDestroyDebugUtilsMessengerEXT，因此，调用 vkCreateInstance 和 vkDestroyInstance 时，我们还无法调试任何问题。<br />
 </p>
@@ -1177,9 +1178,9 @@ vkCreateDebugUtilsMessengerEXT 调用需要一个可用的 instance(VkInstance)�
 </div>
 </div>
 </div>
-<div id="outline-container-org27f0b7f" class="outline-6">
-<h6 id="org27f0b7f">Configuration</h6>
-<div class="outline-text-6" id="text-org27f0b7f">
+<div id="outline-container-orge48a26d" class="outline-6">
+<h6 id="orge48a26d">Configuration</h6>
+<div class="outline-text-6" id="text-orge48a26d">
 <p>
 除了 VkDebugUtilsMessengerCreateInfoEXT 结构中指定的标志之外，validation layers 的行为还有很多设置。 在 Vulkan SDK 中有一个 Config/vk_layer_settings.txt 文件，其中详细解释了如何 validation layers。<br />
 </p>
@@ -1187,13 +1188,13 @@ vkCreateDebugUtilsMessengerEXT 调用需要一个可用的 instance(VkInstance)�
 </div>
 </div>
 
-<div id="outline-container-org0d4d5ab" class="outline-5">
-<h5 id="org0d4d5ab">Physical devices and queue families (62)</h5>
-<div class="outline-text-5" id="text-org0d4d5ab">
+<div id="outline-container-orgbfd6245" class="outline-5">
+<h5 id="orgbfd6245">Physical devices and queue families (62)</h5>
+<div class="outline-text-5" id="text-orgbfd6245">
 </div>
-<div id="outline-container-org7cfa1cf" class="outline-6">
-<h6 id="org7cfa1cf">Selecting a physical device</h6>
-<div class="outline-text-6" id="text-org7cfa1cf">
+<div id="outline-container-orgba86261" class="outline-6">
+<h6 id="orgba86261">Selecting a physical device</h6>
+<div class="outline-text-6" id="text-orgba86261">
 <p>
 通过 VkInstance 对 Vulkan 库进行初始化后，我们需要从系统中查询并选择一个显卡，该显卡支持我们所需的所有特性。事实上我们可以选择任意数量的显卡并同时使用他们，但是该教程中我们只使用第一个适合我们的显卡。最后，我们会将所选的显卡存储到一个 VkPhysicalDevice 句柄。当 VkInstance 被销毁时，该对象会被隐式地销毁，因此，我们不需要在 cleanup 中做显示的销毁操作。<br />
 </p>
@@ -1313,9 +1314,9 @@ vkGetPhysicalDeviceFeatures(device, &amp;deviceFeatures);
 </div>
 </div>
 </div>
-<div id="outline-container-orgda74beb" class="outline-6">
-<h6 id="orgda74beb">Queue families</h6>
-<div class="outline-text-6" id="text-orgda74beb">
+<div id="outline-container-orgb4c97c6" class="outline-6">
+<h6 id="orgb4c97c6">Queue families</h6>
+<div class="outline-text-6" id="text-orgb4c97c6">
 <p>
 Vulkan 中几乎每个操作都需要被提交到一个 queue 中。不同类型的 queue 来自不同的 queue families，每个 queue family 只允许一组命令集合，该集合只是所有命令集合的一个子集。我们需要检查显卡设备支持哪些 queue families，以及其中的哪个 queue family 支持的命令是我们需要使用的。<br />
 </p>
@@ -1389,9 +1390,9 @@ Vulkan 中几乎每个操作都需要被提交到一个 queue 中。不同类型
 </div>
 </div>
 
-<div id="outline-container-org03f8c87" class="outline-5">
-<h5 id="org03f8c87">Logical device and queues (70)</h5>
-<div class="outline-text-5" id="text-org03f8c87">
+<div id="outline-container-org9fdaee4" class="outline-5">
+<h5 id="org9fdaee4">Logical device and queues (70)</h5>
+<div class="outline-text-5" id="text-org9fdaee4">
 <p>
 选择要使用的物理设备后，我们需要设置一个逻辑设备来与之交互。 逻辑设备创建过程与实例创建过程类似，我们需要描述想要使用的特性，我们还需要指定创建哪个队列(我们已经查询了哪些 queue families 是可用的)。如果你有不同的需求，你甚至可以从同一物理设备创建多个逻辑设备。使用 VkDevice 来存储逻辑设备的句柄。<br />
 </p>
@@ -1463,13 +1464,13 @@ Vulkan 中几乎每个操作都需要被提交到一个 queue 中。不同类型
 </div>
 </div>
 </div>
-<div id="outline-container-orgddcdfcd" class="outline-4">
-<h4 id="orgddcdfcd">Presentation</h4>
-<div class="outline-text-4" id="text-orgddcdfcd">
+<div id="outline-container-org7dd0074" class="outline-4">
+<h4 id="org7dd0074">Presentation</h4>
+<div class="outline-text-4" id="text-org7dd0074">
 </div>
-<div id="outline-container-org7db7413" class="outline-5">
-<h5 id="org7db7413">Window surface (74)</h5>
-<div class="outline-text-5" id="text-org7db7413">
+<div id="outline-container-org0bf984d" class="outline-5">
+<h5 id="org0bf984d">Window surface (74)</h5>
+<div class="outline-text-5" id="text-org0bf984d">
 <p>
 Vulkan 是平台无关的 API，其无法直接和窗口系统进行交互。为了在 Vulkan 和窗口系统直接建立联系，我们需要使用 WSI（Windows System Integration）扩展。本章先介绍 VK_KHR_surface 扩展，该扩展暴露了一个 VkSurfaceKHR 对象，其为 surface 的抽象类型，用于展示渲染到图片中的内容。<br />
 </p>
@@ -1482,9 +1483,9 @@ VK_KHR_surface 扩展属于 instance 级别的扩展，事实上，我们已经�
 需要在 instance 创建后，紧接着就创建 window surface。window surface 扩展会影响到物理设备的选择。Vulkan 中 window surfaces 整体是一个可选的组件，如果你需要离屏渲染，就不需要使用该扩展了。<br />
 </p>
 </div>
-<div id="outline-container-org764c1cd" class="outline-6">
-<h6 id="org764c1cd">Window surface creation (74)</h6>
-<div class="outline-text-6" id="text-org764c1cd">
+<div id="outline-container-org08f1ee9" class="outline-6">
+<h6 id="org08f1ee9">Window surface creation (74)</h6>
+<div class="outline-text-6" id="text-org08f1ee9">
 <p>
 虽然 VkSurfaceKHR 类型对象以及该对象的使用是平台无关的，但是该对象的创建依赖于窗口系统。例如，Windows 平台上创建 VkSurfaceKHR 对象需要 HWND 和 HMODULE 句柄，因此还存在平台相关的额外扩展，例如：Windows 平台的 VK_KHR_win32_surface 扩展，该扩展也被包含在 glfwGetRequiredInstanceExtensions 函数返回的列表中了。<br />
 下面方法用来创建 Windows 平台的 VkSurfaceKHR:<br />
@@ -1530,9 +1531,9 @@ VK_KHR_surface 扩展属于 instance 级别的扩展，事实上，我们已经�
 </div>
 </div>
 </div>
-<div id="outline-container-orgc3232ae" class="outline-6">
-<h6 id="orgc3232ae">Querying for presentation support (76)</h6>
-<div class="outline-text-6" id="text-orgc3232ae">
+<div id="outline-container-org202139c" class="outline-6">
+<h6 id="org202139c">Querying for presentation support (76)</h6>
+<div class="outline-text-6" id="text-org202139c">
 <p>
 尽管 Vulkan 实现可能支持窗口系统的集成，但也不意味着系统中的每个 device 都支持。使用如下方法来检查设备是否支持 Surface：<br />
 </p>
@@ -1579,9 +1580,9 @@ VK_KHR_surface 扩展属于 instance 级别的扩展，事实上，我们已经�
 </p>
 </div>
 </div>
-<div id="outline-container-orgfc43fda" class="outline-6">
-<h6 id="orgfc43fda">Creating the presentation queue (77)</h6>
-<div class="outline-text-6" id="text-orgfc43fda">
+<div id="outline-container-orgde154ce" class="outline-6">
+<h6 id="orgde154ce">Creating the presentation queue (77)</h6>
+<div class="outline-text-6" id="text-orgde154ce">
 <p>
 queues 的创建是随着逻辑设备的创建自动创建的，下面方法中添加了创建 presentQueue 相关的设置:<br />
 </p>
@@ -1650,16 +1651,16 @@ queues 的创建是随着逻辑设备的创建自动创建的，下面方法中�
 </div>
 </div>
 </div>
-<div id="outline-container-org158be92" class="outline-5">
-<h5 id="org158be92">Swap chain (79)</h5>
-<div class="outline-text-5" id="text-org158be92">
+<div id="outline-container-orgfd06c30" class="outline-5">
+<h5 id="orgfd06c30">Swap chain (79)</h5>
+<div class="outline-text-5" id="text-orgfd06c30">
 <p>
 Vulkan 没有默认的 framebuffer 这个概念，因此，需要一个基础设施来构建一些 buffer，从而才能渲染到这些 buffer 中。这个基础设施就是 swap chain，在 Vulkan 中必须显示地创建该基础设施。swap chain 本质上是一个等待呈现到屏幕上的 image 队列，应用程序从中获取一个 image，然后绘制到其中，接着将其返回到队列中。队列如何工作以及何时呈现队列中的一个 image 取决于 swap chain 的设置，但一般来说，swap chain 的目的是使图像的呈现与屏幕的刷新率相同步。<br />
 </p>
 </div>
-<div id="outline-container-org0bb1226" class="outline-6">
-<h6 id="org0bb1226">Checking for swap chain support (79)</h6>
-<div class="outline-text-6" id="text-org0bb1226">
+<div id="outline-container-org8287d10" class="outline-6">
+<h6 id="org8287d10">Checking for swap chain support (79)</h6>
+<div class="outline-text-6" id="text-org8287d10">
 <p>
 首先，并非所有显卡都支持直接将 images 呈现在屏幕上(原因可能有很多，例如：为服务器设计的显卡就不支持直接将 images 呈现在屏幕上)。其次，image 的呈现与窗口系统以及窗口关联的 surface 密切相关，swap chain 并不是 Vulkan 核心的一部分。因此，swap chain 属于设备扩展（device extension），你需要查询当前设备是否支持 VK_KHR_swapchain，然后再开启该扩展。<br />
 </p>
@@ -1764,9 +1765,9 @@ Vulkan 没有默认的 framebuffer 这个概念，因此，需要一个基础设
 </div>
 </div>
 </div>
-<div id="outline-container-orga1e93c5" class="outline-6">
-<h6 id="orga1e93c5">Querying details of swap chain support (81)</h6>
-<div class="outline-text-6" id="text-orga1e93c5">
+<div id="outline-container-orgf8baa0d" class="outline-6">
+<h6 id="orgf8baa0d">Querying details of swap chain support (81)</h6>
+<div class="outline-text-6" id="text-orgf8baa0d">
 <p>
 只检测 swap chain 扩展是否可用还不够，还需要检查 swap chain 和 window surface 是否兼容。基本上我们还需要再检查 3 类属性：<br />
 </p>
@@ -1833,8 +1834,8 @@ Vulkan 没有默认的 framebuffer 这个概念，因此，需要一个基础设
 </div>
 </div>
 <ul class="org-ul">
-<li><a id="org8f2f423"></a>ERROR: vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &amp;formatCount, nullptr); 函数抛出异常 wil::ResultException<br />
-<div class="outline-text-7" id="text-org8f2f423">
+<li><a id="org05afc46"></a>ERROR: vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &amp;formatCount, nullptr); 函数抛出异常 wil::ResultException<br />
+<div class="outline-text-7" id="text-org05afc46">
 <p>
 在 C++ Exceptions 选项中, 取消勾选 "&lt;All C++ Exceptions not in this list&gt;"。虽然抛出该异常，依然还可以继续执行。<br />
 </p>
@@ -1846,9 +1847,9 @@ Vulkan 没有默认的 framebuffer 这个概念，因此，需要一个基础设
 </li>
 </ul>
 </div>
-<div id="outline-container-org7d9e70a" class="outline-6">
-<h6 id="org7d9e70a">Choosing the right settings for the swap chain (83)</h6>
-<div class="outline-text-6" id="text-org7d9e70a">
+<div id="outline-container-org1d7a4fc" class="outline-6">
+<h6 id="org1d7a4fc">Choosing the right settings for the swap chain (83)</h6>
+<div class="outline-text-6" id="text-org1d7a4fc">
 <p>
 创建一个 swap chain 涉及的设置比创建 instance 和 device 还多。一共有三种类型的设置：<br />
 </p>
@@ -1944,9 +1945,9 @@ swap extent 是 swap chain 中 images 的分辨率，它几乎总是完全等于
 </div>
 </div>
 </div>
-<div id="outline-container-org5340afb" class="outline-6">
-<h6 id="org5340afb">Creating the swap chain (86)</h6>
-<div class="outline-text-6" id="text-org5340afb">
+<div id="outline-container-org1f66595" class="outline-6">
+<h6 id="org1f66595">Creating the swap chain (86)</h6>
+<div class="outline-text-6" id="text-org1f66595">
 <p>
 使用下面方法来创建 swap chain:<br />
 </p>
@@ -2039,9 +2040,9 @@ Concurrent 模式需要你事先指定哪些 queue families 会共享 images 的
 </div>
 </div>
 
-<div id="outline-container-org718ac91" class="outline-5">
-<h5 id="org718ac91">Image views (92)</h5>
-<div class="outline-text-5" id="text-org718ac91">
+<div id="outline-container-org9c81a8e" class="outline-5">
+<h5 id="org9c81a8e">Image views (92)</h5>
+<div class="outline-text-5" id="text-org9c81a8e">
 <p>
 使用如下方法创建 image view:<br />
 </p>
@@ -2113,18 +2114,18 @@ Concurrent 模式需要你事先指定哪些 queue families 会共享 images 的
 </div>
 </div>
 </div>
-<div id="outline-container-org38bd80f" class="outline-4">
-<h4 id="org38bd80f">Graphics pipeline basics</h4>
-<div class="outline-text-4" id="text-org38bd80f">
+<div id="outline-container-org10fc802" class="outline-4">
+<h4 id="org10fc802">Graphics pipeline basics</h4>
+<div class="outline-text-4" id="text-org10fc802">
 </div>
-<div id="outline-container-orgbb9bd62" class="outline-5">
-<h5 id="orgbb9bd62">Introduction (95)</h5>
-<div class="outline-text-5" id="text-orgbb9bd62">
+<div id="outline-container-orgef4ed15" class="outline-5">
+<h5 id="orgef4ed15">Introduction (95)</h5>
+<div class="outline-text-5" id="text-orgef4ed15">
 <p>
 在接下来的几章中，我们将设置一个 graphics pipeline，来绘制我们的第一个三角形。graphics pipeline 是一个操作序列，其以网格的顶点和纹理为输入经过一系列操作序列后得到 render targets 中的像素。下面展示了一个简化的概述：<br />
 </p>
 
-<div id="orga6cf1c6" class="figure">
+<div id="orgf78b80a" class="figure">
 <p><img src="./Vulkan/graphics-pipeline-simple.jpg" alt="graphics-pipeline-simple.jpg" width="300px" /><br />
 </p>
 </div>
@@ -2170,16 +2171,16 @@ Concurrent 模式需要你事先指定哪些 queue families 会共享 images 的
 </p>
 </div>
 </div>
-<div id="outline-container-org24497b4" class="outline-5">
-<h5 id="org24497b4">Shader modules (99)</h5>
-<div class="outline-text-5" id="text-org24497b4">
+<div id="outline-container-org01a5605" class="outline-5">
+<h5 id="org01a5605">Shader modules (99)</h5>
+<div class="outline-text-5" id="text-org01a5605">
 <p>
 和之前的 APIs 不同，在 Vulkan 中，shader 代码必须是指定的字节码格式，而不能是人类能读懂的 GLSL 或 HLSL。这种字节码格式被称为 SPIR-V（Standard Portable Intermediate Representation），其被用于 Vulkan 和 OpenCL。使用字节码的优点是极大减低了 GPU 供应商编译器的复杂度，该编译器将 shader 代码转换为本地代码。使用人类可读的语法时，一些 GPU 供应商对标准的解释相当灵活。 如果你碰巧使用来自这些供应商之一的 GPU 编写着色器，那么你将面临其他供应商的驱动程序因语法错误而拒绝你的代码的风险，或者更糟的是，你的着色器由于编译器错误而以不同方式运行。使用像 SPIR-V 这样简单的字节码格式，有望避免这种情况。但是，这并不意味着我们需要手工编写这种字节码。 Khronos 发布了他们自己的独立于供应商的编译器，其可以将 GLSL 编译为 SPIR-V。该编译器旨在验证您的着色器代码是否完全符合标准，同时会生成一个 SPIR-V 二进制文件，你可以将该文件随程序一起提供。你还可以将此编译器作为库包含到程序种，从而在运行时生成 SPIR-V。虽然我们可以通过 glslangValidator.exe 直接使用这个编译器，但我们将使用谷歌的 glslc.exe 来代替。 glslc 的优点是它使用了和 GCC 和 Clang 等知名编译器相同的参数格式，并包含一些额外的功能，如 includes。它们都已包含在 Vulkan SDK 中了，因此无需额外下载任何内容。<br />
 </p>
 </div>
-<div id="outline-container-orgaa328dc" class="outline-6">
-<h6 id="orgaa328dc">Vertex shader (100)</h6>
-<div class="outline-text-6" id="text-orgaa328dc">
+<div id="outline-container-orgbea1971" class="outline-6">
+<h6 id="orgbea1971">Vertex shader (100)</h6>
+<div class="outline-text-6" id="text-orgbea1971">
 <p>
 顶点着色器处理每一个进来的顶点，其以顶点的属性（如：世界位置，颜色，法线以及贴图坐标）为输入，裁剪坐标系中的最终位置以及需要传递给 fragment shader 的属性为输出（如：颜色和贴图坐标）。这些值随后会被光栅化器在片段上进行插值，从而得到平滑的过渡。<br />
 </p>
@@ -2189,7 +2190,7 @@ Concurrent 模式需要你事先指定哪些 queue families 会共享 images 的
 </p>
 
 
-<div id="orgc1a2651" class="figure">
+<div id="org8a6b0df" class="figure">
 <p><img src="./Vulkan/framebuffer-device-coordinate-system.jpg" alt="framebuffer-device-coordinate-system.jpg" width="500px" /><br />
 </p>
 </div>
@@ -2198,7 +2199,7 @@ Concurrent 模式需要你事先指定哪些 queue families 会共享 images 的
 Tips: 和 OpenGL 不同，Vulkan 的 normalized device coordinates 的 Y 轴指向下方，并且 Z 坐标的范围变为了[0, 1]。如下图所示：<br />
 </p>
 
-<div id="org5b081a0" class="figure">
+<div id="orgb77bd3c" class="figure">
 <p><img src="./Vulkan/d3d-opengl-vulkan-coordinate-system.jpg" alt="d3d-opengl-vulkan-coordinate-system.jpg" width="500px" /><br />
 </p>
 </div>
@@ -2235,9 +2236,9 @@ vec3 colors[3] = vec3[](
 </div>
 </div>
 </div>
-<div id="outline-container-org93b371b" class="outline-6">
-<h6 id="org93b371b">Fragment shader (102)</h6>
-<div class="outline-text-6" id="text-org93b371b">
+<div id="outline-container-org63fa719" class="outline-6">
+<h6 id="org63fa719">Fragment shader (102)</h6>
+<div class="outline-text-6" id="text-org63fa719">
 <p>
 创建一个 shader.frag 文件：<br />
 </p>
@@ -2256,9 +2257,9 @@ layout(location = 0) <span style="color: #4f97d7; font-weight: bold;">out</span>
 </div>
 </div>
 </div>
-<div id="outline-container-org8bcda21" class="outline-6">
-<h6 id="org8bcda21">Compiling the shaders (104)</h6>
-<div class="outline-text-6" id="text-org8bcda21">
+<div id="outline-container-orgab8d439" class="outline-6">
+<h6 id="orgab8d439">Compiling the shaders (104)</h6>
+<div class="outline-text-6" id="text-orgab8d439">
 <p>
 创建一个 compile.bat 的编译脚本：<br />
 </p>
@@ -2270,9 +2271,9 @@ pause
 </div>
 </div>
 </div>
-<div id="outline-container-org5479873" class="outline-6">
-<h6 id="org5479873">Loading a shader (105)</h6>
-<div class="outline-text-6" id="text-org5479873">
+<div id="outline-container-org8bdc990" class="outline-6">
+<h6 id="org8bdc990">Loading a shader (105)</h6>
+<div class="outline-text-6" id="text-org8bdc990">
 <p>
 使用如下方法加载 shader 代码：<br />
 </p>
@@ -2301,9 +2302,9 @@ pause
 </div>
 </div>
 </div>
-<div id="outline-container-org0eb629c" class="outline-6">
-<h6 id="org0eb629c">Creating shader modules (107)</h6>
-<div class="outline-text-6" id="text-org0eb629c">
+<div id="outline-container-orgbb691ca" class="outline-6">
+<h6 id="orgbb691ca">Creating shader modules (107)</h6>
+<div class="outline-text-6" id="text-orgbb691ca">
 <p>
 Shader modules 只是对 shader bytecode 进行了简单封装。对 SPIR-V 字节码进行编译和链接(得到用于 GPU 执行的机器码)是在创建 graphics pipeline 时执行的。创建完 graphics pipeline 后就可以销毁 Shader modules 了。<br />
 使用如下方法创建 shader modules:<br />
@@ -2328,9 +2329,9 @@ Shader modules 只是对 shader bytecode 进行了简单封装。对 SPIR-V 字�
 </div>
 </div>
 </div>
-<div id="outline-container-orgb0981ed" class="outline-6">
-<h6 id="orgb0981ed">Shader stage creation (108)</h6>
-<div class="outline-text-6" id="text-orgb0981ed">
+<div id="outline-container-org5749572" class="outline-6">
+<h6 id="org5749572">Shader stage creation (108)</h6>
+<div class="outline-text-6" id="text-org5749572">
 <p>
 使用如下方法创建 shader stage:<br />
 </p>
@@ -2368,13 +2369,13 @@ Shader modules 只是对 shader bytecode 进行了简单封装。对 SPIR-V 字�
 </div>
 </div>
 </div>
-<div id="outline-container-org915818b" class="outline-5">
-<h5 id="org915818b">Fixed functions (110)</h5>
-<div class="outline-text-5" id="text-org915818b">
+<div id="outline-container-org4616ee5" class="outline-5">
+<h5 id="org4616ee5">Fixed functions (110)</h5>
+<div class="outline-text-5" id="text-org4616ee5">
 </div>
-<div id="outline-container-org7ff9846" class="outline-6">
-<h6 id="org7ff9846">Vertex input (110)</h6>
-<div class="outline-text-6" id="text-org7ff9846">
+<div id="outline-container-org849fe95" class="outline-6">
+<h6 id="org849fe95">Vertex input (110)</h6>
+<div class="outline-text-6" id="text-org849fe95">
 <p>
 使用 VkPipelineVertexInputStateCreateInfo 来描述顶点数据的格式，粗略来说该数据结构描述了两类信息：<br />
 </p>
@@ -2395,9 +2396,9 @@ vertexInputInfo.pVertexAttributeDescriptions = <span style="color: #a45bad;">nul
 </div>
 </div>
 </div>
-<div id="outline-container-orgfdd94bc" class="outline-6">
-<h6 id="orgfdd94bc">Input assembly (111)</h6>
-<div class="outline-text-6" id="text-orgfdd94bc">
+<div id="outline-container-orgcd1c7af" class="outline-6">
+<h6 id="orgcd1c7af">Input assembly (111)</h6>
+<div class="outline-text-6" id="text-orgcd1c7af">
 <p>
 使用 VkPipelineInputAssemblyStateCreateInfo 来描述输入装配，主要描述两件事情：1. 利用顶点绘制什么类型的几何元素（topology），2.是否开启图元重启。<br />
 topology 可以有如下选项：<br />
@@ -2425,15 +2426,15 @@ inputAssembly.primitiveRestartEnable = VK_FALSE;
 </div>
 </div>
 </div>
-<div id="outline-container-orgae45755" class="outline-6">
-<h6 id="orgae45755">Viewports and scissors (111)</h6>
-<div class="outline-text-6" id="text-orgae45755">
+<div id="outline-container-org80feabb" class="outline-6">
+<h6 id="org80feabb">Viewports and scissors (111)</h6>
+<div class="outline-text-6" id="text-org80feabb">
 <p>
 viewport 定义了从 image 到 framebuffer 的变换。scissor 矩形定义了哪个区域的像素会被存储，scissor 矩形外的像素都会被光栅化器丢弃。下图是对 viewport 和 scissor rectangle 的可视化描述：<br />
 </p>
 
 
-<div id="org216181b" class="figure">
+<div id="org2277c16" class="figure">
 <p><img src="./Vulkan/viewports_scissors.png" alt="viewports_scissors.png" width="500px" /><br />
 </p>
 </div>
@@ -2460,9 +2461,9 @@ viewportState.pScissors = &amp;scissor;
 </div>
 </div>
 </div>
-<div id="outline-container-orgead3ee2" class="outline-6">
-<h6 id="orgead3ee2">Rasterizer (113)</h6>
-<div class="outline-text-6" id="text-orgead3ee2">
+<div id="outline-container-org108b0d5" class="outline-6">
+<h6 id="org108b0d5">Rasterizer (113)</h6>
+<div class="outline-text-6" id="text-org108b0d5">
 <p>
 使用 VkPipelineRasterizationStateCreateInfo 来配置光栅化阶段。<br />
 </p>
@@ -2521,9 +2522,9 @@ rasterizer.depthBiasSlopeFactor = 0.0f; <span style="color: #2aa1ae; background-
 </div>
 </div>
 </div>
-<div id="outline-container-org67b4c1a" class="outline-6">
-<h6 id="org67b4c1a">Multisampling (114)</h6>
-<div class="outline-text-6" id="text-org67b4c1a">
+<div id="outline-container-org58e1942" class="outline-6">
+<h6 id="org58e1942">Multisampling (114)</h6>
+<div class="outline-text-6" id="text-org58e1942">
 <p>
 使用 VkPipelineMultisampleStateCreateInfo 来配置多重采样相关的设置。多重采样是一种抗锯齿的方式，其不需要执行片段着色器多次，因此，其比渲染一个高分辨的结果再缩放到低分辨率要高效很多。<br />
 </p>
@@ -2541,17 +2542,17 @@ multisampling.alphaToOneEnable = VK_FALSE; <span style="color: #2aa1ae; backgrou
 </div>
 </div>
 </div>
-<div id="outline-container-org1a989a5" class="outline-6">
-<h6 id="org1a989a5">Depth and stencil testing (114)</h6>
-<div class="outline-text-6" id="text-org1a989a5">
+<div id="outline-container-org425099c" class="outline-6">
+<h6 id="org425099c">Depth and stencil testing (114)</h6>
+<div class="outline-text-6" id="text-org425099c">
 <p>
 如果你使用了 depth 或 stencil buffer，你还需要配置深度和模板测试。使用 VkPipelineDepthStencilStateCreateInfo 来配置深度和模板测试。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org24ddb48" class="outline-6">
-<h6 id="org24ddb48">Color blending (115)</h6>
-<div class="outline-text-6" id="text-org24ddb48">
+<div id="outline-container-orgf78928d" class="outline-6">
+<h6 id="orgf78928d">Color blending (115)</h6>
+<div class="outline-text-6" id="text-orgf78928d">
 <p>
 片段着色器返回一个颜色后，需要将该颜色和 framebuffer 中的颜色组合起来。可以有两种方式来执行组合：<br />
 </p>
@@ -2596,9 +2597,9 @@ colorWriteMask 对两种方式都生效。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgf3d79c8" class="outline-6">
-<h6 id="orgf3d79c8">Dynamic state (117)</h6>
-<div class="outline-text-6" id="text-orgf3d79c8">
+<div id="outline-container-org46631c8" class="outline-6">
+<h6 id="org46631c8">Dynamic state (117)</h6>
+<div class="outline-text-6" id="text-org46631c8">
 <p>
 只有有限数量的状态可以在不重新创建 pipeline 的情况下被修改，如 viewport 的尺寸，线的宽度以及混合常数(blend constants)。通过使用 VkPipelineDynamicStateCreateInfo 来修改相关设置：<br />
 </p>
@@ -2618,9 +2619,9 @@ dynamicState.pDynamicStates = dynamicStates;
 </div>
 </div>
 
-<div id="outline-container-org9e6b2b7" class="outline-6">
-<h6 id="org9e6b2b7">Pipeline layout (117)</h6>
-<div class="outline-text-6" id="text-org9e6b2b7">
+<div id="outline-container-org061e4ce" class="outline-6">
+<h6 id="org061e4ce">Pipeline layout (117)</h6>
+<div class="outline-text-6" id="text-org061e4ce">
 <p>
 你可以在 shaders 中使用 uniform 值，它们是全局的变量，可以在绘制期间修改这些 uniform 值，从而改变这些 shaders 的行为，而不需要重新创建这些 shaders。通常会使用这些 uniform 值来传递变换矩阵给 vertex shader 等等。<br />
 在创建 pipeline 时通过创建 VkPipelineLayout 对象来指定这些 uniform 值。<br />
@@ -2651,16 +2652,16 @@ pipelineLayoutInfo.pPushConstantRanges = <span style="color: #a45bad;">nullptr</
 </div>
 </div>
 </div>
-<div id="outline-container-orge3d383e" class="outline-5">
-<h5 id="orge3d383e">Render passes (119)</h5>
-<div class="outline-text-5" id="text-orge3d383e">
+<div id="outline-container-org34c6a9e" class="outline-5">
+<h5 id="org34c6a9e">Render passes (119)</h5>
+<div class="outline-text-5" id="text-org34c6a9e">
 <p>
 创建 pipeline 时，我们还需要告诉 Vulkan，我们在渲染时使用的 framebuffer attachments，需要使用多少个 color buffers 和 depth buffers，每个 buffer 使用多少个样本，buffer 中的内容被如何处理。所有这些信息都被封装在 render pass 对象中。<br />
 </p>
 </div>
-<div id="outline-container-org55ea3b6" class="outline-6">
-<h6 id="org55ea3b6">Attachment description (119)</h6>
-<div class="outline-text-6" id="text-org55ea3b6">
+<div id="outline-container-org3b9bf4c" class="outline-6">
+<h6 id="org3b9bf4c">Attachment description (119)</h6>
+<div class="outline-text-6" id="text-org3b9bf4c">
 <p>
 在本章的教程中，我们只使用一个 color buffer attachments。使用 VkAttachmentDescription 来设置 attachments 相关设置：<br />
 VkAttachmentDescription.format              设置 attachments buffer 的格式，需要和 swap chain 中 images 的格式一致<br />
@@ -2711,9 +2712,9 @@ VkAttachmentDescription.finalLayout   指定 render pass 结束时，image 的 l
 </p>
 </div>
 </div>
-<div id="outline-container-orgc347931" class="outline-6">
-<h6 id="orgc347931">Subpasses and attachment references (121)</h6>
-<div class="outline-text-6" id="text-orgc347931">
+<div id="outline-container-orgfd95e4d" class="outline-6">
+<h6 id="orgfd95e4d">Subpasses and attachment references (121)</h6>
+<div class="outline-text-6" id="text-orgfd95e4d">
 <p>
 一个 render pass 可以由多个 subpasses 组成。Subpasses 是渲染操作子序列，这些操作依赖于之前 passes 中 framebuffers 的内容，例如：一个后期效果序列，每一个后期效果都作用到前一个之上。如果将这些渲染操作组合在一个 render pass 中，Vulkan 可以对操作进行重排，并且能够节省内存带宽，从而提高性能。每一个 subpass 都会引用一个或多个 attachments，使用 VkAttachmentReference 来表示 attachment 的引用。<br />
 VkAttachmentReference.attachment  指定引用的 attachment 的索引<br />
@@ -2734,9 +2735,9 @@ VkAttachmentReference.layout      指定 subpass 在引用该 attachment 期间�
 </ul>
 </div>
 </div>
-<div id="outline-container-org3831564" class="outline-6">
-<h6 id="org3831564">Render pass (122)</h6>
-<div class="outline-text-6" id="text-org3831564">
+<div id="outline-container-org7a8f3cf" class="outline-6">
+<h6 id="org7a8f3cf">Render pass (122)</h6>
+<div class="outline-text-6" id="text-org7a8f3cf">
 <p>
 使用如下方法创建 render pass:<br />
 </p>
@@ -2790,9 +2791,9 @@ VkAttachmentReference.layout      指定 subpass 在引用该 attachment 期间�
 </div>
 </div>
 </div>
-<div id="outline-container-orgcaa7642" class="outline-5">
-<h5 id="orgcaa7642">Conclusion: Create Graphics Pipeline</h5>
-<div class="outline-text-5" id="text-orgcaa7642">
+<div id="outline-container-orgf4ef580" class="outline-5">
+<h5 id="orgf4ef580">Conclusion: Create Graphics Pipeline</h5>
+<div class="outline-text-5" id="text-orgf4ef580">
 <p>
 使用如下方法来创建 Graphics pipeline:<br />
 </p>
@@ -2965,13 +2966,13 @@ VkAttachmentReference.layout      指定 subpass 在引用该 attachment 期间�
 </div>
 </div>
 </div>
-<div id="outline-container-org2a49490" class="outline-4">
-<h4 id="org2a49490">Drawing</h4>
-<div class="outline-text-4" id="text-org2a49490">
+<div id="outline-container-org8814f35" class="outline-4">
+<h4 id="org8814f35">Drawing</h4>
+<div class="outline-text-4" id="text-org8814f35">
 </div>
-<div id="outline-container-orge2b8662" class="outline-5">
-<h5 id="orge2b8662">Framebuffers (127)</h5>
-<div class="outline-text-5" id="text-orge2b8662">
+<div id="outline-container-org7126d55" class="outline-5">
+<h5 id="org7126d55">Framebuffers (127)</h5>
+<div class="outline-text-5" id="text-org7126d55">
 <p>
 一个 framebuffer 对象会引用所有 attachments 对应的 VkImageView 对象(在本章的教程中我们只是用了一个 color attachment)。但是，我们为 attachment 所使用的 image 取决于 swap chain 为我们返回哪个 image。这意味着我们需要为 swap chain 中的每个 image 创建一个 framebuffer，并且在绘制时使用的 framebuffer 要和从 swap chain 获得的 image 相对应。<br />
 </p>
@@ -3021,13 +3022,13 @@ VkAttachmentReference.layout      指定 subpass 在引用该 attachment 期间�
 </div>
 </div>
 </div>
-<div id="outline-container-org6a48d80" class="outline-5">
-<h5 id="org6a48d80">Command buffers (130)</h5>
-<div class="outline-text-5" id="text-org6a48d80">
+<div id="outline-container-org71de176" class="outline-5">
+<h5 id="org71de176">Command buffers (130)</h5>
+<div class="outline-text-5" id="text-org71de176">
 </div>
-<div id="outline-container-org779e5f2" class="outline-6">
-<h6 id="org779e5f2">Command pools (130)</h6>
-<div class="outline-text-6" id="text-org779e5f2">
+<div id="outline-container-org751cec7" class="outline-6">
+<h6 id="org751cec7">Command pools (130)</h6>
+<div class="outline-text-6" id="text-org751cec7">
 <p>
 创建 command buffers 之前需要先创建 command pool。command pools 管理用于存储 buffers 的内存，command buffers 就是从 command pools 中分配的。使用下面方法来创建 command pool：<br />
 </p>
@@ -3075,9 +3076,9 @@ VkCommandPoolCreateInfo.flags 有两个可选项：<br />
 </div>
 </div>
 </div>
-<div id="outline-container-orgf1192a7" class="outline-6">
-<h6 id="orgf1192a7">Command buffer allocation (132)</h6>
-<div class="outline-text-6" id="text-orgf1192a7">
+<div id="outline-container-orgbbb5e9e" class="outline-6">
+<h6 id="orgbbb5e9e">Command buffer allocation (132)</h6>
+<div class="outline-text-6" id="text-orgbbb5e9e">
 <p>
 绘制命令中有一个命令涉及到绑定正确的 VkFramebuffer, 因此我们需要为每个 swap chain 中的 image 创建一个 command buffer。使用下面方法来创建 command buffers:<br />
 </p>
@@ -3109,9 +3110,9 @@ VkCommandBufferAllocateInfo.level 参数可以有如下两个选项：<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-orgec41299" class="outline-6">
-<h6 id="orgec41299">Starting command buffer recording (133)</h6>
-<div class="outline-text-6" id="text-orgec41299">
+<div id="outline-container-org1ae809c" class="outline-6">
+<h6 id="org1ae809c">Starting command buffer recording (133)</h6>
+<div class="outline-text-6" id="text-org1ae809c">
 <p>
 使用下面方法来起始 command buffer 的记录:<br />
 </p>
@@ -3141,8 +3142,8 @@ VkCommandBufferBeginInfo.flags 参数可以有如下几个选项：<br />
 </div>
 
 <ul class="org-ul">
-<li><a id="org1871947"></a>ERROR : validation layer: VkCommandBuffer 0x209cf379870[] is already in use and is not marked for simultaneous use. The Vulkan spec states: If any element of the pCommandBuffers member of any element of pSubmits was not recorded with the VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT, it must not be in the pending state.<br />
-<div class="outline-text-7" id="text-org1871947">
+<li><a id="org5f737ad"></a>ERROR : validation layer: VkCommandBuffer 0x209cf379870[] is already in use and is not marked for simultaneous use. The Vulkan spec states: If any element of the pCommandBuffers member of any element of pSubmits was not recorded with the VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT, it must not be in the pending state.<br />
+<div class="outline-text-7" id="text-org5f737ad">
 <div class="org-src-container">
 <pre class="src src-cpp"><span style="color: #ce537a; font-weight: bold;">VkCommandBufferBeginInfo</span> <span style="color: #7590db;">beginInfo</span>{};
 beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -3160,9 +3161,9 @@ beginInfo.pInheritanceInfo = <span style="color: #a45bad;">nullptr</span>; <span
 </li>
 </ul>
 </div>
-<div id="outline-container-orge43c2f4" class="outline-6">
-<h6 id="orge43c2f4">Starting a render pass (134)</h6>
-<div class="outline-text-6" id="text-orge43c2f4">
+<div id="outline-container-org13edd67" class="outline-6">
+<h6 id="org13edd67">Starting a render pass (134)</h6>
+<div class="outline-text-6" id="text-org13edd67">
 <p>
 开始进行绘制时，先要开始一个 render pass，使用下面方法开始一个 render pass:<br />
 </p>
@@ -3191,9 +3192,9 @@ vkCmdBeginRenderPass 的第三个参数控制 render pass 命令会在哪儿执�
 </ul>
 </div>
 </div>
-<div id="outline-container-orgef95ef5" class="outline-6">
-<h6 id="orgef95ef5">Basic drawing commands (135)</h6>
-<div class="outline-text-6" id="text-orgef95ef5">
+<div id="outline-container-org215823a" class="outline-6">
+<h6 id="org215823a">Basic drawing commands (135)</h6>
+<div class="outline-text-6" id="text-org215823a">
 <p>
 随后，我们将 commandBuffers 绑定到 graphics pipeline，然后执行绘制命令:<br />
 </p>
@@ -3222,9 +3223,9 @@ vkCmdDraw 的四个参数意义如下：<br />
 </div>
 </div>
 
-<div id="outline-container-org3147502" class="outline-6">
-<h6 id="org3147502">Finishing up (135)</h6>
-<div class="outline-text-6" id="text-org3147502">
+<div id="outline-container-orgf2e032f" class="outline-6">
+<h6 id="orgf2e032f">Finishing up (135)</h6>
+<div class="outline-text-6" id="text-orgf2e032f">
 <div class="org-src-container">
 <pre class="src src-cpp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#32467;&#26463; render pass</span>
 vkCmdEndRenderPass(<span style="color: #ce537a; font-weight: bold;">commandBuffers</span>[i]);
@@ -3239,9 +3240,9 @@ vkCmdEndRenderPass(<span style="color: #ce537a; font-weight: bold;">commandBuffe
 </div>
 </div>
 </div>
-<div id="outline-container-org7feea43" class="outline-5">
-<h5 id="org7feea43">Rendering and presentation (137)</h5>
-<div class="outline-text-5" id="text-org7feea43">
+<div id="outline-container-orge9b18e0" class="outline-5">
+<h5 id="orge9b18e0">Rendering and presentation (137)</h5>
+<div class="outline-text-5" id="text-orge9b18e0">
 <p>
 接下来我们需要在主循环中做如下三件事：<br />
 </p>
@@ -3255,9 +3256,9 @@ vkCmdEndRenderPass(<span style="color: #ce537a; font-weight: bold;">commandBuffe
 上面每个中都有很多操作，这些操作都是同步执行的，但是上面步骤之间有依赖关系，每一个步骤都依赖前一个步骤结束。有两种方式可用于同步 swap chain 事件：fences 和 samaphores。这两种对象都可以用于协调多个操作。不同之处是，你可以在程序中使用 vkWaitForFences 来访问 fences 的状态，而无法访问 semaphores 的状态。Fences 主要用于同步应用程序和渲染操作，而 Semaphores 主要用于同步同一个 command queues 中的操作，或不同 command queues 中的操作。<br />
 </p>
 </div>
-<div id="outline-container-orgaff988e" class="outline-6">
-<h6 id="orgaff988e">Semaphores (138)</h6>
-<div class="outline-text-6" id="text-orgaff988e">
+<div id="outline-container-org266414b" class="outline-6">
+<h6 id="org266414b">Semaphores (138)</h6>
+<div class="outline-text-6" id="text-org266414b">
 <p>
 我们需要使用一个 Semaphore 来表示已经从 swap chain 中获得了 image，并且准备好了进行渲染，还需要另一个 Semaphore 表示渲染已经完成，可以进行展示了。<br />
 </p>
@@ -3288,9 +3289,9 @@ vkCmdEndRenderPass(<span style="color: #ce537a; font-weight: bold;">commandBuffe
 </div>
 </div>
 </div>
-<div id="outline-container-orgd990d86" class="outline-6">
-<h6 id="orgd990d86">Acquiring an image from the swap chain (139)</h6>
-<div class="outline-text-6" id="text-orgd990d86">
+<div id="outline-container-orga8fe183" class="outline-6">
+<h6 id="orga8fe183">Acquiring an image from the swap chain (139)</h6>
+<div class="outline-text-6" id="text-orga8fe183">
 <p>
 前面提到，第一步先要从 swap chain 获得一个 image，如下：<br />
 </p>
@@ -3306,9 +3307,9 @@ vkAcquireNextImageKHR(device, swapChain, UINT64_MAX, imageAvailableSemaphore, VK
 </div>
 </div>
 </div>
-<div id="outline-container-orgb67c34f" class="outline-6">
-<h6 id="orgb67c34f">Submitting the command buffer (140)</h6>
-<div class="outline-text-6" id="text-orgb67c34f">
+<div id="outline-container-org7752d3c" class="outline-6">
+<h6 id="org7752d3c">Submitting the command buffer (140)</h6>
+<div class="outline-text-6" id="text-org7752d3c">
 <p>
 按照如下方法来提交 command buffer 到 graphics queue，来执行绘制：<br />
 </p>
@@ -3342,9 +3343,9 @@ submitInfo.pSignalSemaphores = signalSemaphores;
 </div>
 </div>
 </div>
-<div id="outline-container-orgc6e9f99" class="outline-6">
-<h6 id="orgc6e9f99">Subpass dependencies (141)</h6>
-<div class="outline-text-6" id="text-orgc6e9f99">
+<div id="outline-container-org9fe9f53" class="outline-6">
+<h6 id="org9fe9f53">Subpass dependencies (141)</h6>
+<div class="outline-text-6" id="text-org9fe9f53">
 <p>
 render pass 中的 subpasses 会自动处理 image layout 的转换。这些转换是通过 subpass dependencies 来控制的，其指定了 subpasses 的内存以及彼此之间的执行依赖关系。我们现在只有一个 subpass，但是该 subpass 之前或之后的操作也被当作隐式的 subpasses。<br />
 </p>
@@ -3392,9 +3393,9 @@ dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 </div>
 </div>
 </div>
-<div id="outline-container-org609043f" class="outline-6">
-<h6 id="org609043f">Presentation (142)</h6>
-<div class="outline-text-6" id="text-org609043f">
+<div id="outline-container-org017759f" class="outline-6">
+<h6 id="org017759f">Presentation (142)</h6>
+<div class="outline-text-6" id="text-org017759f">
 <p>
 最后一步就是将绘制好的结果返回给 swap chain，将结果展示在屏幕上。<br />
 </p>
@@ -3420,9 +3421,9 @@ presentInfo.pResults = <span style="color: #a45bad;">nullptr</span>; <span style
 </div>
 </div>
 </div>
-<div id="outline-container-org5ce91fe" class="outline-6">
-<h6 id="org5ce91fe">Frames in flight (144)</h6>
-<div class="outline-text-6" id="text-org5ce91fe">
+<div id="outline-container-orgac8a634" class="outline-6">
+<h6 id="orgac8a634">Frames in flight (144)</h6>
+<div class="outline-text-6" id="text-orgac8a634">
 <p>
 当前应用程序在 drawFrame 函数中快速地提交工作，但没有检查提交的工作是否完成。如果 CPU 提交的速度比 GPU 处理的速度要快，则队列中会充满任务。更糟糕的是，我们只有了两个信号量做同步，这样同一时间有多个帧都在复用这两个信号量，这肯定是有问题的。最简单的解决方式是在提交工作后，等待工作完成，如下：<br />
 </p>
@@ -3449,9 +3450,9 @@ presentInfo.pResults = <span style="color: #a45bad;">nullptr</span>; <span style
 </div>
 </div>
 </div>
-<div id="outline-container-org9b76c5d" class="outline-5">
-<h5 id="org9b76c5d">Swap chain recreation (152)</h5>
-<div class="outline-text-5" id="text-org9b76c5d">
+<div id="outline-container-orgf633d38" class="outline-5">
+<h5 id="orgf633d38">Swap chain recreation (152)</h5>
+<div class="outline-text-5" id="text-orgf633d38">
 <p>
 当我们的应用程序改变窗口大小时，应用程序会直接 crash。这是由于 swap chain 不适用于当前窗口大小导致的，vkAcquireNextImageKHR 和 vkQueuePresentKHR 函数可以通过如下返回值来指示这种特殊情况：<br />
 </p>
@@ -3518,16 +3519,16 @@ presentInfo.pResults = <span style="color: #a45bad;">nullptr</span>; <span style
 </div>
 </div>
 
-<div id="outline-container-orgf6ea3a8" class="outline-3">
-<h3 id="orgf6ea3a8">Vertex buffers</h3>
-<div class="outline-text-3" id="text-orgf6ea3a8">
+<div id="outline-container-orgcb97e8b" class="outline-3">
+<h3 id="orgcb97e8b">Vertex buffers</h3>
+<div class="outline-text-3" id="text-orgcb97e8b">
 <p>
 前面我们直接在 shader 中硬编码了顶点数据，这章我们将使用 vertex buffer 将顶点数据传递给 GPU。我们创建一个 CPU 可见的 buffer，然后使用 memcopy 将顶点数据 copy 到其中。之后我们使用 staging buffer 将顶点数据 copy 到高性能的内存中。<br />
 </p>
 </div>
-<div id="outline-container-org4884b6c" class="outline-4">
-<h4 id="org4884b6c">Vertex input description (159)</h4>
-<div class="outline-text-4" id="text-org4884b6c">
+<div id="outline-container-org3077ae8" class="outline-4">
+<h4 id="org3077ae8">Vertex input description (159)</h4>
+<div class="outline-text-4" id="text-org3077ae8">
 <p>
 修改 vertex shader 如下：<br />
 </p>
@@ -3687,16 +3688,16 @@ VkVertexInputAttributeDescription.offset 指定了该属性在一个数据项中
 </div>
 </div>
 </div>
-<div id="outline-container-org2572ef3" class="outline-4">
-<h4 id="org2572ef3">Vertex buffer creation (164)</h4>
-<div class="outline-text-4" id="text-org2572ef3">
+<div id="outline-container-orgd45d8a0" class="outline-4">
+<h4 id="orgd45d8a0">Vertex buffer creation (164)</h4>
+<div class="outline-text-4" id="text-orgd45d8a0">
 <p>
 在 Vulkan 中，buffer 是内存的区域，可用于存储任意的数据，这些数据可以被图形显卡读取。和其他 Vulkan 对象不同，buffers 不会为自身自动申请内存。<br />
 </p>
 </div>
-<div id="outline-container-org853f686" class="outline-5">
-<h5 id="org853f686">创建 buffer</h5>
-<div class="outline-text-5" id="text-org853f686">
+<div id="outline-container-orgeaf0e46" class="outline-5">
+<h5 id="orgeaf0e46">创建 buffer</h5>
+<div class="outline-text-5" id="text-orgeaf0e46">
 <p>
 使用下面方法来创建一个 buffer<br />
 </p>
@@ -3715,9 +3716,9 @@ bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 </div>
 </div>
 </div>
-<div id="outline-container-org00e1446" class="outline-5">
-<h5 id="org00e1446">获取 buffer 的内存需求</h5>
-<div class="outline-text-5" id="text-org00e1446">
+<div id="outline-container-org7d93d42" class="outline-5">
+<h5 id="org7d93d42">获取 buffer 的内存需求</h5>
+<div class="outline-text-5" id="text-org7d93d42">
 <p>
 创建 buffer 后，事实上还没有为其赋予内存。为 buffer 分配内存的第一步是查询 buffer 的内存需求，使用 vkGetBufferMemoryRequirements 函数可以查询 buffer 的内存需求，该函数会填充一个 VkMemoryRequirements 对象。VkMemoryRequirements 有如下 3 个成员：<br />
 </p>
@@ -3762,9 +3763,9 @@ allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, VK_ME
 </div>
 </div>
 </div>
-<div id="outline-container-org3c6e8d9" class="outline-5">
-<h5 id="org3c6e8d9">为 buffer 分配内存</h5>
-<div class="outline-text-5" id="text-org3c6e8d9">
+<div id="outline-container-org15e2269" class="outline-5">
+<h5 id="org15e2269">为 buffer 分配内存</h5>
+<div class="outline-text-5" id="text-org15e2269">
 <p>
 使用 vkAllocateMemory 来分配内存，使用 vkBindBufferMemory 来将 buffer 和内存关联起来：<br />
 </p>
@@ -3788,9 +3789,9 @@ vkBindBufferMemory(device, vertexBuffer, vertexBufferMemory, 0);
 </div>
 </div>
 </div>
-<div id="outline-container-org64d6fae" class="outline-5">
-<h5 id="org64d6fae">为 buffer 填充数据</h5>
-<div class="outline-text-5" id="text-org64d6fae">
+<div id="outline-container-org95cb060" class="outline-5">
+<h5 id="org95cb060">为 buffer 填充数据</h5>
+<div class="outline-text-5" id="text-org95cb060">
 <p>
 使用下面方法为 buffer 填充数据：<br />
 </p>
@@ -3818,9 +3819,9 @@ Flushing memory 或使用一致性内存堆意味着驱动可以感知到我们�
 </p>
 </div>
 </div>
-<div id="outline-container-org777b4f7" class="outline-5">
-<h5 id="org777b4f7">绑定 commandBuffer 和 vertexBuffer</h5>
-<div class="outline-text-5" id="text-org777b4f7">
+<div id="outline-container-org27f8f6e" class="outline-5">
+<h5 id="org27f8f6e">绑定 commandBuffer 和 vertexBuffer</h5>
+<div class="outline-text-5" id="text-org27f8f6e">
 <p>
 在执行渲染操作期间，需要绑定 vertex buffer：<br />
 </p>
@@ -3882,24 +3883,24 @@ Flushing memory 或使用一致性内存堆意味着驱动可以感知到我们�
 </div>
 </div>
 </div>
-<div id="outline-container-orgc9a3d28" class="outline-4">
-<h4 id="orgc9a3d28">Staging buffer (173)</h4>
-<div class="outline-text-4" id="text-orgc9a3d28">
+<div id="outline-container-org1168af1" class="outline-4">
+<h4 id="org1168af1">Staging buffer (173)</h4>
+<div class="outline-text-4" id="text-org1168af1">
 <p>
 我们当前使用的内存类型可以正确工作，但性能不是最优的。最优的内存是 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT 标记的内存，这种内存通常不能被 CPU 访问，其在专用的显卡上。我们可以创建两个 vertex buffers。一个 staging buffer（暂存缓冲区），其在 CPU 可以访问的内存，可以将顶点数据上传到这里。另一个是最终的 vertex buffer，其在显卡设备的本地内存上。我们使用 copy 命令将顶点数据从 staging buffer 移动到 最终的 vertex buffer。<br />
 </p>
 </div>
-<div id="outline-container-org969368c" class="outline-5">
-<h5 id="org969368c">Transfer queue (173)</h5>
-<div class="outline-text-5" id="text-org969368c">
+<div id="outline-container-orgf766ab0" class="outline-5">
+<h5 id="orgf766ab0">Transfer queue (173)</h5>
+<div class="outline-text-5" id="text-orgf766ab0">
 <p>
 buffer copy 命令需要支持 transfer 操作的 queue family，其对应的标记为 VK_QUEUE_TRANSFER_BIT。好消息是，任何标记为 VK_QUEUE_GRAPHICS_BIT 或 VK_QUEUE_COMPUTE_BIT 的 queue family 已经隐式支持 VK_QUEUE_TRANSFER_BIT 标记要求的操作。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgb2655ff" class="outline-5">
-<h5 id="orgb2655ff">Using a staging buffer (175)</h5>
-<div class="outline-text-5" id="text-orgb2655ff">
+<div id="outline-container-org23f71d2" class="outline-5">
+<h5 id="org23f71d2">Using a staging buffer (175)</h5>
+<div class="outline-text-5" id="text-org23f71d2">
 <p>
 使用如下方法来利用 staging buffer 传递顶点数据：<br />
 </p>
@@ -3977,18 +3978,18 @@ buffer copy 命令需要支持 transfer 操作的 queue family，其对应的标
 </div>
 </div>
 </div>
-<div id="outline-container-orga26bbab" class="outline-5">
-<h5 id="orga26bbab">Conclusion (178)</h5>
-<div class="outline-text-5" id="text-orga26bbab">
+<div id="outline-container-orgc308adb" class="outline-5">
+<h5 id="orgc308adb">Conclusion (178)</h5>
+<div class="outline-text-5" id="text-orgc308adb">
 <p>
 在真实的应用程序开发中，我们不建议为每个独立的 buffer 都使用 vkAllocateMemory 来分配内存。同时可以申请的内存数量是有限的，最大值由物理设备的 maxMemoryAllocationCount 来决定，即使是 NVIDIA GTX 1080 这样的高端硬件设备，其值也可能只有 4096。当有很多个对象时，应该创建一个自定义的分配器，其可以利用 offset 参数将单次分配的内存划分给多个不同的对象。你也可以使用 GUPOpen 提供的 VulkanMemoryAllocator 库。<br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-org2e7d9a7" class="outline-4">
-<h4 id="org2e7d9a7">Index buffer (179)</h4>
-<div class="outline-text-4" id="text-org2e7d9a7">
+<div id="outline-container-org6eb062b" class="outline-4">
+<h4 id="org6eb062b">Index buffer (179)</h4>
+<div class="outline-text-4" id="text-org6eb062b">
 <p>
 index buffer 的创建和填充与 vertex buffer 类似，在此不再重复。使用 index buffer 很简单：<br />
 </p>
@@ -4053,9 +4054,9 @@ index buffer 的创建和填充与 vertex buffer 类似，在此不再重复。�
 </div>
 </div>
 </div>
-<div id="outline-container-org4c13f5a" class="outline-3">
-<h3 id="org4c13f5a">Uniform Buffers</h3>
-<div class="outline-text-3" id="text-org4c13f5a">
+<div id="outline-container-org6c4cbd2" class="outline-3">
+<h3 id="org6c4cbd2">Uniform Buffers</h3>
+<div class="outline-text-3" id="text-org6c4cbd2">
 <p>
 我们现在已经可以使用 buffer 为 vertex shader 传递任意的顶点属性数据了，但是全局变量(如 MVP 矩阵)应该如何传递给 vertex/fragment shader 呢？<br />
 在 Vulkan 中，可以使用 resource descriptors 来完成全局变量的传递。descriptor 是 shaders 自由访问资源(如：buffers、images)的一种方式。我们将设置一个 buffer，让其包含 MVP 矩阵，然后让 vertex shader 通过一个 descriptor 来访问 MVP 矩阵。descriptors 的使用需要以下 3 步：<br />
@@ -4067,9 +4068,9 @@ index buffer 的创建和填充与 vertex buffer 类似，在此不再重复。�
 </ul>
 </div>
 
-<div id="outline-container-org0e354ba" class="outline-4">
-<h4 id="org0e354ba">Descriptor layout and buffer (184)</h4>
-<div class="outline-text-4" id="text-org0e354ba">
+<div id="outline-container-org780b5c1" class="outline-4">
+<h4 id="org780b5c1">Descriptor layout and buffer (184)</h4>
+<div class="outline-text-4" id="text-org780b5c1">
 <p>
 descriptor layout 指定了在 pipeline 中将要访问的资源类型（就如同 render pass 指定了在 pipeline 中将要访问的 attachments 的类型）。descriptor set 指定了真正被绑定到 descriptors 的 buffer 或 image 资源（就如同 framebuffer 指定了真正被绑定到 attachments 的 image views）。使用时，需要将 descriptor set 绑定到 commandBuffer 上(就如同 vertex buffers 或 framebuffer 绑定到 commandBuffer 上)。<br />
 </p>
@@ -4085,9 +4086,9 @@ desciptors 有很多种类型，本章我们使用的是 uniform buffer objects.
 </p>
 </div>
 
-<div id="outline-container-orgc0ee371" class="outline-5">
-<h5 id="orgc0ee371">Vertex shader (185)</h5>
-<div class="outline-text-5" id="text-orgc0ee371">
+<div id="outline-container-org1f6c8db" class="outline-5">
+<h5 id="org1f6c8db">Vertex shader (185)</h5>
+<div class="outline-text-5" id="text-org1f6c8db">
 <p>
 在 vertex shader 中使用 uniform buffer object descriptor 的方法如下：<br />
 </p>
@@ -4109,9 +4110,9 @@ descriptors 的 binding 指令和 attributes 的 location 指令类似，我们�
 </p>
 </div>
 </div>
-<div id="outline-container-org4273c69" class="outline-5">
-<h5 id="org4273c69">Descriptor set layout (186)</h5>
-<div class="outline-text-5" id="text-org4273c69">
+<div id="outline-container-orgc754984" class="outline-5">
+<h5 id="orgc754984">Descriptor set layout (186)</h5>
+<div class="outline-text-5" id="text-orgc754984">
 <p>
 在 c++中定义 UniformBufferObject，之后便于使用 memcpy 将一个 UniformBufferObject 对象 copy 到一个 VkBuffer 中。另外在创建 pipeline 时，我们还需要提供每个 descriptor binding 的细节, 使用 VkDescriptorSetLayout 来指定 descriptor binding 的细节。（就如我们需要为每个顶点属性所做的一样, 我们使用 VkVertexInputBindingDescription 和 VkVertexInputAttributeDescription 来指定详细信息）。<br />
 </p>
@@ -4140,9 +4141,9 @@ descriptors 的 binding 指令和 attributes 的 location 指令类似，我们�
 </div>
 </div>
 </div>
-<div id="outline-container-org38ea437" class="outline-5">
-<h5 id="org38ea437">Uniform buffer (188)</h5>
-<div class="outline-text-5" id="text-org38ea437">
+<div id="outline-container-org744b299" class="outline-5">
+<h5 id="org744b299">Uniform buffer (188)</h5>
+<div class="outline-text-5" id="text-org744b299">
 <p>
 我们需要创建一个 buffer，来放置 UBO 数据。因为我们会在每帧将新的数据 copy 到 uniform buffer，使用 staging buffer 就没任何意义了，反而会增加性能销毁。<br />
 因为同时可能有多帧被渲染，所以，我们需要多个 uniform buffer，我们不希望为下一帧做准备时更新了 uniform buffer 时，上一帧依然在读取该 buffer 的内容。我们应该为每一帧或每一个 swap chain image 申请一个 uniform buffer。由于我们需要从 command buffer 引用 uniform buffer, 而每一个 swap chain image 都对应了一个 command buffer，所以，我们为每个 swap chain image 申请一个 uniform buffer。<br />
@@ -4165,9 +4166,9 @@ descriptors 的 binding 指令和 attributes 的 location 指令类似，我们�
 </div>
 </div>
 </div>
-<div id="outline-container-orged84e66" class="outline-5">
-<h5 id="orged84e66">Updating uniform data (190)</h5>
-<div class="outline-text-5" id="text-orged84e66">
+<div id="outline-container-org6c8e555" class="outline-5">
+<h5 id="org6c8e555">Updating uniform data (190)</h5>
+<div class="outline-text-5" id="text-org6c8e555">
 <p>
 在 drawFrame 中调用如下函数，从而在每帧更新 uniform buffer 中的数据:<br />
 </p>
@@ -4194,16 +4195,16 @@ descriptors 的 binding 指令和 attributes 的 location 指令类似，我们�
 </div>
 </div>
 </div>
-<div id="outline-container-org44dd715" class="outline-4">
-<h4 id="org44dd715">Descriptor pool and sets (193)</h4>
-<div class="outline-text-4" id="text-org44dd715">
+<div id="outline-container-orgdbc7146" class="outline-4">
+<h4 id="orgdbc7146">Descriptor pool and sets (193)</h4>
+<div class="outline-text-4" id="text-orgdbc7146">
 <p>
 我们还需要为每个 VkBuffer 资源创建一个 descriptor set，从而将其绑定到 uniform buffer descriptor。无法直接创建 descriptor set,需要通过 descriptor pool 来分配 descriptor set。<br />
 </p>
 </div>
-<div id="outline-container-orge90de4d" class="outline-5">
-<h5 id="orge90de4d">Descriptor pool (193)</h5>
-<div class="outline-text-5" id="text-orge90de4d">
+<div id="outline-container-orgb0d54b1" class="outline-5">
+<h5 id="orgb0d54b1">Descriptor pool (193)</h5>
+<div class="outline-text-5" id="text-orgb0d54b1">
 <p>
 使用如下方法创建 descriptor pool:<br />
 </p>
@@ -4230,9 +4231,9 @@ descriptors 的 binding 指令和 attributes 的 location 指令类似，我们�
 </div>
 </div>
 </div>
-<div id="outline-container-org66e0fb5" class="outline-5">
-<h5 id="org66e0fb5">Descriptor set (195)</h5>
-<div class="outline-text-5" id="text-org66e0fb5">
+<div id="outline-container-org6c3d13a" class="outline-5">
+<h5 id="org6c3d13a">Descriptor set (195)</h5>
+<div class="outline-text-5" id="text-org6c3d13a">
 <p>
 使用 vkAllocateDescriptorSets 方法创建 descriptor set, VkDescriptorBufferInfo 指定 uniformBuffer, VkWriteDescriptorSet 将 uniformBuffer 和 descriptor set 关联起来，将 VkWriteDescriptorSet 提供给 vkUpdateDescriptorSets 来更新 descriptor set。<br />
 </p>
@@ -4294,9 +4295,9 @@ vkUpdateDescriptorSets 接受两种类型的数组参数：VkWriteDescriptorSet 
 </p>
 </div>
 </div>
-<div id="outline-container-orged1b79f" class="outline-5">
-<h5 id="orged1b79f">Using descriptor sets (197)</h5>
-<div class="outline-text-5" id="text-orged1b79f">
+<div id="outline-container-orgca92b4b" class="outline-5">
+<h5 id="orgca92b4b">Using descriptor sets (197)</h5>
+<div class="outline-text-5" id="text-orgca92b4b">
 <p>
 现在我们还需要在 CommandBuffer 开始记录后，将 descriptorSet 和 command buffer 关联起来。updateUniformBuffer 处理了窗口尺寸修改的问题，因此我们不需要在 recreateSwapChain 中重新创建 descriptor set。<br />
 </p>
@@ -4351,9 +4352,9 @@ vkUpdateDescriptorSets 接受两种类型的数组参数：VkWriteDescriptorSet 
 </div>
 </div>
 </div>
-<div id="outline-container-org959c89e" class="outline-5">
-<h5 id="org959c89e">Alignment requirements (199)</h5>
-<div class="outline-text-5" id="text-org959c89e">
+<div id="outline-container-org910438a" class="outline-5">
+<h5 id="org910438a">Alignment requirements (199)</h5>
+<div class="outline-text-5" id="text-org910438a">
 <p>
 前面我们没有详细描述如何让 c++中的数据结构和 shader 中的 uniform 结构所表示的数据完全匹配，很显然两边都应该使用相同的类型，如下：<br />
 </p>
@@ -4461,9 +4462,9 @@ mat4 的对齐方式和 vec4 对齐方式相同<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org199fd34" class="outline-5">
-<h5 id="org199fd34">Multiple descriptor sets (201)</h5>
-<div class="outline-text-5" id="text-org199fd34">
+<div id="outline-container-orgd4e23c2" class="outline-5">
+<h5 id="orgd4e23c2">Multiple descriptor sets (201)</h5>
+<div class="outline-text-5" id="text-orgd4e23c2">
 <p>
 事实上可以同时绑定多个 descriptor sets。在创建 pipeline layout 时，你需要为每个 descriptor set 指定一个 descriptor layout。在 shader 就中可以用如下方式引用特定的 descriptor set 了：<br />
 </p>
@@ -4478,9 +4479,9 @@ mat4 的对齐方式和 vec4 对齐方式相同<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org08449c2" class="outline-3">
-<h3 id="org08449c2">Texture mapping</h3>
-<div class="outline-text-3" id="text-org08449c2">
+<div id="outline-container-org6a446ec" class="outline-3">
+<h3 id="org6a446ec">Texture mapping</h3>
+<div class="outline-text-3" id="text-org6a446ec">
 <p>
 在我们的应用程序中添加一个 texture 涉及到如下步骤：<br />
 </p>
@@ -4510,13 +4511,13 @@ mat4 的对齐方式和 vec4 对齐方式相同<br />
 转换 image 的 layout 的常见方式是使用 pipeline barrier。pipeline barrier 主要用于同步对资源的访问操作，如：保证读 image 时，image 已经被写入完成。barriers 也可用于转换 image 的 layout，另外当 swap chain 中的 images 属于多个 queue families 时，若指定 image 的共享方式为 VK_SHARING_MODE_EXCLUSIVE，此时可以使用 barrier 来传递 image 的所有权。<br />
 </p>
 </div>
-<div id="outline-container-orga1f5729" class="outline-4">
-<h4 id="orga1f5729">Create texture image</h4>
-<div class="outline-text-4" id="text-orga1f5729">
+<div id="outline-container-orgbd465b1" class="outline-4">
+<h4 id="orgbd465b1">Create texture image</h4>
+<div class="outline-text-4" id="text-orgbd465b1">
 </div>
-<div id="outline-container-orgaa9fe6c" class="outline-5">
-<h5 id="orgaa9fe6c">Image library (203)</h5>
-<div class="outline-text-5" id="text-orgaa9fe6c">
+<div id="outline-container-org6149656" class="outline-5">
+<h5 id="org6149656">Image library (203)</h5>
+<div class="outline-text-5" id="text-org6149656">
 <p>
 我们使用 stb library 来进行图片数据加载,其支持大部分常见的图片格式，如 jpeg,png,bmp 以及 gif。该 library 只需要包含头文件就可以了，如下：<br />
 </p>
@@ -4532,9 +4533,9 @@ mat4 的对齐方式和 vec4 对齐方式相同<br />
 </div>
 </div>
 
-<div id="outline-container-org5efd1ef" class="outline-5">
-<h5 id="org5efd1ef">create Image (206)</h5>
-<div class="outline-text-5" id="text-org5efd1ef">
+<div id="outline-container-org1a0f937" class="outline-5">
+<h5 id="org1a0f937">create Image (206)</h5>
+<div class="outline-text-5" id="text-org1a0f937">
 <p>
 使用下面方法来创建一个 image：<br />
 </p>
@@ -4622,9 +4623,9 @@ VkImageCreateInfo.flags 和 sparse images 相关。Sparse images 类型的图片
 </p>
 </div>
 </div>
-<div id="outline-container-org2486f81" class="outline-5">
-<h5 id="org2486f81">Layout transitions (211)</h5>
-<div class="outline-text-5" id="text-org2486f81">
+<div id="outline-container-org150cba5" class="outline-5">
+<h5 id="org150cba5">Layout transitions (211)</h5>
+<div class="outline-text-5" id="text-org150cba5">
 <p>
 执行 layout 转换的最常见方式是使用一个 image memory barrier。这种类型的 pipeline barrier 通常用于同步对资源的访问，例如：确保对一个 buffer 的读取在对该 buffer 的写入完成之后进行。但是，其也可用于转换 image layouts 或转移 queue family 所有权。<br />
 使用如下代码利用 image memory barrier 来转换 image layouts：<br />
@@ -4701,9 +4702,9 @@ vkCmdPipelineBarrier 函数的第 9、10 个参数 imageMemoryBarrierCount,pImag
 </div>
 </div>
 
-<div id="outline-container-orgbea00e4" class="outline-5">
-<h5 id="orgbea00e4">Copying buffer to image (214)</h5>
-<div class="outline-text-5" id="text-orgbea00e4">
+<div id="outline-container-org468aa18" class="outline-5">
+<h5 id="org468aa18">Copying buffer to image (214)</h5>
+<div class="outline-text-5" id="text-org468aa18">
 <p>
 使用如下方法将 buffer 中数据 copy 到 image 中：<br />
 </p>
@@ -4741,9 +4742,9 @@ vkCmdPipelineBarrier 函数的第 9、10 个参数 imageMemoryBarrierCount,pImag
 </div>
 </div>
 
-<div id="outline-container-orge6e7c36" class="outline-5">
-<h5 id="orge6e7c36">Preparing the texture image (215)</h5>
-<div class="outline-text-5" id="text-orge6e7c36">
+<div id="outline-container-orge5adc8d" class="outline-5">
+<h5 id="orge5adc8d">Preparing the texture image (215)</h5>
+<div class="outline-text-5" id="text-orge5adc8d">
 <p>
 创建 texture image 的完整操作如下：<br />
 </p>
@@ -4880,13 +4881,13 @@ VK_IMAGE_LAYOUT_GENERAL 类型的 image layout 支持所有的操作，但是其
 </div>
 </div>
 </div>
-<div id="outline-container-org8f51584" class="outline-4">
-<h4 id="org8f51584">Image view and sampler (219)</h4>
-<div class="outline-text-4" id="text-org8f51584">
+<div id="outline-container-org88ad73d" class="outline-4">
+<h4 id="org88ad73d">Image view and sampler (219)</h4>
+<div class="outline-text-4" id="text-org88ad73d">
 </div>
-<div id="outline-container-orgf89e72e" class="outline-5">
-<h5 id="orgf89e72e">Texture image view (219)</h5>
-<div class="outline-text-5" id="text-orgf89e72e">
+<div id="outline-container-orgef86c1c" class="outline-5">
+<h5 id="orgef86c1c">Texture image view (219)</h5>
+<div class="outline-text-5" id="text-orgef86c1c">
 <p>
 使用如下方法创建 texture iamge view：<br />
 </p>
@@ -4924,9 +4925,9 @@ VK_IMAGE_LAYOUT_GENERAL 类型的 image layout 支持所有的操作，但是其
 </div>
 </div>
 </div>
-<div id="outline-container-org6c3f057" class="outline-5">
-<h5 id="org6c3f057">Samplers (221)</h5>
-<div class="outline-text-5" id="text-org6c3f057">
+<div id="outline-container-org72ae52c" class="outline-5">
+<h5 id="org72ae52c">Samplers (221)</h5>
+<div class="outline-text-5" id="text-org72ae52c">
 <p>
 shader 可以直接从 images 中读取贴图图元，但是当 images 作为 textures 时，通常不会这样使用。一般会通过 samplers 来访问 textures，samplers 会应用滤波变换来计算最终的颜色。<br />
 这些 filters 对于处理采样过密(oversampling)问题很有帮助。贴图被映射到几何体时，若对应的 fragments 比贴图图元多时，如果你只是简单地选取离像素最近的贴图图元，你会得到如下左边的图片。如果你联合最近的 4 个贴图图元，进行线性插值得到最终颜色，你将得到如下右边比较平滑的图片：<br />
@@ -4998,16 +4999,16 @@ Undersampling 是一个和 oversampling 刚好相反的问题，此时一个 fra
 </div>
 </div>
 </div>
-<div id="outline-container-org9a78252" class="outline-4">
-<h4 id="org9a78252">Combined image sampler (227)</h4>
-<div class="outline-text-4" id="text-org9a78252">
+<div id="outline-container-org0e18554" class="outline-4">
+<h4 id="org0e18554">Combined image sampler (227)</h4>
+<div class="outline-text-4" id="text-org0e18554">
 <p>
 之前我们在 uniform buffer 相关的章节中已经接触过 descriptors。本章我们将使用一种新类型的 descriptor: combined image sampler。该 descriptor 使得 shaders 可以通过使用过一个 sampler 对象来访问 image 资源。首先，我们修改 descriptor layout, descriptor pool 以及 descriptor set 其它们都包含 combined image sampler descriptor；然后，将贴图坐标添加到 Vertex 结构体中；最后，修改 fragment shader 从 texture 中读取颜色。<br />
 </p>
 </div>
-<div id="outline-container-org8b94593" class="outline-5">
-<h5 id="org8b94593">Updating the descriptors (227)</h5>
-<div class="outline-text-5" id="text-org8b94593">
+<div id="outline-container-org1d48489" class="outline-5">
+<h5 id="org1d48489">Updating the descriptors (227)</h5>
+<div class="outline-text-5" id="text-org1d48489">
 <div class="org-src-container">
 <pre class="src src-cpp"><span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">createDescriptorSetLayout</span>()
 {
@@ -5118,9 +5119,9 @@ Undersampling 是一个和 oversampling 刚好相反的问题，此时一个 fra
 </div>
 </div>
 </div>
-<div id="outline-container-org347fcc3" class="outline-5">
-<h5 id="org347fcc3">Texture coordinates and Shaders (231)</h5>
-<div class="outline-text-5" id="text-org347fcc3">
+<div id="outline-container-org8a595b1" class="outline-5">
+<h5 id="org8a595b1">Texture coordinates and Shaders (231)</h5>
+<div class="outline-text-5" id="text-org8a595b1">
 <p>
 顶点数据中包含贴图坐标以及 shader 中采样贴图都比较简单，不啰嗦了。<br />
 </p>
@@ -5128,13 +5129,13 @@ Undersampling 是一个和 oversampling 刚好相反的问题，此时一个 fra
 </div>
 </div>
 </div>
-<div id="outline-container-orgc17f26a" class="outline-3">
-<h3 id="orgc17f26a">Depth buffering (236)</h3>
-<div class="outline-text-3" id="text-orgc17f26a">
+<div id="outline-container-org8d7eff8" class="outline-3">
+<h3 id="org8d7eff8">Depth buffering (236)</h3>
+<div class="outline-text-3" id="text-org8d7eff8">
 </div>
-<div id="outline-container-org32517e3" class="outline-4">
-<h4 id="org32517e3">Depth image and view (239)</h4>
-<div class="outline-text-4" id="text-org32517e3">
+<div id="outline-container-orgf4242c0" class="outline-4">
+<h4 id="orgf4242c0">Depth image and view (239)</h4>
+<div class="outline-text-4" id="text-orgf4242c0">
 <p>
 和 texture image 不同，我们不必为 depth image 指定一个特定的格式，因为我们不会在程序中直接访问 depth image。depth image 的格式只要有合理的精确度就可以了，通常最少为 24 位。下面这些格式都符合该要求：<br />
 </p>
@@ -5189,9 +5190,9 @@ VkFormatProperties 结构体有如下三个成员：<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orga480e53" class="outline-4">
-<h4 id="orga480e53">Explicitly transitioning the depth image</h4>
-<div class="outline-text-4" id="text-orga480e53">
+<div id="outline-container-org3623c7d" class="outline-4">
+<h4 id="org3623c7d">Explicitly transitioning the depth image</h4>
+<div class="outline-text-4" id="text-org3623c7d">
 <p>
 我们不必显示地为 depth image 转换 layout，因为在 render pass 中会进行处理。但是为了完整性，依然在 createDepthResources 中添加了 transitionImageLayout 来处理 image layout 转换。<br />
 一开始 depth image 中没有内容很重要，所以 VK_IMAGE_LAYOUT_UNDEFINED 可用作初始的 layout。<br />
@@ -5246,9 +5247,9 @@ VkFormatProperties 结构体有如下三个成员：<br />
 </div>
 </div>
 
-<div id="outline-container-org8b879a0" class="outline-4">
-<h4 id="org8b879a0">Render pass (244)</h4>
-<div class="outline-text-4" id="text-org8b879a0">
+<div id="outline-container-org542fa88" class="outline-4">
+<h4 id="org542fa88">Render pass (244)</h4>
+<div class="outline-text-4" id="text-org542fa88">
 <p>
 对 createRenderPass 进行修改，从而包含 depth attachment:<br />
 </p>
@@ -5315,9 +5316,9 @@ VkFormatProperties 结构体有如下三个成员：<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orga1b960f" class="outline-4">
-<h4 id="orga1b960f">Framebuffer (245)</h4>
-<div class="outline-text-4" id="text-orga1b960f">
+<div id="outline-container-orgedb15ae" class="outline-4">
+<h4 id="orgedb15ae">Framebuffer (245)</h4>
+<div class="outline-text-4" id="text-orgedb15ae">
 <p>
 修改 framebuffer 的创建，将 depth image 绑定到 depth attachment。需要注意要在创建 framebuffer 之前创建 depth image。<br />
 </p>
@@ -5340,9 +5341,9 @@ framebufferInfo.layers = 1;
 </div>
 </div>
 </div>
-<div id="outline-container-org5e823d2" class="outline-4">
-<h4 id="org5e823d2">Clear values (246)</h4>
-<div class="outline-text-4" id="text-org5e823d2">
+<div id="outline-container-org4b8b389" class="outline-4">
+<h4 id="org4b8b389">Clear values (246)</h4>
+<div class="outline-text-4" id="text-org4b8b389">
 <p>
 在 render pass 开始时需要指定清除 depth buffer 使用的值：<br />
 </p>
@@ -5357,9 +5358,9 @@ renderPassInfo.pClearValues = clearValues.data();
 </div>
 </div>
 </div>
-<div id="outline-container-orgecad169" class="outline-4">
-<h4 id="orgecad169">Depth and stencil state (246)</h4>
-<div class="outline-text-4" id="text-orgecad169">
+<div id="outline-container-org72c2424" class="outline-4">
+<h4 id="org72c2424">Depth and stencil state (246)</h4>
+<div class="outline-text-4" id="text-org72c2424">
 <p>
 创建 graphics pipeline 时，配置 depth 和 stencil testing:<br />
 </p>
@@ -5381,16 +5382,16 @@ depthStencil.back = {}; <span style="color: #2aa1ae; background-color: #292e34;"
 </div>
 </div>
 </div>
-<div id="outline-container-orgf5374a4" class="outline-3">
-<h3 id="orgf5374a4">Loading models (250)</h3>
-<div class="outline-text-3" id="text-orgf5374a4">
+<div id="outline-container-orgf4d21e3" class="outline-3">
+<h3 id="orgf4d21e3">Loading models (250)</h3>
+<div class="outline-text-3" id="text-orgf4d21e3">
 <p>
 Introduction (250)<br />
 </p>
 </div>
-<div id="outline-container-org5a22a7d" class="outline-4">
-<h4 id="org5a22a7d">Library (250)</h4>
-<div class="outline-text-4" id="text-org5a22a7d">
+<div id="outline-container-org52c6deb" class="outline-4">
+<h4 id="org52c6deb">Library (250)</h4>
+<div class="outline-text-4" id="text-org52c6deb">
 <p>
 我们使用 tinyobjloader 库来实现加载一个 OBJ 模型文件。其非常简单，只有需要包含一个头文件。<br />
 </p>
@@ -5399,9 +5400,9 @@ Introduction (250)<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-org8e357a6" class="outline-4">
-<h4 id="org8e357a6">Loading vertices and indices (252)</h4>
-<div class="outline-text-4" id="text-org8e357a6">
+<div id="outline-container-org36572f9" class="outline-4">
+<h4 id="org36572f9">Loading vertices and indices (252)</h4>
+<div class="outline-text-4" id="text-org36572f9">
 <p>
 OBJ 文件由 positions、normals、texture coordinates 以及 faces 组成。Faces 由任意数量的 vertices 组成，每个 vertex 通过 index 引用一个 position，normal 和 texture coordinate。这样不仅可以复用顶点也可以复用顶点的属性。<br />
 加载 OBJ 模型的代码如下：<br />
@@ -5453,9 +5454,9 @@ attrib 容器中保存了所有的 positions(attrib.vertices)，normals(attrib.n
 </div>
 </div>
 
-<div id="outline-container-org3cbfc91" class="outline-4">
-<h4 id="org3cbfc91">Vertex deduplication (256)</h4>
-<div class="outline-text-4" id="text-org3cbfc91">
+<div id="outline-container-org20954aa" class="outline-4">
+<h4 id="org20954aa">Vertex deduplication (256)</h4>
+<div class="outline-text-4" id="text-org20954aa">
 <p>
 上面的方式会将重复的顶点数据提交给 GPU，并没有真正利用索引的优势。使用下面方法来剔除重复顶点数据：<br />
 </p>
@@ -5510,9 +5511,9 @@ attrib 容器中保存了所有的 positions(attrib.vertices)，normals(attrib.n
 </div>
 </div>
 </div>
-<div id="outline-container-org0146f49" class="outline-3">
-<h3 id="org0146f49">Generating Mipmaps (259)</h3>
-<div class="outline-text-3" id="text-org0146f49">
+<div id="outline-container-orgd4e128d" class="outline-3">
+<h3 id="orgd4e128d">Generating Mipmaps (259)</h3>
+<div class="outline-text-3" id="text-orgd4e128d">
 <p>
 mipmaps 是预计算的缩小版的图片，每级 mipmap 比上一级尺寸缩小一半。使用 mipmaps 可以提高渲染性能并且可以避免摩尔纹。<br />
 </p>
@@ -5520,9 +5521,9 @@ mipmaps 是预计算的缩小版的图片，每级 mipmap 比上一级尺寸缩�
 <li><a href="https://computergraphics.stackexchange.com/questions/1592/moires-patterns-despite-using-mipmaps">https://computergraphics.stackexchange.com/questions/1592/moires-patterns-despite-using-mipmaps</a><br /></li>
 </ul>
 </div>
-<div id="outline-container-org59b3a09" class="outline-4">
-<h4 id="org59b3a09">Generating Mipmaps (261)</h4>
-<div class="outline-text-4" id="text-org59b3a09">
+<div id="outline-container-org0925e9d" class="outline-4">
+<h4 id="org0925e9d">Generating Mipmaps (261)</h4>
+<div class="outline-text-4" id="text-org0925e9d">
 <p>
 使用如下方法计算最大的 mipmap 等级：<br />
 </p>
@@ -5628,9 +5629,9 @@ mipmaps 是预计算的缩小版的图片，每级 mipmap 比上一级尺寸缩�
 </div>
 </div>
 </div>
-<div id="outline-container-orgfbd808e" class="outline-4">
-<h4 id="orgfbd808e">Sampler (267)</h4>
-<div class="outline-text-4" id="text-orgfbd808e">
+<div id="outline-container-orgc858cbb" class="outline-4">
+<h4 id="orgc858cbb">Sampler (267)</h4>
+<div class="outline-text-4" id="text-orgc858cbb">
 <p>
 创建 Sampler 时可以指定 minLod 和 maxLod，以及 mipmapMode:<br />
 </p>
@@ -5649,9 +5650,9 @@ mipmaps 是预计算的缩小版的图片，每级 mipmap 比上一级尺寸缩�
 </div>
 </div>
 </div>
-<div id="outline-container-org60b76ca" class="outline-3">
-<h3 id="org60b76ca">Multisampling (271)</h3>
-<div class="outline-text-3" id="text-org60b76ca">
+<div id="outline-container-orgb58093a" class="outline-3">
+<h3 id="orgb58093a">Multisampling (271)</h3>
+<div class="outline-text-3" id="text-orgb58093a">
 <p>
 使用下面方法检测当前物理设备支持的 MSAA 的最大样本数量：<br />
 </p>
@@ -5685,9 +5686,9 @@ mipmaps 是预计算的缩小版的图片，每级 mipmap 比上一级尺寸缩�
 TODO: 前面利用 Fence 实现同时渲染多帧的数据，这里只创建一个支持多重采样的 image，岂不是破坏了之前的设计？<br />
 </p>
 </div>
-<div id="outline-container-org92119f3" class="outline-4">
-<h4 id="org92119f3">Adding new attachments (276)</h4>
-<div class="outline-text-4" id="text-org92119f3">
+<div id="outline-container-orgf875fbf" class="outline-4">
+<h4 id="orgf875fbf">Adding new attachments (276)</h4>
+<div class="outline-text-4" id="text-orgf875fbf">
 <p>
 在创建 RenderPass 时，为 colorAttachment 和 depthAttachment 指定样本数量。另外，需要将 colorAttachment 的 finalLayout 从 VK_IMAGE_LAYOUT_PRESENT_SRC_KHR 改为 VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL，这是因为多重采样的 images 不能被直接展示，需要将其 resolve 为一个常规的 image。不需要对 depth buffer 进行这样的操作，因为不会展示 depth image。<br />
 增加一个新的 attachment 作为 resolve attachment。这样 render pass 就会将 multisampled color image 转化为一个常规的 color image。如下：<br />
@@ -5775,9 +5776,9 @@ TODO: 前面利用 Fence 实现同时渲染多帧的数据，这里只创建一�
 </div>
 </div>
 </div>
-<div id="outline-container-org1363eb8" class="outline-4">
-<h4 id="org1363eb8">Quality improvements (279)</h4>
-<div class="outline-text-4" id="text-org1363eb8">
+<div id="outline-container-org3fb6ffa" class="outline-4">
+<h4 id="org3fb6ffa">Quality improvements (279)</h4>
+<div class="outline-text-4" id="text-org3fb6ffa">
 <p>
 MSAA 只会平滑几何边缘，几何内部的填充不受影响。开启样本着色可以改进整体的锯齿，进一步提升图片质量，但是会导致额外的性能消耗。使用如下方法开启样本着色：<br />
 </p>
@@ -5799,9 +5800,9 @@ MSAA 只会平滑几何边缘，几何内部的填充不受影响。开启样本
 </div>
 </div>
 </div>
-<div id="outline-container-org9242349" class="outline-3">
-<h3 id="org9242349">Summary</h3>
-<div class="outline-text-3" id="text-org9242349">
+<div id="outline-container-org2592336" class="outline-3">
+<h3 id="org2592336">Summary</h3>
+<div class="outline-text-3" id="text-org2592336">
 <p>
 下面是对整个流程的梳理：<br />
 </p>
@@ -5926,13 +5927,13 @@ MSAA 只会平滑几何边缘，几何内部的填充不受影响。开启样本
 </ul>
 </div>
 </div>
-<div id="outline-container-org8010c88" class="outline-3">
-<h3 id="org8010c88">Q&amp;A</h3>
-<div class="outline-text-3" id="text-org8010c88">
+<div id="outline-container-org1459fbf" class="outline-3">
+<h3 id="org1459fbf">Q&amp;A</h3>
+<div class="outline-text-3" id="text-org1459fbf">
 </div>
-<div id="outline-container-orgba87637" class="outline-4">
-<h4 id="orgba87637">VkAllocationCallbacks 的使用示例</h4>
-<div class="outline-text-4" id="text-orgba87637">
+<div id="outline-container-org52bbd0b" class="outline-4">
+<h4 id="org52bbd0b">VkAllocationCallbacks 的使用示例</h4>
+<div class="outline-text-4" id="text-org52bbd0b">
 <div class="org-src-container">
 <pre class="src src-cpp">VKAPI_ATTR <span style="color: #ce537a; font-weight: bold;">void</span> *<span style="color: #bc6ec5; font-weight: bold;">VKAPI_CALL</span> myrealloc(<span style="color: #ce537a; font-weight: bold;">void</span> *<span style="color: #7590db;">pUserData</span>, <span style="color: #ce537a; font-weight: bold;">void</span> *<span style="color: #7590db;">pOriginal</span>,
                                       <span style="color: #ce537a; font-weight: bold;">size_t</span> <span style="color: #7590db;">size</span>, <span style="color: #ce537a; font-weight: bold;">size_t</span> <span style="color: #7590db;">alignment</span>,
@@ -5985,9 +5986,9 @@ err = vkCreateInstance(&amp;inst_info, &amp;demo-&gt;allocator, &amp;demo-&gt;in
 </div>
 </div>
 
-<div id="outline-container-orgea4c896" class="outline-4">
-<h4 id="orgea4c896">为什么 depthImageView 可以被多个 command buffer 复用，而 swapChainImageView 不能？</h4>
-<div class="outline-text-4" id="text-orgea4c896">
+<div id="outline-container-org31f0c85" class="outline-4">
+<h4 id="org31f0c85">为什么 depthImageView 可以被多个 command buffer 复用，而 swapChainImageView 不能？</h4>
+<div class="outline-text-4" id="text-org31f0c85">
 <p>
 下面链接中有详细讨论。<br />
 </p>
@@ -6005,18 +6006,18 @@ Tips: 开启多重采样后，需要创建 colorImageView，colorImageView 也�
 </div>
 </div>
 
-<div id="outline-container-orga65f1d6" class="outline-4">
-<h4 id="orga65f1d6">secondary command buffer 的使用示例</h4>
-<div class="outline-text-4" id="text-orga65f1d6">
+<div id="outline-container-org0e3e105" class="outline-4">
+<h4 id="org0e3e105">secondary command buffer 的使用示例</h4>
+<div class="outline-text-4" id="text-org0e3e105">
 <ul class="org-ul">
 <li><a href="https://github.com/SaschaWillems/Vulkan/blob/master/examples/multithreading/multithreading.cpp">https://github.com/SaschaWillems/Vulkan/blob/master/examples/multithreading/multithreading.cpp</a><br /></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-orgf63f1f1" class="outline-4">
-<h4 id="orgf63f1f1">使用惯例</h4>
-<div class="outline-text-4" id="text-orgf63f1f1">
+<div id="outline-container-org2ef8f8f" class="outline-4">
+<h4 id="org2ef8f8f">使用惯例</h4>
+<div class="outline-text-4" id="text-org2ef8f8f">
 <p>
 view proj Matrix 通常会放到 uniform buffer<br />
 unity srp batch 中，将<br />
@@ -6024,9 +6025,9 @@ unity srp batch 中，将<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org5c75a85" class="outline-3">
-<h3 id="org5c75a85">参考资料</h3>
-<div class="outline-text-3" id="text-org5c75a85">
+<div id="outline-container-orgfe8227c" class="outline-3">
+<h3 id="orgfe8227c">参考资料</h3>
+<div class="outline-text-3" id="text-orgfe8227c">
 <ul class="org-ul">
 <li>如何正确的入门 Vulkan？ <a href="https://www.zhihu.com/question/424430509">https://www.zhihu.com/question/424430509</a><br /></li>
 <li>Vulkan tutorial code <a href="https://github.com/jjYBdx4IL/VulkanTutorial-VisualStudioProjectFiles">https://github.com/jjYBdx4IL/VulkanTutorial-VisualStudioProjectFiles</a><br /></li>
@@ -6044,17 +6045,17 @@ unity srp batch 中，将<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org28bd00e" class="outline-2">
-<h2 id="org28bd00e">Vulkan Guide</h2>
-<div class="outline-text-2" id="text-org28bd00e">
+<div id="outline-container-org4bbf668" class="outline-2">
+<h2 id="org4bbf668">Vulkan Guide</h2>
+<div class="outline-text-2" id="text-org4bbf668">
 </div>
-<div id="outline-container-orgb6ffe1c" class="outline-3">
-<h3 id="orgb6ffe1c">Vulkan Base</h3>
-<div class="outline-text-3" id="text-orgb6ffe1c">
+<div id="outline-container-org009af04" class="outline-3">
+<h3 id="org009af04">Vulkan Base</h3>
+<div class="outline-text-3" id="text-org009af04">
 </div>
-<div id="outline-container-org9a26ae6" class="outline-4">
-<h4 id="org9a26ae6">Initial Setup</h4>
-<div class="outline-text-4" id="text-org9a26ae6">
+<div id="outline-container-org8cec245" class="outline-4">
+<h4 id="org8cec245">Initial Setup</h4>
+<div class="outline-text-4" id="text-org8cec245">
 <ol class="org-ol">
 <li>获取源代码 git clone -b all-chapters <a href="https://github.com/vblanco20-1/vulkan-guide.git">https://github.com/vblanco20-1/vulkan-guide.git</a><br /></li>
 <li>下载 SDL <a href="https://www.libsdl.org/download-2.0.php">https://www.libsdl.org/download-2.0.php</a> （Tips: 选择 Development Libraries SDL2-devel-2.0.16-VC.zip 版本）放置到 MySDK 目录下<br /></li>
@@ -6062,7 +6063,7 @@ unity srp batch 中，将<br />
 按照下图方式配置 CMake<br />
 </p>
 
-<div id="org4b7787c" class="figure">
+<div id="orga89543b" class="figure">
 <p><img src="./Vulkan/vulkan-guide-init.jpg" alt="vulkan-guide-init.jpg" width="900px" /><br />
 </p>
 </div></li>
@@ -6072,9 +6073,9 @@ unity srp batch 中，将<br />
 </ol>
 </div>
 </div>
-<div id="outline-container-orgfe430e8" class="outline-4">
-<h4 id="orgfe430e8">Push Constants</h4>
-<div class="outline-text-4" id="text-orgfe430e8">
+<div id="outline-container-org7624608" class="outline-4">
+<h4 id="org7624608">Push Constants</h4>
+<div class="outline-text-4" id="text-org7624608">
 <p>
 Push constants 使我们可以发送少量的数据给 shader，该方式很简单也很高效。Push constants 可以将数据发送给 shader 中的任意阶段(vertex 阶段和 fragment 阶段都可以)，数据被存储到 command buffer 中。<br />
 使用方式如下：<br />
@@ -6119,9 +6120,9 @@ Push constants 使我们可以发送少量的数据给 shader，该方式很简�
 </div>
 </div>
 </div>
-<div id="outline-container-org1689766" class="outline-4">
-<h4 id="org1689766">Dynamic Descriptor sets</h4>
-<div class="outline-text-4" id="text-org1689766">
+<div id="outline-container-orgefc8f9a" class="outline-4">
+<h4 id="orgefc8f9a">Dynamic Descriptor sets</h4>
+<div class="outline-text-4" id="text-orgefc8f9a">
 <p>
 利用 dynamic descriptor sets 可以让多个 descriptors 对应同一个 buffer 的不同部分。本教程中 GPUSceneData 和 GPUCameraData 被放在同一个 buffer 中的不同部位，有两个 descriptor 对应该 buffer。<br />
 </p>
@@ -6147,9 +6148,9 @@ layout(set = 0, binding = 1) <span style="color: #4f97d7; font-weight: bold;">un
 </div>
 </div>
 </div>
-<div id="outline-container-orgaabdd2b" class="outline-4">
-<h4 id="orgaabdd2b">Storage buffers (shader storage buffer object)</h4>
-<div class="outline-text-4" id="text-orgaabdd2b">
+<div id="outline-container-org4425b5c" class="outline-4">
+<h4 id="org4425b5c">Storage buffers (shader storage buffer object)</h4>
+<div class="outline-text-4" id="text-org4425b5c">
 <p>
 Uniform Buffer 适用于数据量小，只读的数据。Storage Buffer 适用于数据量大，可修改的数据(shader 可以修改其中数据)。<br />
 OpenGL spec 可以保证 UBOs 的大小可以最少为 16KB（具体实现可以更大）. 而 OpenGL spec 可以保证 SSBOs 的大小最少为 128MB(大多数实现则允许你申请 GPU 支持的最大的内存大小)<br />
@@ -6157,7 +6158,7 @@ OpenGL spec 可以保证 UBOs 的大小可以最少为 16KB（具体实现可以
 
 <p>
 Tips:<br />
-Storage Buffer 与 Staging Buffer 并不是同一种 Buffer。 <a href="#orgc9a3d28">Staging buffer (173)</a><br />
+Storage Buffer 与 Staging Buffer 并不是同一种 Buffer。 <a href="#org1168af1">Staging buffer (173)</a><br />
 </p>
 
 <ul class="org-ul">
@@ -6165,21 +6166,21 @@ Storage Buffer 与 Staging Buffer 并不是同一种 Buffer。 <a href="#orgc9a3
 </ul>
 </div>
 </div>
-<div id="outline-container-org6ba1bfe" class="outline-4">
-<h4 id="org6ba1bfe">ERROR</h4>
-<div class="outline-text-4" id="text-org6ba1bfe">
+<div id="outline-container-org00d0e20" class="outline-4">
+<h4 id="org00d0e20">ERROR</h4>
+<div class="outline-text-4" id="text-org00d0e20">
 </div>
-<div id="outline-container-orgb577903" class="outline-5">
-<h5 id="orgb577903">ERROR CMake Error: The source "VulkanGuide/base/CMakeLists.txt" does not match the source "VulkanGuide/CMakeLists.txt" used to generate cache.  Re-run cmake with a different source directory.</h5>
-<div class="outline-text-5" id="text-orgb577903">
+<div id="outline-container-orgad05123" class="outline-5">
+<h5 id="orgad05123">ERROR CMake Error: The source "VulkanGuide/base/CMakeLists.txt" does not match the source "VulkanGuide/CMakeLists.txt" used to generate cache.  Re-run cmake with a different source directory.</h5>
+<div class="outline-text-5" id="text-orgad05123">
 <p>
 执行 CMake  File/Delete Cache 命令，重新配置 CMake 变量。再执行 Configure，Generate<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org1b42b58" class="outline-5">
-<h5 id="org1b42b58">ERROR Error C3646 'm_Lock': unknown override specifier</h5>
-<div class="outline-text-5" id="text-org1b42b58">
+<div id="outline-container-orgf316ecf" class="outline-5">
+<h5 id="orgf316ecf">ERROR Error C3646 'm_Lock': unknown override specifier</h5>
+<div class="outline-text-5" id="text-orgf316ecf">
 <p>
 设置 c++版本为 c++17 可以解决该问题<br />
 </p>
@@ -6189,36 +6190,36 @@ Storage Buffer 与 Staging Buffer 并不是同一种 Buffer。 <a href="#orgc9a3
 </div>
 </div>
 
-<div id="outline-container-org6bec411" class="outline-5">
-<h5 id="org6bec411">ERROR SDL2.dll 不存在</h5>
-<div class="outline-text-5" id="text-org6bec411">
+<div id="outline-container-orgf9ae1b1" class="outline-5">
+<h5 id="orgf9ae1b1">ERROR SDL2.dll 不存在</h5>
+<div class="outline-text-5" id="text-orgf9ae1b1">
 <p>
 直接将 SDL2.dll copy 到 vulkan-guide/bin/Debug 目录下<br />
 </p>
 </div>
 </div>
 
-<div id="outline-container-org70f4bd5" class="outline-5">
-<h5 id="org70f4bd5">ERROR Validation Error: [ VUID-VkPipelineShaderStageCreateInfo-module-parameter ] Object 0: handle = 0x19ae7186ec0, type = VK_OBJECT_TYPE_INSTANCE; | MessageID = 0xfd71dc70 | Invalid VkShaderModule Object 0xcccccccccccccccc. The Vulkan spec states: module must be a valid VkShaderModule handle</h5>
-<div class="outline-text-5" id="text-org70f4bd5">
+<div id="outline-container-org256d90f" class="outline-5">
+<h5 id="org256d90f">ERROR Validation Error: [ VUID-VkPipelineShaderStageCreateInfo-module-parameter ] Object 0: handle = 0x19ae7186ec0, type = VK_OBJECT_TYPE_INSTANCE; | MessageID = 0xfd71dc70 | Invalid VkShaderModule Object 0xcccccccccccccccc. The Vulkan spec states: module must be a valid VkShaderModule handle</h5>
+<div class="outline-text-5" id="text-org256d90f">
 <p>
 新添加 shader 后需要使用 CMake 重新生成 project<br />
 </p>
 </div>
 </div>
 
-<div id="outline-container-org4dda523" class="outline-5">
-<h5 id="org4dda523">ERROR LNK2019	unresolved external symbol "public: static struct VertexInputDescription __cdecl Vertex::get_vertex_description(void)" (?get_vertex_description@Vertex@@SA?AUVertexInputDescription@@XZ) referenced in function "private: void __cdecl VulkanEngine::init_pipelines(void)" (?init_pipelines@VulkanEngine@@AEAAXXZ)</h5>
-<div class="outline-text-5" id="text-org4dda523">
+<div id="outline-container-org1bc783c" class="outline-5">
+<h5 id="org1bc783c">ERROR LNK2019	unresolved external symbol "public: static struct VertexInputDescription __cdecl Vertex::get_vertex_description(void)" (?get_vertex_description@Vertex@@SA?AUVertexInputDescription@@XZ) referenced in function "private: void __cdecl VulkanEngine::init_pipelines(void)" (?init_pipelines@VulkanEngine@@AEAAXXZ)</h5>
+<div class="outline-text-5" id="text-org1bc783c">
 <p>
 新添加 .h .cpp 文件后需要修改 CMakeLists.txt 文件，否则使用 CMake 重新生成工程时，新加的文件不参与编译<br />
 </p>
 </div>
 </div>
 
-<div id="outline-container-orgf01acd1" class="outline-5">
-<h5 id="orgf01acd1">ERROR gl_BaseInstance undeclared identifier</h5>
-<div class="outline-text-5" id="text-orgf01acd1">
+<div id="outline-container-org3d1a851" class="outline-5">
+<h5 id="org3d1a851">ERROR gl_BaseInstance undeclared identifier</h5>
+<div class="outline-text-5" id="text-org3d1a851">
 <p>
 shader 的版本需要从 version 450 提高为 version 460<br />
 </p>
@@ -6416,9 +6417,9 @@ glsl es version、OpenGL ES version、WebGL version<br />
 </div>
 </div>
 
-<div id="outline-container-org70a72a9" class="outline-5">
-<h5 id="org70a72a9">ERROR Validation Error: [ VUID-VkShaderModuleCreateInfo-pCode-01091 ]</h5>
-<div class="outline-text-5" id="text-org70a72a9">
+<div id="outline-container-org6131b8c" class="outline-5">
+<h5 id="org6131b8c">ERROR Validation Error: [ VUID-VkShaderModuleCreateInfo-pCode-01091 ]</h5>
+<div class="outline-text-5" id="text-org6131b8c">
 <p>
 该错误貌似并没有任何影响<br />
 </p>
@@ -6427,17 +6428,17 @@ glsl es version、OpenGL ES version、WebGL version<br />
 </div>
 </div>
 
-<div id="outline-container-org1ca7417" class="outline-3">
-<h3 id="org1ca7417">GPU Driven Rendering</h3>
-<div class="outline-text-3" id="text-org1ca7417">
+<div id="outline-container-orgc127639" class="outline-3">
+<h3 id="orgc127639">GPU Driven Rendering</h3>
+<div class="outline-text-3" id="text-orgc127639">
 </div>
-<div id="outline-container-orgd8b7758" class="outline-4">
-<h4 id="orgd8b7758">Init Setup</h4>
-<div class="outline-text-4" id="text-orgd8b7758">
+<div id="outline-container-orgd356bb5" class="outline-4">
+<h4 id="orgd356bb5">Init Setup</h4>
+<div class="outline-text-4" id="text-orgd356bb5">
 </div>
-<div id="outline-container-orgae22ec8" class="outline-5">
-<h5 id="orgae22ec8">编译 assimp</h5>
-<div class="outline-text-5" id="text-orgae22ec8">
+<div id="outline-container-org5018046" class="outline-5">
+<h5 id="org5018046">编译 assimp</h5>
+<div class="outline-text-5" id="text-org5018046">
 <ol class="org-ol">
 <li>下载 assimp 源代码，放置到 MySDK/assimp/ 目录下<br /></li>
 <li>使用 CMake 进行编译<br /></li>
@@ -6447,9 +6448,9 @@ glsl es version、OpenGL ES version、WebGL version<br />
 </div>
 </div>
 
-<div id="outline-container-org95b33e1" class="outline-5">
-<h5 id="org95b33e1">导出 asset</h5>
-<div class="outline-text-5" id="text-org95b33e1">
+<div id="outline-container-org8c90e1c" class="outline-5">
+<h5 id="org8c90e1c">导出 asset</h5>
+<div class="outline-text-5" id="text-org8c90e1c">
 <p>
 执行下面命令，将模型导出为 prefab 文件(.pfb)，将贴图导出为.tx 文件<br />
 </p>
@@ -6461,17 +6462,17 @@ glsl es version、OpenGL ES version、WebGL version<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org5bce67b" class="outline-4">
-<h4 id="org5bce67b">GPU Driven Rendering Overview</h4>
-<div class="outline-text-4" id="text-org5bce67b">
+<div id="outline-container-orgff7d7cb" class="outline-4">
+<h4 id="orgff7d7cb">GPU Driven Rendering Overview</h4>
+<div class="outline-text-4" id="text-orgff7d7cb">
 <p width="900px">
 <img src="./Vulkan/vg_cityrender.png" alt="vg_cityrender.png" width="900px" /><br />
 上图处理了 125000 个对象，并且在 main view 和 shadow view 上执行了 culling，帧数达到了 290FPS。上面的视图渲染处理了 4 亿个三角形(main view+shadow view), 使用的显卡为 RTX2080.<br />
 </p>
 </div>
-<div id="outline-container-orge0985be" class="outline-5">
-<h5 id="orge0985be">Introduction</h5>
-<div class="outline-text-5" id="text-orge0985be">
+<div id="outline-container-orgf639119" class="outline-5">
+<h5 id="orgf639119">Introduction</h5>
+<div class="outline-text-5" id="text-orgf639119">
 <p>
 在过去几年中，前沿渲染引擎越来越倾向于在 GPU 上的 compute shaders 中计算渲染本身。 由于引入了 MultiDrawIndirect 和类似的功能，现在可以在 compute shaders 中执行大量的渲染工作。这样做的好处很明显：<br />
 </p>
@@ -6486,7 +6487,7 @@ glsl es version、OpenGL ES version、WebGL version<br />
 </p>
 
 
-<div id="orgd5dc437" class="figure">
+<div id="org202a936" class="figure">
 <p><img src="./Vulkan/vg_indirectperf.png" alt="vg_indirectperf.png" width="900px" /><br />
 </p>
 </div>
@@ -6496,9 +6497,9 @@ glsl es version、OpenGL ES version、WebGL version<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org55ca848" class="outline-5">
-<h5 id="org55ca848">Draw Indirect</h5>
-<div class="outline-text-5" id="text-org55ca848">
+<div id="outline-container-org0a18f2d" class="outline-5">
+<h5 id="org0a18f2d">Draw Indirect</h5>
+<div class="outline-text-5" id="text-org0a18f2d">
 <p>
 这个想法的核心围绕着在图形 API 中使用 Draw Indirect 支持。 这些技术适用于所有图形 API，但它们在 Vulkan 或 DX12 上效果最佳，因为它们可以更好地控制低级内存管理和 compute barriers。它们在 PS4 和 Xbox One 游戏机上也能很好地工作，并且下一代游戏机所具备的特性对这种技术的依赖更大，例如 mesh shaders 和 raytracing。<br />
 </p>
@@ -6550,9 +6551,9 @@ command-&gt;firstInstance = object.ID;
 </ul>
 </div>
 </div>
-<div id="outline-container-orge468364" class="outline-5">
-<h5 id="orge468364">Bindless Design</h5>
-<div class="outline-text-5" id="text-orge468364">
+<div id="outline-container-orgd856977" class="outline-5">
+<h5 id="orgd856977">Bindless Design</h5>
+<div class="outline-text-5" id="text-orgd856977">
 <p>
 NovusCore 是一个 Wow 模拟器研究项目。World of Warcraft 中的一整个大陆的渲染只要不到 10 次 drawcalls，并且帧率可达到 100+FPS, 不限制绘制距离。<br />
 </p>
@@ -6584,9 +6585,9 @@ Push Constants 和 Dynamic Descriptors 可以被使用，但是他们必须是�
 </div>
 </div>
 
-<div id="outline-container-org00dcb23" class="outline-5">
-<h5 id="org00dcb23">Overview of Vkguide engine architecture for compute rendering.</h5>
-<div class="outline-text-5" id="text-org00dcb23">
+<div id="outline-container-orgcd2828d" class="outline-5">
+<h5 id="orgcd2828d">Overview of Vkguide engine architecture for compute rendering.</h5>
+<div class="outline-text-5" id="text-orgcd2828d">
 <p>
 第一件事是将对象数据都放到 GPU buffers 中。需要移除对应于每个对象的 PushConstants，也需要移除对应于每个对象的 uniform buffers，一切都要用 ObjectBuffer 替换，例如：我们将对象的 matrix 存储在其中，并在 shader 中通过索引获得该 matrix 数据。<br />
 </p>
@@ -6624,7 +6625,7 @@ Push Constants 和 Dynamic Descriptors 可以被使用，但是他们必须是�
 </p>
 
 
-<div id="orgde02477" class="figure">
+<div id="org20c9df8" class="figure">
 <p><img src="./Vulkan/vg-gpu-driven-rendering-overview.jpg" alt="vg-gpu-driven-rendering-overview.jpg" width="500px" /><br />
 </p>
 </div>
@@ -6632,19 +6633,19 @@ Push Constants 和 Dynamic Descriptors 可以被使用，但是他们必须是�
 </div>
 </div>
 
-<div id="outline-container-org6935dc8" class="outline-4">
-<h4 id="org6935dc8">Engine architecture overview</h4>
-<div class="outline-text-4" id="text-org6935dc8">
+<div id="outline-container-org6582afd" class="outline-4">
+<h4 id="org6582afd">Engine architecture overview</h4>
+<div class="outline-text-4" id="text-org6582afd">
 </div>
-<div id="outline-container-org40631d2" class="outline-5">
-<h5 id="org40631d2">Asset System</h5>
-<div class="outline-text-5" id="text-org40631d2">
+<div id="outline-container-orgf3016d2" class="outline-5">
+<h5 id="orgf3016d2">Asset System</h5>
+<div class="outline-text-5" id="text-orgf3016d2">
 <p>
 资源系统的设计架构图如下：<br />
 </p>
 
 
-<div id="org7d374ca" class="figure">
+<div id="org7cd6839" class="figure">
 <p><img src="./Vulkan/vg-assetsystem01.jpg" alt="vg-assetsystem01.jpg" width="500px" /><br />
 </p>
 </div>
@@ -6655,9 +6656,9 @@ AssetLib 是一个共享库。converter 和 engine 都会引用该 lib。其定�
 </p>
 </div>
 
-<div id="outline-container-org10e4623" class="outline-6">
-<h6 id="org10e4623">Asset Format</h6>
-<div class="outline-text-6" id="text-org10e4623">
+<div id="outline-container-org33d1762" class="outline-6">
+<h6 id="org33d1762">Asset Format</h6>
+<div class="outline-text-6" id="text-org33d1762">
 <p>
 资源数据分为两部分：一个 json 字符串+一段二进制数据<br />
 json 字符串包含了资源对象的一些信息，例如：若资源为图片资源，则 json 字符串中存储了图片的宽度、高度、格式等等<br />
@@ -6670,9 +6671,9 @@ json 字符串包含了资源对象的一些信息，例如：若资源为图片
 </div>
 </div>
 
-<div id="outline-container-orga93c78c" class="outline-6">
-<h6 id="orga93c78c">Texture Asset</h6>
-<div class="outline-text-6" id="text-orga93c78c">
+<div id="outline-container-org5f35246" class="outline-6">
+<h6 id="org5f35246">Texture Asset</h6>
+<div class="outline-text-6" id="text-org5f35246">
 <p>
 贴图资源相关的结构体和函数都在 texture_asset.h 和 texture_asset.cpp 中。<br />
 </p>
@@ -6723,9 +6724,9 @@ json 字符串中存储了图片的宽度、高度、贴图格式、压缩格式
 </div>
 </div>
 </div>
-<div id="outline-container-orgd0f7226" class="outline-6">
-<h6 id="orgd0f7226">Mesh Asset</h6>
-<div class="outline-text-6" id="text-orgd0f7226">
+<div id="outline-container-org03da039" class="outline-6">
+<h6 id="org03da039">Mesh Asset</h6>
+<div class="outline-text-6" id="text-org03da039">
 <p>
 模型资源相关的结构体和函数都在 mesh_asset.h 和 mesh_asset.cpp 中。<br />
 </p>
@@ -6775,9 +6776,9 @@ json 字符串中存储了模型顶点数据的大小、索引数据的大小、
 </div>
 </div>
 </div>
-<div id="outline-container-orgb1c2016" class="outline-6">
-<h6 id="orgb1c2016">Material Asset</h6>
-<div class="outline-text-6" id="text-orgb1c2016">
+<div id="outline-container-orgac9d48d" class="outline-6">
+<h6 id="orgac9d48d">Material Asset</h6>
+<div class="outline-text-6" id="text-orgac9d48d">
 <p>
 材质资源只包含了 json 字符串部分，没有二进制数据部分。<br />
 </p>
@@ -6797,9 +6798,9 @@ json 字符串中存储了模型顶点数据的大小、索引数据的大小、
 </div>
 </div>
 </div>
-<div id="outline-container-org71aa911" class="outline-6">
-<h6 id="org71aa911">Prefab Asset</h6>
-<div class="outline-text-6" id="text-org71aa911">
+<div id="outline-container-org2cdfcbc" class="outline-6">
+<h6 id="org2cdfcbc">Prefab Asset</h6>
+<div class="outline-text-6" id="text-org2cdfcbc">
 <p>
 预制体资源是对应了一系列节点树。 json 字符串部分对应 PrefabInfo 信息，二进制部分存储节点矩阵数据<br />
 </p>
@@ -6829,18 +6830,18 @@ json 字符串中存储了模型顶点数据的大小、索引数据的大小、
 </div>
 </div>
 
-<div id="outline-container-org62fdfe3" class="outline-5">
-<h5 id="org62fdfe3">Abstraction for descritpor sets</h5>
-<div class="outline-text-5" id="text-org62fdfe3">
+<div id="outline-container-org536ef8f" class="outline-5">
+<h5 id="org536ef8f">Abstraction for descritpor sets</h5>
+<div class="outline-text-5" id="text-org536ef8f">
 <p>
 将 VkDescriptorPool 的创建封装在 DescriptorAllocator 中，并使用缓冲池进行管理，缓冲池中 VkDescriptorPool 的容量不够时才分配新的。<br />
 将 VkDescriptorSetLayout 的创建封装在 DescriptorLayoutCache 中，并使用缓冲池进行管理，将创建的 VkDescriptorSetLayout 添加到缓冲池中，下次创建相同的 VkDescriptorSetLayout 时，直接使用缓冲池中的 VkDescriptorSetLayout。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org1c28333" class="outline-5">
-<h5 id="org1c28333">Configurable options through a CVAR System</h5>
-<div class="outline-text-5" id="text-org1c28333">
+<div id="outline-container-orgd51e631" class="outline-5">
+<h5 id="orgd51e631">Configurable options through a CVAR System</h5>
+<div class="outline-text-5" id="text-orgd51e631">
 <div class="org-src-container">
 <pre class="src src-cpp"><span style="color: #2aa1ae; background-color: #292e34;">//// </span><span style="color: #2aa1ae; background-color: #292e34;">CVAR &#31995;&#32479;&#20013;&#38745;&#24577;&#27880;&#20876;&#21464;&#37327;</span>
 <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">checkbox CVAR</span>
@@ -6874,18 +6875,18 @@ CVAR_TestInt.Set(7);
 </div>
 </div>
 </div>
-<div id="outline-container-org4ce7752" class="outline-5">
-<h5 id="org4ce7752">Multithreading for game engines</h5>
-<div class="outline-text-5" id="text-org4ce7752">
+<div id="outline-container-org476d5d7" class="outline-5">
+<h5 id="org476d5d7">Multithreading for game engines</h5>
+<div class="outline-text-5" id="text-org476d5d7">
 </div>
-<div id="outline-container-org0dd082d" class="outline-6">
-<h6 id="org0dd082d">Ways of using multithreading in game engines</h6>
-<div class="outline-text-6" id="text-org0dd082d">
+<div id="outline-container-orgeaee097" class="outline-6">
+<h6 id="orgeaee097">Ways of using multithreading in game engines</h6>
+<div class="outline-text-6" id="text-orgeaee097">
 <p>
 一开始游戏引擎都是单线程的。最早期最经典的多线程游戏引擎会直接创建多个线程，每个线程执行他们自己的任务。例如，你可以有一个 Game Thread，来执行所有的 gameplay 逻辑和 AI；一个 Render Thread 处理渲染，准备需要绘制的物体，并执行图形命令。其架构如下图所示：<br />
 </p>
 
-<div id="orgacf355f" class="figure">
+<div id="org40922c8" class="figure">
 <p><img src="./Vulkan/vg-multi-thread-gameEngine.jpg" alt="vg-multi-thread-gameEngine.jpg" width="500px" /><br />
 </p>
 </div>
@@ -6902,7 +6903,7 @@ UE4 有一个 Game Thread 和一个 Render Thread 作为主要的线程，还有
 增强这种架构的一种通用方式是将更多内容改为 fork/join 方式，你有一个主要的执行线程，在某些点上，工作的多个部分被分配到多个线程上。UE4 就是这样处理动画和物理的。Game Thread 负责整个游戏逻辑，当其到达需要播放动画的点时，将动画分割成小任务进行计算，并将这些任务分配给其他核心的辅助线程。虽然仍然有一个主要的执行时间线，但在某些点其可以从未使用的内核中获得额外的帮助。这提高了可伸缩性，但仍然不够好，因为框架的其余部分仍然是单线程的。这种增强后的架构图如下：<br />
 </p>
 
-<div id="orge4e2805" class="figure">
+<div id="orgcccd45d" class="figure">
 <p><img src="./Vulkan/vg-multi-thread-gameEngine01.jpg" alt="vg-multi-thread-gameEngine01.jpg" width="500px" /><br />
 </p>
 </div>
@@ -6920,13 +6921,13 @@ Doom Eternal 就使用了 Task based System。Naughty Dog Engine 和 2 Destiny E
 </ul>
 </div>
 </div>
-<div id="outline-container-org8fe6778" class="outline-6">
-<h6 id="org8fe6778">In practive</h6>
-<div class="outline-text-6" id="text-org8fe6778">
+<div id="outline-container-org735f3e4" class="outline-6">
+<h6 id="org735f3e4">In practive</h6>
+<div class="outline-text-6" id="text-org735f3e4">
 </div>
 <ul class="org-ul">
-<li><a id="org13fae35"></a>经典游戏引擎多线程模型<br />
-<div class="outline-text-7" id="text-org13fae35">
+<li><a id="orgf11f87a"></a>经典游戏引擎多线程模型<br />
+<div class="outline-text-7" id="text-orgf11f87a">
 <div class="org-src-container">
 <pre class="src src-cpp"><span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">GameLoop</span>()
 {
@@ -6990,8 +6991,8 @@ Doom Eternal 就使用了 Task based System。Naughty Dog Engine 和 2 Destiny E
 </p>
 </div>
 </li>
-<li><a id="orgd0a46dc"></a>利用 helper 线程增强上述多线程模型<br />
-<div class="outline-text-7" id="text-orgd0a46dc">
+<li><a id="org2252f33"></a>利用 helper 线程增强上述多线程模型<br />
+<div class="outline-text-7" id="text-org2252f33">
 <p>
 在游戏逻辑线程的 GameLoop 中，每一帧都需要按顺序执行一系列事情。我们可以找出哪些可以独立运行的任务，将其分配到其他线程执行。例如，AiCharacter 上执行的 UpdateAnimation()只会访问对应的 AiCharacter，因此可以将其分配到其他线程执行。如下面代码所示：<br />
 </p>
@@ -7007,8 +7008,8 @@ Doom Eternal 就使用了 Task based System。Naughty Dog Engine 和 2 Destiny E
 </div>
 </div>
 </li>
-<li><a id="org3f341a0"></a>引入 TaskSystem<br />
-<div class="outline-text-7" id="text-org3f341a0">
+<li><a id="orgcaaee09"></a>引入 TaskSystem<br />
+<div class="outline-text-7" id="text-orgcaaee09">
 <p>
 我们使用 std::async 来作为一个 task system，std::async 会创建一个轻量级的 thread，我们可以创建很多 lightweight thread 而不引起很大问题，创建 lightweight thread 的消耗要比创建 std::thread 要少很多。不过需要确认这种方式在你的平台上是如何运行的，例如，在 VisualStudio 平台上这种方式实现非常好，但是，GCC/clang 的实现方式可能并非如此。你可以使用 Taskflow 这样的库来代替这里使用 std::async 的方式。<br />
 </p>
@@ -7080,18 +7081,18 @@ physics_task.wait();
 </li>
 </ul>
 </div>
-<div id="outline-container-org89ca88a" class="outline-6">
-<h6 id="org89ca88a">Identifying tasks</h6>
-<div class="outline-text-6" id="text-org89ca88a">
+<div id="outline-container-org965a698" class="outline-6">
+<h6 id="org965a698">Identifying tasks</h6>
+<div class="outline-text-6" id="text-org965a698">
 <p>
 实践中，明确哪些任务可以和其他任务并行执行是非常难的。一个通用的方法是，将一个任务执行所需的数据打包起来，确保该任务不会访问任何其他数据。例如，渲染线程中的 Renderer 类存储了所有的渲染数据，GameThread 永远都不会访问这些数据。我们只会在一帧内的特定的时间点，允许 RenderThread 访问 GameThread 的数据，而此时 GameThread 不会访问这些数据。<br />
 </p>
 </div>
 </div>
 
-<div id="outline-container-org736f723" class="outline-6">
-<h6 id="org736f723">Multithreading Vulkan</h6>
-<div class="outline-text-6" id="text-org736f723">
+<div id="outline-container-org74fa86a" class="outline-6">
+<h6 id="org74fa86a">Multithreading Vulkan</h6>
+<div class="outline-text-6" id="text-org74fa86a">
 <p>
 在 OpenGL 或其他老式的 APIs 中，只能在一个线程上调用 API，不是说同一时间在同一个线程上，而是只能在一个特定的线程上。对于这类 APIs，渲染器通常会创建一个专门的 OpenGL/API 线程，由该线程执行命令，而其他线程将命令发送给该线程。Doom3 引擎和 UE4 引擎都是如此。对于这些老式 API，在一些特殊的情况下，可以在多线程中调用部分 API，例如，OpenGL 的贴图加载可以在其他线程中调用，但是，这些支持都是作为扩展而实现的，可能你的系统并未实现这些扩展。总的来说，这些老式的 API 设计并没有考虑多线程。<br />
 </p>
@@ -7102,24 +7103,24 @@ physics_task.wait();
 </div>
 
 <ul class="org-ul">
-<li><a id="org5eaad5c"></a>compiling pipelines<br />
-<div class="outline-text-7" id="text-org5eaad5c">
+<li><a id="org62e2d23"></a>compiling pipelines<br />
+<div class="outline-text-7" id="text-org62e2d23">
 <p>
 对于编译 pipelines，vkCreateShaderModule 和 vkCreateGraphicsPipeline 都允许在多个线程上同时被调用。一种通用的方式是，为 shader 编译专门指定一个后台线程，该线程定期从一个并行队列中获取编译请求，并将编译完成的 pipelines 放入另外一个队列，之后渲染主线程就可以使用编译后的 pipeline 了。如果你想要引擎没有很多卡顿，你就需要这样做。编译 shader 会花费很长时间，如果你需要在 loading 界面以外的地方实时编译 pipeline，你就需要实现这样一个多线程异步编译模式。<br />
 </p>
 </div>
 </li>
 
-<li><a id="orga2ba3da"></a>descriptor set building<br />
-<div class="outline-text-7" id="text-orga2ba3da">
+<li><a id="org7e5d306"></a>descriptor set building<br />
+<div class="outline-text-7" id="text-org7e5d306">
 <p>
 对于创建 descriptor sets，其也可以在多个线程中完成，只要用于分配 descriptor sets 的 DescriptorPool 不会被多个线程同时访问即可。一种通用的方式是使用管理器生成多个 DescriptorPools，当一个线程需要分配 descritprs 时，该线程从该管理器中获取一个 descriptor pool 来用，然后，再将其返回给管理器，这样以来多个线程就可以使用相同的 descriptor pool 了(管理器限制了多个线程同时使用同一个 descriptor pool)。<br />
 </p>
 </div>
 </li>
 
-<li><a id="orgf0f187d"></a>command submission and recording<br />
-<div class="outline-text-7" id="text-orgf0f187d">
+<li><a id="org72ee369"></a>command submission and recording<br />
+<div class="outline-text-7" id="text-org72ee369">
 <p>
 命令提交和记录也可以是完全并行的，但是有一些规则。<br />
 </p>
@@ -7181,8 +7182,8 @@ vkEndCommandBuffer(primaryBuffer);
 </ol>
 </div>
 </li>
-<li><a id="orge36d622"></a>data upload<br />
-<div class="outline-text-7" id="text-orge36d622">
+<li><a id="org5b2bbd2"></a>data upload<br />
+<div class="outline-text-7" id="text-org5b2bbd2">
 <p>
 通常会有一个专门的 IO 线程，其会从磁盘加载资源。IO 线程有自己的队列和 command allocators, 此处的队列最好是一个 transfer queue。这种方式可以将资源的上传速度从帧循环中完全独立出来，上传一组很大的贴图消耗了好几秒，主循环也不会被卡住。具体来说，就是为 IO thread 创建一个专门的 transfer queue(或者 async-compute queue)，IO thread 通过该并发队列和主循环进行通讯，从而使得上传数据以异步方式进行。可以使用 Fence 来检查，数据上传到 transfer queue 的操作是否完成，一旦完成，IO thread 就可以将该信息发送给主循环，之后引擎就可以将新的贴图或模型传递给渲染器了。<br />
 </p>
@@ -7195,30 +7196,30 @@ vkEndCommandBuffer(primaryBuffer);
 </ul>
 </div>
 </div>
-<div id="outline-container-org42ac41a" class="outline-5">
-<h5 id="org42ac41a">Render Flow</h5>
+<div id="outline-container-orga6b48bf" class="outline-5">
+<h5 id="orga6b48bf">Render Flow</h5>
 </div>
 </div>
 
-<div id="outline-container-org3e6e456" class="outline-4">
-<h4 id="org3e6e456">Draw Indirect</h4>
+<div id="outline-container-orgd2e521a" class="outline-4">
+<h4 id="orgd2e521a">Draw Indirect</h4>
 </div>
-<div id="outline-container-org30629d8" class="outline-4">
-<h4 id="org30629d8">Compute Shaders</h4>
+<div id="outline-container-org00ae68c" class="outline-4">
+<h4 id="org00ae68c">Compute Shaders</h4>
 </div>
-<div id="outline-container-orga40856b" class="outline-4">
-<h4 id="orga40856b">Material System</h4>
+<div id="outline-container-org462f07a" class="outline-4">
+<h4 id="org462f07a">Material System</h4>
 </div>
-<div id="outline-container-orgdfc32aa" class="outline-4">
-<h4 id="orgdfc32aa">Mesh Rendering</h4>
+<div id="outline-container-orge95c3cc" class="outline-4">
+<h4 id="orge95c3cc">Mesh Rendering</h4>
 </div>
-<div id="outline-container-org768406a" class="outline-4">
-<h4 id="org768406a">Compute based Culling</h4>
+<div id="outline-container-org0544515" class="outline-4">
+<h4 id="org0544515">Compute based Culling</h4>
 </div>
 </div>
-<div id="outline-container-org9e47237" class="outline-3">
-<h3 id="org9e47237">参考资料</h3>
-<div class="outline-text-3" id="text-org9e47237">
+<div id="outline-container-org4a7a164" class="outline-3">
+<h3 id="org4a7a164">参考资料</h3>
+<div class="outline-text-3" id="text-org4a7a164">
 <ul class="org-ul">
 <li>vkguide <a href="https://vkguide.dev/">https://vkguide.dev/</a><br /></li>
 <li>vkguide github <a href="https://github.com/vblanco20-1/vulkan-guide">https://github.com/vblanco20-1/vulkan-guide</a><br /></li>
@@ -7226,17 +7227,17 @@ vkEndCommandBuffer(primaryBuffer);
 </div>
 </div>
 </div>
-<div id="outline-container-orgdff272b" class="outline-2">
-<h2 id="orgdff272b">Vulkan vs OpenGL vs OpenGLES vs D3D</h2>
-<div class="outline-text-2" id="text-orgdff272b">
+<div id="outline-container-org88359c3" class="outline-2">
+<h2 id="org88359c3">Vulkan vs OpenGL vs OpenGLES vs D3D</h2>
+<div class="outline-text-2" id="text-org88359c3">
 </div>
-<div id="outline-container-org6fb74d6" class="outline-3">
-<h3 id="org6fb74d6">Version</h3>
-<div class="outline-text-3" id="text-org6fb74d6">
+<div id="outline-container-org4ef6417" class="outline-3">
+<h3 id="org4ef6417">Version</h3>
+<div class="outline-text-3" id="text-org4ef6417">
 </div>
-<div id="outline-container-orga47cdf0" class="outline-4">
-<h4 id="orga47cdf0">OpenGL version</h4>
-<div class="outline-text-4" id="text-orga47cdf0">
+<div id="outline-container-orgcb0ce2a" class="outline-4">
+<h4 id="orgcb0ce2a">OpenGL version</h4>
+<div class="outline-text-4" id="text-orgcb0ce2a">
 <p>
 OpenGL version history<br />
 </p>
@@ -7379,9 +7380,9 @@ OpenGL version history<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-org9109872" class="outline-4">
-<h4 id="org9109872">Open GLES</h4>
-<div class="outline-text-4" id="text-org9109872">
+<div id="outline-container-orgc0d2d8e" class="outline-4">
+<h4 id="orgc0d2d8e">Open GLES</h4>
+<div class="outline-text-4" id="text-orgc0d2d8e">
 <ul class="org-ul">
 <li><a href="https://www.khronos.org/opengles/">https://www.khronos.org/opengles/</a><br /></li>
 <li><a href="https://en.wikipedia.org/wiki/OpenGL_ES">https://en.wikipedia.org/wiki/OpenGL_ES</a><br /></li>
@@ -7389,9 +7390,9 @@ OpenGL version history<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-org771ab6c" class="outline-4">
-<h4 id="org771ab6c">GLSL Version</h4>
-<div class="outline-text-4" id="text-org771ab6c">
+<div id="outline-container-org325e31b" class="outline-4">
+<h4 id="org325e31b">GLSL Version</h4>
+<div class="outline-text-4" id="text-org325e31b">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -7577,20 +7578,20 @@ OpenGL version history<br />
 </div>
 </div>
 </div>
-<div id="outline-container-orgdfd4b68" class="outline-3">
-<h3 id="orgdfd4b68">Compare</h3>
-<div class="outline-text-3" id="text-orgdfd4b68">
+<div id="outline-container-orgf6cbd7c" class="outline-3">
+<h3 id="orgf6cbd7c">Compare</h3>
+<div class="outline-text-3" id="text-orgf6cbd7c">
 </div>
-<div id="outline-container-org1d5130b" class="outline-4">
-<h4 id="org1d5130b">EGL DX11 对比</h4>
-<div class="outline-text-4" id="text-org1d5130b">
+<div id="outline-container-org2cff239" class="outline-4">
+<h4 id="org2cff239">EGL DX11 对比</h4>
+<div class="outline-text-4" id="text-org2cff239">
 <ul class="org-ul">
 <li><a href="https://docs.microsoft.com/en-us/windows/uwp/gaming/moving-from-egl-to-dxgi">https://docs.microsoft.com/en-us/windows/uwp/gaming/moving-from-egl-to-dxgi</a><br /></li>
 </ul>
 </div>
-<div id="outline-container-orgdea2b3b" class="outline-5">
-<h5 id="orgdea2b3b">EGL and DXGI</h5>
-<div class="outline-text-5" id="text-orgdea2b3b">
+<div id="outline-container-org498e517" class="outline-5">
+<h5 id="org498e517">EGL and DXGI</h5>
+<div class="outline-text-5" id="text-org498e517">
 <p>
 DXGI 是 DirectX Graphics Interface 的简称。Direct3D 是 3D 相关的 API。<br />
 </p>
@@ -7784,9 +7785,9 @@ EGL 到 Direct3D 11 的 API 映射：<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-orgcb3fc2f" class="outline-5">
-<h5 id="orgcb3fc2f">buffer, uniforms, vertices, texture</h5>
-<div class="outline-text-5" id="text-orgcb3fc2f">
+<div id="outline-container-org18daeff" class="outline-5">
+<h5 id="org18daeff">buffer, uniforms, vertices, texture</h5>
+<div class="outline-text-5" id="text-org18daeff">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -7901,9 +7902,9 @@ uniform <span style="color: #ce537a; font-weight: bold;">sampler2D</span> <span 
 </div>
 </div>
 </div>
-<div id="outline-container-orga340261" class="outline-5">
-<h5 id="orga340261">pipeline</h5>
-<div class="outline-text-5" id="text-orga340261">
+<div id="outline-container-orgc7883ed" class="outline-5">
+<h5 id="orgc7883ed">pipeline</h5>
+<div class="outline-text-5" id="text-orgc7883ed">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -7951,15 +7952,114 @@ uniform <span style="color: #ce537a; font-weight: bold;">sampler2D</span> <span 
 </table>
 </div>
 </div>
-</div>
+<div id="outline-container-org0942204" class="outline-5">
+<h5 id="org0942204">draw</h5>
+<div class="outline-text-5" id="text-org0942204">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
-<div id="outline-container-org4850c03" class="outline-4">
-<h4 id="org4850c03">Vulkan DX12 概念对比</h4>
-<div class="outline-text-4" id="text-org4850c03">
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">EGL</td>
+<td class="org-left">DX9</td>
+<td class="org-left">DX11</td>
+</tr>
+
+<tr>
+<td class="org-left">glDrawArrays</td>
+<td class="org-left">IDirect3DDevice9::DrawPrimitive</td>
+<td class="org-left">ID3D11DeviceContext::Draw</td>
+</tr>
+
+<tr>
+<td class="org-left">glDrawElements</td>
+<td class="org-left">IDirect3DDevice9::DrawIndexedPrimitive</td>
+<td class="org-left">ID3D11DeviceContext::DrawIndexed</td>
+</tr>
+
+<tr>
+<td class="org-left">glDrawArraysIndirect</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">glDrawElementsIndirect</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">glMultiDrawArrays</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">glMultiDrawElements</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">glMultiDrawArraysIndirect</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">glMultiDrawElementsIndirect</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">glDrawArraysInstanced</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">ID3D11DeviceContext::DrawInstanced</td>
+</tr>
+
+<tr>
+<td class="org-left">glDrawElementsInstanced</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">ID3D11DeviceContext::DrawIndexedInstanced</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">ID3D11DeviceContext::DrawInstancedIndirect</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">ID3D11DeviceContext::DrawIndexedInstancedIndirect</td>
+</tr>
+</tbody>
+</table>
+
+<ul class="org-ul">
+<li>IndirectDrawing <a href="https://learn.microsoft.com/en-us/windows/win32/direct3d12/indirect-drawing">https://learn.microsoft.com/en-us/windows/win32/direct3d12/indirect-drawing</a><br /></li>
+<li>Porting from DirectX11 to OpenGL 4.2: API mapping <a href="https://anteru.net/blog/2013/porting-from-directx11-to-opengl-4-2-api-mapping/">https://anteru.net/blog/2013/porting-from-directx11-to-opengl-4-2-api-mapping/</a><br /></li>
+</ul>
 </div>
-<div id="outline-container-org85f81e0" class="outline-5">
-<h5 id="org85f81e0">基本的 API 方面</h5>
-<div class="outline-text-5" id="text-org85f81e0">
+</div>
+</div>
+<div id="outline-container-org5335c97" class="outline-4">
+<h4 id="org5335c97">Vulkan DX12 概念对比</h4>
+<div class="outline-text-4" id="text-org5335c97">
+</div>
+<div id="outline-container-org5050ca8" class="outline-5">
+<h5 id="org5050ca8">基本的 API 方面</h5>
+<div class="outline-text-5" id="text-org5050ca8">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -8033,9 +8133,9 @@ uniform <span style="color: #ce537a; font-weight: bold;">sampler2D</span> <span 
 </div>
 </div>
 
-<div id="outline-container-org32d86d1" class="outline-5">
-<h5 id="org32d86d1">Command Buffer and Pool</h5>
-<div class="outline-text-5" id="text-org32d86d1">
+<div id="outline-container-org5ed3350" class="outline-5">
+<h5 id="org5ed3350">Command Buffer and Pool</h5>
+<div class="outline-text-5" id="text-org5ed3350">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -8064,9 +8164,9 @@ uniform <span style="color: #ce537a; font-weight: bold;">sampler2D</span> <span 
 </div>
 </div>
 
-<div id="outline-container-org57064c6" class="outline-5">
-<h5 id="org57064c6">Descriptors</h5>
-<div class="outline-text-5" id="text-org57064c6">
+<div id="outline-container-org12a473a" class="outline-5">
+<h5 id="org12a473a">Descriptors</h5>
+<div class="outline-text-5" id="text-org12a473a">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -8110,9 +8210,9 @@ uniform <span style="color: #ce537a; font-weight: bold;">sampler2D</span> <span 
 </div>
 </div>
 
-<div id="outline-container-org5654708" class="outline-5">
-<h5 id="org5654708">Pipeline</h5>
-<div class="outline-text-5" id="text-org5654708">
+<div id="outline-container-orgec4ae09" class="outline-5">
+<h5 id="orgec4ae09">Pipeline</h5>
+<div class="outline-text-5" id="text-orgec4ae09">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -8151,9 +8251,9 @@ uniform <span style="color: #ce537a; font-weight: bold;">sampler2D</span> <span 
 </div>
 </div>
 
-<div id="outline-container-orgcbbd22e" class="outline-5">
-<h5 id="orgcbbd22e">Images and Buffers</h5>
-<div class="outline-text-5" id="text-orgcbbd22e">
+<div id="outline-container-org15f653a" class="outline-5">
+<h5 id="org15f653a">Images and Buffers</h5>
+<div class="outline-text-5" id="text-org15f653a">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -8272,9 +8372,9 @@ uniform <span style="color: #ce537a; font-weight: bold;">sampler2D</span> <span 
 </div>
 </div>
 
-<div id="outline-container-org27e7f5b" class="outline-5">
-<h5 id="org27e7f5b">RenderPasses/RenderTargets</h5>
-<div class="outline-text-5" id="text-org27e7f5b">
+<div id="outline-container-orgad2baa2" class="outline-5">
+<h5 id="orgad2baa2">RenderPasses/RenderTargets</h5>
+<div class="outline-text-5" id="text-orgad2baa2">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -8318,13 +8418,13 @@ uniform <span style="color: #ce537a; font-weight: bold;">sampler2D</span> <span 
 </div>
 </div>
 </div>
-<div id="outline-container-orgab8c0c6" class="outline-4">
-<h4 id="orgab8c0c6">GLSL vs HLSL</h4>
-<div class="outline-text-4" id="text-orgab8c0c6">
+<div id="outline-container-orgc218853" class="outline-4">
+<h4 id="orgc218853">GLSL vs HLSL</h4>
+<div class="outline-text-4" id="text-orgc218853">
 </div>
-<div id="outline-container-org15c285e" class="outline-5">
-<h5 id="org15c285e">System values &amp; built-in inputs</h5>
-<div class="outline-text-5" id="text-org15c285e">
+<div id="outline-container-org6d28e0c" class="outline-5">
+<h5 id="org6d28e0c">System values &amp; built-in inputs</h5>
+<div class="outline-text-5" id="text-org6d28e0c">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -8477,9 +8577,9 @@ uniform <span style="color: #ce537a; font-weight: bold;">sampler2D</span> <span 
 </table>
 </div>
 </div>
-<div id="outline-container-org3f3d688" class="outline-5">
-<h5 id="org3f3d688">Atomic operations</h5>
-<div class="outline-text-5" id="text-org3f3d688">
+<div id="outline-container-org3409604" class="outline-5">
+<h5 id="org3409604">Atomic operations</h5>
+<div class="outline-text-5" id="text-org3409604">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -8512,9 +8612,9 @@ uniform <span style="color: #ce537a; font-weight: bold;">sampler2D</span> <span 
 </table>
 </div>
 </div>
-<div id="outline-container-org172c56d" class="outline-5">
-<h5 id="org172c56d">Shared/local memory</h5>
-<div class="outline-text-5" id="text-org172c56d">
+<div id="outline-container-org448d4fb" class="outline-5">
+<h5 id="org448d4fb">Shared/local memory</h5>
+<div class="outline-text-5" id="text-org448d4fb">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -8537,9 +8637,9 @@ uniform <span style="color: #ce537a; font-weight: bold;">sampler2D</span> <span 
 </table>
 </div>
 </div>
-<div id="outline-container-org8778259" class="outline-5">
-<h5 id="org8778259">Barriers</h5>
-<div class="outline-text-5" id="text-org8778259">
+<div id="outline-container-org3107188" class="outline-5">
+<h5 id="org3107188">Barriers</h5>
+<div class="outline-text-5" id="text-org3107188">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -8592,9 +8692,9 @@ uniform <span style="color: #ce537a; font-weight: bold;">sampler2D</span> <span 
 </table>
 </div>
 </div>
-<div id="outline-container-orgbbb4187" class="outline-5">
-<h5 id="orgbbb4187">Texture access</h5>
-<div class="outline-text-5" id="text-orgbbb4187">
+<div id="outline-container-org39cc93e" class="outline-5">
+<h5 id="org39cc93e">Texture access</h5>
+<div class="outline-text-5" id="text-org39cc93e">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -8657,18 +8757,18 @@ uniform <span style="color: #ce537a; font-weight: bold;">sampler2D</span> <span 
 </table>
 </div>
 </div>
-<div id="outline-container-org7d87a65" class="outline-5">
-<h5 id="org7d87a65">General math</h5>
-<div class="outline-text-5" id="text-org7d87a65">
+<div id="outline-container-orgc64be0d" class="outline-5">
+<h5 id="orgc64be0d">General math</h5>
+<div class="outline-text-5" id="text-orgc64be0d">
 <p>
 GLSL 矩阵为列主序， 矩阵和向量相乘为 M*v<br />
 HLSL 矩阵为行主序， 矩阵和向量相乘为 v*M<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org96ae21d" class="outline-5">
-<h5 id="org96ae21d">Various functions</h5>
-<div class="outline-text-5" id="text-org96ae21d">
+<div id="outline-container-org3d28c3d" class="outline-5">
+<h5 id="org3d28c3d">Various functions</h5>
+<div class="outline-text-5" id="text-org3d28c3d">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -8756,18 +8856,18 @@ HLSL 矩阵为行主序， 矩阵和向量相乘为 v*M<br />
 </table>
 </div>
 </div>
-<div id="outline-container-org35f207b" class="outline-5">
-<h5 id="org35f207b">参考资料</h5>
-<div class="outline-text-5" id="text-org35f207b">
+<div id="outline-container-org9d5ff18" class="outline-5">
+<h5 id="org9d5ff18">参考资料</h5>
+<div class="outline-text-5" id="text-org9d5ff18">
 <ul class="org-ul">
 <li><a href="https://anteru.net/blog/2016/mapping-between-HLSL-and-GLSL/">https://anteru.net/blog/2016/mapping-between-HLSL-and-GLSL/</a> <br /></li>
 </ul>
 </div>
 </div>
 </div>
-<div id="outline-container-orgd03038b" class="outline-4">
-<h4 id="orgd03038b">参考资料</h4>
-<div class="outline-text-4" id="text-orgd03038b">
+<div id="outline-container-org8fd3b54" class="outline-4">
+<h4 id="org8fd3b54">参考资料</h4>
+<div class="outline-text-4" id="text-org8fd3b54">
 <ul class="org-ul">
 <li>ShaderModel 与 ES 版本和 GPU 特性的关系 (有道云有备份) <a href="https://liangz0707.github.io/whoimi/blogs/Shader/ShaderModel%E4%B8%8EES%E7%89%88%E6%9C%AC%E5%92%8CGPU%E7%89%B9%E6%80%A7%E7%9A%84%E5%85%B3%E7%B3%BB.html">https://liangz0707.github.io/whoimi/blogs/Shader/ShaderModel%E4%B8%8EES%E7%89%88%E6%9C%AC%E5%92%8CGPU%E7%89%B9%E6%80%A7%E7%9A%84%E5%85%B3%E7%B3%BB.html</a><br /></li>
 <li>DirectX / OpenGL(Vulkan) concepts mapping chart <a href="https://computergraphics.stackexchange.com/questions/4422/directx-openglvulkan-concepts-mapping-chart">https://computergraphics.stackexchange.com/questions/4422/directx-openglvulkan-concepts-mapping-chart</a><br /></li>

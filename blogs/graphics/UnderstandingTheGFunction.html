@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2022-12-22 Thu 00:13 -->
+<!-- 2023-02-02 Thu 11:07 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>UnderstandingTheGFunction</title>
@@ -15,27 +15,38 @@
          <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.github.io/res/worg_theme/css/worg-classic.css" type="text/css" />
          <link rel="icon" href="https://wolfand11.github.io/res/favicon.ico" type="image/ico" />
          <script type="text/javascript" src="https://wolfand11.github.io/res/blog-tools.js"></script>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        displayAlign: "center",
-        displayIndent: "0em",
-
-        "HTML-CSS": { scale: 100,
-                        linebreaks: { automatic: "false" },
-                        webFont: "TeX"
-                       },
-        SVG: {scale: 100,
-              linebreaks: { automatic: "false" },
-              font: "TeX"},
-        NativeMML: {scale: 100},
-        TeX: { equationNumbers: {autoNumber: "AMS"},
-               MultLineWidth: "85%",
-               TagSide: "right",
-               TagIndent: ".8em"
-             }
-});
+<script>
+  window.MathJax = {
+    tex: {
+      ams: {
+        multlineWidth: '85%'
+      },
+      tags: 'ams',
+      tagSide: 'right',
+      tagIndent: '.8em'
+    },
+    chtml: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    svg: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    output: {
+      font: 'mathjax-modern',
+      displayOverflow: 'overflow'
+    }
+  };
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+
+<script
+  id="MathJax-script"
+  async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
 </head>
 <body>
 <div id="org-div-home-and-up">
@@ -48,112 +59,112 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org8731c34">UnderstandingTheGFunction</a>
+<li><a href="#org732ca2f">UnderstandingTheGFunction</a>
 <ul>
-<li><a href="#org4f42727">Derivation of the Masking Function</a>
+<li><a href="#org5ea6633">Derivation of the Masking Function</a>
 <ul>
-<li><a href="#org0cc394d">Measuring Radiance on a Surface</a></li>
-<li><a href="#org0d4e16d">Microfacet Statistics</a>
+<li><a href="#org53df897">Measuring Radiance on a Surface</a></li>
+<li><a href="#orgd62317a">Microfacet Statistics</a>
 <ul>
-<li><a href="#org0fc6f52">The Distribution of Normals</a></li>
-<li><a href="#org002085c">Spatial and Statistical Equations</a></li>
-<li><a href="#org725b535">Statistical Functions</a></li>
+<li><a href="#orgebf7bbb">The Distribution of Normals</a></li>
+<li><a href="#orgf400367">Spatial and Statistical Equations</a></li>
+<li><a href="#orgf145a3a">Statistical Functions</a></li>
 </ul>
 </li>
-<li><a href="#org62b8460">Microfact Projections</a></li>
-<li><a href="#org047bfaa">A Constraint on the Masking Function</a></li>
+<li><a href="#org47c215a">Microfact Projections</a></li>
+<li><a href="#org574c361">A Constraint on the Masking Function</a></li>
 </ul>
 </li>
-<li><a href="#org3091bdc">Microfacet-Based BRDFs</a>
+<li><a href="#org6f11a4c">Microfacet-Based BRDFs</a>
 <ul>
-<li><a href="#org773db73">Distribution of Visible Normals</a></li>
-<li><a href="#org2e76cd7">Construction of the BRDF</a></li>
-<li><a href="#org387fc47">Construction of the BRDF with specular microfacets</a></li>
-<li><a href="#orgfdeb4fe">Construction of the BRDF with diffuse microfacets</a></li>
-<li><a href="#org0e3baa7">The BRDF Normalization Test</a>
+<li><a href="#org24759ad">Distribution of Visible Normals</a></li>
+<li><a href="#org1c8d51e">Construction of the BRDF</a></li>
+<li><a href="#orgee85f7c">Construction of the BRDF with specular microfacets</a></li>
+<li><a href="#org3312e02">Construction of the BRDF with diffuse microfacets</a></li>
+<li><a href="#org38c9863">The BRDF Normalization Test</a>
 <ul>
-<li><a href="#org40ef62e">The White Furnace Test</a></li>
-<li><a href="#orga1f0954">The Weak White Furnace Test</a></li>
-<li><a href="#orgaae26cc">Summary</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#org1e382e4">Common Physically Based and Non-Physically Based Masking Functions</a>
-<ul>
-<li><a href="#orge4b8c48">The Smith Microsurface Profile</a>
-<ul>
-<li><a href="#org49ec43a">Normal/Masking Independence</a></li>
-<li><a href="#orgd853fb9">Derivation of the Masking Function</a></li>
-<li><a href="#orgbbdc364">The Smith Masking Function</a></li>
-<li><a href="#org6b3e355">Properties</a></li>
-</ul>
-</li>
-<li><a href="#org8834af3">The V-Cavity Microsurface Profile</a>
-<ul>
-<li><a href="#orgd26c5f6">Validation</a></li>
-<li><a href="#org542cf58">Properties</a></li>
-</ul>
-</li>
-<li><a href="#orge34752d">Non-Physically Based Masking Functions</a>
-<ul>
-<li><a href="#org1b2a41b">Definition</a>
-<ul>
-<li><a href="#org10a24ef">The Implicit Masking Function</a></li>
-<li><a href="#orgd210cbb">The Schilick-Smith Masking Function</a></li>
-<li><a href="#org4a9ed15">The Kelemen Masking Function</a></li>
+<li><a href="#orga66db35">The White Furnace Test</a></li>
+<li><a href="#org7740e34">The Weak White Furnace Test</a></li>
+<li><a href="#org90d3857">Summary</a></li>
 </ul>
 </li>
 </ul>
 </li>
-</ul>
-</li>
-<li><a href="#org3e4ac8d">Stetch Invariance of the Masking Function</a>
+<li><a href="#org9fc3ba7">Common Physically Based and Non-Physically Based Masking Functions</a>
 <ul>
-<li><a href="#org66f5981">Masking Probability Invariance</a></li>
-<li><a href="#orgb41e0f5">The Distribution of Slopes</a></li>
-<li><a href="#org9b2bade">Isotropic Shape-Invariant Distributions of Slopes</a>
+<li><a href="#org95e9111">The Smith Microsurface Profile</a>
 <ul>
-<li><a href="#orgb55e0b8">Shape Invariance</a></li>
-<li><a href="#org8254999">Beckmann Distribution</a></li>
-<li><a href="#org2810411">GGX Distribution</a></li>
-<li><a href="#org6f9bdd3">Shape-variant distributions</a></li>
+<li><a href="#orgfa30fba">Normal/Masking Independence</a></li>
+<li><a href="#orga8e2f26">Derivation of the Masking Function</a></li>
+<li><a href="#org993c71c">The Smith Masking Function</a></li>
+<li><a href="#orge2b678e">Properties</a></li>
 </ul>
 </li>
-<li><a href="#org468cf7a">Anisotropic Shape-Invariant Distributions of Slopes</a>
+<li><a href="#org3d8bc21">The V-Cavity Microsurface Profile</a>
 <ul>
-<li><a href="#org1764973">Shape Invariance</a></li>
-<li><a href="#org7857497">Derivation of the Masking Function</a></li>
-<li><a href="#org1c3acc1">Anisotropic Beckmann Distribution</a></li>
-<li><a href="#org0a9b7d4">Anisotropic GGX Distribution</a></li>
+<li><a href="#org46a0868">Validation</a></li>
+<li><a href="#org7f72e53">Properties</a></li>
 </ul>
 </li>
-<li><a href="#orgc41cc4e">More Generalization</a>
+<li><a href="#orgd1beb1c">Non-Physically Based Masking Functions</a>
 <ul>
-<li><a href="#org879b4fd">Arbitrary Shape-Invariant Distributions</a></li>
-<li><a href="#orgf06d0c6">Non Axis-Aligned Stretching</a></li>
-<li><a href="#org3697918">Vertical Shearing and Non-Centered Distributions</a></li>
+<li><a href="#org52b3851">Definition</a>
+<ul>
+<li><a href="#org9466af7">The Implicit Masking Function</a></li>
+<li><a href="#org3648891">The Schilick-Smith Masking Function</a></li>
+<li><a href="#org8c889a0">The Kelemen Masking Function</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#orgabf4097">The Smith Joint Masking-Shadowing Function</a>
+</ul>
+</li>
+<li><a href="#orgac212f2">Stetch Invariance of the Masking Function</a>
+<ul>
+<li><a href="#orgde2e4f4">Masking Probability Invariance</a></li>
+<li><a href="#orgaa57b24">The Distribution of Slopes</a></li>
+<li><a href="#org6b21ec1">Isotropic Shape-Invariant Distributions of Slopes</a>
+<ul>
+<li><a href="#orge9c6684">Shape Invariance</a></li>
+<li><a href="#org2798625">Beckmann Distribution</a></li>
+<li><a href="#org3829323">GGX Distribution</a></li>
+<li><a href="#orge91a4a5">Shape-variant distributions</a></li>
+</ul>
+</li>
+<li><a href="#org3945848">Anisotropic Shape-Invariant Distributions of Slopes</a>
+<ul>
+<li><a href="#org5eb8401">Shape Invariance</a></li>
+<li><a href="#orgdaed138">Derivation of the Masking Function</a></li>
+<li><a href="#org064b8e6">Anisotropic Beckmann Distribution</a></li>
+<li><a href="#org286fa00">Anisotropic GGX Distribution</a></li>
+</ul>
+</li>
+<li><a href="#orgbacef22">More Generalization</a>
+<ul>
+<li><a href="#org8cc36eb">Arbitrary Shape-Invariant Distributions</a></li>
+<li><a href="#org132e132">Non Axis-Aligned Stretching</a></li>
+<li><a href="#org2818657">Vertical Shearing and Non-Centered Distributions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgb20d019">The Smith Joint Masking-Shadowing Function</a>
 <ul>
 <li>
 <ul>
-<li><a href="#orgcc6c1bf">Separable Masking and Shadowing</a></li>
-<li><a href="#orge94fdab">Height-Correlated Masking and Shadowing</a></li>
-<li><a href="#org1c147c3">Direction-Correlated Masking and Shadowing</a></li>
-<li><a href="#org7186f77">Height-Direction-Correlated Masking and Shadowing</a></li>
+<li><a href="#org9826531">Separable Masking and Shadowing</a></li>
+<li><a href="#org3a3e926">Height-Correlated Masking and Shadowing</a></li>
+<li><a href="#orgc21a110">Direction-Correlated Masking and Shadowing</a></li>
+<li><a href="#org1ac580c">Height-Direction-Correlated Masking and Shadowing</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#orga4a3bfb">Discussion and Future Work</a>
+<li><a href="#orgd1f7162">Discussion and Future Work</a>
 <ul>
-<li><a href="#orgfb0091e">Deriving the Smith Masking Function for Other Commonly Used Models</a></li>
-<li><a href="#orgd877906">Correlation of Masking-Shadowing</a></li>
-<li><a href="#org45611c7">Multiple Scattering</a></li>
+<li><a href="#org604e3c3">Deriving the Smith Masking Function for Other Commonly Used Models</a></li>
+<li><a href="#org15c6038">Correlation of Masking-Shadowing</a></li>
+<li><a href="#orge832af8">Multiple Scattering</a></li>
 </ul>
 </li>
 </ul>
@@ -164,29 +175,29 @@
 <p>
 UnderstandingTheGFunction note.<br />
 </p>
-<div class="HTML" id="org63a4521">
+<div class="HTML" id="orgb46f52f">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
 
 </div>
 
-<div id="outline-container-org8731c34" class="outline-2">
-<h2 id="org8731c34">UnderstandingTheGFunction</h2>
-<div class="outline-text-2" id="text-org8731c34">
+<div id="outline-container-org732ca2f" class="outline-2">
+<h2 id="org732ca2f">UnderstandingTheGFunction</h2>
+<div class="outline-text-2" id="text-org732ca2f">
 
-<div id="org0211702" class="figure">
+<div id="orgae98f4c" class="figure">
 <p><img src="./UnderstandingTheGFunction/notation_table.jpg" alt="notation_table.jpg" width="512px" /><br />
 </p>
 </div>
 </div>
-<div id="outline-container-org4f42727" class="outline-3">
-<h3 id="org4f42727">Derivation of the Masking Function</h3>
-<div class="outline-text-3" id="text-org4f42727">
+<div id="outline-container-org5ea6633" class="outline-3">
+<h3 id="org5ea6633">Derivation of the Masking Function</h3>
+<div class="outline-text-3" id="text-org5ea6633">
 </div>
-<div id="outline-container-org0cc394d" class="outline-4">
-<h4 id="org0cc394d">Measuring Radiance on a Surface</h4>
-<div class="outline-text-4" id="text-org0cc394d">
+<div id="outline-container-org53df897" class="outline-4">
+<h4 id="org53df897">Measuring Radiance on a Surface</h4>
+<div class="outline-text-4" id="text-org53df897">
 <p>
 辐射率是从某个单位立体角经过某个单位区域的能量密度。给定微观表面 M 在 wo 方向出射的辐射率为 M 上每小片对应的辐射率乘 wo 方向上投影面积权重再求和。<br />
 </p>
@@ -197,14 +208,14 @@ UnderstandingTheGFunction note.<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org0d4e16d" class="outline-4">
-<h4 id="org0d4e16d">Microfacet Statistics</h4>
-<div class="outline-text-4" id="text-org0d4e16d">
+<div id="outline-container-orgd62317a" class="outline-4">
+<h4 id="orgd62317a">Microfacet Statistics</h4>
+<div class="outline-text-4" id="text-orgd62317a">
 <p>
 我们考虑一个平面区域，通常我们称其为几何表面 G，为了方便起见假设该区域的面积为 1 平方米。微表面模型假设真实表面是由一组偏离几何表面的微表面组合而成的。<br />
 </p>
 
-<div id="org3b8b2cc" class="figure">
+<div id="orgc3ab469" class="figure">
 <p><img src="./UnderstandingTheGFunction/macrocfact_surface.jpg" alt="macrocfact_surface.jpg" width="500px" /><br />
 </p>
 </div>
@@ -221,9 +232,9 @@ M     为微表面<br />
 微表面理论是散射属性的统计模型，统计数字是定义在法线空间上的(即 球空间Ω上的)。<br />
 </p>
 </div>
-<div id="outline-container-org0fc6f52" class="outline-5">
-<h5 id="org0fc6f52">The Distribution of Normals</h5>
-<div class="outline-text-5" id="text-org0fc6f52">
+<div id="outline-container-orgebf7bbb" class="outline-5">
+<h5 id="orgebf7bbb">The Distribution of Normals</h5>
+<div class="outline-text-5" id="text-orgebf7bbb">
 <p>
 为了将微表面上的积分和球上的积分关联起来，定义了法线分布函数 D(m)。D(m)为每平方米几何表面的微观法线分布，其单位为平方米每球面度( \(m^2/sr\) )而不是(1/sr)，其表示微观法线对应的微观表面面积。<br />
 </p>
@@ -233,22 +244,22 @@ M     为微表面<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org002085c" class="outline-5">
-<h5 id="org002085c">Spatial and Statistical Equations</h5>
-<div class="outline-text-5" id="text-org002085c">
+<div id="outline-container-orgf400367" class="outline-5">
+<h5 id="orgf400367">Spatial and Statistical Equations</h5>
+<div class="outline-text-5" id="text-orgf400367">
 <p>
 有了法线分布函数，就可以将表面空间的积分转化为统计空间(球空间)的积分。<br />
 </p>
 
-<div id="orgb4cd61c" class="figure">
+<div id="orgb5b5ac8" class="figure">
 <p><img src="./UnderstandingTheGFunction/spatial-integral2statistical-integral.jpg" alt="spatial-integral2statistical-integral.jpg" width="300px" /><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-org725b535" class="outline-5">
-<h5 id="org725b535">Statistical Functions</h5>
-<div class="outline-text-5" id="text-org725b535">
+<div id="outline-container-orgf145a3a" class="outline-5">
+<h5 id="orgf145a3a">Statistical Functions</h5>
+<div class="outline-text-5" id="text-orgf145a3a">
 <p>
 如果 \(g(p_m)\) 为定义在表面空间上的函数，我们可以按照下面方式将其转化为定义在统计空间的函数 \(g(w_m)\) ：<br />
 </p>
@@ -257,31 +268,31 @@ M     为微表面<br />
 统计空间积分和表面空间积分的关系满足：<br />
 </p>
 
-<div id="orgf00f66e" class="figure">
+<div id="orgeb9f628" class="figure">
 <p><img src="./UnderstandingTheGFunction/spatial-integral2statistical-integral_01.jpg" alt="spatial-integral2statistical-integral_01.jpg" width="300px" /><br />
 </p>
 </div>
 </div>
 </div>
 </div>
-<div id="outline-container-org62b8460" class="outline-4">
-<h4 id="org62b8460">Microfact Projections</h4>
-<div class="outline-text-4" id="text-org62b8460">
+<div id="outline-container-org47c215a" class="outline-4">
+<h4 id="org47c215a">Microfact Projections</h4>
+<div class="outline-text-4" id="text-org47c215a">
 
-<div id="org66fecb7" class="figure">
+<div id="org052ac1c" class="figure">
 <p><img src="./UnderstandingTheGFunction/macrocfact_proj.jpg" alt="macrocfact_proj.jpg" width="500px" /><br />
 </p>
 </div>
 
-<div id="org2ccad0e" class="figure">
+<div id="orge820622" class="figure">
 <p><img src="./UnderstandingTheGFunction/wo_visible_microfacet_area.jpg" alt="wo_visible_microfacet_area.jpg" width="500px" /><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-org047bfaa" class="outline-4">
-<h4 id="org047bfaa">A Constraint on the Masking Function</h4>
-<div class="outline-text-4" id="text-org047bfaa">
+<div id="outline-container-org574c361" class="outline-4">
+<h4 id="org574c361">A Constraint on the Masking Function</h4>
+<div class="outline-text-4" id="text-org574c361">
 <p>
 G1 函数需要遵守下面的约束条件，其表示 wo 方向可见微表面投影面积应该和宏观几何表面在该方向的投影面积相等：<br />
 </p>
@@ -296,22 +307,22 @@ G1 函数需要遵守下面的约束条件，其表示 wo 方向可见微表面�
 </div>
 </div>
 </div>
-<div id="outline-container-org3091bdc" class="outline-3">
-<h3 id="org3091bdc">Microfacet-Based BRDFs</h3>
-<div class="outline-text-3" id="text-org3091bdc">
+<div id="outline-container-org6f11a4c" class="outline-3">
+<h3 id="org6f11a4c">Microfacet-Based BRDFs</h3>
+<div class="outline-text-3" id="text-org6f11a4c">
 </div>
-<div id="outline-container-org773db73" class="outline-4">
-<h4 id="org773db73">Distribution of Visible Normals</h4>
-<div class="outline-text-4" id="text-org773db73">
+<div id="outline-container-org24759ad" class="outline-4">
+<h4 id="org24759ad">Distribution of Visible Normals</h4>
+<div class="outline-text-4" id="text-org24759ad">
 <p width="500px">
 <img src="./UnderstandingTheGFunction/visible_normal_distribution.jpg" alt="visible_normal_distribution.jpg" width="500px" /><br />
-distribution of visible normals 的归一化非常重要，因为我们使用其作为权重函数来得到平均的辐射率，按照 <a href="#org0cc394d">Measuring Radiance on a Surface</a> 的描述，只有归一化才能保证辐射率单位正确，保证能量守恒。<br />
+distribution of visible normals 的归一化非常重要，因为我们使用其作为权重函数来得到平均的辐射率，按照 <a href="#org53df897">Measuring Radiance on a Surface</a> 的描述，只有归一化才能保证辐射率单位正确，保证能量守恒。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org2e76cd7" class="outline-4">
-<h4 id="org2e76cd7">Construction of the BRDF</h4>
-<div class="outline-text-4" id="text-org2e76cd7">
+<div id="outline-container-org1c8d51e" class="outline-4">
+<h4 id="org1c8d51e">Construction of the BRDF</h4>
+<div class="outline-text-4" id="text-org1c8d51e">
 <p width="500px">
 <img src="./UnderstandingTheGFunction/single-bounce-brdf.jpg" alt="single-bounce-brdf.jpg" width="500px" /><br />
 上图中公式 25，只模拟了射线第一次弹射后被反射的情况。但是，BRDF 模型应该描述射线离开表面后的分布。射线第一次被反射后的分布和最终离开表面的分布并不相同，因为一些反射的射线会再次碰到微表面，而后被反射到其他方向，如下图所示。因为，此处推导出的 BRDF 只计算一次弹射，需要将多次弹射的射线从该模型中移除，我们通过引入 shadowing 函数来移除多次弹射。实践上我们使用 masking-shadowing 函数 G2 来代替 masking-function 函数 G1。<br />
@@ -321,27 +332,27 @@ distribution of visible normals 的归一化非常重要，因为我们使用其
 下图为推导出的只计算一次弹射的 BRDF ，多次弹射通过 G2 函数移除掉了：<br />
 </p>
 
-<div id="orgbc3c382" class="figure">
+<div id="org7605b35" class="figure">
 <p><img src="./UnderstandingTheGFunction/brdf_001.jpg" alt="brdf_001.jpg" width="500px" /><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-org387fc47" class="outline-4">
-<h4 id="org387fc47">Construction of the BRDF with specular microfacets</h4>
-<div class="outline-text-4" id="text-org387fc47">
+<div id="outline-container-orgee85f7c" class="outline-4">
+<h4 id="orgee85f7c">Construction of the BRDF with specular microfacets</h4>
+<div class="outline-text-4" id="text-orgee85f7c">
 
-<div id="org05d4513" class="figure">
+<div id="orge3a16b2" class="figure">
 <p><img src="./UnderstandingTheGFunction/brdf_002.jpg" alt="brdf_002.jpg" width="500px" /><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgfdeb4fe" class="outline-4">
-<h4 id="orgfdeb4fe">Construction of the BRDF with diffuse microfacets</h4>
-<div class="outline-text-4" id="text-orgfdeb4fe">
+<div id="outline-container-org3312e02" class="outline-4">
+<h4 id="org3312e02">Construction of the BRDF with diffuse microfacets</h4>
+<div class="outline-text-4" id="text-org3312e02">
 
-<div id="org1599c78" class="figure">
+<div id="orgc5a2a2e" class="figure">
 <p><img src="./UnderstandingTheGFunction/brdf_003.jpg" alt="brdf_003.jpg" width="500px" /><br />
 </p>
 </div>
@@ -351,13 +362,13 @@ distribution of visible normals 的归一化非常重要，因为我们使用其
 </p>
 </div>
 </div>
-<div id="outline-container-org0e3baa7" class="outline-4">
-<h4 id="org0e3baa7">The BRDF Normalization Test</h4>
-<div class="outline-text-4" id="text-org0e3baa7">
+<div id="outline-container-org38c9863" class="outline-4">
+<h4 id="org38c9863">The BRDF Normalization Test</h4>
+<div class="outline-text-4" id="text-org38c9863">
 </div>
-<div id="outline-container-org40ef62e" class="outline-5">
-<h5 id="org40ef62e">The White Furnace Test</h5>
-<div class="outline-text-5" id="text-org40ef62e">
+<div id="outline-container-orga66db35" class="outline-5">
+<h5 id="orga66db35">The White Furnace Test</h5>
+<div class="outline-text-5" id="text-orga66db35">
 <p>
 双向散射分布函数是双向反射分布函数和双向透射分布函数的和。当表面不吸收辐射率时，散射射线的分布遵守下面的约束：<br />
 </p>
@@ -371,28 +382,28 @@ distribution of visible normals 的归一化非常重要，因为我们使用其
 </p>
 </div>
 </div>
-<div id="outline-container-orga1f0954" class="outline-5">
-<h5 id="orga1f0954">The Weak White Furnace Test</h5>
-<div class="outline-text-5" id="text-orga1f0954">
+<div id="outline-container-org7740e34" class="outline-5">
+<h5 id="org7740e34">The Weak White Furnace Test</h5>
+<div class="outline-text-5" id="text-org7740e34">
 <p>
 通过将 masking-shadowing 函数 G2 换为 masking 函数 G1，我们可以得到如下 Weak White Furnace Test 方程，忽略掉多次散射的 brdf 也遵守下面的约束：<br />
 </p>
 
-<div id="org9d831fc" class="figure">
+<div id="orgc5399d9" class="figure">
 <p><img src="./UnderstandingTheGFunction/brdf_constrain_002.jpg" alt="brdf_constrain_002.jpg" width="300px" /><br />
 </p>
 </div>
 </div>
 </div>
 
-<div id="outline-container-orgaae26cc" class="outline-5">
-<h5 id="orgaae26cc">Summary</h5>
-<div class="outline-text-5" id="text-orgaae26cc">
+<div id="outline-container-org90d3857" class="outline-5">
+<h5 id="org90d3857">Summary</h5>
+<div class="outline-text-5" id="text-org90d3857">
 <p>
 下图总结了 BRDF Normaliztion：<br />
 </p>
 
-<div id="orgfd63067" class="figure">
+<div id="orgea3a34b" class="figure">
 <p><img src="./UnderstandingTheGFunction/brdf_normalization.jpg" alt="brdf_normalization.jpg" width="500px" /><br />
 </p>
 </div>
@@ -401,17 +412,17 @@ distribution of visible normals 的归一化非常重要，因为我们使用其
 </div>
 </div>
 
-<div id="outline-container-org1e382e4" class="outline-3">
-<h3 id="org1e382e4">Common Physically Based and Non-Physically Based Masking Functions</h3>
-<div class="outline-text-3" id="text-org1e382e4">
+<div id="outline-container-org9fc3ba7" class="outline-3">
+<h3 id="org9fc3ba7">Common Physically Based and Non-Physically Based Masking Functions</h3>
+<div class="outline-text-3" id="text-org9fc3ba7">
 </div>
-<div id="outline-container-orge4b8c48" class="outline-4">
-<h4 id="orge4b8c48">The Smith Microsurface Profile</h4>
-<div class="outline-text-4" id="text-orge4b8c48">
+<div id="outline-container-org95e9111" class="outline-4">
+<h4 id="org95e9111">The Smith Microsurface Profile</h4>
+<div class="outline-text-4" id="text-org95e9111">
 </div>
-<div id="outline-container-org49ec43a" class="outline-5">
-<h5 id="org49ec43a">Normal/Masking Independence</h5>
-<div class="outline-text-5" id="text-org49ec43a">
+<div id="outline-container-orgfa30fba" class="outline-5">
+<h5 id="orgfa30fba">Normal/Masking Independence</h5>
+<div class="outline-text-5" id="text-orgfa30fba">
 <p>
 Smith Microsurface Profile 假定微表面是非自我相关的，即某点的法线(或高度)和邻近点的法线(或高度)无关，如下图中右边图示。<br />
 </p>
@@ -420,47 +431,47 @@ Smith Microsurface Profile 假定微表面是非自我相关的，即某点的�
 从该模型可以得出 G1 函数独立于法线分布。直观上讲，法线是微表面的局部属性，而微表面上的遮挡则可能发生在微表面的任何地方，其为微表面的距离属性(尽管该距离依然是微观尺度上)。因为，微表面是非自我相关的，局部属性独立于距离属性，因此 masking 函数可以被分解为如下形式：<br />
 </p>
 
-<div id="org6d258ed" class="figure">
+<div id="org73ba5c1" class="figure">
 <p><img src="./UnderstandingTheGFunction/G1Func_separate.jpg" alt="G1Func_separate.jpg" width="300px" /><br />
 </p>
 </div>
 </div>
 </div>
 
-<div id="outline-container-orgd853fb9" class="outline-5">
-<h5 id="orgd853fb9">Derivation of the Masking Function</h5>
-<div class="outline-text-5" id="text-orgd853fb9">
+<div id="outline-container-orga8e2f26" class="outline-5">
+<h5 id="orga8e2f26">Derivation of the Masking Function</h5>
+<div class="outline-text-5" id="text-orga8e2f26">
 
-<div id="orgcb3f0bb" class="figure">
+<div id="org240fc20" class="figure">
 <p><img src="./UnderstandingTheGFunction/G1Func_derive.jpg" alt="G1Func_derive.jpg" width="400px" /><br />
 </p>
 </div>
 </div>
 </div>
 
-<div id="outline-container-orgbbdc364" class="outline-5">
-<h5 id="orgbbdc364">The Smith Masking Function</h5>
-<div class="outline-text-5" id="text-orgbbdc364">
+<div id="outline-container-org993c71c" class="outline-5">
+<h5 id="org993c71c">The Smith Masking Function</h5>
+<div class="outline-text-5" id="text-org993c71c">
 
-<div id="orge30ddbb" class="figure">
+<div id="orgd239657" class="figure">
 <p><img src="./UnderstandingTheGFunction/smith-masking-func.jpg" alt="smith-masking-func.jpg" width="300px" /><br />
 </p>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org6b3e355" class="outline-5">
-<h5 id="org6b3e355">Properties</h5>
-<div class="outline-text-5" id="text-org6b3e355">
+<div id="outline-container-orge2b678e" class="outline-5">
+<h5 id="orge2b678e">Properties</h5>
+<div class="outline-text-5" id="text-orge2b678e">
 <p>
 如果我们将推导出的解析函数和测量数据进行比较，将会发现模型预测的结果有一定的正确性，但是不是完全正确。模型是精确推导出来的，但是其只是近似拟合测量数据。<br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-org8834af3" class="outline-4">
-<h4 id="org8834af3">The V-Cavity Microsurface Profile</h4>
-<div class="outline-text-4" id="text-org8834af3">
+<div id="outline-container-org3d8bc21" class="outline-4">
+<h4 id="org3d8bc21">The V-Cavity Microsurface Profile</h4>
+<div class="outline-text-4" id="text-org3d8bc21">
 <p>
 下图为 The V-Cavity Microsurface Profile<br />
 </p>
@@ -469,20 +480,20 @@ Smith Microsurface Profile 假定微表面是非自我相关的，即某点的�
 下图为基于 The V-Cavity Microsurface Profile 推导 G1 函数的过程：<br />
 </p>
 
-<div id="org81463ed" class="figure">
+<div id="orgf964291" class="figure">
 <p><img src="./UnderstandingTheGFunction/G1Func_derive_v-cavity.jpg" alt="G1Func_derive_v-cavity.jpg" width="400px" /><br />
 </p>
 </div>
 </div>
 
-<div id="outline-container-orgd26c5f6" class="outline-5">
-<h5 id="orgd26c5f6">Validation</h5>
-<div class="outline-text-5" id="text-orgd26c5f6">
+<div id="outline-container-org46a0868" class="outline-5">
+<h5 id="org46a0868">Validation</h5>
+<div class="outline-text-5" id="text-org46a0868">
 <p>
 V-Cavity Microsurface Profile 下推导出的 visible normal distribution 如下：<br />
 </p>
 
-<div id="org45efb0b" class="figure">
+<div id="org0b67289" class="figure">
 <p><img src="./UnderstandingTheGFunction/visible-normal-dist-v-cavity001.jpg" alt="visible-normal-dist-v-cavity001.jpg" width="400px" /><br />
 </p>
 </div>
@@ -491,7 +502,7 @@ V-Cavity Microsurface Profile 下推导出的 visible normal distribution 如下
 下图展示了 v-cavity 模型下，masking 函数的两种取值情况：<br />
 </p>
 
-<div id="orge6ccebb" class="figure">
+<div id="orgbbff9db" class="figure">
 <p><img src="./UnderstandingTheGFunction/masking-func-v-cavity-illustrate.jpg" alt="masking-func-v-cavity-illustrate.jpg" width="500px" /><br />
 </p>
 </div>
@@ -500,7 +511,7 @@ V-Cavity Microsurface Profile 下推导出的 visible normal distribution 如下
 上面的形式由于 min(1, -)项的存在，研究起来比较复杂。但是，V-cavity 模型和 Smith 模型的主要差别在掠射角的情况下。此时上面的 visible normal distribution 函数为下面形式：<br />
 </p>
 
-<div id="org850cae2" class="figure">
+<div id="org4a03596" class="figure">
 <p><img src="./UnderstandingTheGFunction/visible-normal-dist-v-cavity002.jpg" alt="visible-normal-dist-v-cavity002.jpg" width="300px" /><br />
 </p>
 </div>
@@ -509,21 +520,21 @@ V-Cavity Microsurface Profile 下推导出的 visible normal distribution 如下
 下面公式推导了掠射角情况下，V-cavity 模型对应的 visible normal distribution 的归一性：<br />
 </p>
 
-<div id="org7a24706" class="figure">
+<div id="org8fe83f1" class="figure">
 <p><img src="./UnderstandingTheGFunction/visible-normal-dist-v-cavity-normalize001.jpg" alt="visible-normal-dist-v-cavity-normalize001.jpg" width="500px" /><br />
 </p>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org542cf58" class="outline-5">
-<h5 id="org542cf58">Properties</h5>
-<div class="outline-text-5" id="text-org542cf58">
+<div id="outline-container-org7f72e53" class="outline-5">
+<h5 id="org7f72e53">Properties</h5>
+<div class="outline-text-5" id="text-org7f72e53">
 <p>
 V-cavities 模型下的 visible normal distribution 符合归一化约束，但是其并不是物理正确的，掠射角情况下，其模拟的 surface profile 是不真实的。该模型更像一个 normal map 而不是 displacement map,如下图所示：<br />
 </p>
 
-<div id="org7f5a42c" class="figure">
+<div id="orgeee08ac" class="figure">
 <p><img src="./UnderstandingTheGFunction/v-cavity-like-normal-map.jpg" alt="v-cavity-like-normal-map.jpg" width="500px" /><br />
 </p>
 </div>
@@ -536,7 +547,7 @@ V-cavities 模型下的 visible normal distribution 符合归一化约束，但�
 下图展示了使用各项同性的 Beckmann 分布构造的 BRDF。从左到右，Beckmann 分布分别使用了 V-cavity 和 Smith Masking-Shadowing function。从图中可以看出，随着粗糙度增大，Smith 分布向出射方向偏移。对于非常高的粗糙度值，BRDF 甚至主要为后向散射。这样的效果在测量数据中出现了，但是，V-cavity model 没有再现这种效果。<br />
 </p>
 
-<div id="org7006718" class="figure">
+<div id="orgf0ad643" class="figure">
 <p><img src="./UnderstandingTheGFunction/v-cavity-vs-smith.jpg" alt="v-cavity-vs-smith.jpg" width="500px" /><br />
 </p>
 </div>
@@ -544,35 +555,35 @@ V-cavities 模型下的 visible normal distribution 符合归一化约束，但�
 </div>
 </div>
 
-<div id="outline-container-orge34752d" class="outline-4">
-<h4 id="orge34752d">Non-Physically Based Masking Functions</h4>
-<div class="outline-text-4" id="text-orge34752d">
+<div id="outline-container-orgd1beb1c" class="outline-4">
+<h4 id="orgd1beb1c">Non-Physically Based Masking Functions</h4>
+<div class="outline-text-4" id="text-orgd1beb1c">
 </div>
-<div id="outline-container-org1b2a41b" class="outline-5">
-<h5 id="org1b2a41b">Definition</h5>
-<div class="outline-text-5" id="text-org1b2a41b">
+<div id="outline-container-org52b3851" class="outline-5">
+<h5 id="org52b3851">Definition</h5>
+<div class="outline-text-5" id="text-org52b3851">
 <p>
 基于物理的 Masking Function 是从微表面模型推导，或者是在物理微表面上测量得到的。基于物理的 Masking Function 遵守下面这些约束，非基于物理的 G1 函数则不满足这些约束：<br />
 </p>
 
-<div id="org583c372" class="figure">
+<div id="orgdd6e4ba" class="figure">
 <p><img src="./UnderstandingTheGFunction/physical-masking-func-constrain.jpg" alt="physical-masking-func-constrain.jpg" width="500px" /><br />
 </p>
 </div>
 </div>
 
-<div id="outline-container-org10a24ef" class="outline-6">
-<h6 id="org10a24ef">The Implicit Masking Function</h6>
-<div class="outline-text-6" id="text-org10a24ef">
+<div id="outline-container-org9466af7" class="outline-6">
+<h6 id="org9466af7">The Implicit Masking Function</h6>
+<div class="outline-text-6" id="text-org9466af7">
 <p width="300px">
 <img src="./UnderstandingTheGFunction/implicit-G1Func.jpg" alt="implicit-G1Func.jpg" width="300px" /><br />
 Implicit G2 函数假定 G2 中的 |wo.wg||wi.wg| 与 brdf 中分母中的归一化因子约去了。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgd210cbb" class="outline-6">
-<h6 id="orgd210cbb">The Schilick-Smith Masking Function</h6>
-<div class="outline-text-6" id="text-orgd210cbb">
+<div id="outline-container-org3648891" class="outline-6">
+<h6 id="org3648891">The Schilick-Smith Masking Function</h6>
+<div class="outline-text-6" id="text-org3648891">
 <p>
 Schilick 1994 年提出近似 Smith G1 函数的 G1 函数，该 G1 函数被称为 Schilick-Smith G1 函数，Schilick-Smith G1 有三个问题：<br />
 </p>
@@ -587,14 +598,14 @@ Schilick 1994 年提出近似 Smith G1 函数的 G1 函数，该 G1 函数被称
 </p>
 </div>
 </div>
-<div id="outline-container-org4a9ed15" class="outline-6">
-<h6 id="org4a9ed15">The Kelemen Masking Function</h6>
-<div class="outline-text-6" id="text-org4a9ed15">
+<div id="outline-container-org8c889a0" class="outline-6">
+<h6 id="org8c889a0">The Kelemen Masking Function</h6>
+<div class="outline-text-6" id="text-org8c889a0">
 <p>
 Keleman 2001 年提出了一种 V-cavity 模型 G2 函数的廉价替代方案，如下：<br />
 </p>
 
-<div id="orgd9b4e1c" class="figure">
+<div id="orgc24c970" class="figure">
 <p><img src="./UnderstandingTheGFunction/kelemen-G1Func.jpg" alt="kelemen-G1Func.jpg" width="300px" /><br />
 </p>
 </div>
@@ -608,41 +619,41 @@ Keleman G1 函数不能保证遵守前面的公式 14。尽管其可以很好近
 </div>
 </div>
 </div>
-<div id="outline-container-org3e4ac8d" class="outline-3">
-<h3 id="org3e4ac8d">Stetch Invariance of the Masking Function</h3>
-<div class="outline-text-3" id="text-org3e4ac8d">
+<div id="outline-container-orgac212f2" class="outline-3">
+<h3 id="orgac212f2">Stetch Invariance of the Masking Function</h3>
+<div class="outline-text-3" id="text-orgac212f2">
 </div>
-<div id="outline-container-org66f5981" class="outline-4">
-<h4 id="org66f5981">Masking Probability Invariance</h4>
-<div class="outline-text-4" id="text-org66f5981">
+<div id="outline-container-orgde2e4f4" class="outline-4">
+<h4 id="orgde2e4f4">Masking Probability Invariance</h4>
+<div class="outline-text-4" id="text-orgde2e4f4">
 <p width="500px">
 <img src="./UnderstandingTheGFunction/masking_probability_invariance_illustrate.jpg" alt="masking_probability_invariance_illustrate.jpg" width="500px" /><br />
 上图展示了，对于给定的出射方向，拉伸一维结构对微表面 masking 产生的影响。拉伸结构类似于拉伸图片，该操作不会影响结构的拓扑：拉伸后，被遮挡射线依然被遮挡，没被遮挡的射线依然没被遮挡。遮挡概率的重要属性就是结构拉伸的不变性。包括微表面斜率和出射方向斜率，都被按照拉伸因子的倒数进行缩放。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgb41e0f5" class="outline-4">
-<h4 id="orgb41e0f5">The Distribution of Slopes</h4>
-<div class="outline-text-4" id="text-orgb41e0f5">
+<div id="outline-container-orgaa57b24" class="outline-4">
+<h4 id="orgaa57b24">The Distribution of Slopes</h4>
+<div class="outline-text-4" id="text-orgaa57b24">
 
-<div id="orgbd9d7c2" class="figure">
+<div id="orgdeab3be" class="figure">
 <p><img src="./UnderstandingTheGFunction/slope_distribution.jpg" alt="slope_distribution.jpg" width="400px" /><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-org9b2bade" class="outline-4">
-<h4 id="org9b2bade">Isotropic Shape-Invariant Distributions of Slopes</h4>
-<div class="outline-text-4" id="text-org9b2bade">
+<div id="outline-container-org6b21ec1" class="outline-4">
+<h4 id="org6b21ec1">Isotropic Shape-Invariant Distributions of Slopes</h4>
+<div class="outline-text-4" id="text-org6b21ec1">
 </div>
-<div id="outline-container-orgb55e0b8" class="outline-5">
-<h5 id="orgb55e0b8">Shape Invariance</h5>
-<div class="outline-text-5" id="text-orgb55e0b8">
+<div id="outline-container-orge9c6684" class="outline-5">
+<h5 id="orge9c6684">Shape Invariance</h5>
+<div class="outline-text-5" id="text-orge9c6684">
 <p>
 当斜率分布只依赖于 \(tan(θ_m)/α\) 时，斜率分布 \(P^{22}\) 为：<br />
 </p>
 
-<div id="org45e102b" class="figure">
+<div id="org5d38e1c" class="figure">
 <p><img src="./UnderstandingTheGFunction/isotropic-shape-invariant-dist-of-slopes.jpg" alt="isotropic-shape-invariant-dist-of-slopes.jpg" width="400px" /><br />
 </p>
 </div>
@@ -660,11 +671,11 @@ Keleman G1 函数不能保证遵守前面的公式 14。尽管其可以很好近
 </p>
 </div>
 </div>
-<div id="outline-container-org8254999" class="outline-5">
-<h5 id="org8254999">Beckmann Distribution</h5>
-<div class="outline-text-5" id="text-org8254999">
+<div id="outline-container-org2798625" class="outline-5">
+<h5 id="org2798625">Beckmann Distribution</h5>
+<div class="outline-text-5" id="text-org2798625">
 
-<div id="org66397c7" class="figure">
+<div id="org867262b" class="figure">
 <p><img src="./UnderstandingTheGFunction/beckmann-dist01.jpg" alt="beckmann-dist01.jpg" width="500px" /><br />
 </p>
 </div>
@@ -673,51 +684,51 @@ Keleman G1 函数不能保证遵守前面的公式 14。尽管其可以很好近
 Λ函数的意义可以参考下图：<br />
 </p>
 
-<div id="orgfa638bb" class="figure">
+<div id="org2b25817" class="figure">
 <p><img src="./PhysicallyBasedRendering/2020_06_24_g_distribution_func.jpg" alt="2020_06_24_g_distribution_func.jpg" width="600px" /><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-org2810411" class="outline-5">
-<h5 id="org2810411">GGX Distribution</h5>
-<div class="outline-text-5" id="text-org2810411">
+<div id="outline-container-org3829323" class="outline-5">
+<h5 id="org3829323">GGX Distribution</h5>
+<div class="outline-text-5" id="text-org3829323">
 
-<div id="org49ecce8" class="figure">
+<div id="orge00f0f7" class="figure">
 <p><img src="./UnderstandingTheGFunction/ggx-dist.jpg" alt="ggx-dist.jpg" width="300px" /><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-org6f9bdd3" class="outline-5">
-<h5 id="org6f9bdd3">Shape-variant distributions</h5>
-<div class="outline-text-5" id="text-org6f9bdd3">
+<div id="outline-container-orge91a4a5" class="outline-5">
+<h5 id="orge91a4a5">Shape-variant distributions</h5>
+<div class="outline-text-5" id="text-orge91a4a5">
 <p>
 需要注意的是并不是所有分布都是形状不变的，Phong 分布就是形状变化的分布。<br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-org468cf7a" class="outline-4">
-<h4 id="org468cf7a">Anisotropic Shape-Invariant Distributions of Slopes</h4>
-<div class="outline-text-4" id="text-org468cf7a">
+<div id="outline-container-org3945848" class="outline-4">
+<h4 id="org3945848">Anisotropic Shape-Invariant Distributions of Slopes</h4>
+<div class="outline-text-4" id="text-org3945848">
 </div>
-<div id="outline-container-org1764973" class="outline-5">
-<h5 id="org1764973">Shape Invariance</h5>
-<div class="outline-text-5" id="text-org1764973">
+<div id="outline-container-org5eb8401" class="outline-5">
+<h5 id="org5eb8401">Shape Invariance</h5>
+<div class="outline-text-5" id="text-org5eb8401">
 <p>
 如果使用依赖于方位角的因子缩放形状，则形状不变的分布可以为各项异性的。斜率的权重因子被分配到每个方向上，此时对应的斜率分布为：<br />
 </p>
 
-<div id="org8cbb88f" class="figure">
+<div id="orgaba64cd" class="figure">
 <p><img src="./UnderstandingTheGFunction/anisotropic-slope_distribution.jpg" alt="anisotropic-slope_distribution.jpg" width="500px" /><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-org7857497" class="outline-5">
-<h5 id="org7857497">Derivation of the Masking Function</h5>
-<div class="outline-text-5" id="text-org7857497">
+<div id="outline-container-orgdaed138" class="outline-5">
+<h5 id="orgdaed138">Derivation of the Masking Function</h5>
+<div class="outline-text-5" id="text-orgdaed138">
 <p width="500px">
 <img src="./UnderstandingTheGFunction/isotropic-slope-dist2anisotropic-slope-dist-illustrate.jpg" alt="isotropic-slope-dist2anisotropic-slope-dist-illustrate.jpg" width="500px" /><br />
 上图展示了，通过拉伸表面将各项同性的形状不变分布转化为各项异性的分布。相反地，任何一个各项异性分布的结构可以转变为一个各项同性分布的结构。我们利用该属性来推导出 masking 函数。<br />
@@ -728,34 +739,34 @@ Keleman G1 函数不能保证遵守前面的公式 14。尽管其可以很好近
 </p>
 </div>
 </div>
-<div id="outline-container-org1c3acc1" class="outline-5">
-<h5 id="org1c3acc1">Anisotropic Beckmann Distribution</h5>
-<div class="outline-text-5" id="text-org1c3acc1">
+<div id="outline-container-org064b8e6" class="outline-5">
+<h5 id="org064b8e6">Anisotropic Beckmann Distribution</h5>
+<div class="outline-text-5" id="text-org064b8e6">
 
-<div id="orgda31ef7" class="figure">
+<div id="org941aaf7" class="figure">
 <p><img src="./UnderstandingTheGFunction/anisotropic-beckmann-dist01.jpg" alt="anisotropic-beckmann-dist01.jpg" width="500px" /><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-org0a9b7d4" class="outline-5">
-<h5 id="org0a9b7d4">Anisotropic GGX Distribution</h5>
-<div class="outline-text-5" id="text-org0a9b7d4">
+<div id="outline-container-org286fa00" class="outline-5">
+<h5 id="org286fa00">Anisotropic GGX Distribution</h5>
+<div class="outline-text-5" id="text-org286fa00">
 
-<div id="org24931d7" class="figure">
+<div id="org1f8a2e1" class="figure">
 <p><img src="./UnderstandingTheGFunction/anisotropic-ggx-dist.jpg" alt="anisotropic-ggx-dist.jpg" width="500px" /><br />
 </p>
 </div>
 </div>
 </div>
 </div>
-<div id="outline-container-orgc41cc4e" class="outline-4">
-<h4 id="orgc41cc4e">More Generalization</h4>
-<div class="outline-text-4" id="text-orgc41cc4e">
+<div id="outline-container-orgbacef22" class="outline-4">
+<h4 id="orgbacef22">More Generalization</h4>
+<div class="outline-text-4" id="text-orgbacef22">
 </div>
-<div id="outline-container-org879b4fd" class="outline-5">
-<h5 id="org879b4fd">Arbitrary Shape-Invariant Distributions</h5>
-<div class="outline-text-5" id="text-org879b4fd">
+<div id="outline-container-org8cc36eb" class="outline-5">
+<h5 id="org8cc36eb">Arbitrary Shape-Invariant Distributions</h5>
+<div class="outline-text-5" id="text-org8cc36eb">
 <p>
 形状不变的分布的重要属性是，对于任意粗糙度或任意各向异性的结构，求解 masking 函数的所需的所有信息在 1 维的 Λ 函数中都包含了。因此，Λ确定后，可以使用Λ来构造任意粗糙度和任意各项异性的参数化分布。选择任意一个一维的函数 f，可以按照下面方式构造对于的各项异性法线分布：<br />
 </p>
@@ -765,19 +776,19 @@ Keleman G1 函数不能保证遵守前面的公式 14。尽管其可以很好近
 </p>
 </div>
 </div>
-<div id="outline-container-orgf06d0c6" class="outline-5">
-<h5 id="orgf06d0c6">Non Axis-Aligned Stretching</h5>
-<div class="outline-text-5" id="text-orgf06d0c6">
+<div id="outline-container-org132e132" class="outline-5">
+<h5 id="org132e132">Non Axis-Aligned Stretching</h5>
+<div class="outline-text-5" id="text-org132e132">
 
-<div id="org4711f52" class="figure">
+<div id="org3dc1075" class="figure">
 <p><img src="./UnderstandingTheGFunction/non-axis-aligned-shape-invariance.jpg" alt="non-axis-aligned-shape-invariance.jpg" width="500px" /><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-org3697918" class="outline-5">
-<h5 id="org3697918">Vertical Shearing and Non-Centered Distributions</h5>
-<div class="outline-text-5" id="text-org3697918">
+<div id="outline-container-org2818657" class="outline-5">
+<h5 id="org2818657">Vertical Shearing and Non-Centered Distributions</h5>
+<div class="outline-text-5" id="text-org2818657">
 <p width="500px">
 <img src="./UnderstandingTheGFunction/v-shearing-illustrate.jpg" alt="v-shearing-illustrate.jpg" width="500px" /><br />
 上图展示了在竖直方向上对结构进行切变，masking 函数依然保持不变。在竖直方向上对结构侵袭切变等价于将结构的所有斜率偏移一个固定的常量。统一其包含了对所有微表面斜率和斜率关联的出射方向进行了偏移。<br />
@@ -790,7 +801,7 @@ Keleman G1 函数不能保证遵守前面的公式 14。尽管其可以很好近
 </p>
 
 
-<div id="org9d0e134" class="figure">
+<div id="org6bb1623" class="figure">
 <p><img src="./UnderstandingTheGFunction/v-shearing-derivate.jpg" alt="v-shearing-derivate.jpg" width="500px" /><br />
 </p>
 </div>
@@ -798,79 +809,79 @@ Keleman G1 函数不能保证遵守前面的公式 14。尽管其可以很好近
 </div>
 </div>
 </div>
-<div id="outline-container-orgabf4097" class="outline-3">
-<h3 id="orgabf4097">The Smith Joint Masking-Shadowing Function</h3>
-<div class="outline-text-3" id="text-orgabf4097">
+<div id="outline-container-orgb20d019" class="outline-3">
+<h3 id="orgb20d019">The Smith Joint Masking-Shadowing Function</h3>
+<div class="outline-text-3" id="text-orgb20d019">
 </div>
-<div id="outline-container-orgcc6c1bf" class="outline-5">
-<h5 id="orgcc6c1bf">Separable Masking and Shadowing</h5>
-<div class="outline-text-5" id="text-orgcc6c1bf">
+<div id="outline-container-org9826531" class="outline-5">
+<h5 id="org9826531">Separable Masking and Shadowing</h5>
+<div class="outline-text-5" id="text-org9826531">
 <p width="300px">
 <img src="./UnderstandingTheGFunction/separable-G2.jpg" alt="separable-G2.jpg" width="300px" /><br />
 该模型假设 masking 和 shadowing 互相独立。该模型过度估算了 shadowing，因为 masking 和 shadowing 总存在一定的相关性。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orge94fdab" class="outline-5">
-<h5 id="orge94fdab">Height-Correlated Masking and Shadowing</h5>
-<div class="outline-text-5" id="text-orge94fdab">
+<div id="outline-container-org3a3e926" class="outline-5">
+<h5 id="org3a3e926">Height-Correlated Masking and Shadowing</h5>
+<div class="outline-text-5" id="text-org3a3e926">
 <p>
 直观来讲，微表面越高，在出射方向上其可见可能性越大，在入射方向上可见可能性也同样增大。因此，masking 和 shadowing 通过微表面的海拔相关联。考虑这种关联性可以得到如下的 G2 函数：<br />
 </p>
 
-<div id="org852d2f2" class="figure">
+<div id="org7f369d3" class="figure">
 <p><img src="./UnderstandingTheGFunction/height-corelated-G2.jpg" alt="height-corelated-G2.jpg" width="300px" /><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-org1c147c3" class="outline-5">
-<h5 id="org1c147c3">Direction-Correlated Masking and Shadowing</h5>
-<div class="outline-text-5" id="text-org1c147c3">
+<div id="outline-container-orgc21a110" class="outline-5">
+<h5 id="orgc21a110">Direction-Correlated Masking and Shadowing</h5>
+<div class="outline-text-5" id="text-orgc21a110">
 <p>
 当入射方向和出射方向靠近时，Masking 和 Shadowing 会有很强的相关性。特定情况下，当入射方向和出射方向相同时，从出射方向可见的微表面，从入射方向也可见。此时，应该将 shadowing 函数从 BRDF 中移除，因为 shadowed 的微表面从入射方向和出射方向都不可见。这被称为热点效应：视线和光方向平行时，阴影消失。考虑这种关联性可以得到如下的 G2 函数：<br />
 </p>
 
-<div id="org85170c6" class="figure">
+<div id="org29aa6fd" class="figure">
 <p><img src="./UnderstandingTheGFunction/dir-corelated-G2.jpg" alt="dir-corelated-G2.jpg" width="500px" /><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-org7186f77" class="outline-5">
-<h5 id="org7186f77">Height-Direction-Correlated Masking and Shadowing</h5>
-<div class="outline-text-5" id="text-org7186f77">
+<div id="outline-container-org1ac580c" class="outline-5">
+<h5 id="org1ac580c">Height-Direction-Correlated Masking and Shadowing</h5>
+<div class="outline-text-5" id="text-org1ac580c">
 
-<div id="org5138ff4" class="figure">
+<div id="org6a6a1e5" class="figure">
 <p><img src="./UnderstandingTheGFunction/dir-height-corelated-G2.jpg" alt="dir-height-corelated-G2.jpg" width="500px" /><br />
 </p>
 </div>
 </div>
 </div>
 </div>
-<div id="outline-container-orga4a3bfb" class="outline-3">
-<h3 id="orga4a3bfb">Discussion and Future Work</h3>
-<div class="outline-text-3" id="text-orga4a3bfb">
+<div id="outline-container-orgd1f7162" class="outline-3">
+<h3 id="orgd1f7162">Discussion and Future Work</h3>
+<div class="outline-text-3" id="text-orgd1f7162">
 </div>
-<div id="outline-container-orgfb0091e" class="outline-4">
-<h4 id="orgfb0091e">Deriving the Smith Masking Function for Other Commonly Used Models</h4>
-<div class="outline-text-4" id="text-orgfb0091e">
+<div id="outline-container-org604e3c3" class="outline-4">
+<h4 id="org604e3c3">Deriving the Smith Masking Function for Other Commonly Used Models</h4>
+<div class="outline-text-4" id="text-org604e3c3">
 <p>
 前面以及描述了为 Beckmann 和 GGX 分布推导出来的解析形式的 masking 函数。但是，对于其他常用的法线分布，masking 函数并不总是可以按照解析方式积分的。分布的形状不变性，使得其对应的 masking 函数只依赖于斜率和粗糙度的比值。因此，masking 函数中的Λ函数可以被编码为一个一维函数。形状变化的分布，其 masking 函数很难确定。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgd877906" class="outline-4">
-<h4 id="orgd877906">Correlation of Masking-Shadowing</h4>
-<div class="outline-text-4" id="text-orgd877906">
+<div id="outline-container-org15c6038" class="outline-4">
+<h4 id="org15c6038">Correlation of Masking-Shadowing</h4>
+<div class="outline-text-4" id="text-org15c6038">
 <p>
 任意分布对应的关联的 Masking-Shadowing 函数的推导，目前依然是一个开放性问题。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org45611c7" class="outline-4">
-<h4 id="org45611c7">Multiple Scattering</h4>
-<div class="outline-text-4" id="text-org45611c7">
+<div id="outline-container-orge832af8" class="outline-4">
+<h4 id="orge832af8">Multiple Scattering</h4>
+<div class="outline-text-4" id="text-orge832af8">
 <p>
 模拟多次散射是改进当前通用 BRDF 模型表现效果的一种可行方式。Phong Beckmann GGX 和实际测量的材质相比较，都有过短的 tails。人们尝试保持标准的 BRDF 形式不变，微调法线分布。但是，通常这样做会让模型失去物理意义。<br />
 不要再去开发更复杂的参数模型了，我们应该问问自己，是否测量数据中的特定效果从模型中消失了，然后，扩展模型来代替当前模型。模拟多次散射看上去是一个不错的候选方案，事实上其已经从物理学中被开发出来了。但是，这些模型太复杂了，物理学的目的是精确性而不是易于实现性。<br />

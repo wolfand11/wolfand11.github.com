@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-02-02 Thu 11:08 -->
+<!-- 2023-05-24 Wed 11:52 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>CMake</title>
@@ -38,6 +38,20 @@
 <li><a href="#org693bda0">usage</a>
 <ul>
 <li><a href="#org8b0b09a">指定 c++版本</a></li>
+<li><a href="#org868e9ec">指定编译生成的 app 目录</a></li>
+<li><a href="#orgb5d438e">利用 add_subdirectory 组织多个工程</a></li>
+<li><a href="#org40bd556">打印 CMake 变量</a></li>
+</ul>
+</li>
+<li><a href="#orgaab41e3">Error</a>
+<ul>
+<li><a href="#org814f6d2">windows</a>
+<ul>
+<li><a href="#org20a25d9">could not find any instance of Visual Studio</a></li>
+<li><a href="#orga5e44ef">The CXX compiler identification is unknown</a></li>
+<li><a href="#org2fa8ccf">project_source_dir 为空</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -49,7 +63,7 @@
 <p>
 CMake note.<br />
 </p>
-<div class="HTML" id="orgf565c3b">
+<div class="HTML" id="org4125caf">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -112,11 +126,12 @@ CMake note.<br />
   <span style="color: #2aa1ae; background-color: #292e34;"># -B &#25351;&#23450;&#26500;&#24314;&#30446;&#24405;&#20026;    ./CPPConcurrencyInAction/BUILD</span>
   <span style="color: #2aa1ae; background-color: #292e34;"># &#37197;&#32622;&#24182;&#29983;&#25104;makefiles&#65292;&#35774;&#32622;&#25152;&#26377;options&#20026;&#40664;&#35748;&#35774;&#32622;&#65292;&#24182;&#23558;&#20854;&#32531;&#23384;&#21040;CMakeCache.txt&#25991;&#20214;&#20013;</span>
   cmake -S . -B BUILD
+
   <span style="color: #2aa1ae; background-color: #292e34;"># &#35843;&#29992;&#26500;&#24314;&#31995;&#32479;&#25191;&#34892;&#26500;&#24314;&#65292;&#26080;&#35770;&#20320;&#30340;&#26500;&#24314;&#31995;&#32479;&#26159;make&#36824;&#26159;ninja&#36824;&#26159;&#22522;&#20110;IDE&#30340;&#31995;&#32479;&#65292;&#37117;&#21487;&#20197;&#20351;&#29992;&#32479;&#19968;&#30340;&#21629;&#20196;</span>
   <span style="color: #2aa1ae; background-color: #292e34;"># -j 2 &#22312;&#20004;&#20010;CPU &#26680;&#24515;&#19978;&#25191;&#34892;&#26500;&#24314;</span>
   <span style="color: #2aa1ae; background-color: #292e34;"># -v verbosely show commands used to build (&#35814;&#32454;&#21015;&#20986;&#26500;&#24314;&#20351;&#29992;&#30340;&#21629;&#20196;)</span>
   cmake --build BUILD
-  <span style="color: #2aa1ae; background-color: #292e34;"># </span>
+  <span style="color: #2aa1ae; background-color: #292e34;"># &#25351;&#23450;&#21482;&#32534;&#35793; CPPConcurrencyInAction target</span>
   cmake --build BUILD --target CPPConcurrencyInAction
 </pre>
 </div>
@@ -133,6 +148,144 @@ CMake note.<br />
 <div class="org-src-container">
 <pre class="src src-cmake"><span style="color: #bc6ec5; font-weight: bold;">set</span>(CMAKE_CXX_STANDARD 14)
 </pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org868e9ec" class="outline-4">
+<h4 id="org868e9ec">指定编译生成的 app 目录</h4>
+<div class="outline-text-4" id="text-org868e9ec">
+<div class="org-src-container">
+<pre class="src src-cmake"><span style="color: #2aa1ae; background-color: #292e34;"># &#39033;&#30446;&#30446;&#24405;&#32467;&#26500;&#22914;&#19979;</span>
+<span style="color: #2aa1ae; background-color: #292e34;"># Test</span>
+<span style="color: #2aa1ae; background-color: #292e34;">#   CMakeLists.txt</span>
+<span style="color: #2aa1ae; background-color: #292e34;">#   main.cpp</span>
+<span style="color: #2aa1ae; background-color: #292e34;"># &#25191;&#34892;&#32534;&#35793;&#21518;&#65292;test.exe &#30446;&#24405;&#20026; Test/bin/test.exe</span>
+
+<span style="color: #bc6ec5; font-weight: bold;">cmake_minimum_required</span> (VERSION 3.15)
+<span style="color: #bc6ec5; font-weight: bold;">project</span>(Test)
+
+<span style="color: #bc6ec5; font-weight: bold;">set</span>(CMAKE_CXX_STANDARD 17)
+<span style="color: #bc6ec5; font-weight: bold;">set</span>(CMAKE_RUNTIME_OUTPUT_DIRECTORY <span style="color: #2d9574;">"${</span><span style="color: #7590db;">PROJECT_SOURCE_DIR</span><span style="color: #2d9574;">}/bin"</span>)
+
+<span style="color: #bc6ec5; font-weight: bold;">add_executable</span>(test main.cpp)
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgb5d438e" class="outline-4">
+<h4 id="orgb5d438e">利用 add_subdirectory 组织多个工程</h4>
+<div class="outline-text-4" id="text-orgb5d438e">
+<p>
+目录结构如下：<br />
+</p>
+<pre class="example" id="orgd444921">
+LLVM-Kaleidoscope
+   CMakeLists.txt
+   chapter-0
+      CMakeLists.txt
+      main.cpp
+   chapter-1
+      CMakeLists.txt
+      main.cpp
+</pre>
+
+<div class="org-src-container">
+<pre class="src src-cmake"><span style="color: #2aa1ae; background-color: #292e34;"># LLVM-Kaleidoscope/CMakeLists.txt</span>
+<span style="color: #bc6ec5; font-weight: bold;">cmake_minimum_required</span> (VERSION 3.15)
+<span style="color: #bc6ec5; font-weight: bold;">project</span>(Kaleidoscope)
+
+<span style="color: #bc6ec5; font-weight: bold;">set</span>(CMAKE_CXX_STANDARD 17)
+<span style="color: #bc6ec5; font-weight: bold;">set</span>(CMAKE_RUNTIME_OUTPUT_DIRECTORY <span style="color: #2d9574;">"${</span><span style="color: #7590db;">PROJECT_SOURCE_DIR</span><span style="color: #2d9574;">}/bin"</span>)
+
+<span style="color: #bc6ec5; font-weight: bold;">add_subdirectory</span>(chapter-0)
+<span style="color: #bc6ec5; font-weight: bold;">add_subdirectory</span>(chapter-1)
+
+<span style="color: #2aa1ae; background-color: #292e34;"># LLVM-Kaleidoscope/chapter-0/CMakeLists.txt</span>
+<span style="color: #bc6ec5; font-weight: bold;">add_executable</span>(chapter_0 main.cpp)
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-shell"><span style="color: #4f97d7;">cd</span> LLVM-Kaleidoscope
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#25191;&#34892;&#19979;&#38754;&#21629;&#20196;&#65292;&#22312;LLVM-Kaleidoscope/build&#30446;&#24405;&#19979;&#29983;&#25104;&#24037;&#31243;</span>
+cmake -S . -B build
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#25191;&#34892;&#19979;&#38754;&#21629;&#20196;&#65292;&#32534;&#35793;&#25152;&#26377;&#24037;&#31243;&#29983;&#25104; chapter-0.exe chapter-1.exe</span>
+cmake --build build
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org40bd556" class="outline-4">
+<h4 id="org40bd556">打印 CMake 变量</h4>
+<div class="outline-text-4" id="text-org40bd556">
+<div class="org-src-container">
+<pre class="src src-cmake"><span style="color: #bc6ec5; font-weight: bold;">message</span>(PROJECT_SOURCE_DIR=<span style="color: #2d9574;">"${</span><span style="color: #7590db;">PROJECT_SOURCE_DIR</span><span style="color: #2d9574;">}"</span>)
+</pre>
+</div>
+
+<ul class="org-ul">
+<li><a href="https://stackoverflow.com/questions/68139352/how-to-print-variables-in-cmake">https://stackoverflow.com/questions/68139352/how-to-print-variables-in-cmake</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgaab41e3" class="outline-3">
+<h3 id="orgaab41e3">Error</h3>
+<div class="outline-text-3" id="text-orgaab41e3">
+</div>
+<div id="outline-container-org814f6d2" class="outline-4">
+<h4 id="org814f6d2">windows</h4>
+<div class="outline-text-4" id="text-org814f6d2">
+</div>
+<div id="outline-container-org20a25d9" class="outline-5">
+<h5 id="org20a25d9">could not find any instance of Visual Studio</h5>
+<div class="outline-text-5" id="text-org20a25d9">
+<p>
+没有安装 VS CMake 组件 和 Visual Studio 扩展开发<br />
+</p>
+
+<ul class="org-ul">
+<li><a href="https://blog.csdn.net/diaodaa/article/details/106122943">https://blog.csdn.net/diaodaa/article/details/106122943</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orga5e44ef" class="outline-5">
+<h5 id="orga5e44ef">The CXX compiler identification is unknown</h5>
+<div class="outline-text-5" id="text-orga5e44ef">
+<p>
+安装 VS C++ 开发环境<br />
+<img src="./CMake/windows-cmake-env.jpg" alt="windows-cmake-env.jpg" /><br />
+</p>
+
+<ul class="org-ul">
+<li><a href="https://stackoverflow.com/questions/20632860/the-cxx-compiler-identification-is-unknown">https://stackoverflow.com/questions/20632860/the-cxx-compiler-identification-is-unknown</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org2fa8ccf" class="outline-5">
+<h5 id="org2fa8ccf">project_source_dir 为空</h5>
+<div class="outline-text-5" id="text-org2fa8ccf">
+<p>
+调用 project() 之后 PROJECT_SOURCE_DIR 变量才生效<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cmake"><span style="color: #2aa1ae; background-color: #292e34;"># ERROR</span>
+<span style="color: #bc6ec5; font-weight: bold;">cmake_minimum_required</span> (VERSION 3.15)
+<span style="color: #bc6ec5; font-weight: bold;">set</span>(CMAKE_CXX_STANDARD 17)
+<span style="color: #bc6ec5; font-weight: bold;">set</span>(CMAKE_RUNTIME_OUTPUT_DIRECTORY <span style="color: #2d9574;">"${</span><span style="color: #7590db;">PROJECT_SOURCE_DIR</span><span style="color: #2d9574;">}/bin"</span>)
+<span style="color: #bc6ec5; font-weight: bold;">message</span>(PROJECT_SOURCE_DIR=<span style="color: #2d9574;">"${</span><span style="color: #7590db;">PROJECT_SOURCE_DIR</span><span style="color: #2d9574;">}"</span>)
+
+<span style="color: #bc6ec5; font-weight: bold;">project</span>(Kaleidoscope)
+
+<span style="color: #2aa1ae; background-color: #292e34;"># RIGHT</span>
+<span style="color: #bc6ec5; font-weight: bold;">cmake_minimum_required</span> (VERSION 3.15)
+<span style="color: #bc6ec5; font-weight: bold;">project</span>(Kaleidoscope)
+
+<span style="color: #bc6ec5; font-weight: bold;">set</span>(CMAKE_CXX_STANDARD 17)
+<span style="color: #bc6ec5; font-weight: bold;">set</span>(CMAKE_RUNTIME_OUTPUT_DIRECTORY <span style="color: #2d9574;">"${</span><span style="color: #7590db;">PROJECT_SOURCE_DIR</span><span style="color: #2d9574;">}/bin"</span>)
+<span style="color: #bc6ec5; font-weight: bold;">message</span>(PROJECT_SOURCE_DIR=<span style="color: #2d9574;">"${</span><span style="color: #7590db;">PROJECT_SOURCE_DIR</span><span style="color: #2d9574;">}"</span>)
+</pre>
+</div>
 </div>
 </div>
 </div>

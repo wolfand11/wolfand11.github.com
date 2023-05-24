@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2023-05-24 Wed 11:52 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ComputeShader</title>
+<meta name="generator" content="Org Mode" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+         <meta name="viewport" content="width=device-width, initial-scale=1" />
+         <link rel="stylesheet" title="Standard" href="https://wolfand11.github.io/res/worg_theme/css/worg.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.github.io/res/worg_theme/css/worg-zenburn.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.github.io/res/worg_theme/css/worg-classic.css" type="text/css" />
+         <link rel="icon" href="https://wolfand11.github.io/res/favicon.ico" type="image/ico" />
+         <script type="text/javascript" src="https://wolfand11.github.io/res/blog-tools.js"></script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href=""> UP </a>
+ |
+ <a accesskey="H" href="https://wolfand11.github.io"> HOME </a>
+</div><div id="content" class="content">
+<h1 class="title">ComputeShader</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#org98e8c2a">ComputeShader</a>
+<ul>
+<li><a href="#org3ba7eda">GPUDrivenTerrain</a>
+<ul>
+<li><a href="#org9d6620f">DataStructure</a></li>
+<li><a href="#orgb9407cf">Implement 0</a>
+<ul>
+<li><a href="#org5e10b40">使用 plane 平铺场景</a></li>
+</ul>
+</li>
+<li><a href="#orgdb98061">Implement 1</a>
+<ul>
+<li><a href="#org87bbdc4">构建四叉树</a></li>
+<li><a href="#org3f60856">构建 patch</a></li>
+<li><a href="#orgce55e6d">渲染 patch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org2bb038b">参考资料</a></li>
+</ul>
+</li>
+<li><a href="#org1b42418">参考资料</a></li>
+</ul>
+</div>
+</div>
+<p>
+ComputeShader note.<br />
+</p>
+<div class="HTML" id="orgc4412fc">
+<p>
+&lt;!&#x2013; more &#x2013;&gt;<br />
+</p>
+
+</div>
+
+<div id="outline-container-org98e8c2a" class="outline-2">
+<h2 id="org98e8c2a">ComputeShader</h2>
+<div class="outline-text-2" id="text-org98e8c2a">
+</div>
+<div id="outline-container-org3ba7eda" class="outline-3">
+<h3 id="org3ba7eda">GPUDrivenTerrain</h3>
+<div class="outline-text-3" id="text-org3ba7eda">
+</div>
+<div id="outline-container-org9d6620f" class="outline-4">
+<h4 id="org9d6620f">DataStructure</h4>
+<div class="outline-text-4" id="text-org9d6620f">
+<p>
+world 10240m * 10240m<br />
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">&#xa0;</th>
+<th scope="col" class="org-left">patchSize</th>
+<th scope="col" class="org-left">gridPerPatch</th>
+<th scope="col" class="org-left">gridRes</th>
+<th scope="col" class="org-left">grid</th>
+<th scope="col" class="org-left">gridPerNode</th>
+<th scope="col" class="org-left">nodeSize</th>
+<th scope="col" class="org-left">node</th>
+<th scope="col" class="org-left">patchPerNode</th>
+<th scope="col" class="org-left">sectorPerNode</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">Lod0</td>
+<td class="org-left">8m*1=8m</td>
+<td class="org-left">16*16</td>
+<td class="org-left">0.5m</td>
+<td class="org-left">10240m/0.5=20480</td>
+<td class="org-left">128*128</td>
+<td class="org-left">128*0.5=64</td>
+<td class="org-left">10240/64=160</td>
+<td class="org-left">64/8=8</td>
+<td class="org-left">64/64=1</td>
+</tr>
+
+<tr>
+<td class="org-left">Lod1</td>
+<td class="org-left">8m*2=16m</td>
+<td class="org-left">16*16</td>
+<td class="org-left">1m</td>
+<td class="org-left">10240m/1=10240</td>
+<td class="org-left">128*128</td>
+<td class="org-left">128*1=128</td>
+<td class="org-left">10240/128=80</td>
+<td class="org-left">128/16=8</td>
+<td class="org-left">128/64=2</td>
+</tr>
+
+<tr>
+<td class="org-left">Lod2</td>
+<td class="org-left">8m*4=32m</td>
+<td class="org-left">16*16</td>
+<td class="org-left">2m</td>
+<td class="org-left">10240m/2=5120</td>
+<td class="org-left">128*128</td>
+<td class="org-left">128*2=256</td>
+<td class="org-left">10240/256=40</td>
+<td class="org-left">256/32=8</td>
+<td class="org-left">256/64=4</td>
+</tr>
+
+<tr>
+<td class="org-left">Lod3</td>
+<td class="org-left">8m*8=64m</td>
+<td class="org-left">16*16</td>
+<td class="org-left">4m</td>
+<td class="org-left">10240m/4=2560</td>
+<td class="org-left">128*128</td>
+<td class="org-left">128*4=512</td>
+<td class="org-left">10240/512=20</td>
+<td class="org-left">512/64=8</td>
+<td class="org-left">512/64=8</td>
+</tr>
+
+<tr>
+<td class="org-left">Lod4</td>
+<td class="org-left">8m*16=128m</td>
+<td class="org-left">16*16</td>
+<td class="org-left">8m</td>
+<td class="org-left">10240m/8=1280</td>
+<td class="org-left">128*128</td>
+<td class="org-left">128*8=1024</td>
+<td class="org-left">10240/1024=10</td>
+<td class="org-left">1024/128=8</td>
+<td class="org-left">1024/64=16</td>
+</tr>
+
+<tr>
+<td class="org-left">Lod5</td>
+<td class="org-left">8m*32=256m</td>
+<td class="org-left">16*16</td>
+<td class="org-left">16m</td>
+<td class="org-left">10240m/16=640</td>
+<td class="org-left">128*128</td>
+<td class="org-left">128*16=2048</td>
+<td class="org-left">10240/2048=5</td>
+<td class="org-left">2048/256=8</td>
+<td class="org-left">2048/64=32</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+最小的 node 的大小为 64m*64m, 我们将 64m*64m 大小的地块称为一个 Sector。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgb9407cf" class="outline-4">
+<h4 id="orgb9407cf">Implement 0</h4>
+<div class="outline-text-4" id="text-orgb9407cf">
+</div>
+<div id="outline-container-org5e10b40" class="outline-5">
+<h5 id="org5e10b40">使用 plane 平铺场景</h5>
+<div class="outline-text-5" id="text-org5e10b40">
+<p>
+假设所有 node 都是 lod0，根据 nodeIndex 可以得出 nodeLoc，进而得出 nodePosition，从而得到 patchPosition。<br />
+使用如下函数生成 patch：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-shader">[numthreads(8,8,1)]
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">BuildPatch</span>(uint3 id : SV_DispatchThreadID, uint3 groupId:SV_GroupID, uint3 groupThreadId:SV_GroupThreadID)
+{
+    uint nodeId = groupId.x;
+    uint2 nodeLoc = uint2(nodeId % NodeCountArr[0], nodeId / NodeCountArr[0]);
+    uint2 patchLoc = groupThreadId.xy;
+
+    Patch patch;
+    patch.position = nodeLoc * NodeSizeArr[0] + patchLoc * PatchSizeArr[0];
+    PatchListAppendBuffer.Append(patch);
+}
+</pre>
+</div>
+<p>
+使用如下函数进行绘制：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp">cmd.<span style="color: #bc6ec5; font-weight: bold;">DrawMeshInstancedIndirect</span>(setting.<span style="color: #ce537a; font-weight: bold;">patchMesh</span>, 0, setting.<span style="color: #ce537a; font-weight: bold;">terrainMaterial</span>, 0, setting.<span style="color: #ce537a; font-weight: bold;">PatchIndirectArgs</span>);
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgdb98061" class="outline-4">
+<h4 id="orgdb98061">Implement 1</h4>
+<div class="outline-text-4" id="text-orgdb98061">
+</div>
+<div id="outline-container-org87bbdc4" class="outline-5">
+<h5 id="org87bbdc4">构建四叉树</h5>
+<div class="outline-text-5" id="text-org87bbdc4">
+<p>
+从 maxLod 开始，遍历节点。判断节点离摄像机距离，如果比较远，则不分解该节点。否则分解该节点。<br />
+将不需要分解的节点添加到 QuadTreeBuffer, 需要分解的节点，分解为低一级的 4 个节点。<br />
+Tips:<br />
+低一级节点的 Loc 按照如下方式计算，以避免相邻节点分解所得的节点重叠<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-shader">NodeListAppendBuffer.Append(nodeLoc * 2);
+NodeListAppendBuffer.Append(nodeLoc * 2 + uint2(1, 0));
+NodeListAppendBuffer.Append(nodeLoc * 2 + uint2(0, 1));
+NodeListAppendBuffer.Append(nodeLoc * 2 + uint2(1, 1));
+</pre>
+</div>
+<p>
+如，lodMax 的两个相邻节点(1,1)和(1,2)<br />
+(1,1) 分解后为(2,2) (3,2) (2,3) (3,3)<br />
+(1,2) 分解后为(2,4) (3,4) (2,5) (3,5)<br />
+</p>
+
+<p>
+使用如下代码，调试生成的节点个数：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">uint</span>[] <span style="color: #7590db;">tmpData</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">uint</span>[3];
+setting.CSIndirectArgs.<span style="color: #bc6ec5; font-weight: bold;">GetData</span>(tmpData);
+Debug.<span style="color: #bc6ec5; font-weight: bold;">LogWarningFormat</span>(<span style="color: #2d9574;">"tmpData {0}, {1}, {2}"</span>, tmpData[0],tmpData[1],tmpData[2]);
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org3f60856" class="outline-5">
+<h5 id="org3f60856">构建 patch</h5>
+<div class="outline-text-5" id="text-org3f60856">
+<p>
+一个 node 分解为 8*8 个 patch<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgce55e6d" class="outline-5">
+<h5 id="orgce55e6d">渲染 patch</h5>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org2bb038b" class="outline-3">
+<h3 id="org2bb038b">参考资料</h3>
+<div class="outline-text-3" id="text-org2bb038b">
+<ul class="org-ul">
+<li><a href="https://github.com/wlgys8/GPUDrivenTerrainLearn">https://github.com/wlgys8/GPUDrivenTerrainLearn</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org1b42418" class="outline-2">
+<h2 id="org1b42418">参考资料</h2>
+<div class="outline-text-2" id="text-org1b42418">
+<ul class="org-ul">
+<li><a href="https://docs.unity3d.com/Manual/SL-ShaderCompileTargets.html">https://docs.unity3d.com/Manual/SL-ShaderCompileTargets.html</a><br /></li>
+<li><a href="https://registry.khronos.org/OpenGL/extensions/ANDROID/ANDROID_extension_pack_es31a.txt">https://registry.khronos.org/OpenGL/extensions/ANDROID/ANDROID_extension_pack_es31a.txt</a><br /></li>
+<li>【Unity】Compute Shader 的基础介绍与使用 <a href="https://zhuanlan.zhihu.com/p/368307575">https://zhuanlan.zhihu.com/p/368307575</a> 有道云备份<br /></li>
+<li>Compute shader support for mobile in 2022 <a href="https://forum.unity.com/threads/compute-shader-support-for-mobile-in-2022.1305024/">https://forum.unity.com/threads/compute-shader-support-for-mobile-in-2022.1305024/</a><br /></li>
+<li>GPU Instancing 手机兼容性报告 <a href="https://zhuanlan.zhihu.com/p/72717290">https://zhuanlan.zhihu.com/p/72717290</a><br /></li>
+<li>ComputeShader 手机兼容性报告 <a href="https://zhuanlan.zhihu.com/p/68886986">https://zhuanlan.zhihu.com/p/68886986</a><br /></li>
+<li>SSBO <a href="https://www.khronos.org/opengl/wiki/Shader_Storage_Buffer_Object">https://www.khronos.org/opengl/wiki/Shader_Storage_Buffer_Object</a><br /></li>
+<li>图形管线中的 AsyncCompute 中的 Async 是指什么？ <a href="https://www.zhihu.com/question/276526226">https://www.zhihu.com/question/276526226</a><br /></li>
+<li>Advanced API Performance: Async Compute and Overlap <a href="https://developer.nvidia.com/blog/advanced-api-performance-async-compute-and-overlap/">https://developer.nvidia.com/blog/advanced-api-performance-async-compute-and-overlap/</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<div id="vssue"></div>
+        <link rel="stylesheet" href="https://unpkg.com/vssue/dist/vssue.min.css">
+        <script src="https://unpkg.com/vue@2.7.10/dist/vue.runtime.min.js"></script>
+        <script src="https://unpkg.com/vssue/dist/vssue.github.min.js"></script>
+        <script>
+          new Vue({
+            el: '#vssue',
+            render: h => h('Vssue', {
+              props: {
+                // 在这里设置当前页面对应的 Issue 标题
+                title: 'ComputeShader',
+
+                // 在这里设置你使用的平台的 OAuth App 配置
+                options: {
+                    owner: 'wolfand11',
+                    repo: 'blog_comments',
+                    clientId: 'a02b49185d85859cb92c',
+                    clientSecret: '6f123085c6f1ce339e2517d24e5b099fa1dc9c85', // 只有在使用某些平台时需要
+                },
+              }
+            })
+          })
+        </script>
+</div>
+</body>
+</html>

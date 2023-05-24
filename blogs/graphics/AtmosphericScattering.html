@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-02-02 Thu 11:07 -->
+<!-- 2023-05-24 Wed 11:52 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>AtmosphericScattering</title>
@@ -27,16 +27,40 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
+<li><a href="#org7c15ffa">Basic Knowledge</a></li>
 <li><a href="#orgfca98b0">Unity Procedural Skybox</a></li>
 <li><a href="#org3c9cd85">AtmosphericScattering</a>
 <ul>
 <li><a href="#org367a3b5">Volumetric Atmospheric Scattering</a>
 <ul>
-<li><a href="#org748f677">单次散射</a></li>
 <li><a href="#org2ed282a">Volumetric Single Scattering</a></li>
 </ul>
 </li>
-<li><a href="#org1b78e67">参考资料</a>
+<li><a href="#org8f87bd0">2008 Precomputed Atmospheric Scattering</a>
+<ul>
+<li><a href="#orgf61c00b">Atmospheric Models</a>
+<ul>
+<li><a href="#org317dc67">Physical model</a>
+<ul>
+<li><a href="#orga2d0f5b">Rendering equation</a></li>
+<li><a href="#org43b77de">Previous rendering methods</a></li>
+</ul>
+</li>
+<li><a href="#orge58e8be">Our Method</a></li>
+<li><a href="#org9ed95d8">Precomputations</a></li>
+</ul>
+</li>
+<li><a href="#org1b78e67">参考资料</a></li>
+</ul>
+</li>
+<li><a href="#orga24ad51">2009 Rendering Parametrizable Planetary Atmospheres with Multiple Scattering in Real-Time</a>
+<ul>
+<li><a href="#orgdff7427">参考资料</a></li>
+</ul>
+</li>
+<li><a href="#org95b4cfa">Volumetric fog: Unified, compute shader based solution to atmospheric scattering</a></li>
+<li><a href="#org87fb18e">A Scalable and Production Ready Sky and Atmosphere Rendering Technique</a></li>
+<li><a href="#orgee3ee19">参考资料</a>
 <ul>
 <li><a href="#org152d3fc">alan zucconi Totorials</a></li>
 <li><a href="#orgf363abe">Github</a></li>
@@ -51,18 +75,38 @@
 <p>
 AtmosphericScattering note.<br />
 </p>
-<div class="HTML" id="orgfe40408">
+<div class="HTML" id="org3bac70f">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
 
 </div>
 
+<div id="outline-container-org7c15ffa" class="outline-2">
+<h2 id="org7c15ffa">Basic Knowledge</h2>
+<div class="outline-text-2" id="text-org7c15ffa">
+<p>
+<a href="./VolumetricLightScattering.html#orgbe2a398">Volumetric Ligth Scattering Basic Knowledge</a><br />
+</p>
+
+<p>
+大气分层结构图：<br />
+<img src="./AtmosphericScattering/atmosphere-layers.jpg" alt="atmosphere-layers.jpg" /><br />
+</p>
+
+<p>
+海拔高度和大气密度，大气压强的关系如下图：<br />
+<img src="./AtmosphericScattering/air-density-altitude.jpg" alt="air-density-altitude.jpg" /><br />
+</p>
+</div>
+</div>
+
+
 <div id="outline-container-orgfca98b0" class="outline-2">
 <h2 id="orgfca98b0">Unity Procedural Skybox</h2>
 <div class="outline-text-2" id="text-orgfca98b0">
 
-<div id="org1c8483f" class="figure">
+<div id="orgcbe7a4e" class="figure">
 <p><img src="./AtmosphericScattering/unity_simple_skybox_cloud001.gif" alt="unity_simple_skybox_cloud001.gif" /><br />
 </p>
 </div>
@@ -80,21 +124,6 @@ AtmosphericScattering note.<br />
 <div id="outline-container-org367a3b5" class="outline-3">
 <h3 id="org367a3b5">Volumetric Atmospheric Scattering</h3>
 <div class="outline-text-3" id="text-org367a3b5">
-</div>
-<div id="outline-container-org748f677" class="outline-4">
-<h4 id="org748f677">单次散射</h4>
-<div class="outline-text-4" id="text-org748f677">
-<p>
-外散射<br />
-空气中的分子会将朝向指定方向(如摄像机方向)的光反射到其他方向。<br />
-真实的光源每秒会发射出很多(10^15)个光子，每个光子都有一定概率被空气分子反射。光传播的介质密度越大，单个光子被反射的概率越高。随着传播距离越长，剩余没被反射的光子越少。<br />
-</p>
-
-<p>
-内散射<br />
-空气中的分子会将其他方向的光反射到指定的方向(如摄像机方向)。<br />
-</p>
-</div>
 </div>
 <div id="outline-container-org2ed282a" class="outline-4">
 <h4 id="org2ed282a">Volumetric Single Scattering</h4>
@@ -119,9 +148,153 @@ AtmosphericScattering note.<br />
 </div>
 </div>
 
-<div id="outline-container-org1b78e67" class="outline-3">
-<h3 id="org1b78e67">参考资料</h3>
-<div class="outline-text-3" id="text-org1b78e67">
+<div id="outline-container-org8f87bd0" class="outline-3">
+<h3 id="org8f87bd0">2008 Precomputed Atmospheric Scattering</h3>
+<div class="outline-text-3" id="text-org8f87bd0">
+</div>
+<div id="outline-container-orgf61c00b" class="outline-4">
+<h4 id="orgf61c00b">Atmospheric Models</h4>
+<div class="outline-text-4" id="text-orgf61c00b">
+<p>
+渲染大气光照依赖于两个方面：一个是局部介质属性的物理模型，另一个是对到达观察者眼睛的全局照明的模拟。这包括与地面的交互，地面可以被建模为一个 Lambertian 表面，其为一个高度场，其反射率为α(x,λ)，法线为 n(x)。<br />
+</p>
+</div>
+<div id="outline-container-org317dc67" class="outline-5">
+<h5 id="org317dc67">Physical model</h5>
+<div class="outline-text-5" id="text-org317dc67">
+<p>
+在 CG 中常用的物理模型是一个晴空万里的模型。模型基于两种成分，空气分子和气溶胶颗粒。在 Rg=6360km (地球半径 6371km)和 Rt=6420km 之间薄球面层中，这些分子和颗粒的密度会递减。<br />
+</p>
+
+<p>
+在每一点上，被散射到远离入射方向θ度的光的比例，由散射系数βs 和相位函数 P 的乘积给出。βs 取决于颗粒密度，P描述了角度的相关性。<br />
+对于空气分子，由 Rayleigh 理论可给出βs 和 P，空气分子几乎不会吸收入射光，消光系数(extinction coefficient) βe = βs<br />
+<img src="./AtmosphericScattering/rayleigh-theory.jpg" alt="rayleigh-theory.jpg" /><br />
+和空气分子不同，气溶胶会吸收一部分入射光。吸收部分由 βa 表示，消光系数 βe = βs + βa。<br />
+<img src="./AtmosphericScattering/mie-theory.jpg" alt="mie-theory.jpg" /><br />
+随着海拔变化，折射率的变化会导致光线有小的偏折（小于 2 度）。简单起见，我们直接忽略该影响。<br />
+</p>
+</div>
+<div id="outline-container-orga2d0f5b" class="outline-6">
+<h6 id="orga2d0f5b">Rendering equation</h6>
+<div class="outline-text-6" id="text-orga2d0f5b">
+<p>
+这里我们将回顾参与介质的渲染方程，将其应用于大气。下图是渲染方程：<br />
+<img src="./AtmosphericScattering/atmosphere-rendering-equation.jpg" alt="atmosphere-rendering-equation.jpg" /><br />
+下图是渲染方程相关概念的图示：<br />
+<img src="./AtmosphericScattering/atmosphere-rendering-equation-01.jpg" alt="atmosphere-rendering-equation-01.jpg" /><br />
+</p>
+</div>
+</div>
+<div id="outline-container-org43b77de" class="outline-6">
+<h6 id="org43b77de">Previous rendering methods</h6>
+<div class="outline-text-6" id="text-org43b77de">
+<p>
+上面公式 8 非常复杂。在计算机图形学中有很多的简化假设用于简化计算来求出近似解。大多数实时方法都会忽略多次散射。这样的话，公式 8 就可以简化为 L = L0 + R[L0] + S[L0]。但是，S[L0]求解起来也很复杂。一些作者提出了以理想化为代价的解析求解方案：具有恒定大气密度的平坦地球[HP02]，或没有米氏散射[REK∗04]。平坦地球假设限制只能在地面进行观察。否则，S[L0]通常是通过数值积分来计算的[NSTN93]，可以通过低采样来实时进行[O'N05]。一个值得注意的例外是[SFE07]，他们依赖于这个积分的预计算。然而，为了减少参数的数量，他们只考虑了视角和太阳天顶角，而忽略了视角和太阳方向之间的角度。因此，他们不能再现大气层内的地球阴影。<br />
+</p>
+
+<p>
+如上所述，忽略多重散射对白天来说是可以接受的，但对黄昏来说就不行了[HMS05]。这是因为太阳光在白天穿过的大气层要比日落或日出时少得多。因此，一些作者提出了考虑多重散射的方法。[PSS99]用分析模型拟合了双重散射蒙特卡洛模拟的结果，但他们的模型只对地面的观测者有效。[NDKY96]和[HMS05]使用体积辐射度算法来计算多重散射，但他们的方法远非实时（每幅图像几分钟到几小时）。<br />
+</p>
+
+<p>
+在本文中，我们提出了一种新的方法来实时渲染天空和空中视角，从地面到太空的所有视角，同时考虑到多重散射。该方法受到[SFE07]的启发，并在多重散射的基础上进行了扩展，加入了之前被忽略的视线-太阳角 参数，对预计算表进行了更好的参数化，并对 Light Shafts 采用了新的方法。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orge58e8be" class="outline-5">
+<h5 id="orge58e8be">Our Method</h5>
+<div class="outline-text-5" id="text-orge58e8be">
+<p>
+为了提高效率和真实性，我们的目标是尽可能地预先计算 L，只用最小的近似值。我们的解决方案是基于对零散射和单一散射的精确计算，并使用近似的 occlusion 效果来计算多重散射。事实上，我们为零散射和单散射考虑了地面形状的细节，以便得到正确的地面颜色、阴影和 light shafts。但我们用一个反射率恒定的完美球体来近似计算多重散射，以允许预计算。<br />
+</p>
+
+<p>
+Notations<br />
+在展示我们的方法之前，我们需要一些符号和辅助函数。对于一个完美球形地面，由于球的对称性，x和 v 可以简化为一个海拔和一个视线天顶角，以 x,v,s 为参数的函数(如 L 或 S[L])就可以简化为只需 4 个参数的函数（两个参数表示 x 和 v，两个参数表示 s）。另外，L 可以被表示为一系列线性算子 R 和 S，第 i 项对应于光被反射或散射 i 次。<br />
+<img src="./AtmosphericScattering/01-notation.jpg" alt="01-notation.jpg" /><br />
+</p>
+
+<p>
+Zero and single scattering<br />
+在渲染中，我们精确计算 L0 和 R[L0]。为此，我们使用了一个阴影算法来计算太阳的遮挡，并且预计算透射比 T(其只依赖于两个参数, 见 Section 4)。S[L0]比较复杂，其是 x 和 x0 之间的积分，但是，由于 L0 中的遮挡项，对于在阴影中的所有点 y，该积分为空，这里我们假设阴影中的点在 xs 和 x0 之间（见 Figure 1，更一般的情况在 Section 5 讨论）。这样，积分就可以简化到照亮的线段[x, xs]上进行。并且，occlusion 可以被忽略，因为采用 xs 就是考虑了 occlusion 了。预计算 T 只需要 2 个参数，预计算 S[L0]需要 4 个参数。<br />
+<img src="./AtmosphericScattering/01-single-scattering.jpg" alt="01-single-scattering.jpg" /><br />
+</p>
+
+<p>
+Multiple scattering<br />
+如上所示，尽管有遮挡，L0 和 L1 还是可以准确计算出来。不幸的是，在其他项 L2+&#x2026;=R[L∗]+S[L∗]中考虑遮挡的问题要困难得多。希望在这种情况下，occlusion 可以被近似计算。事实上，在白天，多重散射效应与单一散射相比是很小的，而在不被太阳直接照射的情况下，地面的贡献也很小。因此，我们通过对多重散射的贡献进行积分来近似 S[L∗]中的遮挡效应，而该多重散射(在 x 和 xs 之间)贡献是在没有遮挡的情况下计算的。这会产生正的和负的偏差（见图 1）。我们还对 R[L∗]中的遮挡效应进行了近似，其是由于地面的切平面而导致的水平半球的环境遮挡。<br />
+<img src="./AtmosphericScattering/01-multi-scattering.jpg" alt="01-multi-scattering.jpg" /><br />
+</p>
+</div>
+</div>
+<div id="outline-container-org9ed95d8" class="outline-5">
+<h5 id="org9ed95d8">Precomputations</h5>
+<div class="outline-text-5" id="text-org9ed95d8">
+
+<div id="org45f4a60" class="figure">
+<p><img src="./AtmosphericScattering/01-precompute-1.jpg" alt="01-precompute-1.jpg" /><br />
+</p>
+</div>
+
+<p>
+Angular precision<br />
+S' 为 4D 表格，其尺寸会随分辨率增大快速增大。所以我们只能为 v 使用有限的角度分辨率。这带来了一个精度问题，然而这只限于具有很强前向散射的 Mie 散射。为了解决这个问题，我们把单次的 Mie 散射项与 S' 中的所有其他散射项分开，以便在运行时应用相函数。<br />
+<img src="./AtmosphericScattering/01-precompute-2.jpg" alt="01-precompute-2.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org1b78e67" class="outline-4">
+<h4 id="org1b78e67">参考资料</h4>
+<div class="outline-text-4" id="text-org1b78e67">
+<ul class="org-ul">
+<li>2008 Precomputed Atmospheric Scattering en <a href="https://ebruneton.github.io/precomputed_atmospheric_scattering/">https://ebruneton.github.io/precomputed_atmospheric_scattering/</a><br /></li>
+<li>2008 Precomputed Atmospheric Scattering github <a href="https://github.com/ebruneton/precomputed_atmospheric_scattering">https://github.com/ebruneton/precomputed_atmospheric_scattering</a><br /></li>
+<li>2008 Precomputed Atmospheric Scattering cn <a href="https://zhuanlan.zhihu.com/p/76844937">https://zhuanlan.zhihu.com/p/76844937</a><br /></li>
+<li>基于物理的大气渲染 <a href="https://zhuanlan.zhihu.com/p/36498679">https://zhuanlan.zhihu.com/p/36498679</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orga24ad51" class="outline-3">
+<h3 id="orga24ad51">2009 Rendering Parametrizable Planetary Atmospheres with Multiple Scattering in Real-Time</h3>
+<div class="outline-text-3" id="text-orga24ad51">
+</div>
+<div id="outline-container-orgdff7427" class="outline-4">
+<h4 id="orgdff7427">参考资料</h4>
+<div class="outline-text-4" id="text-orgdff7427">
+<ul class="org-ul">
+<li>2009 Rendering Parametrizable Planetary Atmospheres with Multiple Scattering in Real-Time cn <a href="https://zhuanlan.zhihu.com/p/345916725">https://zhuanlan.zhihu.com/p/345916725</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org95b4cfa" class="outline-3">
+<h3 id="org95b4cfa">Volumetric fog: Unified, compute shader based solution to atmospheric scattering</h3>
+<div class="outline-text-3" id="text-org95b4cfa">
+<ul class="org-ul">
+<li>2014 <a href="SiggraphAdvancedRealtimeRenderingReference.html#ID-a83ebf0d-8d7f-431c-b66b-f9903150b6b3">Volumetric Fog: unified compute shader-based solution to atmospheric scattering</a><br /></li>
+<li><a href="https://github.com/Unity-Technologies/VolumetricLighting">https://github.com/Unity-Technologies/VolumetricLighting</a><br /></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org87fb18e" class="outline-3">
+<h3 id="org87fb18e">A Scalable and Production Ready Sky and Atmosphere Rendering Technique</h3>
+<div class="outline-text-3" id="text-org87fb18e">
+<ul class="org-ul">
+<li>2020 A Scalable and Production Ready Sky and Atmosphere Rendering Technique <a href="https://github.com/sebh/UnrealEngineSkyAtmosphere">https://github.com/sebh/UnrealEngineSkyAtmosphere</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgee3ee19" class="outline-3">
+<h3 id="orgee3ee19">参考资料</h3>
+<div class="outline-text-3" id="text-orgee3ee19">
 </div>
 <div id="outline-container-org152d3fc" class="outline-4">
 <h4 id="org152d3fc">alan zucconi Totorials</h4>

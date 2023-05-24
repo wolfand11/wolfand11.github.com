@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-02-02 Thu 11:08 -->
+<!-- 2023-05-24 Wed 11:52 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Programing in CSharp</title>
@@ -88,7 +88,12 @@
 </li>
 <li><a href="#orgfb67caf">条件分支语句</a></li>
 <li><a href="#org34642c5">预处理指令</a></li>
+<li><a href="#orgc77e28b">函数</a>
+<ul>
 <li><a href="#org2f7b93e">泛型函数</a></li>
+<li><a href="#orga9a8ca4">函数可变参数</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#org950c21b">类与对象</a>
@@ -206,12 +211,16 @@
 </li>
 <li><a href="#org99495dd">字符串与正则表达式</a>
 <ul>
-<li><a href="#orgda7750f">string</a></li>
+<li><a href="#orgda7750f">string</a>
+<ul>
+<li><a href="#orgfb927f8">string 填充</a></li>
+</ul>
+</li>
 <li><a href="#orgfeb47b6">StringBuilder</a></li>
 <li><a href="#orgc7d239d"><span class="todo TODO">TODO</span> 正则表达式</a>
 <ul>
 <li><a href="#orgf3cfbb8">正则表达式匹配 ftp list directory detial</a></li>
-<li><a href="#org6ea7c35">参考资料</a></li>
+<li><a href="#orgc676e43">参考资料</a></li>
 </ul>
 </li>
 </ul>
@@ -275,7 +284,12 @@
 <ul>
 <li><a href="#org1c125db">装箱过程</a></li>
 <li><a href="#org8e360d7">拆箱过程</a></li>
-<li><a href="#org41d88b9">优化</a></li>
+<li><a href="#org41d88b9">优化</a>
+<ul>
+<li><a href="#org1614bfd">struct 转换为 interface 会有装箱操作</a></li>
+<li><a href="#org521bb4a">使用显式的装箱操作来减少多余的装箱操作</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#orgd9d0b1d">编码规范</a></li>
@@ -297,6 +311,11 @@
 </li>
 <li><a href="#orgae488df">HowTo</a>
 <ul>
+<li><a href="#org0f3def6">Base</a>
+<ul>
+<li><a href="#org3ff304d">查看本地 dotnet version</a></li>
+</ul>
+</li>
 <li><a href="#org1359c64">Collections</a>
 <ul>
 <li><a href="#org54a2a90">Array List</a>
@@ -356,14 +375,14 @@
 </li>
 </ul>
 </li>
-<li><a href="#orgc676e43">参考资料</a></li>
+<li><a href="#org7e98583">参考资料</a></li>
 </ul>
 </div>
 </div>
 <p>
 csharp language note.<br />
 </p>
-<div class="HTML" id="orgb6f6725">
+<div class="HTML" id="org54a6daf">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -528,12 +547,12 @@ C#中内置类型符合.Net CLS 规范。<br />
   <span style="color: #4f97d7; font-weight: bold;">using</span> System;
   <span style="color: #4f97d7; font-weight: bold;">struct</span> <span style="color: #ce537a; font-weight: bold;">Point</span>
   {
-      <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">x</span>, <span style="color: #7590db;">y</span>; 
+      <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">x</span>, <span style="color: #7590db;">y</span>;
   }
 
   <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">MainClass</span>
   {
-      <span style="color: #4f97d7; font-weight: bold;">unsafe</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Main</span>() 
+      <span style="color: #4f97d7; font-weight: bold;">unsafe</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Main</span>()
       {
           <span style="color: #ce537a; font-weight: bold;">Point</span> <span style="color: #7590db;">pt</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Point</span>();
           Point* pp = &amp;pt;
@@ -681,9 +700,9 @@ const 为编译期常量 ，readonly 为运行时常量<br />
 <div class="org-src-container">
 <pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">enum</span> <span style="color: #ce537a; font-weight: bold;">Colors</span> { <span style="color: #7590db;">Red</span>, <span style="color: #7590db;">Green</span>, <span style="color: #7590db;">Blue</span>, <span style="color: #7590db;">Yellow</span> };
 
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">1 Enum--&gt;String </span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">1 Enum--&gt;String</span>
 <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#36820;&#22238; "Green"</span>
-<span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">greenName</span> = Colors.Green.<span style="color: #bc6ec5; font-weight: bold;">ToString</span>(); 
+<span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">greenName</span> = Colors.Green.<span style="color: #bc6ec5; font-weight: bold;">ToString</span>();
 <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">greenName</span> = Enum.<span style="color: #bc6ec5; font-weight: bold;">GetName</span>(<span style="color: #4f97d7; font-weight: bold;">typeof</span>(Colors), Colors.Blue);
 <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">colorsNames</span> = Enum.<span style="color: #bc6ec5; font-weight: bold;">GetNames</span>(<span style="color: #4f97d7; font-weight: bold;">typeof</span>(Colors));
 
@@ -794,9 +813,13 @@ C#预处理器只实现了 C++预处理器的一个子集，不支持宏。<br /
 </div>
 </div>
 </div>
-<div id="outline-container-org2f7b93e" class="outline-4">
-<h4 id="org2f7b93e">泛型函数</h4>
-<div class="outline-text-4" id="text-org2f7b93e">
+<div id="outline-container-orgc77e28b" class="outline-4">
+<h4 id="orgc77e28b">函数</h4>
+<div class="outline-text-4" id="text-orgc77e28b">
+</div>
+<div id="outline-container-org2f7b93e" class="outline-5">
+<h5 id="org2f7b93e">泛型函数</h5>
+<div class="outline-text-5" id="text-org2f7b93e">
 <div class="org-src-container">
 <pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">ForeachObjInScene</span>&lt;<span style="color: #ce537a; font-weight: bold;">ObjT</span>&gt;(<span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #7590db;">scenePath</span>, <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #7590db;">includeInactive</span>, <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #7590db;">sceneProgress</span>, System.<span style="color: #ce537a; font-weight: bold;">Action</span>&lt;<span style="color: #ce537a; font-weight: bold;">ObjT</span>&gt; <span style="color: #7590db;">opt</span>) <span style="color: #4f97d7; font-weight: bold;">where</span> ObjT : UnityEngine.Object
 {
@@ -834,6 +857,15 @@ C#预处理器只实现了 C++预处理器的一个子集，不支持宏。<br /
 <ul class="org-ul">
 <li><a href="https://learn.microsoft.com/zh-cn/dotnet/csharp/programming-guide/generics/generic-methods">https://learn.microsoft.com/zh-cn/dotnet/csharp/programming-guide/generics/generic-methods</a><br /></li>
 </ul>
+</div>
+</div>
+<div id="outline-container-orga9a8ca4" class="outline-5">
+<h5 id="orga9a8ca4">函数可变参数</h5>
+<div class="outline-text-5" id="text-orga9a8ca4">
+<p>
+<a href="#org6dd9373">params 关键字</a><br />
+</p>
+</div>
 </div>
 </div>
 </div>
@@ -972,7 +1004,7 @@ protected internal 表示 类和子类可以访问，该成员所在程序集内
 可以在初始化语句中初始化成员变量的值，而不需要都在构造函数中进行。<br />
 </p>
 <div class="org-src-container">
-<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Person</span> 
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Person</span>
 {
     <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#19979;&#38754;&#30340;&#21021;&#22987;&#21270;&#35821;&#21477;&#20013;&#21021;&#22987;&#21270;&#20102;&#25104;&#21592;&#21464;&#37327;&#30340;&#20540;&#20026; "Unknown"</span>
     <span style="color: #4f97d7; font-weight: bold;">private</span> <span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #7590db;">name</span> = <span style="color: #2d9574;">"Unknown"</span>;
@@ -1303,11 +1335,11 @@ Console.<span style="color: #bc6ec5; font-weight: bold;">WriteLine</span>(<span 
       <span style="color: #4f97d7; font-weight: bold;">private</span> <span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #7590db;">name</span>;
       <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #7590db;">Name</span>
       {
-          <span style="color: #4f97d7; font-weight: bold;">get</span> 
+          <span style="color: #4f97d7; font-weight: bold;">get</span>
           {
               <span style="color: #4f97d7; font-weight: bold;">return</span> name;
           }
-          <span style="color: #4f97d7; font-weight: bold;">set</span> 
+          <span style="color: #4f97d7; font-weight: bold;">set</span>
           {
               name = <span style="color: #a45bad;">value</span>;
           }
@@ -1409,9 +1441,9 @@ Console.<span style="color: #bc6ec5; font-weight: bold;">WriteLine</span>(<span 
   {
       <span style="color: #4f97d7; font-weight: bold;">private</span> <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">id</span> = 0;
 
-      <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">Id</span> {   
-          <span style="color: #4f97d7; font-weight: bold;">get</span> { 
-              <span style="color: #4f97d7; font-weight: bold;">return</span> id;            
+      <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">Id</span> {
+          <span style="color: #4f97d7; font-weight: bold;">get</span> {
+              <span style="color: #4f97d7; font-weight: bold;">return</span> id;
           }
           <span style="color: #4f97d7; font-weight: bold;">set</span> {
               id = <span style="color: #a45bad;">value</span>;
@@ -1880,7 +1912,7 @@ Console.WriteLine (<span style="color: #2d9574;">"iValue as int    = {0}"</span>
           <span style="color: #4f97d7; font-weight: bold;">get</span> {
               <span style="color: #4f97d7; font-weight: bold;">return</span> IGBase_P;
           }
-          <span style="color: #4f97d7; font-weight: bold;">set</span> { 
+          <span style="color: #4f97d7; font-weight: bold;">set</span> {
               IGBase_P = <span style="color: #a45bad;">value</span>;
           }
       }
@@ -1891,7 +1923,7 @@ Console.WriteLine (<span style="color: #2d9574;">"iValue as int    = {0}"</span>
           <span style="color: #4f97d7; font-weight: bold;">get</span> {
               <span style="color: #4f97d7; font-weight: bold;">return</span> p;
           }
-          <span style="color: #4f97d7; font-weight: bold;">set</span> { 
+          <span style="color: #4f97d7; font-weight: bold;">set</span> {
               p = <span style="color: #a45bad;">value</span>;
           }
       }
@@ -2482,7 +2514,7 @@ IEnumerator GetEnumerator();      // 由于和泛型版本的方法同名，所�
         <span style="color: #4f97d7; font-weight: bold;">for</span> (<span style="color: #ce537a; font-weight: bold;">GListNode</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt; <span style="color: #7590db;">iter</span> = first; iter != <span style="color: #a45bad;">null</span>; iter = iter.Next) {
             <span style="color: #4f97d7; font-weight: bold;">yield</span> <span style="color: #4f97d7; font-weight: bold;">return</span> iter.Value;
         }
-    } 
+    }
     <span style="color: #4f97d7; font-weight: bold;">else</span> {
         <span style="color: #ce537a; font-weight: bold;">GListNode</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt; <span style="color: #7590db;">iter</span> = first;
         <span style="color: #4f97d7; font-weight: bold;">while</span> (iter != <span style="color: #a45bad;">null</span>) {
@@ -2492,8 +2524,8 @@ IEnumerator GetEnumerator();      // 由于和泛型版本的方法同名，所�
     }
 }
 System.Collections.<span style="color: #ce537a; font-weight: bold;">IEnumerator</span> System.Collections.IEnumerable.<span style="color: #bc6ec5; font-weight: bold;">GetEnumerator</span> ()
-{  
-    <span style="color: #4f97d7; font-weight: bold;">return</span> GetEnumerator ();  
+{
+    <span style="color: #4f97d7; font-weight: bold;">return</span> GetEnumerator ();
 }
 </pre>
 </div>
@@ -2545,7 +2577,19 @@ Debug.<span style="color: #bc6ec5; font-weight: bold;">Log</span>(<span style="c
 </pre>
 </div>
 </div>
+<div id="outline-container-orgfb927f8" class="outline-5">
+<h5 id="orgfb927f8">string 填充</h5>
+<div class="outline-text-5" id="text-orgfb927f8">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">str&#38271;&#24230;&#19981;&#36275;maxStrLen&#26102;&#65292;&#29992;&#31354;&#26684;&#22635;&#20805;str&#20351;&#20854;&#38271;&#24230;&#36798;&#21040;maxStrLen</span>
+str.<span style="color: #bc6ec5; font-weight: bold;">PadRight</span>(<span style="color: #ce537a; font-weight: bold;">maxStrLen</span>, <span style="color: #2d9574;">' '</span>);
+str.<span style="color: #bc6ec5; font-weight: bold;">PadLeft</span>(maxStrLen, <span style="color: #2d9574;">' '</span>);
+</pre>
 </div>
+</div>
+</div>
+</div>
+
 <div id="outline-container-orgfeb47b6" class="outline-4">
 <h4 id="orgfeb47b6">StringBuilder</h4>
 <div class="outline-text-4" id="text-orgfeb47b6">
@@ -2615,9 +2659,9 @@ Console.WriteLine (mutableStr);
 </div>
 </div>
 </div>
-<div id="outline-container-org6ea7c35" class="outline-5">
-<h5 id="org6ea7c35">参考资料</h5>
-<div class="outline-text-5" id="text-org6ea7c35">
+<div id="outline-container-orgc676e43" class="outline-5">
+<h5 id="orgc676e43">参考资料</h5>
+<div class="outline-text-5" id="text-orgc676e43">
 <ol class="org-ol">
 <li>C#正则表达式语言 <a href="https://msdn.microsoft.com/zh-cn/library/az24scfc(v=vs.110).aspx">https://msdn.microsoft.com/zh-cn/library/az24scfc(v=vs.110).aspx</a><br /></li>
 </ol>
@@ -2688,11 +2732,11 @@ Console.WriteLine (mutableStr);
 
   MultiDelegate.MyClassWithDelegate.<span style="color: #ce537a; font-weight: bold;">StringDelegate</span> <span style="color: #7590db;">multiDelegate</span> = writer + transmiter;
   multiDelegate (<span style="color: #2d9574;">"str pass to writer+transmiter"</span>);
-  multiDelegate += logger; 
+  multiDelegate += logger;
   multiDelegate (<span style="color: #2d9574;">"str pass to writer+transmiter+loger"</span>);
-  multiDelegate -= transmiter; 
+  multiDelegate -= transmiter;
   multiDelegate (<span style="color: #2d9574;">"str pass to writer+transmiter+loger-transmiter"</span>);
-  multiDelegate += logger; 
+  multiDelegate += logger;
   multiDelegate (<span style="color: #2d9574;">"str pass to writer+loger+loger"</span>);
   <span style="color: #9f8766;">///////////////////////////////////</span>
   <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">&#19979;&#38754;&#20026;&#36755;&#20986;</span>
@@ -3399,9 +3443,18 @@ Console.<span style="color: #bc6ec5; font-weight: bold;">WriteLine</span>(<span 
 <div id="outline-container-org41d88b9" class="outline-4">
 <h4 id="org41d88b9">优化</h4>
 <div class="outline-text-4" id="text-org41d88b9">
-<p>
-使用显式的装箱操作来减少多余的装箱操作<br />
-</p>
+</div>
+<div id="outline-container-org1614bfd" class="outline-5">
+<h5 id="org1614bfd">struct 转换为 interface 会有装箱操作</h5>
+<div class="outline-text-5" id="text-org1614bfd">
+<ul class="org-ul">
+<li><a href="https://stackoverflow.com/questions/3032750/structs-interfaces-and-boxing">https://stackoverflow.com/questions/3032750/structs-interfaces-and-boxing</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org521bb4a" class="outline-5">
+<h5 id="org521bb4a">使用显式的装箱操作来减少多余的装箱操作</h5>
+<div class="outline-text-5" id="text-org521bb4a">
 <div class="org-src-container">
 <pre class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">x</span> = 100;
 <span style="color: #ce537a; font-weight: bold;">ArrayList</span> <span style="color: #7590db;">arr</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">ArrayList</span>(3);
@@ -3421,6 +3474,7 @@ arr.<span style="color: #bc6ec5; font-weight: bold;">Add</span>(o);
 <p>
 使用泛型集合类可以避免装箱操作<br />
 </p>
+</div>
 </div>
 </div>
 </div>
@@ -3510,6 +3564,24 @@ overwrite 表示重新实现从父类派生而来的方法，需要关键字 new
 <div id="outline-container-orgae488df" class="outline-2">
 <h2 id="orgae488df">HowTo</h2>
 <div class="outline-text-2" id="text-orgae488df">
+</div>
+<div id="outline-container-org0f3def6" class="outline-3">
+<h3 id="org0f3def6">Base</h3>
+<div class="outline-text-3" id="text-org0f3def6">
+</div>
+<div id="outline-container-org3ff304d" class="outline-4">
+<h4 id="org3ff304d">查看本地 dotnet version</h4>
+<div class="outline-text-4" id="text-org3ff304d">
+<div class="org-src-container">
+<pre class="src src-shell">dotnet.exe --version
+</pre>
+</div>
+
+<ul class="org-ul">
+<li><a href="https://stackoverflow.com/questions/1565434/how-do-i-find-the-net-version">https://stackoverflow.com/questions/1565434/how-do-i-find-the-net-version</a><br /></li>
+</ul>
+</div>
+</div>
 </div>
 <div id="outline-container-org1359c64" class="outline-3">
 <h3 id="org1359c64">Collections</h3>
@@ -3668,14 +3740,14 @@ _allObjects.<span style="color: #bc6ec5; font-weight: bold;">Sort</span>((x, y) 
 <h5 id="org77daee4">工作目录 脚本目录</h5>
 <div class="outline-text-5" id="text-org77daee4">
 <div class="org-src-container">
-<pre class="src src-csharp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#33719;&#21462;&#33050;&#26412;&#36816;&#34892;&#30446;&#24405; </span>
+<pre class="src src-csharp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#33719;&#21462;&#33050;&#26412;&#36816;&#34892;&#30446;&#24405;</span>
 Directory.<span style="color: #bc6ec5; font-weight: bold;">GetCurrentDirectory</span>();
 
 <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25913;&#21464;&#24403;&#21069;&#24037;&#20316;&#30446;</span>
 Directory.<span style="color: #bc6ec5; font-weight: bold;">SetCurrentDirectory</span>(curDir + <span style="color: #2d9574;">"/../"</span>);
 
-<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#33719;&#21462;&#33050;&#26412;&#25152;&#22312;&#30446;&#24405; </span>
-<span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">os.path.split(os.path.realpath(__file__))[0]     </span>
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#33719;&#21462;&#33050;&#26412;&#25152;&#22312;&#30446;&#24405;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">os.path.split(os.path.realpath(__file__))[0]</span>
 
 <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#33719;&#21462;&#36335;&#24452;&#30340;&#26631;&#20934;&#36335;&#24452; &#20840;&#36335;&#24452;&#20999;&#20854;&#20013;&#19981;&#21547;&#26377;&#8220;./ ../&#8221;&#20043;&#31867;</span>
 Path.<span style="color: #bc6ec5; font-weight: bold;">GetFullPath</span>(<span style="color: #2d9574;">"./../"</span>);
@@ -3788,18 +3860,18 @@ Directory.<span style="color: #bc6ec5; font-weight: bold;">Create</span>(path); 
 <div class="outline-text-5" id="text-orgc76d768">
 <div class="org-src-container">
 <pre class="src src-csharp">  <span style="color: #4f97d7; font-weight: bold;">using</span> System.IO;
-  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20889;&#20837;&#25991;&#20214; 1 - &#20197; Append &#26041;&#24335;&#20889;&#20837; </span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20889;&#20837;&#25991;&#20214; 1 - &#20197; Append &#26041;&#24335;&#20889;&#20837;</span>
   <span style="color: #4f97d7; font-weight: bold;">using</span> (<span style="color: #ce537a; font-weight: bold;">FileStream</span> <span style="color: #7590db;">fs</span> = File.<span style="color: #bc6ec5; font-weight: bold;">Open</span>(path, FileMode.Append))
   {
       <span style="color: #ce537a; font-weight: bold;">Byte</span>[] <span style="color: #7590db;">info</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">UTF8Encoding</span>(<span style="color: #a45bad;">true</span>).<span style="color: #bc6ec5; font-weight: bold;">GetBytes</span>(<span style="color: #2d9574;">"This is some test text."</span>);
       fs.<span style="color: #bc6ec5; font-weight: bold;">Write</span>(info, 0, info.Length);
   }
 
-  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20889;&#20837;&#25991;&#20214; 2 - &#20197; &#38750; Append &#26041;&#24335;&#20889;&#20837; </span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20889;&#20837;&#25991;&#20214; 2 - &#20197; &#38750; Append &#26041;&#24335;&#20889;&#20837;</span>
   File.<span style="color: #bc6ec5; font-weight: bold;">WriteAllText</span>(path, <span style="color: #2d9574;">"This is some test text."</span>, Encoding.UTF8);
   File.<span style="color: #bc6ec5; font-weight: bold;">WriteAllLines</span>(path, <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">List</span>&lt;<span style="color: #ce537a; font-weight: bold;">string</span>&gt;{<span style="color: #2d9574;">"one line."</span>,<span style="color: #2d9574;">"two line."</span>}, Encoding.UTF8);
 
-  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20889;&#20837;&#25991;&#20214; 2 - &#20197; Append &#26041;&#24335;&#20889;&#20837; </span>
+  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20889;&#20837;&#25991;&#20214; 2 - &#20197; Append &#26041;&#24335;&#20889;&#20837;</span>
   File.<span style="color: #bc6ec5; font-weight: bold;">AppendAllText</span>(path, <span style="color: #2d9574;">"This is some test text."</span>, Encoding.UTF8);
   File.<span style="color: #bc6ec5; font-weight: bold;">AppendAllLines</span>(path, <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">List</span>&lt;<span style="color: #ce537a; font-weight: bold;">string</span>&gt;{<span style="color: #2d9574;">"one line."</span>,<span style="color: #2d9574;">"two line."</span>}, Encoding.UTF8);
 
@@ -3943,9 +4015,9 @@ Directory.<span style="color: #bc6ec5; font-weight: bold;">Create</span>(path); 
 </div>
 </div>
 </div>
-<div id="outline-container-orgc676e43" class="outline-2">
-<h2 id="orgc676e43">参考资料</h2>
-<div class="outline-text-2" id="text-orgc676e43">
+<div id="outline-container-org7e98583" class="outline-2">
+<h2 id="org7e98583">参考资料</h2>
+<div class="outline-text-2" id="text-org7e98583">
 <ul class="org-ul">
 <li>.Net 系列文章 <a href="http://www.cnblogs.com/anding/p/5226343.html">http://www.cnblogs.com/anding/p/5226343.html</a><br /></li>
 </ul>

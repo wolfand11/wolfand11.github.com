@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-02-02 Thu 11:08 -->
+<!-- 2023-05-24 Wed 11:52 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>URP</title>
@@ -63,7 +63,16 @@
 <ul>
 <li><a href="#orgabad919">Base</a>
 <ul>
-<li><a href="#org4892320">源码分析</a></li>
+<li><a href="#org4892320">源码分析</a>
+<ul>
+<li><a href="#org409bb20">源码分析方法</a>
+<ul>
+<li><a href="#org48a41d0">static analysis and editor debugging method</a></li>
+<li><a href="#org2ba2656">app profiling method</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a href="#org6edb5d9">Native RenderPass</a></li>
 <li><a href="#org7affa24">URPAsset</a>
 <ul>
@@ -82,6 +91,7 @@
 </li>
 </ul>
 </li>
+<li><a href="#orgdc759d8">Rendering Debugger</a></li>
 </ul>
 </li>
 <li><a href="#org4673f29">Shader</a>
@@ -126,7 +136,7 @@
 <p>
 URP note.<br />
 </p>
-<div class="HTML" id="org3e848cb">
+<div class="HTML" id="org1ee13bb">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -156,6 +166,44 @@ URP 12.1.6 版本中 ForwardRenderer 变为了 UniversalRenderer<br />
 <li>Unity URP 简要剖析 <a href="https://zhuanlan.zhihu.com/p/399297398">https://zhuanlan.zhihu.com/p/399297398</a><br /></li>
 </ul>
 </div>
+<div id="outline-container-org409bb20" class="outline-5">
+<h5 id="org409bb20">源码分析方法</h5>
+<div class="outline-text-5" id="text-org409bb20">
+</div>
+<div id="outline-container-org48a41d0" class="outline-6">
+<h6 id="org48a41d0">static analysis and editor debugging method</h6>
+<div class="outline-text-6" id="text-org48a41d0">
+<p>
+将 com.unity.render-pipelines.core@14.0.7 和 com.unity.render-pipelines.universal@14.0.7 从 Test/Library/PackageCache 目录 copy 到 Test/Packages 目录，方便对 urp 源码进行修改来辅助调试。<br />
+</p>
+
+<p>
+在 editor 下对源代码进行调试，结合对 urp 源代码静态分析，来分析 URP 的执行逻辑。<br />
+</p>
+
+<p>
+可以使用 Understand 工具来辅助 urp 源代码的静态分析。 <a href="../tools/DeveloperTools.html#org0571897">Understand 静态代码分析</a><br />
+</p>
+</div>
+</div>
+<div id="outline-container-org2ba2656" class="outline-6">
+<h6 id="org2ba2656">app profiling method</h6>
+<div class="outline-text-6" id="text-org2ba2656">
+<p>
+首先，编译 Windows 版本进行分析，BuildSettings 设置如下：<br />
+Development Build = True<br />
+Deep Profiling Support = True<br />
+Script Debugging = True<br />
+</p>
+
+<p>
+其次，使用 Unity Profiler 工具对 Test.exe 进行 Profiler<br />
+在 Timeline 中可以看到一帧中，函数的调用顺序，如下图：<br />
+<img src="./URP/urp-source-code01.jpg" alt="urp-source-code01.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
 </div>
 <div id="outline-container-org6edb5d9" class="outline-4">
 <h4 id="org6edb5d9">Native RenderPass</h4>
@@ -182,7 +230,7 @@ URP 12.1.6 版本中 ForwardRenderer 变为了 UniversalRenderer<br />
 
 <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">UniversalRenderPipelineAssetExtensions</span>
 {
-    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">ScriptableRendererFeature</span> <span style="color: #bc6ec5; font-weight: bold;">GetRenderFeature</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt;(<span style="color: #4f97d7; font-weight: bold;">this</span> <span style="color: #ce537a; font-weight: bold;">UniversalRenderPipelineAsset</span> <span style="color: #7590db;">asset</span>, <span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #7590db;">name</span>) <span style="color: #4f97d7; font-weight: bold;">where</span> T : ScriptableRendererFeature
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">T</span> <span style="color: #bc6ec5; font-weight: bold;">GetRenderFeature</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt;(<span style="color: #4f97d7; font-weight: bold;">this</span> <span style="color: #ce537a; font-weight: bold;">UniversalRenderPipelineAsset</span> <span style="color: #7590db;">asset</span>, <span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #7590db;">name</span>) <span style="color: #4f97d7; font-weight: bold;">where</span> T : ScriptableRendererFeature
     {
         <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">type</span> = asset.<span style="color: #bc6ec5; font-weight: bold;">GetType</span>();
         <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">propertyInfo</span> = type.<span style="color: #bc6ec5; font-weight: bold;">GetField</span>(<span style="color: #2d9574;">"m_RendererDataList"</span>, BindingFlags.Instance | BindingFlags.NonPublic);
@@ -202,7 +250,7 @@ URP 12.1.6 版本中 ForwardRenderer 变为了 UniversalRenderer<br />
                 {
                     <span style="color: #4f97d7; font-weight: bold;">if</span> (rendererFeature <span style="color: #4f97d7; font-weight: bold;">is</span> T &amp;&amp; rendererFeature.name == name)
                     {
-                        <span style="color: #4f97d7; font-weight: bold;">return</span> rendererFeature;
+                        <span style="color: #4f97d7; font-weight: bold;">return</span> rendererFeature <span style="color: #4f97d7; font-weight: bold;">as</span> T;
                     }
                 }
             }
@@ -211,7 +259,7 @@ URP 12.1.6 版本中 ForwardRenderer 变为了 UniversalRenderer<br />
         <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #a45bad;">null</span>;
     }
 
-    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">ScriptableRendererFeature</span> <span style="color: #bc6ec5; font-weight: bold;">SetRenderFeatureEnable</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt;(<span style="color: #4f97d7; font-weight: bold;">this</span> <span style="color: #ce537a; font-weight: bold;">UniversalRenderPipelineAsset</span> <span style="color: #7590db;">asset</span>, <span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #7590db;">name</span>, <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #7590db;">enable</span>) <span style="color: #4f97d7; font-weight: bold;">where</span> T : ScriptableRendererFeature
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">T</span> <span style="color: #bc6ec5; font-weight: bold;">SetRenderFeatureEnable</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt;(<span style="color: #4f97d7; font-weight: bold;">this</span> <span style="color: #ce537a; font-weight: bold;">UniversalRenderPipelineAsset</span> <span style="color: #7590db;">asset</span>, <span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #7590db;">name</span>, <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #7590db;">enable</span>) <span style="color: #4f97d7; font-weight: bold;">where</span> T : ScriptableRendererFeature
     {
         <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">feature</span> = <span style="color: #bc6ec5; font-weight: bold;">GetRenderFeature</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt;(<span style="color: #ce537a; font-weight: bold;">asset</span>, <span style="color: #ce537a; font-weight: bold;">name</span>);
         <span style="color: #4f97d7; font-weight: bold;">if</span> (feature)
@@ -500,6 +548,14 @@ URP 12.1.6 版本中 ForwardRenderer 变为了 UniversalRenderer<br />
 </div>
 </div>
 </div>
+<div id="outline-container-orgdc759d8" class="outline-4">
+<h4 id="orgdc759d8">Rendering Debugger</h4>
+<div class="outline-text-4" id="text-orgdc759d8">
+<p>
+实现 Rendering Debugger 的 Editor 代码在 Packages\com.unity.render-pipelines.core\Editor\Debugging\DebugWindow.cs。可以将自己的扩展嵌入到其中。可以参考 URP 中 DebugDisplaySettingsRendering 的实现。<br />
+</p>
+</div>
+</div>
 </div>
 <div id="outline-container-org4673f29" class="outline-3">
 <h3 id="org4673f29">Shader</h3>
@@ -670,7 +726,7 @@ shader 的 vert frag 入口函数被定义在 com.unity.render-pipelines.univers
 </p>
 
 
-<div id="org28313b5" class="figure">
+<div id="org835bff2" class="figure">
 <p><img src="./URP/gi_compare_01.png" alt="gi_compare_01.png" width="1500px" /><br />
 </p>
 </div>
@@ -679,7 +735,7 @@ shader 的 vert frag 入口函数被定义在 com.unity.render-pipelines.univers
 下图为图 2<br />
 </p>
 
-<div id="orge72787c" class="figure">
+<div id="org785bb35" class="figure">
 <p><img src="./URP/gi_compare_02.png" alt="gi_compare_02.png" width="1500px" /><br />
 </p>
 </div>
@@ -688,7 +744,7 @@ shader 的 vert frag 入口函数被定义在 com.unity.render-pipelines.univers
 下图为图 3<br />
 </p>
 
-<div id="org390ee0e" class="figure">
+<div id="org87047c3" class="figure">
 <p><img src="./URP/gi_compare_03.png" alt="gi_compare_03.png" width="1500px" /><br />
 </p>
 </div>
@@ -697,7 +753,7 @@ shader 的 vert frag 入口函数被定义在 com.unity.render-pipelines.univers
 下图为图 4<br />
 </p>
 
-<div id="org663de73" class="figure">
+<div id="orga6abf25" class="figure">
 <p><img src="./URP/gi_compare_04.png" alt="gi_compare_04.png" width="1500px" /><br />
 </p>
 </div>
@@ -706,7 +762,7 @@ shader 的 vert frag 入口函数被定义在 com.unity.render-pipelines.univers
 下图为图 5<br />
 </p>
 
-<div id="orgd6a9e8c" class="figure">
+<div id="org368db3e" class="figure">
 <p><img src="./URP/gi_compare_05.png" alt="gi_compare_05.png" width="1500px" /><br />
 </p>
 </div>
@@ -770,7 +826,10 @@ URP 中使用_BaseMap 代替了_MainTex。并在_BaseMap 的前面标记了[Main
 <h2 id="org1be03d7">参考资料</h2>
 <div class="outline-text-2" id="text-org1be03d7">
 <ul class="org-ul">
-<li><a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.0/manual/index.html">https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.0/manual/index.html</a><br /></li>
+<li>CoreRP Library API <a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.core@14.0/api/">https://docs.unity3d.com/Packages/com.unity.render-pipelines.core@14.0/api/</a><br /></li>
+<li>CoreRP Library Manual <a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.core@14.0/manual/">https://docs.unity3d.com/Packages/com.unity.render-pipelines.core@14.0/manual/</a><br /></li>
+<li>Universal RP API <a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@14.0/api/">https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@14.0/api/</a><br /></li>
+<li>Universal RP Manual <a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@14.0/manual/">https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@14.0/manual/</a><br /></li>
 </ul>
 </div>
 </div>

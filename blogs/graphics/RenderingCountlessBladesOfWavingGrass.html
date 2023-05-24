@@ -1,0 +1,493 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2023-05-24 Wed 11:52 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RenderingCountlessBladesOfWavingGrass</title>
+<meta name="generator" content="Org Mode" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+         <meta name="viewport" content="width=device-width, initial-scale=1" />
+         <link rel="stylesheet" title="Standard" href="https://wolfand11.github.io/res/worg_theme/css/worg.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.github.io/res/worg_theme/css/worg-zenburn.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.github.io/res/worg_theme/css/worg-classic.css" type="text/css" />
+         <link rel="icon" href="https://wolfand11.github.io/res/favicon.ico" type="image/ico" />
+         <script type="text/javascript" src="https://wolfand11.github.io/res/blog-tools.js"></script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href=""> UP </a>
+ |
+ <a accesskey="H" href="https://wolfand11.github.io"> HOME </a>
+</div><div id="content" class="content">
+<h1 class="title">RenderingCountlessBladesOfWavingGrass</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#orgf8f0d61">RenderingCountlessBladesOfWavingGrass</a>
+<ul>
+<li><a href="#org7aaba74">7.1 Introduction</a></li>
+<li><a href="#orgd10919d">7.2 Overview</a></li>
+<li><a href="#orgb366ec6">7.3 Preparation of the Grass Objects</a>
+<ul>
+<li><a href="#org50c474d">7.3.1 Grass Texture</a></li>
+<li><a href="#org53a3ea9">7.3.2 Grass Objects</a></li>
+</ul>
+</li>
+<li><a href="#org0d14daa">7.4 Animation</a>
+<ul>
+<li><a href="#org1607416">7.4.1 The General Idea</a></li>
+<li><a href="#org30f432a">7.4.2 Animation per Cluster of Grass Objects</a>
+<ul>
+<li><a href="#org70c7d84">Pros</a></li>
+<li><a href="#org1f4749b">Cons</a></li>
+<li><a href="#orge1cd6be">Algorithm</a></li>
+</ul>
+</li>
+<li><a href="#org51f3455">7.4.3 Animation per Vertex</a>
+<ul>
+<li><a href="#orgc7ec526">Pros</a></li>
+<li><a href="#org92012ca">Cons</a></li>
+<li><a href="#orgbfb8cb5">Algorithm</a></li>
+</ul>
+</li>
+<li><a href="#org4b1e5ae">7.4.4 Animation per Grass Object</a>
+<ul>
+<li><a href="#orgbd3d4c1">Pros</a></li>
+<li><a href="#orgc5abf93">Cons</a></li>
+<li><a href="#orga5a0976">Algorithm</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org8e1750f">7.5 Conclusion</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<p>
+RenderingCountlessBladesOfWavingGrass note.<br />
+</p>
+<div class="HTML" id="org8554909">
+<p>
+&lt;!&#x2013; more &#x2013;&gt;<br />
+</p>
+
+</div>
+
+<div id="outline-container-orgf8f0d61" class="outline-2">
+<h2 id="orgf8f0d61">RenderingCountlessBladesOfWavingGrass</h2>
+<div class="outline-text-2" id="text-orgf8f0d61">
+</div>
+<div id="outline-container-org7aaba74" class="outline-3">
+<h3 id="org7aaba74">7.1 Introduction</h3>
+<div class="outline-text-3" id="text-org7aaba74">
+<p>
+为了以一种逼真的方式模拟出一个田园牧歌式的景象，除了细节非常丰富的树木灌木以及复杂的水和天空模拟外，我们还需要一个高质量的草地效果。我们必须能够将草地覆盖到大面积的地形上，而不会把 GPU 占用过多。草地应当看起来更像是自然生长的，并且可以在风中实时摆动。<br />
+</p>
+
+<p>
+过去，高质量的草地模拟在实时应用中都被认为是太复杂的。 Codecreatures Benchmark（由 Codecult 于 2002 年发布）却证明了这一悲观论断是不正确的（见图 7-1）。在本章中，我们将介绍一个灵活通用的草地模拟方法，基于这个 Benchmark（基准测试）中展示的草效果。另外，本书附带的材料中提供了一个特殊版本的 Codecreatures Benchmark 应用程序，它提供了交互式演示模式。<br />
+</p>
+
+
+<div id="org99963de" class="figure">
+<p><img src="./RenderingCountlessBladesOfWavingGrass/fig07-01.jpg" alt="fig07-01.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgd10919d" class="outline-3">
+<h3 id="orgd10919d">7.2 Overview</h3>
+<div class="outline-text-3" id="text-orgd10919d">
+<p>
+首先，我们应该意识到，详细建模每一片草叶并不是有意义的，因为更大的草地将需要太多的多边形。用当今的图形硬件，无法实时显示出一个数不清的多边形草地场景。<br />
+因此，我们必须建立一个简单而有用的替代方案，满足以下条件：<br />
+</p>
+<ul class="org-ul">
+<li>必须可以用少量多边形代表许多草叶。<br /></li>
+<li>从不同视线上，草看起来要密集。<br /></li>
+</ul>
+
+<p>
+在下一节中，我们将构建满足这些条件的草对象。<br />
+此外，草叶必须真实地动起来。在第 7.4 节中，我们将讨论三种不同的动画方法。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgb366ec6" class="outline-3">
+<h3 id="orgb366ec6">7.3 Preparation of the Grass Objects</h3>
+<div class="outline-text-3" id="text-orgb366ec6">
+<p>
+正如我们刚才提到的，必须由少量的多边形来代表许多草叶。我们从解决这个问题开始。不管摄像机的位置和方向如何，外观应该像一片开阔的乡村。幸运的是，解决这个问题并不太困难。在第 7.3.1 节中，我们首先将几片草叶组合起来，并将它们显示在一个纹理中。但这还不够：一些使用该纹理的多边形必须以这样的方式组合，使单个多边形不被注意到（见第 7.3.2 节）。当观众四处移动时，我们通过混入或混出（blending them in or out）来增加或移除远处的草物体。这确保了完整的草地效果具有健壮的视觉质量。<br />
+</p>
+</div>
+<div id="outline-container-org50c474d" class="outline-4">
+<h4 id="org50c474d">7.3.1 Grass Texture</h4>
+<div class="outline-text-4" id="text-org50c474d">
+<p>
+现在让我们看看如何为我们要解决的任务建立一个纹理。所需的纹理必须聚集多个草叶；否则，它将有大面积的透明区域。我们只需在透明的 alpha 通道中画出实心的草茎，就可以得到这个纹理。在颜色通道中，我们应该使用不同深浅的绿色和黄色，以便更好地区分单个叶片。我们可能想模拟条件好的和条件差的草叶，表示年龄或成熟度的差异，甚至想区分草叶的正面和背面。<br />
+</p>
+
+<p>
+图 7-2 中显示了一个草的纹理的具体例子。<br />
+<img src="./RenderingCountlessBladesOfWavingGrass/fig07-02.jpg" alt="fig07-02.jpg" /><br />
+</p>
+</div>
+</div>
+<div id="outline-container-org53a3ea9" class="outline-4">
+<h4 id="org53a3ea9">7.3.2 Grass Objects</h4>
+<div class="outline-text-4" id="text-org53a3ea9">
+<p>
+本节解释了如何结合一些多边形，用上一节建立的草地纹理进行贴图映射，使模拟的草地看起来很密集，并且不突出个别多边形。该技术还保证了单个多边形的不可见性。<br />
+</p>
+
+<p>
+因为用户可以在场景中自由浏览，类似于图 7-3 所示的构造不足以产生令人信服的效果。如果有人相对于多边形的方向垂直观看场景，草的多边形的线性排列的结构会立即被识别。此外，在这种情况下，草看起来会非常薄。像这样的排列方式只有在自动相机导航或无法到达的远处的草地上才可以考虑。<br />
+</p>
+
+
+<div id="orgff75d5d" class="figure">
+<p><img src="./RenderingCountlessBladesOfWavingGrass/fig07-03.jpg" alt="fig07-03.jpg" /><br />
+</p>
+</div>
+
+<p>
+为了确保独立于当前视角的良好视觉质量，我们必须交叉草多边形。使用看起来像星星的配置被证明是非常值得的。图 7-4 展示了两种可行的 "草物体 "的变体，由三个相交的四边形组成。我们必须在渲染多边形时禁用背面剔除，以实现正反面的可见性。为了获得适当的光照，我们应该将所有顶点的法线向量与多边形的垂直边缘平行。这就保证了位于斜坡上的所有草物体的正确照明，不会因为地形的亮度而产生差异。<br />
+</p>
+
+
+<div id="orgf86c23d" class="figure">
+<p><img src="./RenderingCountlessBladesOfWavingGrass/fig07-04.jpg" alt="fig07-04.jpg" /><br />
+</p>
+</div>
+
+<p>
+如果我们像图 7-5 所示，在一个大的区域内将这些草对象放置的很近，在运行时将它们从后往前排序，使用 alpha 混合，并在绘制调用中启用 z-testing/writing，那么就会得到一个自然生长的茂密草地的效果。<br />
+</p>
+
+
+<div id="org61a5e23" class="figure">
+<p><img src="./RenderingCountlessBladesOfWavingGrass/fig07-05.jpg" alt="fig07-05.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org0d14daa" class="outline-3">
+<h3 id="org0d14daa">7.4 Animation</h3>
+<div class="outline-text-3" id="text-org0d14daa">
+<p>
+继续下一步，我们要对一个完整的草地进行逼真的动画处理，用图 7-5 中的 "草地对象 "来构建草地。本节介绍了三种不同的动画变体。每一种都有其优点和缺点。第 7.4.1 节介绍了我们的动画方法的总体思路。在第 7.4.2 节中，对站在一起的几个草物体的集群以同样的方式进行动画。在第 7.4.3 节中，每个顶点都有自己的平移矢量。最后，在第 7.4.4 节中，我们试图找到黄金分割点：为每个草物体提供不同的动画。<br />
+</p>
+</div>
+<div id="outline-container-org1607416" class="outline-4">
+<h4 id="org1607416">7.4.1 The General Idea</h4>
+<div class="outline-text-4" id="text-org1607416">
+<p>
+为了实现高度真实的动画，我们将使用基于三角函数的计算，特别是正弦和余弦。这个计算应该考虑被移动的位置（无论是顶点还是物体或集群的中心）和当前的时间。另外，盛行风的方向和强度也将是影响因素。我们的每一项技术都只移动草物体的上部顶点。在顶点着色器中，通过检查纹理坐标很容易区分这些上部顶点和下部顶点。所有的上部顶点都应该有相同的草纹理 v 坐标：比如零，或者接近零的值。如下面代码所示，在这三种技术中，顶点着色器代码中的框架都是一样的；只有纯动画部分不同。动画代码可以在下面的章节中找到。<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// Equal Cg / HLSL framework in the vertex shaders</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// for Sections 7.4.2, 7.4.3, and 7.4.4</span>
+<span style="color: #2aa1ae; background-color: #292e34;">//</span>
+<span style="color: #4f97d7; font-weight: bold;">struct</span> VS_INPUT {
+    <span style="color: #ce537a; font-weight: bold;">float3</span> vPosition : <span style="color: #a45bad;">POSITION</span>;
+    <span style="color: #ce537a; font-weight: bold;">float3</span> vNormal : <span style="color: #a45bad;">NORMAL</span>;
+    <span style="color: #ce537a; font-weight: bold;">float2</span> TexCoords : <span style="color: #a45bad;">TEXCOORD0</span>;
+    <span style="color: #2aa1ae; background-color: #292e34;">// This member is needed in Section 7.4.4</span>
+    <span style="color: #ce537a; font-weight: bold;">float3</span> vObjectPosition : <span style="color: #a45bad;">TEXCOORD1</span>;
+};
+<span style="color: #4f97d7; font-weight: bold;">struct</span> VS_OUTPUT {
+    <span style="color: #ce537a; font-weight: bold;">float4</span> vPosition : <span style="color: #a45bad;">POSITION</span>;
+    <span style="color: #ce537a; font-weight: bold;">float4</span> vDiffuse : <span style="color: #a45bad;">COLOR</span>;
+    <span style="color: #ce537a; font-weight: bold;">float2</span> TexCoords : <span style="color: #a45bad;">TEXCOORD0</span>;
+};
+<span style="color: #4f97d7; font-weight: bold;">struct</span> VS_TEMP {
+    <span style="color: #ce537a; font-weight: bold;">float3</span> vPosition;
+    <span style="color: #ce537a; font-weight: bold;">float3</span> vNormal;
+};
+<span style="color: #ce537a; font-weight: bold;">float4x4</span> mWorldViewProjMatrix;
+<span style="color: #ce537a; font-weight: bold;">float4</span> vLight;
+<span style="color: #ce537a; font-weight: bold;">float</span> fObjectHeight;
+VS_OUTPUT <span style="color: #bc6ec5; font-weight: bold;">main</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> VS_INPUT v)
+{
+    VS_OUTPUT <span style="color: #4f97d7; font-weight: bold;">out</span>;
+    VS_TEMP temp;
+    <span style="color: #2aa1ae; background-color: #292e34;">// Animate the upper vertices and normals only</span>
+    <span style="color: #4f97d7; font-weight: bold;">if</span> (v.TexCoords.y &lt;= 0.1) { <span style="color: #2aa1ae; background-color: #292e34;">// Or: if(v.TexCoords.y &gt;= 0.9)</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// animation (to world space)</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// Insert the code for 7.4.2, 7.4.3, or 7.4.4</span>
+        . . . <span style="color: #2aa1ae; background-color: #292e34;">// &lt;- Code for our different animation methods</span>
+    }
+    <span style="color: #2aa1ae; background-color: #292e34;">// Output stuff</span>
+    <span style="color: #4f97d7; font-weight: bold;">out</span>.vPosition = <span style="color: #4f97d7;">mul</span>(<span style="color: #ce537a; font-weight: bold;">float4</span>(temp.vPosition, 1), mWorldViewProjMatrix);
+    <span style="color: #4f97d7; font-weight: bold;">out</span>.vDiffuse = <span style="color: #4f97d7;">dot</span>(vLight, temp.vNormal);
+    <span style="color: #4f97d7; font-weight: bold;">out</span>.TexCoords = v.TexCoords;
+    <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #4f97d7; font-weight: bold;">out</span>;
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org30f432a" class="outline-4">
+<h4 id="org30f432a">7.4.2 Animation per Cluster of Grass Objects</h4>
+<div class="outline-text-4" id="text-org30f432a">
+<p>
+下面的方法被用于 Codecreatures Benchmark，它产生了一种具有不断改变强度和方向的阵风的逼真外观。在这里，多边形上部顶点的移动对于靠近的一组草物体来说是相同的。为了产生一个自然的动画，我们应该选择一个不太大的集群大小。见图 7-6。<br />
+</p>
+
+
+<div id="org04041ab" class="figure">
+<p><img src="./RenderingCountlessBladesOfWavingGrass/fig07-06.jpg" alt="fig07-06.jpg" /><br />
+</p>
+</div>
+
+<p>
+动画的平移矢量是由 CPU 计算的，并作为一个常量参数交给顶点着色器。在 CPU 上使用一种更昂贵的算法，可以让我们实现非常复杂的风的模拟。因为我们为每个草丛对象提供了自己的平移矢量，所以我们必须为每个草丛改变这个常量参数。因此，我们必须经常中断一个完整草地的渲染，并为每个集群使用单独的绘制调用。<br />
+</p>
+</div>
+<div id="outline-container-org70c7d84" class="outline-5">
+<h5 id="org70c7d84">Pros</h5>
+<div class="outline-text-5" id="text-org70c7d84">
+<ul class="org-ul">
+<li>复杂的动画计算是通过基于 CPU 的算法进行的<br /></li>
+<li>由于多边形上部顶点的距离是恒定的，所以没有变形<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org1f4749b" class="outline-5">
+<h5 id="org1f4749b">Cons</h5>
+<div class="outline-text-5" id="text-org1f4749b">
+<ul class="org-ul">
+<li>要显示一个完整的草地，需要多次的绘制调用<br /></li>
+<li>由于一个对象集群的所有顶点的动画是相同的，集群可能被明显观察到<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orge1cd6be" class="outline-5">
+<h5 id="orge1cd6be">Algorithm</h5>
+<div class="outline-text-5" id="text-orge1cd6be">
+<ol class="org-ol">
+<li>在 CPU 上，使用集群中心的位置计算下一个集群的当前平移向量<br /></li>
+<li>将平移矢量设置为顶点着色器的常量。<br /></li>
+<li>为集群执行一个绘制调用。<br /></li>
+<li>在顶点着色器中，将平移矢量添加到上部顶点的位置。参见下面代码。<br /></li>
+</ol>
+
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">float3</span> vClusterTranslation; <span style="color: #2aa1ae; background-color: #292e34;">// Calculated on CPU</span>
+VS_OUTPUT <span style="color: #bc6ec5; font-weight: bold;">main</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> VS_INPUT v)
+{
+    . . .
+    <span style="color: #2aa1ae; background-color: #292e34;">// animation (to world space)</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// Here comes the code for 7.4.2</span>
+    temp.vPosition = v.vPosition + vClusterTranslation;
+    temp.vNormal = <span style="color: #4f97d7;">normalize</span>(v.vNormal * fObjectHeight + vClusterTranslation);
+    ...
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org51f3455" class="outline-4">
+<h4 id="org51f3455">7.4.3 Animation per Vertex</h4>
+<div class="outline-text-4" id="text-org51f3455">
+<p>
+第 7.4.2 节中讨论的方法的主要问题之一是性能差，因为有大量的绘制调用，而这些调用只能单独渲染少量的多边形。如果我们能够通过使用更少的绘制调用来渲染一个大面积的草地，那就更好了。然而，我们必须将完整的动画计算重新放到顶点着色器中，以便能够相对于它的位置分别移动每个顶点。见图 7-7。<br />
+</p>
+
+
+<div id="org938a4f2" class="figure">
+<p><img src="./RenderingCountlessBladesOfWavingGrass/fig07-07.jpg" alt="fig07-07.jpg" /><br />
+</p>
+</div>
+
+<p>
+因为每个顶点的平移是单独计算的，所以草的多边形上部顶点之间的边的长度不再是恒定的，如图 7-8 所示。由于每片草的长度和厚度不恒定，可能会出现明显的变形(distortions)，但通常这些 artifacts 不会很明显。<br />
+</p>
+
+
+<div id="org09d93d0" class="figure">
+<p><img src="./RenderingCountlessBladesOfWavingGrass/fig07-08.jpg" alt="fig07-08.jpg" /><br />
+</p>
+</div>
+
+<p>
+此外，整体效果可能比之前的方法看起来更不自然。因为附近区域的所有顶点的平移都是非常相似的，所以导致了局部混乱的缺失和非常同质化的动画。我们能够通过在顶点着色器中使用一个伪随机函数来消除这个缺点，以达到更多的变化结果。<br />
+</p>
+</div>
+
+<div id="outline-container-orgc7ec526" class="outline-5">
+<h5 id="orgc7ec526">Pros</h5>
+<div class="outline-text-5" id="text-orgc7ec526">
+<ul class="org-ul">
+<li>只需要几个绘图调用，甚至只需要一个，就可以显示一个完整的草地<br /></li>
+<li>在顶点着色器中改变顶点的位置，可以使风的波纹有连续性<br /></li>
+<li>这些集群是无法区分的<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org92012ca" class="outline-5">
+<h5 id="org92012ca">Cons</h5>
+<div class="outline-text-5" id="text-org92012ca">
+<ul class="org-ul">
+<li>由于多边形上部顶点的距离不定，会出现变形<br /></li>
+<li>由于缺乏局部的混乱，动画可能会出现同质化<br /></li>
+<li>动画计算的复杂性是有限的<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgbfb8cb5" class="outline-5">
+<h5 id="orgbfb8cb5">Algorithm</h5>
+<div class="outline-text-5" id="text-orgbfb8cb5">
+<p>
+1 为顶点着色器设置常量，如时间戳和风的基本强度和方向。<br />
+2 为整个草地或大面积的草地执行一次绘制调用。<br />
+3 使用顶点着色器来计算基于顶点位置的动画。<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">float</span> fTimeStamp;
+<span style="color: #ce537a; font-weight: bold;">float3</span> vWindDirection;
+<span style="color: #ce537a; font-weight: bold;">float</span> fWindStrength;
+VS_OUTPUT <span style="color: #bc6ec5; font-weight: bold;">main</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> VS_INPUT v)
+{
+    . . .
+    <span style="color: #2aa1ae; background-color: #292e34;">// animation (to world space)</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// Here comes the code for 7.4.3</span>
+    <span style="color: #ce537a; font-weight: bold;">float3</span> vVertexTranslation = CalcTranslation(v.vPosition, fTimeStamp, vWindDirection, fWindStrength);
+    temp.vPosition = v.vPosition + vVertexTranslation;
+    temp.vNormal = <span style="color: #4f97d7;">normalize</span>(v.vNormal * fObjectHeight + vVertexTranslation);
+    . . .
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org4b1e5ae" class="outline-4">
+<h4 id="org4b1e5ae">7.4.4 Animation per Grass Object</h4>
+<div class="outline-text-4" id="text-org4b1e5ae">
+<p>
+为了增加基于第 7.4.2 和 7.4.3 节中介绍的方法的动画的视觉复杂性，我们将不扭曲的草地纹理和低数量的绘制调用与局部混沌（局部混乱、局部变化）相结合，从而获得这两种方法的优点。我们能够结合这些方法是因为我们不再根据每个顶点的位置来计算其动画，而是根据草对象的中心位置来计算&#x2013;每个对象由三个相交的四边形组成（见 7.3.2 节）。因为相邻的草对象现在有不同的动画，我们可以表现出所需的局部混乱，如图 7-9 所示。此外，每个草对象的恒定动画还可以防止水平纹理变形（distortions）。<br />
+</p>
+
+
+<div id="orgbd75edd" class="figure">
+<p><img src="./RenderingCountlessBladesOfWavingGrass/fig07-09.jpg" alt="fig07-09.jpg" /><br />
+</p>
+</div>
+
+<p>
+为了实现这一点，每个顶点必须知道其对应的草对象的中心位置，可以是相对于顶点的位置，也可以是在世界中的绝对位置。这个所需的草对象位置向量必须是顶点格式的（也就是存储在纹理坐标中），因为顶点着色器必须读取这个值。<br />
+</p>
+</div>
+<div id="outline-container-orgbd3d4c1" class="outline-5">
+<h5 id="orgbd3d4c1">Pros</h5>
+<div class="outline-text-5" id="text-orgbd3d4c1">
+<ul class="org-ul">
+<li>只需要几个绘图调用，甚至只需要一个，就可以显示一个完整的草地<br /></li>
+<li>由于多边形上部顶点的距离是恒定的，所以没有失真<br /></li>
+<li>局部差异创造了一个更自然的外观<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgc5abf93" class="outline-5">
+<h5 id="orgc5abf93">Cons</h5>
+<div class="outline-text-5" id="text-orgc5abf93">
+<ul class="org-ul">
+<li>在顶点中需要存储额外的数据，因为每个顶点也包含其草地对象的中心位置<br /></li>
+<li>动画计算的复杂性是有限的，以尽量减少着色器的成本<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orga5a0976" class="outline-5">
+<h5 id="orga5a0976">Algorithm</h5>
+<div class="outline-text-5" id="text-orga5a0976">
+<p>
+1 为顶点着色器设置常量，如时间戳和风的基本强度和方向。<br />
+2 为整个草地或大面积的草地执行一次绘制调用。<br />
+3 在顶点着色器中，根据草地对象的中心位置来计算动画。<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #ce537a; font-weight: bold;">float</span> fTimeStamp;
+<span style="color: #ce537a; font-weight: bold;">float3</span> vWindDirection;
+<span style="color: #ce537a; font-weight: bold;">float</span> fWindStrength;
+VS_OUTPUT <span style="color: #bc6ec5; font-weight: bold;">main</span>(<span style="color: #4f97d7; font-weight: bold;">const</span> VS_INPUT v)
+{
+    . . .
+    <span style="color: #2aa1ae; background-color: #292e34;">// animation (to world space)</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// Here comes the code for 7.4.4</span>
+    <span style="color: #ce537a; font-weight: bold;">float3</span> vObjectTranslation = CalcTranslation(v.vObjectPosition, fTimeStamp, vWindDirection, fWindStrength);
+    temp.vPosition = v.vPosition + vObjectTranslation;
+    temp.vNormal = <span style="color: #4f97d7;">normalize</span>(v.vNormal * fObjectHeight + vObjectTranslation);
+    . . .
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org8e1750f" class="outline-3">
+<h3 id="org8e1750f">7.5 Conclusion</h3>
+<div class="outline-text-3" id="text-org8e1750f">
+<p>
+我们已经成功地建立了一个真实的草地模拟，满足了三个最重要的要求。<br />
+</p>
+
+<ul class="org-ul">
+<li>广泛的实用性，而不过度的性能压力<br /></li>
+<li>从所有视线看都是自然的外观<br /></li>
+<li>基于当时风况的动画（有三种不同的变体）<br /></li>
+</ul>
+
+<p>
+如图 7-10 所示，用于 Codecreatures Benchmark 的特殊版本的应用程序提供了一个交互式演示模式，可以在本书的 CD 或网站上找到。在该应用程序中，你可以使用一个自由的相机进行导航，并切换渲染状态。我们鼓励你查看这个应用程序，看一看背后的实现。<br />
+</p>
+
+
+<div id="orgf5be123" class="figure">
+<p><img src="./RenderingCountlessBladesOfWavingGrass/fig07-10.jpg" alt="fig07-10.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<div id="vssue"></div>
+        <link rel="stylesheet" href="https://unpkg.com/vssue/dist/vssue.min.css">
+        <script src="https://unpkg.com/vue@2.7.10/dist/vue.runtime.min.js"></script>
+        <script src="https://unpkg.com/vssue/dist/vssue.github.min.js"></script>
+        <script>
+          new Vue({
+            el: '#vssue',
+            render: h => h('Vssue', {
+              props: {
+                // 在这里设置当前页面对应的 Issue 标题
+                title: 'RenderingCountlessBladesOfWavingGrass',
+
+                // 在这里设置你使用的平台的 OAuth App 配置
+                options: {
+                    owner: 'wolfand11',
+                    repo: 'blog_comments',
+                    clientId: 'a02b49185d85859cb92c',
+                    clientSecret: '6f123085c6f1ce339e2517d24e5b099fa1dc9c85', // 只有在使用某些平台时需要
+                },
+              }
+            })
+          })
+        </script>
+</div>
+</body>
+</html>

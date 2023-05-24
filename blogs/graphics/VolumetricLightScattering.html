@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2023-05-24 Wed 11:52 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>VolumetricLightScattering</title>
+<meta name="generator" content="Org Mode" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+         <meta name="viewport" content="width=device-width, initial-scale=1" />
+         <link rel="stylesheet" title="Standard" href="https://wolfand11.github.io/res/worg_theme/css/worg.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.github.io/res/worg_theme/css/worg-zenburn.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.github.io/res/worg_theme/css/worg-classic.css" type="text/css" />
+         <link rel="icon" href="https://wolfand11.github.io/res/favicon.ico" type="image/ico" />
+         <script type="text/javascript" src="https://wolfand11.github.io/res/blog-tools.js"></script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href=""> UP </a>
+ |
+ <a accesskey="H" href="https://wolfand11.github.io"> HOME </a>
+</div><div id="content" class="content">
+<h1 class="title">VolumetricLightScattering</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#org5546f4c">VolumetricLightScattering</a>
+<ul>
+<li><a href="#orgbe2a398">Basic Knowledge</a>
+<ul>
+<li><a href="#orga8581cc">体渲染相关概念</a></li>
+<li><a href="#org71f5b35">丁达尔效应</a></li>
+<li><a href="#orgd99f15e">瑞利散射</a></li>
+<li><a href="#org375f4f9">米氏散射</a></li>
+</ul>
+</li>
+<li><a href="#org9de5da8">LightShaft</a>
+<ul>
+<li><a href="#orgc3bf259">RayMarching LightShaft 0</a></li>
+<li><a href="#org07b525f">RayMarching LightShaft 1</a></li>
+<li><a href="#orgc4ab8ed">RayMarching LightShaft 2</a></li>
+<li><a href="#org839c9a5">UE4 LightShafts</a></li>
+<li><a href="#org1bac6be">Volumetric Light</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<p>
+VolumetricLightScattering note.<br />
+</p>
+<div class="HTML" id="org9abab36">
+<p>
+&lt;!&#x2013; more &#x2013;&gt;<br />
+</p>
+
+</div>
+
+<div id="outline-container-org5546f4c" class="outline-2">
+<h2 id="org5546f4c">VolumetricLightScattering</h2>
+<div class="outline-text-2" id="text-org5546f4c">
+</div>
+<div id="outline-container-orgbe2a398" class="outline-3">
+<h3 id="orgbe2a398">Basic Knowledge</h3>
+<div class="outline-text-3" id="text-orgbe2a398">
+</div>
+<div id="outline-container-orga8581cc" class="outline-4">
+<h4 id="orga8581cc">体渲染相关概念</h4>
+<div class="outline-text-4" id="text-orga8581cc">
+<p>
+吸收（absorption）：光能转化为介质内其它形式的能（如热能）。<br />
+外散射（out-scattering）：光打在介质粒子上散射到其它方向去了。<br />
+自发光（emission）：介质内其它形式的能（如热能）转化成光能。<br />
+内散射（in-scattering）：其它方向来的光打在介质粒子上恰好散射到本方向上。<br />
+</p>
+
+<p>
+体渲染数学原理 <a href="https://zhuanlan.zhihu.com/p/56710440">https://zhuanlan.zhihu.com/p/56710440</a><br />
+</p>
+</div>
+</div>
+<div id="outline-container-org71f5b35" class="outline-4">
+<h4 id="org71f5b35">丁达尔效应</h4>
+<div class="outline-text-4" id="text-org71f5b35">
+<p>
+可见光的波长约在 400～700 nm 之间，当光线射入分散体系时，一部分自由地通过，一部分被吸收、反射或散射，可能发生以下三种情况：<br />
+（1）当光束通过粗分散体系，由于分散质的粒子大于入射光的波长，主要发生反射或折射现象，使体系呈现混浊。<br />
+（2）当光线通过胶体溶液，由于分散质粒子的直径一般在 1～100 nm 之间，小于入射光的波长，主要发生散射，可以看见乳白色的光柱，出现丁达尔现象。<br />
+（3）当光束通过分子溶液，由于溶液十分均匀，散射光因相互干涉而完全抵消，看不见散射光。<br />
+</p>
+
+<ul class="org-ul">
+<li>丁达尔效应 <a href="https://baike.baidu.com/item/%E4%B8%81%E8%BE%BE%E5%B0%94%E6%95%88%E5%BA%94">https://baike.baidu.com/item/%E4%B8%81%E8%BE%BE%E5%B0%94%E6%95%88%E5%BA%94</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgd99f15e" class="outline-4">
+<h4 id="orgd99f15e">瑞利散射</h4>
+<div class="outline-text-4" id="text-orgd99f15e">
+<p>
+瑞利散射是由远小于辐射波长的粒子对光或其他电磁辐射的散射。散射量与光的波长的四次方成反比(波长越短 Rayleigh 散射越强)。<br />
+</p>
+
+<p>
+空气分子对光的散射就属于 Rayleigh Scattering，瑞利散射是各向同性的，吸收可以忽略。<br />
+</p>
+
+<p>
+太阳光谱中波长较短的蓝紫光比波长较长的红光散射更明显，而短波中又以蓝光能量最大，所以在雨过天晴或秋高气爽时（空中较粗微粒比较少，以分子散射为主），在大气分子的强烈散射作用下，蓝色光被散射至弥漫天空，天空即呈现蔚蓝色。<br />
+</p>
+
+<ul class="org-ul">
+<li>瑞利散射 <a href="https://en.wikipedia.org/wiki/Rayleigh_scattering">https://en.wikipedia.org/wiki/Rayleigh_scattering</a><br /></li>
+<li>瑞利散射 <a href="https://baike.baidu.com/item/%E7%91%9E%E5%88%A9%E6%95%A3%E5%B0%84">https://baike.baidu.com/item/%E7%91%9E%E5%88%A9%E6%95%A3%E5%B0%84</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org375f4f9" class="outline-4">
+<h4 id="org375f4f9">米氏散射</h4>
+<div class="outline-text-4" id="text-org375f4f9">
+<p>
+当大气中粒子的直径与辐射的波长相当时发生的散射。这种散射主要由大气中的微粒，如烟、尘埃、小水滴及气溶胶等引起。米氏散射的散射强度与频率的二次方成正比，并且散射在光线向前方向比向后方向更强,方向性比较明显。<br />
+</p>
+
+<p>
+米氏散射是各向异性的，具有很强的 forward lobe 和更高的吸收比例。<br />
+</p>
+
+<ul class="org-ul">
+<li>米氏散射 <a href="https://baike.baidu.com/item/%E7%B1%B3%E6%B0%8F%E6%95%A3%E5%B0%84">https://baike.baidu.com/item/%E7%B1%B3%E6%B0%8F%E6%95%A3%E5%B0%84</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org9de5da8" class="outline-3">
+<h3 id="org9de5da8">LightShaft</h3>
+<div class="outline-text-3" id="text-org9de5da8">
+</div>
+<div id="outline-container-orgc3bf259" class="outline-4">
+<h4 id="orgc3bf259">RayMarching LightShaft 0</h4>
+<div class="outline-text-4" id="text-orgc3bf259">
+<ol class="org-ol">
+<li>渲染光源方向的深度图<br /></li>
+<li>渲染摄像机方向的深度图<br /></li>
+<li>以摄像机原点为射线原点，以摄像机到当前着色点方向为射线方向，以摄像机深度为射线最远距离。<br /></li>
+<li>若当前 RayMarching 点不在阴影中，则表示该点对 LightShaft 效果有贡献，否则无贡献。<br />
+<ul class="org-ul">
+<li>将当前 RayMarching 点转化到光源空间内，若 RayMarching 点的深度 &lt;= 光源空间 DepthRT 深度，则表示其不在阴影中。<br /></li>
+</ul></li>
+</ol>
+
+
+<div id="org34f1e81" class="figure">
+<p><img src="./VolumetricLightScattering/god-ray.jpg" alt="god-ray.jpg" width="800px" /><br />
+</p>
+</div>
+
+
+<div id="org0469af4" class="figure">
+<p><img src="./VolumetricLightScattering/god-ray2.jpg" alt="god-ray2.jpg" width="800px" /><br />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org07b525f" class="outline-4">
+<h4 id="org07b525f">RayMarching LightShaft 1</h4>
+<div class="outline-text-4" id="text-org07b525f">
+<ol class="org-ol">
+<li>渲染光源以及遮挡物到 OcclusionRT<br /></li>
+<li>正常渲染场景到 framebuffer<br /></li>
+<li>以远离光源的方向进行 RayMarching。Occlusion 按照远离距离衰减，将 Occlusion 和 FrameBuffer 进行混合。<br />
+<ul class="org-ul">
+<li>混合函数为 glBlendFunc(GL_SRC_ALPHA, GL_ONE);<br /></li>
+</ul></li>
+</ol>
+
+
+<div id="org3f5b6ff" class="figure">
+<p><img src="./VolumetricLightScattering/fake-god-ray-01.jpg" alt="fake-god-ray-01.jpg" width="800px" /><br />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #4f97d7; font-weight: bold;">uniform</span> <span style="color: #ce537a; font-weight: bold;">float</span> exposure;
+<span style="color: #4f97d7; font-weight: bold;">uniform</span> <span style="color: #ce537a; font-weight: bold;">float</span> decay;
+<span style="color: #4f97d7; font-weight: bold;">uniform</span> <span style="color: #ce537a; font-weight: bold;">float</span> density;
+<span style="color: #4f97d7; font-weight: bold;">uniform</span> <span style="color: #ce537a; font-weight: bold;">float</span> weight;
+<span style="color: #4f97d7; font-weight: bold;">uniform</span> vec2 lightPositionOnScreen;
+<span style="color: #4f97d7; font-weight: bold;">uniform</span> <span style="color: #ce537a; font-weight: bold;">sampler2D</span> firstPass;  <span style="color: #2aa1ae; background-color: #292e34;">// occlusion rt</span>
+<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">int</span> NUM_SAMPLES = 100 ;
+
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">main</span>()
+{
+    vec2 deltaTextCoord = vec2( gl_TexCoord[0].st - lightPositionOnScreen.xy );
+    vec2 textCoo = gl_TexCoord[0].st;
+    deltaTextCoord *= 1.0 /  <span style="color: #ce537a; font-weight: bold;">float</span>(NUM_SAMPLES) * density;
+    <span style="color: #ce537a; font-weight: bold;">float</span> illuminationDecay = 1.0;
+
+
+    <span style="color: #4f97d7; font-weight: bold;">for</span>(<span style="color: #ce537a; font-weight: bold;">int</span> i=0; i &lt; NUM_SAMPLES ; i++)
+    {
+        textCoo -= deltaTextCoord;
+        vec4 sample = <span style="color: #4f97d7; font-weight: bold;">texture2D</span>(firstPass, textCoo );
+
+        sample *= illuminationDecay * weight;
+
+        gl_FragColor += sample;
+
+        illuminationDecay *= decay;
+    }
+    gl_FragColor *= exposure;
+}
+</pre>
+</div>
+
+<p>
+light scattering with opengl <a href="https://fabiensanglard.net/lightScattering/">https://fabiensanglard.net/lightScattering/</a> 有道云备份<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgc4ab8ed" class="outline-4">
+<h4 id="orgc4ab8ed">RayMarching LightShaft 2</h4>
+<div class="outline-text-4" id="text-orgc4ab8ed">
+<ol class="org-ol">
+<li>屏幕空间内，以当前着色点 pScreenUV 为原点，以光源着色点 lightScreenUV 为目标点。在这两个点之间进行 RayMarching。<br /></li>
+<li>若当前 RayMarching 点对应的深度为 1，则表示该点必定不在阴影中，其对 LightShaft 效果有贡献，否则无贡献。<br />
+<ul class="org-ul">
+<li>近似计算 RayMarching 点对 LightShaft 的贡献<br /></li>
+</ul></li>
+</ol>
+
+
+<div id="org870ce3a" class="figure">
+<p><img src="./VolumetricLightScattering/god-ray3.jpg" alt="god-ray3.jpg" width="800px" /><br />
+</p>
+</div>
+
+<p>
+Unity GodRay <a href="https://zhuanlan.zhihu.com/p/144037609">https://zhuanlan.zhihu.com/p/144037609</a><br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org839c9a5" class="outline-4">
+<h4 id="org839c9a5">UE4 LightShafts</h4>
+<div class="outline-text-4" id="text-org839c9a5">
+<p>
+Occlusion 方法<br />
+利用场景深度 RT 创建一个 Mask，以远离 light 的方向对该 Mask 进行多次 Blur 操作，将结果作为 fog 和大气的 mask。该方法和现实生活中的光束产生的原理类似 - 光束由雾气的阴影所生成。注意：这也意味着光束的强弱度只能和雾气和大气相同。原理同上面 <a href="#org07b525f">RayMarching LightShaft 1</a><br />
+</p>
+
+<p>
+Bloom 方法<br />
+该方法在世界空间中的光源周围捕捉场景颜色（包括半透明度和雾气散射），并从光源进行径向模糊。此法并非对真实世界中发生的一切进行模拟，但可控性较高（不受雾气密度限制），视觉效果震撼。太阳周围存在突出的明亮区域（如明亮的云朵）时光晕法的使用效果最佳。明亮的太阳过小，会形成一定程度的锯齿，而且 Blur 操作是图像空间操作，消耗比较高。<br />
+</p>
+
+<ul class="org-ul">
+<li><a href="https://docs.unrealengine.com/4.27/en-US/BuildingWorlds/LightingAndShadows/LightShafts/">https://docs.unrealengine.com/4.27/en-US/BuildingWorlds/LightingAndShadows/LightShafts/</a><br /></li>
+<li>UE4ToUnity LightShaft <a href="https://zhuanlan.zhihu.com/p/76944971">https://zhuanlan.zhihu.com/p/76944971</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org1bac6be" class="outline-4">
+<h4 id="org1bac6be">Volumetric Light</h4>
+<div class="outline-text-4" id="text-org1bac6be">
+<ul class="org-ul">
+<li><a href="https://developer.nvidia.com/gpugems/gpugems3/part-ii-light-and-shadows/chapter-13-volumetric-light-scattering-post-process">https://developer.nvidia.com/gpugems/gpugems3/part-ii-light-and-shadows/chapter-13-volumetric-light-scattering-post-process</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<div id="vssue"></div>
+        <link rel="stylesheet" href="https://unpkg.com/vssue/dist/vssue.min.css">
+        <script src="https://unpkg.com/vue@2.7.10/dist/vue.runtime.min.js"></script>
+        <script src="https://unpkg.com/vssue/dist/vssue.github.min.js"></script>
+        <script>
+          new Vue({
+            el: '#vssue',
+            render: h => h('Vssue', {
+              props: {
+                // 在这里设置当前页面对应的 Issue 标题
+                title: 'VolumetricLightScattering',
+
+                // 在这里设置你使用的平台的 OAuth App 配置
+                options: {
+                    owner: 'wolfand11',
+                    repo: 'blog_comments',
+                    clientId: 'a02b49185d85859cb92c',
+                    clientSecret: '6f123085c6f1ce339e2517d24e5b099fa1dc9c85', // 只有在使用某些平台时需要
+                },
+              }
+            })
+          })
+        </script>
+</div>
+</body>
+</html>

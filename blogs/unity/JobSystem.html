@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-02-02 Thu 11:08 -->
+<!-- 2023-05-24 Wed 14:57 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Job System</title>
@@ -32,10 +32,10 @@
 <li><a href="#org69dfede">Unity Job System</a>
 <ul>
 <li><a href="#org0dbc76b">概述</a></li>
-<li><a href="#org4784ea0">Safety system</a>
+<li><a href="#orgff39b88">Safety system</a>
 <ul>
 <li><a href="#org52531be">Race conditions(竞争情况|竞争态势|竞争环境)</a></li>
-<li><a href="#org94480a5">Safety system</a></li>
+<li><a href="#org4784ea0">Safety system</a></li>
 </ul>
 </li>
 <li><a href="#orgbf4b095">Native Container</a>
@@ -54,7 +54,11 @@
 <li><a href="#org6e3016d">Job Handle and dependencies</a>
 <ul>
 <li><a href="#orge3e9ddf">指定 job 依赖关系</a></li>
-<li><a href="#org61e3ea3">在主线程等待 job，执行 job</a></li>
+<li><a href="#org61e3ea3">在主线程等待 job，执行 job</a>
+<ul>
+<li><a href="#org35521c4">JobHandle.ScheduleBatchedJobs</a></li>
+</ul>
+</li>
 <li><a href="#orgb3f0bf5">Example</a></li>
 </ul>
 </li>
@@ -92,12 +96,12 @@
 <li><a href="#org3284645">Index 12 is out of restricted IJobParallelFor range [0&#x2026;11] in ReadWriteBuffer.</a></li>
 </ul>
 </li>
-<li><a href="#orgd709f8c">参考资料</a></li>
+<li><a href="#org120b095">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#org713f427">Implement Job System With CPP</a>
 <ul>
-<li><a href="#org120b095">参考资料</a></li>
+<li><a href="#orgbbc91ff">参考资料</a></li>
 </ul>
 </li>
 </ul>
@@ -106,7 +110,7 @@
 <p>
 Job System note.<br />
 </p>
-<div class="HTML" id="org955bbea">
+<div class="HTML" id="org35c640b">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -146,9 +150,9 @@ Job System note.<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-org4784ea0" class="outline-4">
-<h4 id="org4784ea0">Safety system</h4>
-<div class="outline-text-4" id="text-org4784ea0">
+<div id="outline-container-orgff39b88" class="outline-4">
+<h4 id="orgff39b88">Safety system</h4>
+<div class="outline-text-4" id="text-orgff39b88">
 </div>
 <div id="outline-container-org52531be" class="outline-5">
 <h5 id="org52531be">Race conditions(竞争情况|竞争态势|竞争环境)</h5>
@@ -158,9 +162,9 @@ Job System note.<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org94480a5" class="outline-5">
-<h5 id="org94480a5">Safety system</h5>
-<div class="outline-text-5" id="text-org94480a5">
+<div id="outline-container-org4784ea0" class="outline-5">
+<h5 id="org4784ea0">Safety system</h5>
+<div class="outline-text-5" id="text-org4784ea0">
 <p>
 为了使得编写多线程代码更容易，unity c# job system 会检测所有潜在的 race conditions，并且避免 race conditions 导致的 bugs。<br />
 </p>
@@ -301,7 +305,7 @@ Tips:<br />
 </p>
 <ul class="org-ul">
 <li>BurstCompile  显式指定 unity 使用 Burst 来编译我们的 MyJob job 结构体。当 job 第一次被执行时，其会被 Burst 在后台进行编译，此时会使用常规的 C#编译版本。当 Burst 编译完成后，才会切换到 Burst 编译版本。<br /></li>
-<li>BurstCompiel(CompileSynchronously=true) 表示强制 editor 立即编译 job 的 Burst 版本，unity 会卡住，直到编译完成。<br /></li>
+<li>BurstCompile(CompileSynchronously=true) 表示强制 editor 立即编译 job 的 Burst 版本，unity 会卡住，直到编译完成。<br /></li>
 </ul>
 </div>
 </div>
@@ -395,12 +399,24 @@ jobC.<span style="color: #bc6ec5; font-weight: bold;">Schedule</span>(dependency
 
 <p>
 Tips:<br />
-调用 Schedule 之后，并不会开始执行 job。JobHandle 的 Complete 方法会刷新 memory cache 中的 jobs 并开始执行过程。调用 JobHandle 的 Complete 方法会将 job 的 NativeContainer 的所有权转移回主线程。调用依赖该 job 的另一个 job 的 JobHandle.Complete 方法也可以将该 job 的 NativeContainer 的所有权转移回主线程。例如：jobA 使用 NativeContainer containerA，jobB 依赖于 jobA，在主线程上，调用 jobA 的 Complete 或调用 jobB 的 Complete 之后，都可以安全访问 containerA。<br />
+调用 Schedule 之后，并不会开始执行 job，只会将 job 放入 job 队列，使得 job 对 worker 线程可见。JobHandle 的 Complete 方法会刷新 memory cache 中的 jobs 并开始执行过程。调用 JobHandle 的 Complete 方法会将 job 的 NativeContainer 的所有权转移回主线程。调用依赖该 job 的另一个 job 的 JobHandle.Complete 方法也可以将该 job 的 NativeContainer 的所有权转移回主线程。例如：jobA 使用 NativeContainer containerA，jobB 依赖于 jobA，在主线程上，调用 jobA 的 Complete 或调用 jobB 的 Complete 之后，都可以安全访问 containerA。<br />
 </p>
 
 <p>
 如果不需要在主线程访问 job 的数据，也就不需要调用 JobHandle 的 Complete 方法，此时为了执行 job，需要通过调用 JobHandle.ScheduleBatchedJobs 来显示刷新 batch，该调用会对性能造成负面影响。<br />
 </p>
+</div>
+<div id="outline-container-org35521c4" class="outline-6">
+<h6 id="org35521c4">JobHandle.ScheduleBatchedJobs</h6>
+<div class="outline-text-6" id="text-org35521c4">
+<p>
+job system 有意延迟 job 的执行，直到你手动调用 JobHandle.ScheduleBatchedJobs。因为，唤醒工作线程的成本实际上可能很高，所以，调度了一些 jobs 后，再延迟启动工作线程是一个好的默认设置。通常，如果你要在循环中调度一堆 jobs，应该等待循环结束后再启动工作线程。如果在调度多个作业之间，需要在主线程上做大量工作，那么在每个作业之间使用 ScheduleBatchedJobs 则是有意义的。<br />
+</p>
+
+<ul class="org-ul">
+<li><a href="https://docs.unity3d.com/ScriptReference/Unity.Jobs.JobHandle.ScheduleBatchedJobs.html">https://docs.unity3d.com/ScriptReference/Unity.Jobs.JobHandle.ScheduleBatchedJobs.html</a><br /></li>
+</ul>
+</div>
 </div>
 </div>
 <div id="outline-container-orgb3f0bf5" class="outline-5">
@@ -424,7 +440,7 @@ Tips:<br />
 <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">struct</span> <span style="color: #ce537a; font-weight: bold;">AddOneJob</span> : <span style="color: #ce537a; font-weight: bold;">IJob</span>
 {
     <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">NativeArray</span>&lt;<span style="color: #ce537a; font-weight: bold;">float</span>&gt; <span style="color: #7590db;">result</span>;
-    
+
     <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Execute</span>()
     {
         result[0] = result[0] + 1;
@@ -493,12 +509,8 @@ ParallelFor job 使用 NativeArray 类型的数据作为其数据源。ParallelF
 
 <p>
 下图为整个调度 ParallelFor job 的流程：<br />
+<img src="./JobSystem/jobsystem_parallelfor_job_batches.jpg" alt="jobsystem_parallelfor_job_batches.jpg" /><br />
 </p>
-
-<div id="orgf0b1dd4" class="figure">
-<p><img src="./JobSystem/jobsystem_parallelfor_job_batches.jpg" alt="jobsystem_parallelfor_job_batches.jpg" width="700px" /><br />
-</p>
-</div>
 
 <p>
 当一个 Native Job 比其他 job 先完成分给它的 batchs，它会从其他 Native Job 抽取 batchs 来执行。为了保证 cache 的局部性，它只会抽取某个 Native Job 剩余的一半 batchs。<br />
@@ -820,9 +832,9 @@ job 有一个 Run 方法，你可以在 Schedule 的地方使用 Run 来代替�
 </div>
 </div>
 </div>
-<div id="outline-container-orgd709f8c" class="outline-3">
-<h3 id="orgd709f8c">参考资料</h3>
-<div class="outline-text-3" id="text-orgd709f8c">
+<div id="outline-container-org120b095" class="outline-3">
+<h3 id="org120b095">参考资料</h3>
+<div class="outline-text-3" id="text-org120b095">
 <ul class="org-ul">
 <li>JobSystem <a href="https://docs.unity3d.com/Manual/JobSystem.html">https://docs.unity3d.com/Manual/JobSystem.html</a><br /></li>
 <li>Burst <a href="https://docs.unity3d.com/Packages/com.unity.burst@0.2/manual/index.html">https://docs.unity3d.com/Packages/com.unity.burst@0.2/manual/index.html</a><br /></li>
@@ -836,9 +848,9 @@ job 有一个 Run 方法，你可以在 Schedule 的地方使用 Run 来代替�
 <h2 id="org713f427">Implement Job System With CPP</h2>
 <div class="outline-text-2" id="text-org713f427">
 </div>
-<div id="outline-container-org120b095" class="outline-3">
-<h3 id="org120b095">参考资料</h3>
-<div class="outline-text-3" id="text-org120b095">
+<div id="outline-container-orgbbc91ff" class="outline-3">
+<h3 id="orgbbc91ff">参考资料</h3>
+<div class="outline-text-3" id="text-orgbbc91ff">
 <ul class="org-ul">
 <li>Parallelizing the Naughty Dog Engine Using Fibers <a href="https://www.gdcvault.com/play/1022186/Parallelizing-the-Naughty-Dog-Engine">https://www.gdcvault.com/play/1022186/Parallelizing-the-Naughty-Dog-Engine</a><br /></li>
 <li>Parallelizing the Naughty Dog Engine Using Fibers <a href="https://ubm-twvideo01.s3.amazonaws.com/o1/vault/gdc2015/presentations/Gyrling_Christian_Parallelizing_The_Naughty.pdf">https://ubm-twvideo01.s3.amazonaws.com/o1/vault/gdc2015/presentations/Gyrling_Christian_Parallelizing_The_Naughty.pdf</a><br /></li>

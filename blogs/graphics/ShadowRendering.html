@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-02-02 Thu 11:07 -->
+<!-- 2023-06-16 Fri 21:12 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>ShadowRendering</title>
@@ -27,89 +27,89 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org5090fb4">Shadow Mapping</a>
+<li><a href="#org93085c0">Shadow Mapping</a>
 <ul>
-<li><a href="#org56c8674">原理</a></li>
-<li><a href="#org0ad534c">Issues</a>
+<li><a href="#orgc869e57">原理</a></li>
+<li><a href="#org808cafe">Issues</a>
 <ul>
-<li><a href="#orgf087f10">Self Occlusion</a>
+<li><a href="#org9bdbdb8">Self Occlusion</a>
 <ul>
-<li><a href="#orgbc228b6">Unity 如何处理的 SelfOcclusion？</a></li>
-<li><a href="#org538a362">为什么光照方向和表面法线夹角越大，Self Occlusion 越严重？</a></li>
+<li><a href="#orgaf552ea">Unity 如何处理的 SelfOcclusion？</a></li>
+<li><a href="#orgec0778c">为什么光照方向和表面法线夹角越大，Self Occlusion 越严重？</a></li>
 </ul>
 </li>
-<li><a href="#org7202f3b">Aliasing</a></li>
-<li><a href="#org409cbf7">参考资料</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#org01d0649">Cascaded Shadow Mapping</a>
-<ul>
-<li><a href="#org7baa504">原理</a></li>
-</ul>
-</li>
-<li><a href="#orgfa2bc85">Unity ScreenSpaceShadows</a>
-<ul>
-<li><a href="#org696b3d5">原理</a></li>
-</ul>
-</li>
-<li><a href="#orged7e6b6">Percentage Closer Filter</a>
-<ul>
-<li><a href="#org64d5058">原理</a>
-<ul>
-<li><a href="#orgaf9a3ad">如何生成 2D Triangle Filter Kernel?</a></li>
-<li><a href="#orgfde98de">如何生成 2D Gaussian Filter Kernel?</a></li>
+<li><a href="#orgb05d9bf">Aliasing</a></li>
+<li><a href="#orga454a29">参考资料</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#orgebe6461">Percentage Closer Soft Shadow</a>
+<li><a href="#org3ec1a46">Cascaded Shadow Mapping</a>
 <ul>
-<li><a href="#orgcb41177">原理</a></li>
+<li><a href="#orge49d8ee">原理</a></li>
 </ul>
 </li>
-<li><a href="#org4db767a">Planar Shadow</a>
+<li><a href="#orgc4e4ac1">Unity ScreenSpaceShadows</a>
 <ul>
-<li><a href="#orga4387e9">原理</a>
+<li><a href="#org2e74585">原理</a></li>
+</ul>
+</li>
+<li><a href="#org17b086b">Percentage Closer Filter</a>
 <ul>
-<li><a href="#orgf3ec71e">ERROR: 反射摄像机渲染结果和场景摄像机相同？</a></li>
-<li><a href="#org9842771">ERROR: 穿过平面的物体，反射效果错误</a></li>
+<li><a href="#org0e88eb6">原理</a>
+<ul>
+<li><a href="#org8764388">如何生成 2D Triangle Filter Kernel?</a></li>
+<li><a href="#org26b7ec1">如何生成 2D Gaussian Filter Kernel?</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#org896aa7e">Dynamic Shadow Projector</a>
+<li><a href="#org96ec19c">Percentage Closer Soft Shadow</a>
 <ul>
-<li><a href="#org8f9d9ae">原理</a></li>
+<li><a href="#org8064ad8">原理</a></li>
 </ul>
 </li>
-<li><a href="#org4a2ecdd">Stencil Shadow Volume</a>
+<li><a href="#org3706a18">Planar Shadow</a>
 <ul>
-<li><a href="#org7e7aaa3">原理</a></li>
+<li><a href="#orga6bb0cb">原理</a>
+<ul>
+<li><a href="#org7586253">ERROR: 反射摄像机渲染结果和场景摄像机相同？</a></li>
+<li><a href="#org1ba2bd0">ERROR: 穿过平面的物体，反射效果错误</a></li>
 </ul>
 </li>
-<li><a href="#orgea56826"><span class="todo TODO">TODO</span> SDF Shadow</a></li>
-<li><a href="#org4c70a70">参考资料</a></li>
+</ul>
+</li>
+<li><a href="#org2586bc0">Dynamic Shadow Projector</a>
+<ul>
+<li><a href="#org51ef091">原理</a></li>
+</ul>
+</li>
+<li><a href="#orgecf6869">Stencil Shadow Volume</a>
+<ul>
+<li><a href="#orgb78be36">原理</a></li>
+</ul>
+</li>
+<li><a href="#orgeab1ab2"><span class="todo TODO">TODO</span> SDF Shadow</a></li>
+<li><a href="#org3820dbb">参考资料</a></li>
 </ul>
 </div>
 </div>
 <p>
 UnityShadow note.<br />
 </p>
-<div class="HTML" id="orgdb29b41">
+<div class="HTML" id="org140e14d">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
 
 </div>
-<div id="outline-container-org5090fb4" class="outline-2">
-<h2 id="org5090fb4">Shadow Mapping</h2>
-<div class="outline-text-2" id="text-org5090fb4">
+<div id="outline-container-org93085c0" class="outline-2">
+<h2 id="org93085c0">Shadow Mapping</h2>
+<div class="outline-text-2" id="text-org93085c0">
 </div>
-<div id="outline-container-org56c8674" class="outline-3">
-<h3 id="org56c8674">原理</h3>
-<div class="outline-text-3" id="text-org56c8674">
+<div id="outline-container-orgc869e57" class="outline-3">
+<h3 id="orgc869e57">原理</h3>
+<div class="outline-text-3" id="text-orgc869e57">
 <ol class="org-ol">
 <li>从灯光方向渲染场景，得到 shadow map<br /></li>
 <li>从摄像机渲染场景时，将渲染的像素转化到灯光坐标系中，执行投影变换后得到像素在灯光坐标系下的深度值 Zl 以及采样 shadowmap 的 uv 坐标<br /></li>
@@ -117,19 +117,19 @@ UnityShadow note.<br />
 </ol>
 </div>
 </div>
-<div id="outline-container-org0ad534c" class="outline-3">
-<h3 id="org0ad534c">Issues</h3>
-<div class="outline-text-3" id="text-org0ad534c">
+<div id="outline-container-org808cafe" class="outline-3">
+<h3 id="org808cafe">Issues</h3>
+<div class="outline-text-3" id="text-org808cafe">
 </div>
-<div id="outline-container-orgf087f10" class="outline-4">
-<h4 id="orgf087f10">Self Occlusion</h4>
-<div class="outline-text-4" id="text-orgf087f10">
+<div id="outline-container-org9bdbdb8" class="outline-4">
+<h4 id="org9bdbdb8">Self Occlusion</h4>
+<div class="outline-text-4" id="text-org9bdbdb8">
 <p>
 用阴影贴图存储场景到光源的深度信息，其实是在光栅化阶段后，将场景深度信息进行离散化存储到精度有限的深度贴图中，深度贴图中每个图元对应的是一个小区域(假设该区域为 As)中心点的深度值 Z。 渲染物体时，fragment shader 中计算当前片段的深度值，该深度值同样是一个小区域(假设该区域为 Al)中心点的深度值 Zl。无法保证 As 和 Al 区域能一一对应起来，所以，在比较 Z 和 Zl 时，这两个值对应的并不是同一个点的深度。如下图所示：<br />
 </p>
 
 
-<div id="org5724ce0" class="figure">
+<div id="org8bed55e" class="figure">
 <p><img src="./ShadowRendering/shadow_map_self_occlusion_01.jpg" alt="shadow_map_self_occlusion_01.jpg" width="400px" /><br />
 </p>
 </div>
@@ -138,7 +138,7 @@ UnityShadow note.<br />
 这就会导致下图中出现黑白相间的条纹:<br />
 </p>
 
-<div id="org21308cc" class="figure">
+<div id="orgdaa99fb" class="figure">
 <p><img src="./ShadowRendering/shadow_map_self_occlusion.jpg" alt="shadow_map_self_occlusion.jpg" width="200px" /><br />
 </p>
 </div>
@@ -147,7 +147,7 @@ UnityShadow note.<br />
 可以通过将像素深度值往光源方向的反方向偏移来解决该问题，其原理如下图所示：<br />
 </p>
 
-<div id="orgbe37cf5" class="figure">
+<div id="orgfac8bc6" class="figure">
 <p><img src="./ShadowRendering/shadow_map_self_occlusion_03.jpg" alt="shadow_map_self_occlusion_03.jpg" width="400px" /><br />
 </p>
 </div>
@@ -162,7 +162,7 @@ UnityShadow note.<br />
 上面的偏移方法会导致阴影跟着偏移，如下图所示：<br />
 </p>
 
-<div id="orgcfde499" class="figure">
+<div id="org6fe7b00" class="figure">
 <p><img src="./ShadowRendering/shadow_map_self_occlusion_04.jpg" alt="shadow_map_self_occlusion_04.jpg" width="400px" /><br />
 </p>
 </div>
@@ -171,15 +171,15 @@ UnityShadow note.<br />
 还可以通过第二深度贴图来解决 Self Occlusion 问题，该方案可以避免阴影偏移的问题，其原理如下图：<br />
 </p>
 
-<div id="org0b8e960" class="figure">
+<div id="org07de513" class="figure">
 <p><img src="./ShadowRendering/second-depth-shadow mapping.jpg" alt="second-depth-shadow mapping.jpg" width="400px" /><br />
 </p>
 </div>
 </div>
 
-<div id="outline-container-orgbc228b6" class="outline-5">
-<h5 id="orgbc228b6">Unity 如何处理的 SelfOcclusion？</h5>
-<div class="outline-text-5" id="text-orgbc228b6">
+<div id="outline-container-orgaf552ea" class="outline-5">
+<h5 id="orgaf552ea">Unity 如何处理的 SelfOcclusion？</h5>
+<div class="outline-text-5" id="text-orgaf552ea">
 <ol class="org-ol">
 <li>渲染阴影贴图时，将物体顶点向 normal 反方向偏移，阴影贴图中记录的深度值会比正常情况要大。<br /></li>
 <li>将近平面前的物体移到近平面，避免阴影显示不完整<br /></li>
@@ -235,9 +235,9 @@ UnityShadow note.<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org538a362" class="outline-5">
-<h5 id="org538a362">为什么光照方向和表面法线夹角越大，Self Occlusion 越严重？</h5>
-<div class="outline-text-5" id="text-org538a362">
+<div id="outline-container-orgec0778c" class="outline-5">
+<h5 id="orgec0778c">为什么光照方向和表面法线夹角越大，Self Occlusion 越严重？</h5>
+<div class="outline-text-5" id="text-orgec0778c">
 <p>
 如下图所示光照方向和表面法线夹角越大，阴影贴图所对应的场景区域越大，每个阴影图元对应的区域越大。摄像机片段深度值和阴影深度值相差就越大。shadow bias 比较小的化，依然无法避免 Self Occlusion 问题。<br />
 <img src="./ShadowRendering/shadow_map_self_occlusion_02.jpg" alt="shadow_map_self_occlusion_02.jpg" /><br />
@@ -246,17 +246,17 @@ UnityShadow note.<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org7202f3b" class="outline-4">
-<h4 id="org7202f3b">Aliasing</h4>
-<div class="outline-text-4" id="text-org7202f3b">
+<div id="outline-container-orgb05d9bf" class="outline-4">
+<h4 id="orgb05d9bf">Aliasing</h4>
+<div class="outline-text-4" id="text-orgb05d9bf">
 <p>
 使用 PCF 来解决 Aliasing。PCF 原理参考下文。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org409cbf7" class="outline-4">
-<h4 id="org409cbf7">参考资料</h4>
-<div class="outline-text-4" id="text-org409cbf7">
+<div id="outline-container-orga454a29" class="outline-4">
+<h4 id="orga454a29">参考资料</h4>
+<div class="outline-text-4" id="text-orga454a29">
 <ul class="org-ul">
 <li><a href="https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping">https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping</a><br /></li>
 <li><a href="https://sites.cs.ucsb.edu/~lingqi/teaching/resources/GAMES202_Lecture_03.pdf">https://sites.cs.ucsb.edu/~lingqi/teaching/resources/GAMES202_Lecture_03.pdf</a><br /></li>
@@ -265,32 +265,32 @@ UnityShadow note.<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org01d0649" class="outline-2">
-<h2 id="org01d0649">Cascaded Shadow Mapping</h2>
-<div class="outline-text-2" id="text-org01d0649">
+<div id="outline-container-org3ec1a46" class="outline-2">
+<h2 id="org3ec1a46">Cascaded Shadow Mapping</h2>
+<div class="outline-text-2" id="text-org3ec1a46">
 </div>
-<div id="outline-container-org7baa504" class="outline-3">
-<h3 id="org7baa504">原理</h3>
-<div class="outline-text-3" id="text-org7baa504">
+<div id="outline-container-orge49d8ee" class="outline-3">
+<h3 id="orge49d8ee">原理</h3>
+<div class="outline-text-3" id="text-orge49d8ee">
 <p>
 场景中近处物体的阴影精度要求比较高，远处物体的阴影精度不需要太高。可以按照下图所示方法将视景体分为 Near、Middle、Far 三部分，分别对场景进行阴影渲染，近处阴影渲染所涵盖的场景比较小，远处阴影渲染所涵盖的场景范围比较大，假如各部分所占阴影贴图空间相同，则近处部分的阴影精度自然要高。我们甚至可以为近处分配更多的阴影贴图空间，更进一步提高近处阴影进度。<br />
 </p>
 
 
-<div id="org45b67a7" class="figure">
+<div id="orgbd037eb" class="figure">
 <p><img src="./ShadowRendering/cascaded_shadow_mapping.png" alt="cascaded_shadow_mapping.png" /><br />
 </p>
 </div>
 </div>
 </div>
 </div>
-<div id="outline-container-orgfa2bc85" class="outline-2">
-<h2 id="orgfa2bc85">Unity ScreenSpaceShadows</h2>
-<div class="outline-text-2" id="text-orgfa2bc85">
+<div id="outline-container-orgc4e4ac1" class="outline-2">
+<h2 id="orgc4e4ac1">Unity ScreenSpaceShadows</h2>
+<div class="outline-text-2" id="text-orgc4e4ac1">
 </div>
-<div id="outline-container-org696b3d5" class="outline-3">
-<h3 id="org696b3d5">原理</h3>
-<div class="outline-text-3" id="text-org696b3d5">
+<div id="outline-container-org2e74585" class="outline-3">
+<h3 id="org2e74585">原理</h3>
+<div class="outline-text-3" id="text-org2e74585">
 <ol class="org-ol">
 <li>在屏幕空间，根据深度缓冲区内容 和 ShadowMap 内容，得到屏幕空间的阴影。<br /></li>
 <li>渲染物体时，直接采样屏幕空间阴影贴图得到阴影值。<br /></li>
@@ -300,21 +300,21 @@ UnityShadow note.<br />
 </div>
 </div>
 </div>
-<div id="outline-container-orged7e6b6" class="outline-2">
-<h2 id="orged7e6b6">Percentage Closer Filter</h2>
-<div class="outline-text-2" id="text-orged7e6b6">
+<div id="outline-container-org17b086b" class="outline-2">
+<h2 id="org17b086b">Percentage Closer Filter</h2>
+<div class="outline-text-2" id="text-org17b086b">
 </div>
-<div id="outline-container-org64d5058" class="outline-3">
-<h3 id="org64d5058">原理</h3>
-<div class="outline-text-3" id="text-org64d5058">
+<div id="outline-container-org0e88eb6" class="outline-3">
+<h3 id="org0e88eb6">原理</h3>
+<div class="outline-text-3" id="text-org0e88eb6">
 <ul class="org-ul">
 <li><a href="https://developer.download.nvidia.com/books/HTML/gpugems/gpugems_ch11.html">https://developer.download.nvidia.com/books/HTML/gpugems/gpugems_ch11.html</a><br /></li>
 </ul>
 </div>
 
-<div id="outline-container-orgaf9a3ad" class="outline-4">
-<h4 id="orgaf9a3ad">如何生成 2D Triangle Filter Kernel?</h4>
-<div class="outline-text-4" id="text-orgaf9a3ad">
+<div id="outline-container-org8764388" class="outline-4">
+<h4 id="org8764388">如何生成 2D Triangle Filter Kernel?</h4>
+<div class="outline-text-4" id="text-org8764388">
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #4f97d7; font-weight: bold;">import</span> numpy <span style="color: #4f97d7; font-weight: bold;">as</span> np
 
@@ -343,9 +343,9 @@ UnityShadow note.<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-orgfde98de" class="outline-4">
-<h4 id="orgfde98de">如何生成 2D Gaussian Filter Kernel?</h4>
-<div class="outline-text-4" id="text-orgfde98de">
+<div id="outline-container-org26b7ec1" class="outline-4">
+<h4 id="org26b7ec1">如何生成 2D Gaussian Filter Kernel?</h4>
+<div class="outline-text-4" id="text-org26b7ec1">
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #4f97d7; font-weight: bold;">import</span> numpy <span style="color: #4f97d7; font-weight: bold;">as</span> np
 <span style="color: #4f97d7; font-weight: bold;">import</span> scipy.stats <span style="color: #4f97d7; font-weight: bold;">as</span> st
@@ -370,37 +370,37 @@ UnityShadow note.<br />
 </div>
 </div>
 </div>
-<div id="outline-container-orgebe6461" class="outline-2">
-<h2 id="orgebe6461">Percentage Closer Soft Shadow</h2>
-<div class="outline-text-2" id="text-orgebe6461">
+<div id="outline-container-org96ec19c" class="outline-2">
+<h2 id="org96ec19c">Percentage Closer Soft Shadow</h2>
+<div class="outline-text-2" id="text-org96ec19c">
 </div>
-<div id="outline-container-orgcb41177" class="outline-3">
-<h3 id="orgcb41177">原理</h3>
-<div class="outline-text-3" id="text-orgcb41177">
+<div id="outline-container-org8064ad8" class="outline-3">
+<h3 id="org8064ad8">原理</h3>
+<div class="outline-text-3" id="text-org8064ad8">
 <p>
 依据投影点和遮挡物之间的距离计算 PCF 采样宽度，距离越远采样宽度越大，阴影越模糊；距离越近采样宽度越小，阴影越锐利。<br />
 </p>
 
 
-<div id="org1b12ad9" class="figure">
+<div id="org2f0af81" class="figure">
 <p><img src="./ShadowRendering/pcss_shadow_value.jpg" alt="pcss_shadow_value.jpg" width="200px" /><br />
 </p>
 </div>
 </div>
 </div>
 </div>
-<div id="outline-container-org4db767a" class="outline-2">
-<h2 id="org4db767a">Planar Shadow</h2>
-<div class="outline-text-2" id="text-org4db767a">
+<div id="outline-container-org3706a18" class="outline-2">
+<h2 id="org3706a18">Planar Shadow</h2>
+<div class="outline-text-2" id="text-org3706a18">
 </div>
-<div id="outline-container-orga4387e9" class="outline-3">
-<h3 id="orga4387e9">原理</h3>
-<div class="outline-text-3" id="text-orga4387e9">
+<div id="outline-container-orga6bb0cb" class="outline-3">
+<h3 id="orga6bb0cb">原理</h3>
+<div class="outline-text-3" id="text-orga6bb0cb">
 <p>
 将模型顶点变换到投影平面上进行渲染。<br />
 </p>
 
-<div id="org961f568" class="figure">
+<div id="orgc71e95a" class="figure">
 <p><img src="./ShadowRendering/planar_shadow.jpg" alt="planar_shadow.jpg" width="350px" /><br />
 </p>
 </div>
@@ -410,9 +410,9 @@ UnityShadow note.<br />
 <li><a href="https://zhuanlan.zhihu.com/p/31504088">https://zhuanlan.zhihu.com/p/31504088</a><br /></li>
 </ul>
 </div>
-<div id="outline-container-orgf3ec71e" class="outline-4">
-<h4 id="orgf3ec71e">ERROR: 反射摄像机渲染结果和场景摄像机相同？</h4>
-<div class="outline-text-4" id="text-orgf3ec71e">
+<div id="outline-container-org7586253" class="outline-4">
+<h4 id="org7586253">ERROR: 反射摄像机渲染结果和场景摄像机相同？</h4>
+<div class="outline-text-4" id="text-org7586253">
 <p>
 reflectionCam.Render() 会触发 OnWillRenderObject()，导致两次反射抵消了反射效果，即相当于执行了如下代码：<br />
 </p>
@@ -438,9 +438,9 @@ reflectionCam.Render() 会触发 OnWillRenderObject()，导致两次反射抵消
 </div>
 </div>
 </div>
-<div id="outline-container-org9842771" class="outline-4">
-<h4 id="org9842771">ERROR: 穿过平面的物体，反射效果错误</h4>
-<div class="outline-text-4" id="text-org9842771">
+<div id="outline-container-org1ba2bd0" class="outline-4">
+<h4 id="org1ba2bd0">ERROR: 穿过平面的物体，反射效果错误</h4>
+<div class="outline-text-4" id="text-org1ba2bd0">
 <p>
 错误效果如下：<br />
 <img src="./ShadowRendering/plannar_reflection_error01.jpg" alt="plannar_reflection_error01.jpg" /><br />
@@ -450,25 +450,25 @@ reflectionCam.Render() 会触发 OnWillRenderObject()，导致两次反射抵消
 </div>
 </div>
 
-<div id="outline-container-org896aa7e" class="outline-2">
-<h2 id="org896aa7e">Dynamic Shadow Projector</h2>
-<div class="outline-text-2" id="text-org896aa7e">
+<div id="outline-container-org2586bc0" class="outline-2">
+<h2 id="org2586bc0">Dynamic Shadow Projector</h2>
+<div class="outline-text-2" id="text-org2586bc0">
 </div>
-<div id="outline-container-org8f9d9ae" class="outline-3">
-<h3 id="org8f9d9ae">原理</h3>
-<div class="outline-text-3" id="text-org8f9d9ae">
+<div id="outline-container-org51ef091" class="outline-3">
+<h3 id="org51ef091">原理</h3>
+<div class="outline-text-3" id="text-org51ef091">
 <ol class="org-ol">
 <li>从灯光方向，对投影物体进行渲染，结果放入 RenderTexture _ShadowRT 中<br /></li>
 <li>使用 Projector 渲染阴影接受物体，将_ShadowRT 投影到阴影接受物体上<br /></li>
 </ol>
 
 <p>
-<a id="orgfd8846e"></a> ：<br />
+<a id="org6f4378e"></a> ：<br />
 在正常渲染地面(假设地面为阴影接收物)时，将像素对应的坐标变换到 Projector 的屏幕空间，使用该屏幕空间坐标直接对_ShadowRT 进行采样就得到了当前渲染位置的阴影值。<br />
 </p>
 
 
-<div id="orgca76816" class="figure">
+<div id="orgeb28331" class="figure">
 <p><img src="./ShadowRendering/projector-shadow.jpg" alt="projector-shadow.jpg" width="500px" /><br />
 </p>
 </div>
@@ -509,13 +509,13 @@ reflectionCam.Render() 会触发 OnWillRenderObject()，导致两次反射抵消
 </div>
 </div>
 </div>
-<div id="outline-container-org4a2ecdd" class="outline-2">
-<h2 id="org4a2ecdd">Stencil Shadow Volume</h2>
-<div class="outline-text-2" id="text-org4a2ecdd">
+<div id="outline-container-orgecf6869" class="outline-2">
+<h2 id="orgecf6869">Stencil Shadow Volume</h2>
+<div class="outline-text-2" id="text-orgecf6869">
 </div>
-<div id="outline-container-org7e7aaa3" class="outline-3">
-<h3 id="org7e7aaa3">原理</h3>
-<div class="outline-text-3" id="text-org7e7aaa3">
+<div id="outline-container-orgb78be36" class="outline-3">
+<h3 id="orgb78be36">原理</h3>
+<div class="outline-text-3" id="text-orgb78be36">
 <p>
 阴影锥算法的思想是延伸光照在物体上出现的锥轮廓，并通过一系列简单的 stencil 操作将其渲染到 stencil buffer。关键思想是如果物体在阴影锥内部（在阴影中），则阴影锥前面的几何体多边形赢得深度测试，阴影锥后面的多边形则无法通过该深度测试。<br />
 </p>
@@ -529,7 +529,7 @@ Tips: 需要为所有物体都生成一个阴影锥，上图只显示了为 B �
 该方法适用于多个遮挡物的情况。如下图所示：<br />
 </p>
 
-<div id="org636572f" class="figure">
+<div id="org8d8320b" class="figure">
 <p><img src="./ShadowRendering/stencil_shadow_volume01.png" alt="stencil_shadow_volume01.png" width="150px" /><br />
 </p>
 </div>
@@ -542,18 +542,18 @@ Tips: 需要为所有物体都生成一个阴影锥，上图只显示了为 B �
 </div>
 </div>
 </div>
-<div id="outline-container-orgea56826" class="outline-2">
-<h2 id="orgea56826"><span class="todo TODO">TODO</span> SDF Shadow</h2>
-<div class="outline-text-2" id="text-orgea56826">
+<div id="outline-container-orgeab1ab2" class="outline-2">
+<h2 id="orgeab1ab2"><span class="todo TODO">TODO</span> SDF Shadow</h2>
+<div class="outline-text-2" id="text-orgeab1ab2">
 <ul class="org-ul">
 <li><a href="https://zhuanlan.zhihu.com/p/377107677">https://zhuanlan.zhihu.com/p/377107677</a><br /></li>
 <li><a href="https://github.com/jackie2009/sdfshadow">https://github.com/jackie2009/sdfshadow</a><br /></li>
 </ul>
 </div>
 </div>
-<div id="outline-container-org4c70a70" class="outline-2">
-<h2 id="org4c70a70">参考资料</h2>
-<div class="outline-text-2" id="text-org4c70a70">
+<div id="outline-container-org3820dbb" class="outline-2">
+<h2 id="org3820dbb">参考资料</h2>
+<div class="outline-text-2" id="text-org3820dbb">
 <ul class="org-ul">
 <li>Unity 实时阴影实现——Cascaded Shadow Mapping <a href="https://zhuanlan.zhihu.com/p/45673049">https://zhuanlan.zhihu.com/p/45673049</a><br /></li>
 <li>Cascaded Shadow Maps <a href="https://docs.microsoft.com/zh-cn/windows/desktop/DxTechArts/cascaded-shadow-maps">https://docs.microsoft.com/zh-cn/windows/desktop/DxTechArts/cascaded-shadow-maps</a><br /></li>

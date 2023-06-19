@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-02-02 Thu 11:08 -->
+<!-- 2023-06-16 Fri 21:13 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Game Engine Architecture</title>
@@ -59,65 +59,65 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org9799cd8">第一部分 Foundations</a></li>
-<li><a href="#org050e330">第二部分 Low-Level Engine Systems</a></li>
-<li><a href="#orge935220">第三部分 Graphics and Motion</a>
+<li><a href="#org92d3ac9">第一部分 Foundations</a></li>
+<li><a href="#org796ef87">第二部分 Low-Level Engine Systems</a></li>
+<li><a href="#org4185a24">第三部分 Graphics and Motion</a>
 <ul>
-<li><a href="#org23557d4">Rendering Engine</a></li>
-<li><a href="#orge8cb645">Animation Systems</a>
+<li><a href="#orgffadb1a">Rendering Engine</a></li>
+<li><a href="#org1d229b4">Animation Systems</a>
 <ul>
-<li><a href="#orgf1ea76a">Types of Character Animation</a>
+<li><a href="#orgcd90346">Types of Character Animation</a>
 <ul>
-<li><a href="#org3d2a876">Cel Animation</a></li>
-<li><a href="#org5998777">Rigid Hierarchical Animation</a></li>
-<li><a href="#org141b159">Per-Vertex Animation and Morph Targets</a></li>
-<li><a href="#org6db2ca6">Skinned Animation</a></li>
+<li><a href="#orga3059bc">Cel Animation</a></li>
+<li><a href="#orgcc040c4">Rigid Hierarchical Animation</a></li>
+<li><a href="#org7232288">Per-Vertex Animation and Morph Targets</a></li>
+<li><a href="#orgd1ed424">Skinned Animation</a></li>
 </ul>
 </li>
-<li><a href="#org97c102c">Skeletons</a>
+<li><a href="#orgcb838d7">Skeletons</a>
 <ul>
-<li><a href="#orgf92e948">Skeleton Hierarchy</a></li>
-<li><a href="#orgfde2e39">Representing a Skeleton in Memory</a></li>
+<li><a href="#org5d4dd73">Skeleton Hierarchy</a></li>
+<li><a href="#orgfaa1c66">Representing a Skeleton in Memory</a></li>
 </ul>
 </li>
-<li><a href="#org76c2100">Poses</a>
+<li><a href="#orgfee51ef">Poses</a>
 <ul>
-<li><a href="#orga2ff1e8">Bind Pose</a></li>
-<li><a href="#orgf9825be">Local Pose</a></li>
-<li><a href="#org78364a9">Global Pose</a></li>
+<li><a href="#org7a47921">Bind Pose</a></li>
+<li><a href="#org00f975e">Local Pose</a></li>
+<li><a href="#org3d7632d">Global Pose</a></li>
 </ul>
 </li>
-<li><a href="#org1031172">Clips</a>
+<li><a href="#org7ce92f6">Clips</a>
 <ul>
-<li><a href="#org925bff0">The Local Time Line</a></li>
+<li><a href="#orgb3d54ea">The Local Time Line</a></li>
 </ul>
 </li>
-<li><a href="#org62d6bdc">Skinning and Matrix Palette Generation</a>
+<li><a href="#org1dd9f3b">Skinning and Matrix Palette Generation</a>
 <ul>
-<li><a href="#org355d3a4">Per-Vertex Skinning Information</a></li>
-<li><a href="#orgbe180fe">The Mathematics of Skinning</a>
+<li><a href="#orgea4ab35">Per-Vertex Skinning Information</a></li>
+<li><a href="#org9e18faa">The Mathematics of Skinning</a>
 <ul>
-<li><a href="#org03cbd7b">对于单个关节骨骼求解蒙皮矩阵</a></li>
-<li><a href="#org7b0b28f">对于多个关节骨骼求解蒙皮矩阵</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#org46732e3">Animation Blending</a>
-<ul>
-<li><a href="#org52259d6">LERP Blending</a></li>
+<li><a href="#org390345e">对于单个关节骨骼求解蒙皮矩阵</a></li>
+<li><a href="#org35a12a1">对于多个关节骨骼求解蒙皮矩阵</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#org3d24eb2">Collision And Rigid Body Dynamics</a></li>
+<li><a href="#org0294f6b">Animation Blending</a>
+<ul>
+<li><a href="#orga080a36">LERP Blending</a></li>
 </ul>
 </li>
-<li><a href="#orga023851">第四部分 Gameplay Systems</a></li>
+</ul>
+</li>
+<li><a href="#org1ea9c30">Collision And Rigid Body Dynamics</a></li>
+</ul>
+</li>
+<li><a href="#org643da6e">第四部分 Gameplay Systems</a></li>
 </ul>
 </div>
 </div>
-<div class="HTML" id="org4f7dd00">
+<div class="HTML" id="orgbc55126">
 <p>
 Game Engine Architecture 读书笔记<br />
 &lt;!&#x2013; more &#x2013;&gt;<br />
@@ -125,70 +125,70 @@ Game Engine Architecture 读书笔记<br />
 
 </div>
 
-<div id="outline-container-org9799cd8" class="outline-2">
-<h2 id="org9799cd8">第一部分 Foundations</h2>
+<div id="outline-container-org92d3ac9" class="outline-2">
+<h2 id="org92d3ac9">第一部分 Foundations</h2>
 </div>
-<div id="outline-container-org050e330" class="outline-2">
-<h2 id="org050e330">第二部分 Low-Level Engine Systems</h2>
+<div id="outline-container-org796ef87" class="outline-2">
+<h2 id="org796ef87">第二部分 Low-Level Engine Systems</h2>
 </div>
-<div id="outline-container-orge935220" class="outline-2">
-<h2 id="orge935220">第三部分 Graphics and Motion</h2>
-<div class="outline-text-2" id="text-orge935220">
+<div id="outline-container-org4185a24" class="outline-2">
+<h2 id="org4185a24">第三部分 Graphics and Motion</h2>
+<div class="outline-text-2" id="text-org4185a24">
 </div>
-<div id="outline-container-org23557d4" class="outline-3">
-<h3 id="org23557d4">Rendering Engine</h3>
+<div id="outline-container-orgffadb1a" class="outline-3">
+<h3 id="orgffadb1a">Rendering Engine</h3>
 </div>
-<div id="outline-container-orge8cb645" class="outline-3">
-<h3 id="orge8cb645">Animation Systems</h3>
-<div class="outline-text-3" id="text-orge8cb645">
+<div id="outline-container-org1d229b4" class="outline-3">
+<h3 id="org1d229b4">Animation Systems</h3>
+<div class="outline-text-3" id="text-org1d229b4">
 </div>
-<div id="outline-container-orgf1ea76a" class="outline-4">
-<h4 id="orgf1ea76a">Types of Character Animation</h4>
-<div class="outline-text-4" id="text-orgf1ea76a">
+<div id="outline-container-orgcd90346" class="outline-4">
+<h4 id="orgcd90346">Types of Character Animation</h4>
+<div class="outline-text-4" id="text-orgcd90346">
 </div>
-<div id="outline-container-org3d2a876" class="outline-5">
-<h5 id="org3d2a876">Cel Animation</h5>
+<div id="outline-container-orga3059bc" class="outline-5">
+<h5 id="orga3059bc">Cel Animation</h5>
 </div>
-<div id="outline-container-org5998777" class="outline-5">
-<h5 id="org5998777">Rigid Hierarchical Animation</h5>
+<div id="outline-container-orgcc040c4" class="outline-5">
+<h5 id="orgcc040c4">Rigid Hierarchical Animation</h5>
 </div>
-<div id="outline-container-org141b159" class="outline-5">
-<h5 id="org141b159">Per-Vertex Animation and Morph Targets</h5>
+<div id="outline-container-org7232288" class="outline-5">
+<h5 id="org7232288">Per-Vertex Animation and Morph Targets</h5>
 </div>
-<div id="outline-container-org6db2ca6" class="outline-5">
-<h5 id="org6db2ca6">Skinned Animation</h5>
+<div id="outline-container-orgd1ed424" class="outline-5">
+<h5 id="orgd1ed424">Skinned Animation</h5>
 </div>
 </div>
-<div id="outline-container-org97c102c" class="outline-4">
-<h4 id="org97c102c">Skeletons</h4>
-<div class="outline-text-4" id="text-org97c102c">
+<div id="outline-container-orgcb838d7" class="outline-4">
+<h4 id="orgcb838d7">Skeletons</h4>
+<div class="outline-text-4" id="text-orgcb838d7">
 <p>
 骨骼系统是有一些列有层次结构的关节组成的。我们经常混用骨骼 和 关节这两个专业术语。但是，骨骼这个术语其实是错误用法。技术上讲关节是动画直接操纵的对象，而骨骼只是关节之间的空白区域。<br />
 </p>
 </div>
-<div id="outline-container-orgf92e948" class="outline-5">
-<h5 id="orgf92e948">Skeleton Hierarchy</h5>
+<div id="outline-container-org5d4dd73" class="outline-5">
+<h5 id="org5d4dd73">Skeleton Hierarchy</h5>
 </div>
-<div id="outline-container-orgfde2e39" class="outline-5">
-<h5 id="orgfde2e39">Representing a Skeleton in Memory</h5>
+<div id="outline-container-orgfaa1c66" class="outline-5">
+<h5 id="orgfaa1c66">Representing a Skeleton in Memory</h5>
 </div>
 </div>
-<div id="outline-container-org76c2100" class="outline-4">
-<h4 id="org76c2100">Poses</h4>
-<div class="outline-text-4" id="text-org76c2100">
+<div id="outline-container-orgfee51ef" class="outline-4">
+<h4 id="orgfee51ef">Poses</h4>
+<div class="outline-text-4" id="text-orgfee51ef">
 </div>
-<div id="outline-container-orga2ff1e8" class="outline-5">
-<h5 id="orga2ff1e8">Bind Pose</h5>
-<div class="outline-text-5" id="text-orga2ff1e8">
+<div id="outline-container-org7a47921" class="outline-5">
+<h5 id="org7a47921">Bind Pose</h5>
+<div class="outline-text-5" id="text-org7a47921">
 <p>
 Bind Pose 又被称为 参考姿势 或 重置姿势。该姿势是 3D 模型在绑定到骨骼之前的姿势。<br />
 Bind Pose 也被称为 T 姿势，因为角色会把脚轻微地分开站着，并且双臂向外伸展呈 T 字形。之所以选择这个特殊的姿势，是因为该姿势将身体的各个肢体彼此分开，可以让绑定顶点到关节的过程更容易些。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgf9825be" class="outline-5">
-<h5 id="orgf9825be">Local Pose</h5>
-<div class="outline-text-5" id="text-orgf9825be">
+<div id="outline-container-org00f975e" class="outline-5">
+<h5 id="org00f975e">Local Pose</h5>
+<div class="outline-text-5" id="text-org00f975e">
 <p>
 一个关节的姿势通常特定地关联到它的父关节。父子结构的姿势允许一个关节自然地移动，例如，旋转肩关节时，保持肘、手腕、手指的姿势保持不变，整个手臂会按照肩关节旋转。<br />
 一个关节的局部姿势：<br />
@@ -207,9 +207,9 @@ P^{skel}=\{P_j\}|_{j=0}^{N-1}
 \end{align}
 </div>
 </div>
-<div id="outline-container-org78364a9" class="outline-5">
-<h5 id="org78364a9">Global Pose</h5>
-<div class="outline-text-5" id="text-org78364a9">
+<div id="outline-container-org3d7632d" class="outline-5">
+<h5 id="org3d7632d">Global Pose</h5>
+<div class="outline-text-5" id="text-org3d7632d">
 <p>
 有时候将关节姿势表示为模型空间或世界空间会很方便。此时，关节姿势被称为全局姿势。<br />
 关节根节点的父节点坐标空间被定义为模型空间。<br />
@@ -219,24 +219,24 @@ P^{skel}=\{P_j\}|_{j=0}^{N-1}
 </div>
 </div>
 </div>
-<div id="outline-container-org1031172" class="outline-4">
-<h4 id="org1031172">Clips</h4>
-<div class="outline-text-4" id="text-org1031172">
+<div id="outline-container-org7ce92f6" class="outline-4">
+<h4 id="org7ce92f6">Clips</h4>
+<div class="outline-text-4" id="text-org7ce92f6">
 </div>
-<div id="outline-container-org925bff0" class="outline-5">
-<h5 id="org925bff0">The Local Time Line</h5>
+<div id="outline-container-orgb3d54ea" class="outline-5">
+<h5 id="orgb3d54ea">The Local Time Line</h5>
 </div>
 </div>
-<div id="outline-container-org62d6bdc" class="outline-4">
-<h4 id="org62d6bdc">Skinning and Matrix Palette Generation</h4>
-<div class="outline-text-4" id="text-org62d6bdc">
+<div id="outline-container-org1dd9f3b" class="outline-4">
+<h4 id="org1dd9f3b">Skinning and Matrix Palette Generation</h4>
+<div class="outline-text-4" id="text-org1dd9f3b">
 <p>
 任何骨架姿势都可以表示为一组局部或全局的关节姿势变换。下面我们将探索将 3DMesh 上的顶点附加到一个骨架姿势上的过程，这个过程就是蒙皮。<br />
 </p>
 </div>
-<div id="outline-container-org355d3a4" class="outline-5">
-<h5 id="org355d3a4">Per-Vertex Skinning Information</h5>
-<div class="outline-text-5" id="text-org355d3a4">
+<div id="outline-container-orgea4ab35" class="outline-5">
+<h5 id="orgea4ab35">Per-Vertex Skinning Information</h5>
+<div class="outline-text-5" id="text-orgea4ab35">
 <p>
 将网格的顶点关联到骨骼就是蒙皮网格。<br />
 将网格蒙皮到骨骼时，必须为每个顶点提供额外的信息：<br />
@@ -258,16 +258,16 @@ P^{skel}=\{P_j\}|_{j=0}^{N-1}
 </div>
 </div>
 </div>
-<div id="outline-container-orgbe180fe" class="outline-5">
-<h5 id="orgbe180fe">The Mathematics of Skinning</h5>
-<div class="outline-text-5" id="text-orgbe180fe">
+<div id="outline-container-org9e18faa" class="outline-5">
+<h5 id="org9e18faa">The Mathematics of Skinning</h5>
+<div class="outline-text-5" id="text-org9e18faa">
 <p>
 蒙皮矩阵是将蒙皮网格的顶点从原来的位置（绑定姿势）变换至骨骼的当前姿势的矩阵<br />
 </p>
 </div>
-<div id="outline-container-org03cbd7b" class="outline-6">
-<h6 id="org03cbd7b">对于单个关节骨骼求解蒙皮矩阵</h6>
-<div class="outline-text-6" id="text-org03cbd7b">
+<div id="outline-container-org390345e" class="outline-6">
+<h6 id="org390345e">对于单个关节骨骼求解蒙皮矩阵</h6>
+<div class="outline-text-6" id="text-org390345e">
 <ul class="org-ul">
 <li>\(V_j\)       为在关节 j 空间下表示的顶点坐标<br /></li>
 <li>\(V_{B}^{M}\) 为在模型空间下表示的绑定姿势的顶点坐标<br /></li>
@@ -291,9 +291,9 @@ P^{skel}=\{P_j\}|_{j=0}^{N-1}
 </p>
 </div>
 </div>
-<div id="outline-container-org7b0b28f" class="outline-6">
-<h6 id="org7b0b28f">对于多个关节骨骼求解蒙皮矩阵</h6>
-<div class="outline-text-6" id="text-org7b0b28f">
+<div id="outline-container-org35a12a1" class="outline-6">
+<h6 id="org35a12a1">对于多个关节骨骼求解蒙皮矩阵</h6>
+<div class="outline-text-6" id="text-org35a12a1">
 <ul class="org-ul">
 <li>\(P_{j \to p(j)}\)  为关节 j 的当前局部姿势<br /></li>
 </ul>
@@ -310,9 +310,9 @@ P^{skel}=\{P_j\}|_{j=0}^{N-1}
 </div>
 </div>
 </div>
-<div id="outline-container-org46732e3" class="outline-4">
-<h4 id="org46732e3">Animation Blending</h4>
-<div class="outline-text-4" id="text-org46732e3">
+<div id="outline-container-org0294f6b" class="outline-4">
+<h4 id="org0294f6b">Animation Blending</h4>
+<div class="outline-text-4" id="text-org0294f6b">
 <p>
 动画混合是指令一个以上的动画片段对角色最终姿势起作用的技术。混合是把两个或更多的输入姿势结合，产生骨骼的输出姿势。<br />
 </p>
@@ -322,18 +322,18 @@ P^{skel}=\{P_j\}|_{j=0}^{N-1}
 也可以是不同时间点的两个已知姿势间的混合。例如，动画关键帧之间的采样；又例如不同片段之间的过渡;<br />
 </p>
 </div>
-<div id="outline-container-org52259d6" class="outline-5">
-<h5 id="org52259d6">LERP Blending</h5>
+<div id="outline-container-orga080a36" class="outline-5">
+<h5 id="orga080a36">LERP Blending</h5>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org3d24eb2" class="outline-3">
-<h3 id="org3d24eb2">Collision And Rigid Body Dynamics</h3>
+<div id="outline-container-org1ea9c30" class="outline-3">
+<h3 id="org1ea9c30">Collision And Rigid Body Dynamics</h3>
 </div>
 </div>
-<div id="outline-container-orga023851" class="outline-2">
-<h2 id="orga023851">第四部分 Gameplay Systems</h2>
+<div id="outline-container-org643da6e" class="outline-2">
+<h2 id="org643da6e">第四部分 Gameplay Systems</h2>
 </div>
 </div>
 <div id="postamble" class="status">

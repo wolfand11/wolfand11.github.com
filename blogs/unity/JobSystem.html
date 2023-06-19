@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-05-24 Wed 14:57 -->
+<!-- 2023-06-16 Fri 21:13 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Job System</title>
@@ -27,81 +27,81 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org0ae7c4a">Job System</a>
+<li><a href="#org08231a2">Job System</a>
 <ul>
-<li><a href="#org69dfede">Unity Job System</a>
+<li><a href="#org20ed877">Unity Job System</a>
 <ul>
-<li><a href="#org0dbc76b">概述</a></li>
-<li><a href="#orgff39b88">Safety system</a>
+<li><a href="#orgd9cf8f3">概述</a></li>
+<li><a href="#orgd236f78">Safety system</a>
 <ul>
-<li><a href="#org52531be">Race conditions(竞争情况|竞争态势|竞争环境)</a></li>
-<li><a href="#org4784ea0">Safety system</a></li>
+<li><a href="#orgaa68672">Race conditions(竞争情况|竞争态势|竞争环境)</a></li>
+<li><a href="#org5e18eed">Safety system</a></li>
 </ul>
 </li>
-<li><a href="#orgbf4b095">Native Container</a>
+<li><a href="#org2cd1ac7">Native Container</a>
 <ul>
-<li><a href="#org6bd8d69">What types of NativeContainer are available?</a></li>
-<li><a href="#orga4912c5">NativeContainer and safety system</a></li>
-<li><a href="#orgd9dd017">NativeContainer Allocator</a></li>
+<li><a href="#orgbccd817">What types of NativeContainer are available?</a></li>
+<li><a href="#org00a5504">NativeContainer and safety system</a></li>
+<li><a href="#orgb5dfe71">NativeContainer Allocator</a></li>
 </ul>
 </li>
-<li><a href="#org216a834">Creating Jobs and Scheduling Jobs</a>
+<li><a href="#org553e43b">Creating Jobs and Scheduling Jobs</a>
 <ul>
-<li><a href="#org7412b8f">Creating Jobs</a></li>
-<li><a href="#org91bd4e1">Scheduling Jobs</a></li>
+<li><a href="#org64da176">Creating Jobs</a></li>
+<li><a href="#org2c72a4d">Scheduling Jobs</a></li>
 </ul>
 </li>
-<li><a href="#org6e3016d">Job Handle and dependencies</a>
+<li><a href="#orge3d2af4">Job Handle and dependencies</a>
 <ul>
-<li><a href="#orge3e9ddf">指定 job 依赖关系</a></li>
-<li><a href="#org61e3ea3">在主线程等待 job，执行 job</a>
+<li><a href="#org1bcd844">指定 job 依赖关系</a></li>
+<li><a href="#orga46f662">在主线程等待 job，执行 job</a>
 <ul>
-<li><a href="#org35521c4">JobHandle.ScheduleBatchedJobs</a></li>
+<li><a href="#org7695046">JobHandle.ScheduleBatchedJobs</a></li>
 </ul>
 </li>
-<li><a href="#orgb3f0bf5">Example</a></li>
+<li><a href="#orge992e62">Example</a></li>
 </ul>
 </li>
-<li><a href="#org731cf91">ParallelFor Jobs and ParallelForTransform Jobs</a>
+<li><a href="#orgce17c11">ParallelFor Jobs and ParallelForTransform Jobs</a>
 <ul>
-<li><a href="#orgc475a8a">Scheduling ParallelFor job</a></li>
-<li><a href="#org890ebfa">ParallelFor Jobs Example</a>
+<li><a href="#orgb71a6d2">Scheduling ParallelFor job</a></li>
+<li><a href="#org353ad4a">ParallelFor Jobs Example</a>
 <ul>
-<li><a href="#org27086f4">example 1</a></li>
-<li><a href="#orga01400a">example 2</a></li>
+<li><a href="#org8a09eb4">example 1</a></li>
+<li><a href="#orgd59ac35">example 2</a></li>
 </ul>
 </li>
-<li><a href="#org6f5d445">ParallelForTransform Jobs</a></li>
+<li><a href="#org80c86c2">ParallelForTransform Jobs</a></li>
 </ul>
 </li>
-<li><a href="#org3a5b154">C# Job System tips and troubleshooting</a>
+<li><a href="#orgac05eae">C# Job System tips and troubleshooting</a>
 <ul>
-<li><a href="#org327cfa2">在 job 中不要访问 static 数据 （Do not access static data from a job）</a></li>
-<li><a href="#orga93853f">刷新调度了的 Batches (Flush scheduled batches)</a></li>
-<li><a href="#org02c2f7b">不要尝试去更新 NativeContainer 的内容 (Don't try to update NativeContainer contents)</a></li>
-<li><a href="#org60e20fe">调用 JobHandle.Complete 来重新获得所有权（Call JobHandle.Complete to regain ownership)</a></li>
-<li><a href="#org2aa3e54">在主线程使用 Schedule 和 Complete（Use Schedule and Complete in the main thread）</a></li>
-<li><a href="#org82b5a3c">在正确的时机使用 Schedule 和 Complete (Use Schedule and Complete at the right time)</a></li>
-<li><a href="#orge30bea6">将 NativeContainer 标记为 read-only (Mark NativeContainer types as read-only)</a></li>
-<li><a href="#org8701a10">检查数据依赖 (Check for data dependencies)</a></li>
-<li><a href="#org595c79c">Debugging Job</a></li>
-<li><a href="#org4806f7d">不要在 job 中申请托管内存 (Do not allocate managed memory in jobs)</a></li>
+<li><a href="#orgc03b23a">在 job 中不要访问 static 数据 （Do not access static data from a job）</a></li>
+<li><a href="#org10a2cad">刷新调度了的 Batches (Flush scheduled batches)</a></li>
+<li><a href="#orgedcf3fd">不要尝试去更新 NativeContainer 的内容 (Don't try to update NativeContainer contents)</a></li>
+<li><a href="#org58d76e0">调用 JobHandle.Complete 来重新获得所有权（Call JobHandle.Complete to regain ownership)</a></li>
+<li><a href="#org3d4e5f0">在主线程使用 Schedule 和 Complete（Use Schedule and Complete in the main thread）</a></li>
+<li><a href="#orgac30c1d">在正确的时机使用 Schedule 和 Complete (Use Schedule and Complete at the right time)</a></li>
+<li><a href="#orgd82994e">将 NativeContainer 标记为 read-only (Mark NativeContainer types as read-only)</a></li>
+<li><a href="#org524aaa7">检查数据依赖 (Check for data dependencies)</a></li>
+<li><a href="#org067bf94">Debugging Job</a></li>
+<li><a href="#orgd0866ee">不要在 job 中申请托管内存 (Do not allocate managed memory in jobs)</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#org9adfc7b">ERROR</a>
+<li><a href="#org0526cef">ERROR</a>
 <ul>
-<li><a href="#org51b92d4">BurstAotCompiler.cs(558,27): error CS0234: The type or namespace name 'AndroidExternalToolsSettings' does not exist in the namespace 'UnityEditor.Android' (are you missing an assembly reference?)</a></li>
-<li><a href="#org3284645">Index 12 is out of restricted IJobParallelFor range [0&#x2026;11] in ReadWriteBuffer.</a></li>
+<li><a href="#org74837f9">BurstAotCompiler.cs(558,27): error CS0234: The type or namespace name 'AndroidExternalToolsSettings' does not exist in the namespace 'UnityEditor.Android' (are you missing an assembly reference?)</a></li>
+<li><a href="#org9efbd4c">Index 12 is out of restricted IJobParallelFor range [0&#x2026;11] in ReadWriteBuffer.</a></li>
 </ul>
 </li>
-<li><a href="#org120b095">参考资料</a></li>
+<li><a href="#org388d18e">参考资料</a></li>
 </ul>
 </li>
-<li><a href="#org713f427">Implement Job System With CPP</a>
+<li><a href="#org6a36104">Implement Job System With CPP</a>
 <ul>
-<li><a href="#orgbbc91ff">参考资料</a></li>
+<li><a href="#org5851174">参考资料</a></li>
 </ul>
 </li>
 </ul>
@@ -110,24 +110,24 @@
 <p>
 Job System note.<br />
 </p>
-<div class="HTML" id="org35c640b">
+<div class="HTML" id="org7813e89">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
 
 </div>
 
-<div id="outline-container-org0ae7c4a" class="outline-2">
-<h2 id="org0ae7c4a">Job System</h2>
-<div class="outline-text-2" id="text-org0ae7c4a">
+<div id="outline-container-org08231a2" class="outline-2">
+<h2 id="org08231a2">Job System</h2>
+<div class="outline-text-2" id="text-org08231a2">
 </div>
-<div id="outline-container-org69dfede" class="outline-3">
-<h3 id="org69dfede">Unity Job System</h3>
-<div class="outline-text-3" id="text-org69dfede">
+<div id="outline-container-org20ed877" class="outline-3">
+<h3 id="org20ed877">Unity Job System</h3>
+<div class="outline-text-3" id="text-org20ed877">
 </div>
-<div id="outline-container-org0dbc76b" class="outline-4">
-<h4 id="org0dbc76b">概述</h4>
-<div class="outline-text-4" id="text-org0dbc76b">
+<div id="outline-container-orgd9cf8f3" class="outline-4">
+<h4 id="orgd9cf8f3">概述</h4>
+<div class="outline-text-4" id="text-orgd9cf8f3">
 <p>
 使用 Unity C# Job System，用户可以编写多线程代码和 Unity 的其他部分交互，其使得编写正确的多线程代码变得更容易。C# Job System 和 Unity 引擎内部使用的 Native Job System 是互相结合在一起的。用户写的代码和 Unity 共享工作线程。这种协同方式避免了创建多于 CPU 核心数量的线程，从而避免了 CPU 资源的竞争。<br />
 </p>
@@ -150,21 +150,21 @@ Job System note.<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-orgff39b88" class="outline-4">
-<h4 id="orgff39b88">Safety system</h4>
-<div class="outline-text-4" id="text-orgff39b88">
+<div id="outline-container-orgd236f78" class="outline-4">
+<h4 id="orgd236f78">Safety system</h4>
+<div class="outline-text-4" id="text-orgd236f78">
 </div>
-<div id="outline-container-org52531be" class="outline-5">
-<h5 id="org52531be">Race conditions(竞争情况|竞争态势|竞争环境)</h5>
-<div class="outline-text-5" id="text-org52531be">
+<div id="outline-container-orgaa68672" class="outline-5">
+<h5 id="orgaa68672">Race conditions(竞争情况|竞争态势|竞争环境)</h5>
+<div class="outline-text-5" id="text-orgaa68672">
 <p>
 编写多线程代码时，总会有 race conditions 的风险。当一个操作的输出依赖于另一个过程的执行时机，就会发生 race conditions。race conditions 并不总是 bug，但是其是不确定行为的来源。当 race condition 导致 bug 后，因为其依赖于执行时机，很难找到问题的源头，只能在特定的情况下才能复现该问题。Debugging 可能导致该问题消失，因为断点和日志会改变独立线程的执行时机。Race conditions 为多线程编程带来了极大的挑战。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org4784ea0" class="outline-5">
-<h5 id="org4784ea0">Safety system</h5>
-<div class="outline-text-5" id="text-org4784ea0">
+<div id="outline-container-org5e18eed" class="outline-5">
+<h5 id="org5e18eed">Safety system</h5>
+<div class="outline-text-5" id="text-org5e18eed">
 <p>
 为了使得编写多线程代码更容易，unity c# job system 会检测所有潜在的 race conditions，并且避免 race conditions 导致的 bugs。<br />
 </p>
@@ -179,17 +179,17 @@ C# Job System copy 数据的方式意味着一个 job 只能访问 blittable 数
 </div>
 </div>
 </div>
-<div id="outline-container-orgbf4b095" class="outline-4">
-<h4 id="orgbf4b095">Native Container</h4>
-<div class="outline-text-4" id="text-orgbf4b095">
+<div id="outline-container-org2cd1ac7" class="outline-4">
+<h4 id="org2cd1ac7">Native Container</h4>
+<div class="outline-text-4" id="text-org2cd1ac7">
 <p>
 Safety System copy 数据的一个缺点是，其同时将一个 job 的执行结果隔离到每一个 copy 中。为了克服该限制，你需要将结果保存到一类共享内存中，这类共享内存被称为 NativeContainer。<br />
 NativeContainer 是一个托管值类型，其为 native 内存提供了相对安全的 C# 封装。其包含一个指针指向非托管区域。当和 Unity C# Job System 一起使用时，一个 NativeContainer 允许一个 job 去访问和主线程共享的数据，而不是在数据 copy 上工作。<br />
 </p>
 </div>
-<div id="outline-container-org6bd8d69" class="outline-5">
-<h5 id="org6bd8d69">What types of NativeContainer are available?</h5>
-<div class="outline-text-5" id="text-org6bd8d69">
+<div id="outline-container-orgbccd817" class="outline-5">
+<h5 id="orgbccd817">What types of NativeContainer are available?</h5>
+<div class="outline-text-5" id="text-orgbccd817">
 <p>
 Unity 附带了一个名为 NativeArray 的 NativeContainer。你可以使用 NativeSlice 来操作一个 NativeArray 来获得一个 NativeArray 的子集。<br />
 </p>
@@ -206,9 +206,9 @@ ECS package 扩展了 Unity.Collections 命名空间，包含了一些其他类�
 </div>
 </div>
 
-<div id="outline-container-orga4912c5" class="outline-5">
-<h5 id="orga4912c5">NativeContainer and safety system</h5>
-<div class="outline-text-5" id="text-orga4912c5">
+<div id="outline-container-org00a5504" class="outline-5">
+<h5 id="org00a5504">NativeContainer and safety system</h5>
+<div class="outline-text-5" id="text-org00a5504">
 <p>
 safety system 被构建在所有的 NativeContainer 类型中。其会跟踪对任何一个 NativeContainer 的读写。<br />
 </p>
@@ -238,9 +238,9 @@ Tips:<br />
 </div>
 </div>
 
-<div id="outline-container-orgd9dd017" class="outline-5">
-<h5 id="orgd9dd017">NativeContainer Allocator</h5>
-<div class="outline-text-5" id="text-orgd9dd017">
+<div id="outline-container-orgb5dfe71" class="outline-5">
+<h5 id="orgb5dfe71">NativeContainer Allocator</h5>
+<div class="outline-text-5" id="text-orgb5dfe71">
 <p>
 当创建一个 NativeContainer,你必须指定所需的内存分配类型。内存分配类型取决于 job 执行的时间长度。这样你就可以定制内存分配从而在每种情况下达到最佳性能。<br />
 有三种类型的 Allocator 用于 NativeContainer 的内存分配和释放。在初始化你的 NativeContainer 时，需要指定合适的 Allocator.<br />
@@ -259,13 +259,13 @@ Tips:<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org216a834" class="outline-4">
-<h4 id="org216a834">Creating Jobs and Scheduling Jobs</h4>
-<div class="outline-text-4" id="text-org216a834">
+<div id="outline-container-org553e43b" class="outline-4">
+<h4 id="org553e43b">Creating Jobs and Scheduling Jobs</h4>
+<div class="outline-text-4" id="text-org553e43b">
 </div>
-<div id="outline-container-org7412b8f" class="outline-5">
-<h5 id="org7412b8f">Creating Jobs</h5>
-<div class="outline-text-5" id="text-org7412b8f">
+<div id="outline-container-org64da176" class="outline-5">
+<h5 id="org64da176">Creating Jobs</h5>
+<div class="outline-text-5" id="text-org64da176">
 <p>
 job 是 unity 中所有实现了 IJob 接口的 struct 的总称。为了创建一个 Job 需要做以下三件事：<br />
 </p>
@@ -309,9 +309,9 @@ Tips:<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-org91bd4e1" class="outline-5">
-<h5 id="org91bd4e1">Scheduling Jobs</h5>
-<div class="outline-text-5" id="text-org91bd4e1">
+<div id="outline-container-org2c72a4d" class="outline-5">
+<h5 id="org2c72a4d">Scheduling Jobs</h5>
+<div class="outline-text-5" id="text-org2c72a4d">
 <p>
 在主线程调度一个 job 需要做以下三件事：<br />
 </p>
@@ -352,13 +352,13 @@ result.<span style="color: #bc6ec5; font-weight: bold;">Dispose</span>();
 </div>
 </div>
 </div>
-<div id="outline-container-org6e3016d" class="outline-4">
-<h4 id="org6e3016d">Job Handle and dependencies</h4>
-<div class="outline-text-4" id="text-org6e3016d">
+<div id="outline-container-orge3d2af4" class="outline-4">
+<h4 id="orge3d2af4">Job Handle and dependencies</h4>
+<div class="outline-text-4" id="text-orge3d2af4">
 </div>
-<div id="outline-container-orge3e9ddf" class="outline-5">
-<h5 id="orge3e9ddf">指定 job 依赖关系</h5>
-<div class="outline-text-5" id="text-orge3e9ddf">
+<div id="outline-container-org1bcd844" class="outline-5">
+<h5 id="org1bcd844">指定 job 依赖关系</h5>
+<div class="outline-text-5" id="text-org1bcd844">
 <p>
 当调用一个 job 的 Schedule 方法后会返回一个 Job Handle 对象，可以使用 Job Handle 来指定 job 之间的依赖关系，如下：<br />
 </p>
@@ -390,9 +390,9 @@ jobC.<span style="color: #bc6ec5; font-weight: bold;">Schedule</span>(dependency
 </div>
 </div>
 </div>
-<div id="outline-container-org61e3ea3" class="outline-5">
-<h5 id="org61e3ea3">在主线程等待 job，执行 job</h5>
-<div class="outline-text-5" id="text-org61e3ea3">
+<div id="outline-container-orga46f662" class="outline-5">
+<h5 id="orga46f662">在主线程等待 job，执行 job</h5>
+<div class="outline-text-5" id="text-orga46f662">
 <p>
 使用 JobHandle 可以在主线程强制等待 job 执行完成，只需要调用 JobHandle 的 Complete 方法就可以做到。之后，主线程就可以安全地访问 job 使用的 NativeContainer 了。<br />
 </p>
@@ -406,9 +406,9 @@ Tips:<br />
 如果不需要在主线程访问 job 的数据，也就不需要调用 JobHandle 的 Complete 方法，此时为了执行 job，需要通过调用 JobHandle.ScheduleBatchedJobs 来显示刷新 batch，该调用会对性能造成负面影响。<br />
 </p>
 </div>
-<div id="outline-container-org35521c4" class="outline-6">
-<h6 id="org35521c4">JobHandle.ScheduleBatchedJobs</h6>
-<div class="outline-text-6" id="text-org35521c4">
+<div id="outline-container-org7695046" class="outline-6">
+<h6 id="org7695046">JobHandle.ScheduleBatchedJobs</h6>
+<div class="outline-text-6" id="text-org7695046">
 <p>
 job system 有意延迟 job 的执行，直到你手动调用 JobHandle.ScheduleBatchedJobs。因为，唤醒工作线程的成本实际上可能很高，所以，调度了一些 jobs 后，再延迟启动工作线程是一个好的默认设置。通常，如果你要在循环中调度一堆 jobs，应该等待循环结束后再启动工作线程。如果在调度多个作业之间，需要在主线程上做大量工作，那么在每个作业之间使用 ScheduleBatchedJobs 则是有意义的。<br />
 </p>
@@ -419,9 +419,9 @@ job system 有意延迟 job 的执行，直到你手动调用 JobHandle.Schedule
 </div>
 </div>
 </div>
-<div id="outline-container-orgb3f0bf5" class="outline-5">
-<h5 id="orgb3f0bf5">Example</h5>
-<div class="outline-text-5" id="text-orgb3f0bf5">
+<div id="outline-container-orge992e62" class="outline-5">
+<h5 id="orge992e62">Example</h5>
+<div class="outline-text-5" id="text-orge992e62">
 <div class="org-src-container">
 <pre class="src src-csharp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Job adding two floating point values together</span>
 <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">struct</span> <span style="color: #ce537a; font-weight: bold;">MyJob</span> : <span style="color: #ce537a; font-weight: bold;">IJob</span>
@@ -481,9 +481,9 @@ result.<span style="color: #bc6ec5; font-weight: bold;">Dispose</span>();
 </div>
 </div>
 </div>
-<div id="outline-container-org731cf91" class="outline-4">
-<h4 id="org731cf91">ParallelFor Jobs and ParallelForTransform Jobs</h4>
-<div class="outline-text-4" id="text-org731cf91">
+<div id="outline-container-orgce17c11" class="outline-4">
+<h4 id="orgce17c11">ParallelFor Jobs and ParallelForTransform Jobs</h4>
+<div class="outline-text-4" id="text-orgce17c11">
 <p>
 前面提到的 IJob 类型的 job，只会有一个 job 执行一个任务。另外有一种 IJobParallelFor 类型的 job，可以在很多对象上执行相同的操作。<br />
 </p>
@@ -496,9 +496,9 @@ Tips: unity 中所有实现 IJobParallelFor 接口的 struct 都被称为 Parall
 ParallelFor job 使用 NativeArray 类型的数据作为其数据源。ParallelFor jobs 交叉运行在 CPU 的多个核心上。每个 CPU 核心上有一个 job，每个 job 处理总工作量的一个子集。IJobParallelFor 不像 IJob 只执行一次 Execute 方法，其会对每个数据项执行一次 Execute。Execute 方法有一个 index 参数，利用这个 index 就可以在 job 的实现中访问和操作指定的单个数据项。<br />
 </p>
 </div>
-<div id="outline-container-orgc475a8a" class="outline-5">
-<h5 id="orgc475a8a">Scheduling ParallelFor job</h5>
-<div class="outline-text-5" id="text-orgc475a8a">
+<div id="outline-container-orgb71a6d2" class="outline-5">
+<h5 id="orgb71a6d2">Scheduling ParallelFor job</h5>
+<div class="outline-text-5" id="text-orgb71a6d2">
 <p>
 调度 ParallelFor job 时必须指定被分割的数据源的长度。job 中有多个 NativeArray 时，Untiy C# Job System 无法知道哪个 NativeArray 被用于数据源。这个长度同时会告诉 Untiy C# Job System 需要多少个 Execute 方法。<br />
 </p>
@@ -517,13 +517,13 @@ ParallelFor job 使用 NativeArray 类型的数据作为其数据源。ParallelF
 </p>
 </div>
 </div>
-<div id="outline-container-org890ebfa" class="outline-5">
-<h5 id="org890ebfa">ParallelFor Jobs Example</h5>
-<div class="outline-text-5" id="text-org890ebfa">
+<div id="outline-container-org353ad4a" class="outline-5">
+<h5 id="org353ad4a">ParallelFor Jobs Example</h5>
+<div class="outline-text-5" id="text-org353ad4a">
 </div>
-<div id="outline-container-org27086f4" class="outline-6">
-<h6 id="org27086f4">example 1</h6>
-<div class="outline-text-6" id="text-org27086f4">
+<div id="outline-container-org8a09eb4" class="outline-6">
+<h6 id="org8a09eb4">example 1</h6>
+<div class="outline-text-6" id="text-org8a09eb4">
 <div class="org-src-container">
 <pre class="src src-csharp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Job adding two floating point values together</span>
 <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">struct</span> <span style="color: #ce537a; font-weight: bold;">MyParallelJob</span> : <span style="color: #ce537a; font-weight: bold;">IJobParallelFor</span>
@@ -570,9 +570,9 @@ result.<span style="color: #bc6ec5; font-weight: bold;">Dispose</span>();
 </div>
 </div>
 </div>
-<div id="outline-container-orga01400a" class="outline-6">
-<h6 id="orga01400a">example 2</h6>
-<div class="outline-text-6" id="text-orga01400a">
+<div id="outline-container-orgd59ac35" class="outline-6">
+<h6 id="orgd59ac35">example 2</h6>
+<div class="outline-text-6" id="text-orgd59ac35">
 <div class="org-src-container">
 <pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">UnityEngine</span>;
 <span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">Unity</span>.<span style="color: #7590db;">Collections</span>;
@@ -644,9 +644,9 @@ result.<span style="color: #bc6ec5; font-weight: bold;">Dispose</span>();
 </div>
 </div>
 </div>
-<div id="outline-container-org6f5d445" class="outline-5">
-<h5 id="org6f5d445">ParallelForTransform Jobs</h5>
-<div class="outline-text-5" id="text-org6f5d445">
+<div id="outline-container-org80c86c2" class="outline-5">
+<h5 id="org80c86c2">ParallelForTransform Jobs</h5>
+<div class="outline-text-5" id="text-org80c86c2">
 <div class="org-src-container">
 <pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">struct</span> <span style="color: #ce537a; font-weight: bold;">PositionUpdateJob</span> : <span style="color: #ce537a; font-weight: bold;">IJobParallelForTransform</span>
 {
@@ -694,13 +694,13 @@ result.<span style="color: #bc6ec5; font-weight: bold;">Dispose</span>();
 </div>
 </div>
 </div>
-<div id="outline-container-org3a5b154" class="outline-4">
-<h4 id="org3a5b154">C# Job System tips and troubleshooting</h4>
-<div class="outline-text-4" id="text-org3a5b154">
+<div id="outline-container-orgac05eae" class="outline-4">
+<h4 id="orgac05eae">C# Job System tips and troubleshooting</h4>
+<div class="outline-text-4" id="text-orgac05eae">
 </div>
-<div id="outline-container-org327cfa2" class="outline-5">
-<h5 id="org327cfa2">在 job 中不要访问 static 数据 （Do not access static data from a job）</h5>
-<div class="outline-text-5" id="text-org327cfa2">
+<div id="outline-container-orgc03b23a" class="outline-5">
+<h5 id="orgc03b23a">在 job 中不要访问 static 数据 （Do not access static data from a job）</h5>
+<div class="outline-text-5" id="text-orgc03b23a">
 <p>
 在 job 中访问 static 数据绕开了所有 safety system。如果访问错误的数据，可能会导致 unity crash。例如，访问 MonoBehaviour 可能会导致 crash。<br />
 </p>
@@ -710,9 +710,9 @@ TIPS: 因为这个缺点，未来版本的 unity 会通过静态分析来避免�
 </p>
 </div>
 </div>
-<div id="outline-container-orga93853f" class="outline-5">
-<h5 id="orga93853f">刷新调度了的 Batches (Flush scheduled batches)</h5>
-<div class="outline-text-5" id="text-orga93853f">
+<div id="outline-container-org10a2cad" class="outline-5">
+<h5 id="org10a2cad">刷新调度了的 Batches (Flush scheduled batches)</h5>
+<div class="outline-text-5" id="text-org10a2cad">
 <p>
 当你想要 jobs 开始执行，你可以使用 JobHandle.ScheduleBatchedJobs 来 flush scheduled batch。需要注意的是调用该方法会对性能造成负面影响。不 flushing batch 会延迟调度，直到主线程等待 job 执行结果，才开始执行结果。在其他情况下，可以使用 JobHandle.Complete 来开始执行过程。<br />
 </p>
@@ -722,9 +722,9 @@ TIPS: 在 ECS 中，Batch 会被隐式地 flush，因此不需要调用 JobHandl
 </p>
 </div>
 </div>
-<div id="outline-container-org02c2f7b" class="outline-5">
-<h5 id="org02c2f7b">不要尝试去更新 NativeContainer 的内容 (Don't try to update NativeContainer contents)</h5>
-<div class="outline-text-5" id="text-org02c2f7b">
+<div id="outline-container-orgedcf3fd" class="outline-5">
+<h5 id="orgedcf3fd">不要尝试去更新 NativeContainer 的内容 (Don't try to update NativeContainer contents)</h5>
+<div class="outline-text-5" id="text-orgedcf3fd">
 <p>
 因为无法返回引用，所以不能直接修改 NativeContainer 的内容。例如： nativeArray[0]++; 的效果如同： var temp=nativeArray[0]; temp++; 这样并不会更新 nativeArray 的内容。应该使用下面的方法来更新 nativeContainer 的内容：<br />
 </p>
@@ -736,49 +736,49 @@ nativeArray[0] = temp;
 </div>
 </div>
 </div>
-<div id="outline-container-org60e20fe" class="outline-5">
-<h5 id="org60e20fe">调用 JobHandle.Complete 来重新获得所有权（Call JobHandle.Complete to regain ownership)</h5>
-<div class="outline-text-5" id="text-org60e20fe">
+<div id="outline-container-org58d76e0" class="outline-5">
+<h5 id="org58d76e0">调用 JobHandle.Complete 来重新获得所有权（Call JobHandle.Complete to regain ownership)</h5>
+<div class="outline-text-5" id="text-org58d76e0">
 <p>
 只调用 JobHandle.IsCompleted 来检查是不够的。对于主线程来说，必须调用 JobHandle.Complete 才能重新获得 NativeContainer 类型数据的所有权。调用 Complete 还会清除 safety system 中的状态。不这样做会导致内存泄露。如果你每帧调度的新 jobs 依赖于前面帧的 job，这个过程也适用。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org2aa3e54" class="outline-5">
-<h5 id="org2aa3e54">在主线程使用 Schedule 和 Complete（Use Schedule and Complete in the main thread）</h5>
-<div class="outline-text-5" id="text-org2aa3e54">
+<div id="outline-container-org3d4e5f0" class="outline-5">
+<h5 id="org3d4e5f0">在主线程使用 Schedule 和 Complete（Use Schedule and Complete in the main thread）</h5>
+<div class="outline-text-5" id="text-org3d4e5f0">
 <p>
 你只能在主线程调用 Schedule 和 Complete。如果一个 job 依赖于另一个，使用 JobHandle 来管理依赖关系，而不是在一个 job 中调度另一个 job。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org82b5a3c" class="outline-5">
-<h5 id="org82b5a3c">在正确的时机使用 Schedule 和 Complete (Use Schedule and Complete at the right time)</h5>
-<div class="outline-text-5" id="text-org82b5a3c">
+<div id="outline-container-orgac30c1d" class="outline-5">
+<h5 id="orgac30c1d">在正确的时机使用 Schedule 和 Complete (Use Schedule and Complete at the right time)</h5>
+<div class="outline-text-5" id="text-orgac30c1d">
 <p>
 当一个 job 得到其所需数据后，就应该立即调用 Schedule。不要调用 Complete，直到你需要结果数据的时候。当一个 job 和正在运行的其他 job 没有竞争关系时，并且目前还不需要等待这个 job，调度这个 job 是一个很好的做法。例如：如果你在一帧结束到下一帧开始之间有一段时期没有任何 job 在执行，而且一帧的延迟是可以接受的，你可以在趋近于一帧结束的时候 schedule 这个 job，然后在下一帧使用结果。或者，如果你的游戏在切换时期被其他 jobs 占用达到饱和了，在一帧有未充分利用的其他阶段，在这些阶段调度你的 job 会更有效。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orge30bea6" class="outline-5">
-<h5 id="orge30bea6">将 NativeContainer 标记为 read-only (Mark NativeContainer types as read-only)</h5>
-<div class="outline-text-5" id="text-orge30bea6">
+<div id="outline-container-orgd82994e" class="outline-5">
+<h5 id="orgd82994e">将 NativeContainer 标记为 read-only (Mark NativeContainer types as read-only)</h5>
+<div class="outline-text-5" id="text-orgd82994e">
 <p>
 默认情况下，job 对 NativeContainer 既有 read 权限又有 write 权限。适当使用 [ReadOnly] 可以改善性能。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org8701a10" class="outline-5">
-<h5 id="org8701a10">检查数据依赖 (Check for data dependencies)</h5>
-<div class="outline-text-5" id="text-org8701a10">
+<div id="outline-container-org524aaa7" class="outline-5">
+<h5 id="org524aaa7">检查数据依赖 (Check for data dependencies)</h5>
+<div class="outline-text-5" id="text-org524aaa7">
 <p>
 在 Profiler 窗口，主线程的 WaitForJobGroup 标记表示主线程在等待工作线程完成。这意味着你在某个地方引入了数据依赖，你需要解决该问题。查找 JobHandle.Complete 来追踪数据依赖，其导致了主线程的等待。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org595c79c" class="outline-5">
-<h5 id="org595c79c">Debugging Job</h5>
-<div class="outline-text-5" id="text-org595c79c">
+<div id="outline-container-org067bf94" class="outline-5">
+<h5 id="org067bf94">Debugging Job</h5>
+<div class="outline-text-5" id="text-org067bf94">
 <p>
 job 有一个 Run 方法，你可以在 Schedule 的地方使用 Run 来代替，从而在主线程立即执行 job。这样就可以对 job 进行 debug 了。<br />
 </p>
@@ -791,9 +791,9 @@ job 有一个 Run 方法，你可以在 Schedule 的地方使用 Run 来代替�
 </div>
 </div>
 </div>
-<div id="outline-container-org4806f7d" class="outline-5">
-<h5 id="org4806f7d">不要在 job 中申请托管内存 (Do not allocate managed memory in jobs)</h5>
-<div class="outline-text-5" id="text-org4806f7d">
+<div id="outline-container-orgd0866ee" class="outline-5">
+<h5 id="orgd0866ee">不要在 job 中申请托管内存 (Do not allocate managed memory in jobs)</h5>
+<div class="outline-text-5" id="text-orgd0866ee">
 <p>
 在 job 中生气托管内存非常的慢，并且使得 job 无法使用 unity 的 Burst 编译器来优化性能。Burst 是一种新的基于 LLVM 的后端编译器技术，其可以让事情变得更容易。其可以将 C# job 转化为高度优化的机器代码，可以充分利用不同平台的特定能力。<br />
 </p>
@@ -801,21 +801,21 @@ job 有一个 Run 方法，你可以在 Schedule 的地方使用 Run 来代替�
 </div>
 </div>
 </div>
-<div id="outline-container-org9adfc7b" class="outline-3">
-<h3 id="org9adfc7b">ERROR</h3>
-<div class="outline-text-3" id="text-org9adfc7b">
+<div id="outline-container-org0526cef" class="outline-3">
+<h3 id="org0526cef">ERROR</h3>
+<div class="outline-text-3" id="text-org0526cef">
 </div>
-<div id="outline-container-org51b92d4" class="outline-4">
-<h4 id="org51b92d4">BurstAotCompiler.cs(558,27): error CS0234: The type or namespace name 'AndroidExternalToolsSettings' does not exist in the namespace 'UnityEditor.Android' (are you missing an assembly reference?)</h4>
-<div class="outline-text-4" id="text-org51b92d4">
+<div id="outline-container-org74837f9" class="outline-4">
+<h4 id="org74837f9">BurstAotCompiler.cs(558,27): error CS0234: The type or namespace name 'AndroidExternalToolsSettings' does not exist in the namespace 'UnityEditor.Android' (are you missing an assembly reference?)</h4>
+<div class="outline-text-4" id="text-org74837f9">
 <p>
 没有安装 Android Build Support。在 UnityHub 中在对应 Unity 版本中添加模块即可。若已经安装，则重新打开一下 Unity 工程就可以了。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org3284645" class="outline-4">
-<h4 id="org3284645">Index 12 is out of restricted IJobParallelFor range [0&#x2026;11] in ReadWriteBuffer.</h4>
-<div class="outline-text-4" id="text-org3284645">
+<div id="outline-container-org9efbd4c" class="outline-4">
+<h4 id="org9efbd4c">Index 12 is out of restricted IJobParallelFor range [0&#x2026;11] in ReadWriteBuffer.</h4>
+<div class="outline-text-4" id="text-org9efbd4c">
 <p>
 添加 NativeDisableParallelForRestriction 属性可以解决该问题。<br />
 </p>
@@ -832,9 +832,9 @@ job 有一个 Run 方法，你可以在 Schedule 的地方使用 Run 来代替�
 </div>
 </div>
 </div>
-<div id="outline-container-org120b095" class="outline-3">
-<h3 id="org120b095">参考资料</h3>
-<div class="outline-text-3" id="text-org120b095">
+<div id="outline-container-org388d18e" class="outline-3">
+<h3 id="org388d18e">参考资料</h3>
+<div class="outline-text-3" id="text-org388d18e">
 <ul class="org-ul">
 <li>JobSystem <a href="https://docs.unity3d.com/Manual/JobSystem.html">https://docs.unity3d.com/Manual/JobSystem.html</a><br /></li>
 <li>Burst <a href="https://docs.unity3d.com/Packages/com.unity.burst@0.2/manual/index.html">https://docs.unity3d.com/Packages/com.unity.burst@0.2/manual/index.html</a><br /></li>
@@ -844,13 +844,13 @@ job 有一个 Run 方法，你可以在 Schedule 的地方使用 Run 来代替�
 </div>
 </div>
 </div>
-<div id="outline-container-org713f427" class="outline-2">
-<h2 id="org713f427">Implement Job System With CPP</h2>
-<div class="outline-text-2" id="text-org713f427">
+<div id="outline-container-org6a36104" class="outline-2">
+<h2 id="org6a36104">Implement Job System With CPP</h2>
+<div class="outline-text-2" id="text-org6a36104">
 </div>
-<div id="outline-container-orgbbc91ff" class="outline-3">
-<h3 id="orgbbc91ff">参考资料</h3>
-<div class="outline-text-3" id="text-orgbbc91ff">
+<div id="outline-container-org5851174" class="outline-3">
+<h3 id="org5851174">参考资料</h3>
+<div class="outline-text-3" id="text-org5851174">
 <ul class="org-ul">
 <li>Parallelizing the Naughty Dog Engine Using Fibers <a href="https://www.gdcvault.com/play/1022186/Parallelizing-the-Naughty-Dog-Engine">https://www.gdcvault.com/play/1022186/Parallelizing-the-Naughty-Dog-Engine</a><br /></li>
 <li>Parallelizing the Naughty Dog Engine Using Fibers <a href="https://ubm-twvideo01.s3.amazonaws.com/o1/vault/gdc2015/presentations/Gyrling_Christian_Parallelizing_The_Naughty.pdf">https://ubm-twvideo01.s3.amazonaws.com/o1/vault/gdc2015/presentations/Gyrling_Christian_Parallelizing_The_Naughty.pdf</a><br /></li>

@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-05-24 Wed 11:52 -->
+<!-- 2023-06-16 Fri 21:12 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>URP</title>
@@ -59,103 +59,243 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org63750a8">URP</a>
+<li><a href="#org60fb8aa">CoreRP</a>
 <ul>
-<li><a href="#orgabad919">Base</a>
+<li><a href="#orgce9ac20">Base</a>
 <ul>
-<li><a href="#org4892320">源码分析</a>
+<li><a href="#org8c0476e">RenderGraph</a>
 <ul>
-<li><a href="#org409bb20">源码分析方法</a>
+<li><a href="#orgf115dc2">Render graph fundamentals</a>
 <ul>
-<li><a href="#org48a41d0">static analysis and editor debugging method</a></li>
-<li><a href="#org2ba2656">app profiling method</a></li>
+<li><a href="#org11540f2">Main principles</a></li>
+<li><a href="#orgaf2e6f9">Resource Management</a></li>
+<li><a href="#orgead4e83">Render graph execution overview</a></li>
+</ul>
+</li>
+<li><a href="#org1e75222">参考资料</a></li>
+</ul>
+</li>
+<li><a href="#orgefb4195">RTHandle system</a></li>
+<li><a href="#org19533ce">Rendering Debugger</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#org6edb5d9">Native RenderPass</a></li>
-<li><a href="#org7affa24">URPAsset</a>
+<li><a href="#org37aedef">URP</a>
 <ul>
-<li><a href="#org580099d">Runtime 修改 URPAsset 设置</a></li>
-</ul>
-</li>
-<li><a href="#orga262710">RenderFeature</a>
+<li><a href="#org638a2e4">Base</a>
 <ul>
-<li><a href="#org34de12b">Disable/Enable RenderFeature Runtime</a></li>
-<li><a href="#org60e1b8e">Custom RenderFeature</a>
+<li><a href="#org84299cf">源码分析</a>
 <ul>
-<li><a href="#org3317c20">template</a></li>
-<li><a href="#org658443f">kawase blur</a></li>
-<li><a href="#org3e88b31">len flares</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#orgdc759d8">Rendering Debugger</a></li>
-</ul>
-</li>
-<li><a href="#org4673f29">Shader</a>
+<li><a href="#org6513bf4">源码分析方法</a>
 <ul>
-<li><a href="#org52352b2">MultiPass</a></li>
-<li><a href="#org568fb32">Lightmap 烘培</a></li>
+<li><a href="#org00fba14">method 1: use urp</a></li>
+<li><a href="#org0333f03">method 2: static analysis and editor debugging method</a></li>
+<li><a href="#org34adc26">method 3: app profiling method</a></li>
 </ul>
 </li>
-<li><a href="#orge895121">Misc</a>
+<li><a href="#orgdb22cee">RenderingPath</a>
 <ul>
-<li><a href="#orgee9466b">Upgrade Buildin Shader To URP</a>
+<li><a href="#org8cd72fe">Forward Rendering Path</a></li>
+<li><a href="#orgcc88979">Deferred Rendering Path</a></li>
+<li><a href="#org6c9efff">Forward Plus Rendering Path</a></li>
+<li><a href="#org0e1a57a">参考资料</a></li>
+</ul>
+</li>
+<li><a href="#org3338b86">Forward Plus</a></li>
+</ul>
+</li>
+<li><a href="#orga588bec">Native RenderPass</a></li>
+<li><a href="#org007641e">URPAsset</a>
 <ul>
-<li><a href="#orgf019368">Point Light Effect Error</a></li>
-<li><a href="#org536a028">Common</a></li>
+<li><a href="#org844b135">Runtime 修改 URPAsset 设置</a></li>
 </ul>
 </li>
-<li><a href="#org9fa4f00">Unity Buildin 和 URP 支持的 Feature 对比</a></li>
-<li><a href="#org7f6ba79">创建一个 Lit Shader Graph 默认文件，生成的 shader 代码</a></li>
-<li><a href="#orgb839c9e">URP Buildin GI 比较</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#orgf32f3b1">HDRP</a>
+<li><a href="#orga324b09">RenderFeature</a>
 <ul>
-<li><a href="#org71117d7">Setup</a></li>
+<li><a href="#org3162c77">Disable/Enable RenderFeature Runtime</a></li>
+<li><a href="#org9d6ac61">Custom RenderFeature</a>
+<ul>
+<li><a href="#org54758aa">template</a></li>
+<li><a href="#orge044e7f">kawase blur</a></li>
+<li><a href="#org4431dda">len flares</a></li>
 </ul>
 </li>
-<li><a href="#orge61499c">ERROR</a>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org08e74d7">Shader</a>
+<ul>
+<li><a href="#org1932144">MultiPass</a></li>
+<li><a href="#org1587f71">Lightmap 烘培</a></li>
+</ul>
+</li>
+<li><a href="#org9e9d388">Misc</a>
+<ul>
+<li><a href="#org4a990d3">Upgrade Buildin Shader To URP</a>
+<ul>
+<li><a href="#orgedc8015">Point Light Effect Error</a></li>
+<li><a href="#org832bf7b">Common</a></li>
+</ul>
+</li>
+<li><a href="#orgb1ea38b">Unity Buildin 和 URP 支持的 Feature 对比</a></li>
+<li><a href="#org38f7b9d">创建一个 Lit Shader Graph 默认文件，生成的 shader 代码</a></li>
+<li><a href="#org2bc24bb">URP Buildin GI 比较</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgcf20d0b">HDRP</a>
+<ul>
+<li><a href="#org7c941de">Base</a>
+<ul>
+<li><a href="#orge4be3be">Setup</a></li>
+<li><a href="#orgc014b60">源码分析</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgf8eefcf">ERROR</a>
 <ul>
 <li>
 <ul>
-<li><a href="#org73e3a05">Material 'Liquid' with Shader 'Custom/MyEffect/Unlit/Liquid' doesn't have a texture property '_MainTex' UnityEngine.GUIUtility:ProcessEvent (int,intptr,bool&amp;)</a></li>
+<li><a href="#org9750c3c">Material 'Liquid' with Shader 'Custom/MyEffect/Unlit/Liquid' doesn't have a texture property '_MainTex' UnityEngine.GUIUtility:ProcessEvent (int,intptr,bool&amp;)</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#org1be03d7">参考资料</a></li>
+<li><a href="#orga6ecdd3">参考资料</a></li>
 </ul>
 </div>
 </div>
 <p>
 URP note.<br />
 </p>
-<div class="HTML" id="org1ee13bb">
+<div class="HTML" id="org3d540e3">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
 
 </div>
 
-<div id="outline-container-org63750a8" class="outline-2">
-<h2 id="org63750a8">URP</h2>
-<div class="outline-text-2" id="text-org63750a8">
+<div id="outline-container-org60fb8aa" class="outline-2">
+<h2 id="org60fb8aa">CoreRP</h2>
+<div class="outline-text-2" id="text-org60fb8aa">
 </div>
-<div id="outline-container-orgabad919" class="outline-3">
-<h3 id="orgabad919">Base</h3>
-<div class="outline-text-3" id="text-orgabad919">
+<div id="outline-container-orgce9ac20" class="outline-3">
+<h3 id="orgce9ac20">Base</h3>
+<div class="outline-text-3" id="text-orgce9ac20">
 </div>
-<div id="outline-container-org4892320" class="outline-4">
-<h4 id="org4892320">源码分析</h4>
-<div class="outline-text-4" id="text-org4892320">
+<div id="outline-container-org8c0476e" class="outline-4">
+<h4 id="org8c0476e">RenderGraph</h4>
+<div class="outline-text-4" id="text-org8c0476e">
+</div>
+<div id="outline-container-orgf115dc2" class="outline-5">
+<h5 id="orgf115dc2">Render graph fundamentals</h5>
+<div class="outline-text-5" id="text-orgf115dc2">
+</div>
+<div id="outline-container-org11540f2" class="outline-6">
+<h6 id="org11540f2">Main principles</h6>
+<div class="outline-text-6" id="text-org11540f2">
+<p>
+在使用 RenderGraph API 写 render passes 之前，你需要知道下面一些基本原则：<br />
+</p>
+<ul class="org-ul">
+<li>你不再需要直接处理资源了，你需要使用 render graph 系统指定的 handles。所有 RenderGraph APIs 都使用这些 handles 来操作资源。render graph 管理的资源类型有 RTHandles, ComputeBuffers 以及 RendererLists<br /></li>
+<li>实际的资源引用只可以在一个 render pass 的执行代码（execution code）中被访问<br /></li>
+<li>该框架要求显示声明 render passes。每个 render pass 必须声明其从哪些资源进行读取，又会写入到哪些资源<br /></li>
+<li>每次执行 render graph，都不会进行持久化。这意味着在某次执行 render graph 中创建的资源无法传递到下一帧<br /></li>
+<li>对于哪些需要持久化的资源（例如，从一帧传递给另外一帧的资源），你可以在 render graph 外面创建该资源，然后将其导入到 render graph。在依赖跟踪方面，它们的行为与任何其他 render graph 资源一样，但该 render graph 不处理它们的生命周期。<br /></li>
+<li>render graph 主要使用 RTHandles 作为纹理资源。这对如何编写着色器代码以及如何设置它们有很多影响。<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgaf2e6f9" class="outline-6">
+<h6 id="orgaf2e6f9">Resource Management</h6>
+<div class="outline-text-6" id="text-orgaf2e6f9">
+<p>
+render graph system 使用一帧的 high-level 表示来计算每个资源的生命周期。这意味着当你使用 RenderGraph API 创建一个资源时，render graph 系统此时并不会创建该资源。API 只是返回一个表示该资源的 handle(句柄)，你通过该 handle 来使用所有的 RenderGraph APIs。render graph 只会在第一个 pass 需要写入该资源前创建该资源。这样，创建和分配就可以分离开，创建并不意味着 render graph system 分配资源。相反，这意味着它提供了必要的内存来表示资源，以便它可以在渲染过程中使用该资源。 同理，它也会在最后一次需要读取该资源的 pass 之后释放该资源的内存。这样，render graph sytem 可以根据你在 pass 中声明的内容以最有效的方式重用内存。如果 render graph system 不执行需要指定资源的 pass，则系统不会为该资源分配内存。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgead4e83" class="outline-6">
+<h6 id="orgead4e83">Render graph execution overview</h6>
+<div class="outline-text-6" id="text-orgead4e83">
+<p>
+render graph 的执行是一个三步过程（设置，编译，执行），每一帧 render graph 都会从头开始。 这是因为 graph 可以在帧与帧之间动态变化，例如，graph 会根据用户的操作而变化。<br />
+</p>
+</div>
+<ul class="org-ul">
+<li><a id="org1a23deb"></a>Setup<br />
+<div class="outline-text-7" id="text-org1a23deb">
+<p>
+首先，设置所有的 render passes。在这里，你什么所有要执行的 render passes，以及每个 render pass 使用的资源。<br />
+</p>
+</div>
+</li>
+<li><a id="org853e789"></a>Compilation<br />
+<div class="outline-text-7" id="text-org853e789">
+<p>
+其次，编译该 render graph。在该步骤中，render graph system 会剔除无用的 render pass(若 render pass 的输出没有被使用，则该 render pass 是无用的)。这样做可以减少 Setup 的处理工作(在设置 render graph 时不需要处理特殊逻辑了)。debug render passes 就是一个很好的离子。如果你声明了一个 render pass 来生成一些调试话输出，你不需要将其展现到 back buffer，render graph system 会自动剔除该 render pass。<br />
+</p>
+
+<p>
+此步骤还会计算资源的生命周期。 这允许 render graph system 以高效的方式创建和释放资源，并可以正确计算同步点，以同步在 async compute pipeline 上执行 passes。<br />
+</p>
+</div>
+</li>
+<li><a id="orga690717"></a>Execution<br />
+<div class="outline-text-7" id="text-orga690717">
+<p>
+最后，执行 render graph。render graph system 按照什么的顺序执行所有未被剔除的 render passes。在每个 render pass 之前，render graph system 会创建合适的资源，并在 render pass 之后释放这些资源(若这些资源不在被后续的 render passes 使用)<br />
+</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org1e75222" class="outline-5">
+<h5 id="org1e75222">参考资料</h5>
+<div class="outline-text-5" id="text-org1e75222">
+<ul class="org-ul">
+<li><a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.core@16.0/manual/render-graph-system.html">https://docs.unity3d.com/Packages/com.unity.render-pipelines.core@16.0/manual/render-graph-system.html</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgefb4195" class="outline-4">
+<h4 id="orgefb4195">RTHandle system</h4>
+</div>
+<div id="outline-container-org19533ce" class="outline-4">
+<h4 id="org19533ce">Rendering Debugger</h4>
+<div class="outline-text-4" id="text-org19533ce">
+<p>
+实现 Rendering Debugger 的 Editor 代码在 Packages\com.unity.render-pipelines.core\Editor\Debugging\DebugWindow.cs。可以将自己的扩展嵌入到其中。可以参考 URP 中 DebugDisplaySettingsRendering 的实现。<br />
+</p>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org37aedef" class="outline-2">
+<h2 id="org37aedef">URP</h2>
+<div class="outline-text-2" id="text-org37aedef">
+</div>
+<div id="outline-container-org638a2e4" class="outline-3">
+<h3 id="org638a2e4">Base</h3>
+<div class="outline-text-3" id="text-org638a2e4">
+</div>
+<div id="outline-container-org84299cf" class="outline-4">
+<h4 id="org84299cf">源码分析</h4>
+<div class="outline-text-4" id="text-org84299cf">
 <p>
 <a href="./URP/Unity URP.xmind">./URP/Unity URP.xmind</a><br />
+</p>
+
+<p>
+下图为 URP 处理流程：<br />
+<img src="./URP/urp-flow.jpg" alt="urp-flow.jpg" /><br />
 </p>
 
 <p>
@@ -166,13 +306,22 @@ URP 12.1.6 版本中 ForwardRenderer 变为了 UniversalRenderer<br />
 <li>Unity URP 简要剖析 <a href="https://zhuanlan.zhihu.com/p/399297398">https://zhuanlan.zhihu.com/p/399297398</a><br /></li>
 </ul>
 </div>
-<div id="outline-container-org409bb20" class="outline-5">
-<h5 id="org409bb20">源码分析方法</h5>
-<div class="outline-text-5" id="text-org409bb20">
+<div id="outline-container-org6513bf4" class="outline-5">
+<h5 id="org6513bf4">源码分析方法</h5>
+<div class="outline-text-5" id="text-org6513bf4">
 </div>
-<div id="outline-container-org48a41d0" class="outline-6">
-<h6 id="org48a41d0">static analysis and editor debugging method</h6>
-<div class="outline-text-6" id="text-org48a41d0">
+<div id="outline-container-org00fba14" class="outline-6">
+<h6 id="org00fba14">method 1: use urp</h6>
+<div class="outline-text-6" id="text-org00fba14">
+<p>
+查看官方文档，了解 urp 相关的概念，功能。使用 urp 提供的功能。从整体来了解 urp。<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org0333f03" class="outline-6">
+<h6 id="org0333f03">method 2: static analysis and editor debugging method</h6>
+<div class="outline-text-6" id="text-org0333f03">
 <p>
 将 com.unity.render-pipelines.core@14.0.7 和 com.unity.render-pipelines.universal@14.0.7 从 Test/Library/PackageCache 目录 copy 到 Test/Packages 目录，方便对 urp 源码进行修改来辅助调试。<br />
 </p>
@@ -182,13 +331,13 @@ URP 12.1.6 版本中 ForwardRenderer 变为了 UniversalRenderer<br />
 </p>
 
 <p>
-可以使用 Understand 工具来辅助 urp 源代码的静态分析。 <a href="../tools/DeveloperTools.html#org0571897">Understand 静态代码分析</a><br />
+可以使用 Understand 工具来辅助 urp 源代码的静态分析。 <a href="../tools/DeveloperTools.html#org1dd714a">Understand 静态代码分析</a><br />
 </p>
 </div>
 </div>
-<div id="outline-container-org2ba2656" class="outline-6">
-<h6 id="org2ba2656">app profiling method</h6>
-<div class="outline-text-6" id="text-org2ba2656">
+<div id="outline-container-org34adc26" class="outline-6">
+<h6 id="org34adc26">method 3: app profiling method</h6>
+<div class="outline-text-6" id="text-org34adc26">
 <p>
 首先，编译 Windows 版本进行分析，BuildSettings 设置如下：<br />
 Development Build = True<br />
@@ -198,29 +347,144 @@ Script Debugging = True<br />
 
 <p>
 其次，使用 Unity Profiler 工具对 Test.exe 进行 Profiler<br />
-在 Timeline 中可以看到一帧中，函数的调用顺序，如下图：<br />
-<img src="./URP/urp-source-code01.jpg" alt="urp-source-code01.jpg" /><br />
+在 Timeline 中可以看到一帧中，主线程和渲染线程函数的调用顺序，如下图：<br />
+</p>
+
+
+<div id="org2c4acc4" class="figure">
+<p><img src="./URP/urp-source-code01.jpg" alt="urp-source-code01.jpg" /><br />
 </p>
 </div>
 </div>
 </div>
 </div>
-<div id="outline-container-org6edb5d9" class="outline-4">
-<h4 id="org6edb5d9">Native RenderPass</h4>
-<div class="outline-text-4" id="text-org6edb5d9">
+<div id="outline-container-orgdb22cee" class="outline-5">
+<h5 id="orgdb22cee">RenderingPath</h5>
+<div class="outline-text-5" id="text-orgdb22cee">
+</div>
+<div id="outline-container-org8cd72fe" class="outline-6">
+<h6 id="org8cd72fe">Forward Rendering Path</h6>
+<div class="outline-text-6" id="text-org8cd72fe">
+<p>
+前向渲染伪代码如下，可以看出 N 个物体 M 个光源的情况下，运行复杂度为 O(N*M)。光源数量对于计算复杂度影响很大，比较适合光源数量比较少的情况。<br />
+</p>
+<pre class="example" id="org946c536">
+For each light:
+    For each object affected by the light:
+        framebuffer += object * light
+</pre>
+</div>
+<ul class="org-ul">
+<li><a id="orgf3c96be"></a>优点<br />
+<div class="outline-text-7" id="text-orgf3c96be">
+<ul class="org-ul">
+<li>每个物体可以使用不同的光照模型和渲染技术<br /></li>
+<li>支持 MSAA<br /></li>
+</ul>
+</div>
+</li>
+<li><a id="org7f89db0"></a>缺点<br />
+<div class="outline-text-7" id="text-org7f89db0">
+<ul class="org-ul">
+<li>pixel shader 比较复杂，导致 Overdraw 消耗严重<br /></li>
+<li>对多光源不友好，像素不受光源影响时，也需要处理该光源光照（CPU 端无法精确剔除，只要光源和物体有交集，物体的任何一点都需要处理光照）<br /></li>
+<li>shader 中需要处理不同的光源类型，增加了 shader 变体或分支<br /></li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-orgcc88979" class="outline-6">
+<h6 id="orgcc88979">Deferred Rendering Path</h6>
+<div class="outline-text-6" id="text-orgcc88979">
+<pre class="example" id="org4abf2bf">
+For each object:
+    Render to multiple targets
+For each light:
+    Apply light as a 2D postProcess
+</pre>
+</div>
+<ul class="org-ul">
+<li><a id="orgc525823"></a>优点<br />
+<div class="outline-text-7" id="text-orgc525823">
+<ul class="org-ul">
+<li>解耦了 Mesh Draw 和 Light Draw，保证物体只被绘制一次，光源也只绘制一次，整体场景 Draw call 复杂度变成了 O(M+N)<br /></li>
+<li>G-Buffer 除了用于直接光照外，还能够被用于一些间接光照的效果，也正是 G-Buffer 概念的提出，使得近十年来越来越多的算法从 World space 向 Screen Space 的演进<br /></li>
+<li>使得每个着色器都专注于几何参数提取或者照明。这种分离使着色器的功能进行拆分，简化了着色器系统管理。使得 Shader 支持功能更加单一(这是优点也是缺点)<br /></li>
+<li>只渲染可见的像素，节省计算量<br /></li>
+</ul>
+</div>
+</li>
+<li><a id="org33dd151"></a>缺点<br />
+<div class="outline-text-7" id="text-org33dd151">
+<ul class="org-ul">
+<li>内存开销较大，G-Buffer 是主要元凶<br /></li>
+<li>需要 MRT 的支持(OpenGL|ES3.0)<br /></li>
+<li>读写 G-buffer 的内存带宽用量是性能瓶颈。每个光源计算都会去读取 GBuffer<br /></li>
+<li>对透明物体的渲染存在问题。大多数是在 Deferred 渲染完之后，让透明物体走 Forward 渲染<br /></li>
+<li>对多重采样抗锯齿(MultiSampling Anti-Aliasing, MSAA)的支持不友好<br /></li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-org6c9efff" class="outline-6">
+<h6 id="org6c9efff">Forward Plus Rendering Path</h6>
+<div class="outline-text-6" id="text-org6c9efff">
+<pre class="example" id="org781ed40">
+foreach object in sceen
+        get depth
+foreach tile in screen:
+        get max min depth
+        Frustum  Intersection test
+        Generate a list of light
+foreach pixel in screen:
+    foreach light in light_list_of_this_tile:
+        pixelLighting += light_contribution_to_pixel(light,pixel)
+</pre>
+</div>
+</div>
+<div id="outline-container-org0e1a57a" class="outline-6">
+<h6 id="org0e1a57a">参考资料</h6>
+<div class="outline-text-6" id="text-org0e1a57a">
+<ul class="org-ul">
+<li>Tile Base Render (Forward+) <a href="https://zhuanlan.zhihu.com/p/553907076">https://zhuanlan.zhihu.com/p/553907076</a><br /></li>
+<li>URP12 ClusterRendering 调研 <a href="https://zhuanlan.zhihu.com/p/489839605">https://zhuanlan.zhihu.com/p/489839605</a><br /></li>
+<li>Deferred Shading <a href="./UnityCatLikeCoding.html#org535124d">./UnityCatLikeCoding.html#org535124d</a><br /></li>
+<li>Deferred Lights  <a href="./UnityCatLikeCoding.html#org318248f">./UnityCatLikeCoding.html#org318248f</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org3338b86" class="outline-5">
+<h5 id="org3338b86">Forward Plus</h5>
+<div class="outline-text-5" id="text-org3338b86">
+<ul class="org-ul">
+<li>所有灯光根据离相机的距离按照从前向后排序<br /></li>
+<li>将屏幕划分成多个 Tile，计算出每个 Tile 内包含的灯光，使用 Mask 来保存（例如第 3 位为 1 表示第三个灯和 Tile 相交，三这个序号由第一步的排序决定）。一个 Mask 使用一个 uint 表示，如果灯光超出 32 个，则会再多使用对应个数的 uint<br /></li>
+<li>将相机根据近远裁平面从前往后切分成多个 Bin，每个 Bin 保存和其相交的最近和最远的灯光的序号（也就是会存下来两个值，minIndex 和 maxIndex，分别映射到由第一步得到的排序序号）<br /></li>
+<li>将第二第三步得到的数据存储到 Constant Buffer 中待之后 GPU 读取<br /></li>
+<li>光照着色时，会根据当前顶点所在的 Tile 来先读出对应的 Mask。其次根据当前顶点所在 Bin，使用 Bin 的 minIndex 和 maxIndex 对刚刚读取到的 Mask 做一次过滤来得到最终受影响的灯光（例如 Mask 为 10011001，为了简化这里只用了 8 位。而 minIndex 为 4，maxIndex 为 6，这两个值代表的范围为 00111000。将这个范围与 Mask 做一次与运算后得到 00011000，便为最终影响这个顶点的那些灯光，即第 4 和第 5 个灯）。在获取到具体哪个灯后便可以执行正常的光照计算了<br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orga588bec" class="outline-4">
+<h4 id="orga588bec">Native RenderPass</h4>
+<div class="outline-text-4" id="text-orga588bec">
 <ul class="org-ul">
 <li><a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@13.1/manual/urp-universal-renderer.html">https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@13.1/manual/urp-universal-renderer.html</a><br /></li>
 <li><a href="https://forum.unity.com/threads/what-is-the-issue-with-native-renderpass-and-xr.1141285/">https://forum.unity.com/threads/what-is-the-issue-with-native-renderpass-and-xr.1141285/</a><br /></li>
 </ul>
 </div>
 </div>
-<div id="outline-container-org7affa24" class="outline-4">
-<h4 id="org7affa24">URPAsset</h4>
-<div class="outline-text-4" id="text-org7affa24">
+<div id="outline-container-org007641e" class="outline-4">
+<h4 id="org007641e">URPAsset</h4>
+<div class="outline-text-4" id="text-org007641e">
 </div>
-<div id="outline-container-org580099d" class="outline-5">
-<h5 id="org580099d">Runtime 修改 URPAsset 设置</h5>
-<div class="outline-text-5" id="text-org580099d">
+<div id="outline-container-org844b135" class="outline-5">
+<h5 id="org844b135">Runtime 修改 URPAsset 设置</h5>
+<div class="outline-text-5" id="text-org844b135">
 <div class="org-src-container">
 <pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">System</span>.<span style="color: #7590db;">Collections</span>;
 <span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">System</span>.<span style="color: #7590db;">Collections</span>.<span style="color: #7590db;">Generic</span>;
@@ -296,13 +560,13 @@ Script Debugging = True<br />
 </div>
 </div>
 </div>
-<div id="outline-container-orga262710" class="outline-4">
-<h4 id="orga262710">RenderFeature</h4>
-<div class="outline-text-4" id="text-orga262710">
+<div id="outline-container-orga324b09" class="outline-4">
+<h4 id="orga324b09">RenderFeature</h4>
+<div class="outline-text-4" id="text-orga324b09">
 </div>
-<div id="outline-container-org34de12b" class="outline-5">
-<h5 id="org34de12b">Disable/Enable RenderFeature Runtime</h5>
-<div class="outline-text-5" id="text-org34de12b">
+<div id="outline-container-org3162c77" class="outline-5">
+<h5 id="org3162c77">Disable/Enable RenderFeature Runtime</h5>
+<div class="outline-text-5" id="text-org3162c77">
 <div class="org-src-container">
 <pre class="src src-csharp">screenShotRendererFeature.<span style="color: #bc6ec5; font-weight: bold;">SetActive</span>(<span style="color: #ce537a; font-weight: bold;">enableSSRF</span>);
 </pre>
@@ -313,13 +577,13 @@ Script Debugging = True<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-org60e1b8e" class="outline-5">
-<h5 id="org60e1b8e">Custom RenderFeature</h5>
-<div class="outline-text-5" id="text-org60e1b8e">
+<div id="outline-container-org9d6ac61" class="outline-5">
+<h5 id="org9d6ac61">Custom RenderFeature</h5>
+<div class="outline-text-5" id="text-org9d6ac61">
 </div>
-<div id="outline-container-org3317c20" class="outline-6">
-<h6 id="org3317c20">template</h6>
-<div class="outline-text-6" id="text-org3317c20">
+<div id="outline-container-org54758aa" class="outline-6">
+<h6 id="org54758aa">template</h6>
+<div class="outline-text-6" id="text-org54758aa">
 <div class="org-src-container">
 <pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">UnityEngine</span>;
 <span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">UnityEngine</span>.<span style="color: #7590db;">Rendering</span>;
@@ -397,9 +661,9 @@ Script Debugging = True<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org658443f" class="outline-6">
-<h6 id="org658443f">kawase blur</h6>
-<div class="outline-text-6" id="text-org658443f">
+<div id="outline-container-orge044e7f" class="outline-6">
+<h6 id="orge044e7f">kawase blur</h6>
+<div class="outline-text-6" id="text-orge044e7f">
 <ul class="org-ul">
 <li><a href="https://github.com/sebastianhein/urp_kawase_blur/">https://github.com/sebastianhein/urp_kawase_blur/</a><br /></li>
 </ul>
@@ -538,9 +802,9 @@ Script Debugging = True<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org3e88b31" class="outline-6">
-<h6 id="org3e88b31">len flares</h6>
-<div class="outline-text-6" id="text-org3e88b31">
+<div id="outline-container-org4431dda" class="outline-6">
+<h6 id="org4431dda">len flares</h6>
+<div class="outline-text-6" id="text-org4431dda">
 <ul class="org-ul">
 <li><a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.1/manual/containers/create-custom-renderer-feature-1.html">https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.1/manual/containers/create-custom-renderer-feature-1.html</a><br /></li>
 </ul>
@@ -548,22 +812,14 @@ Script Debugging = True<br />
 </div>
 </div>
 </div>
-<div id="outline-container-orgdc759d8" class="outline-4">
-<h4 id="orgdc759d8">Rendering Debugger</h4>
-<div class="outline-text-4" id="text-orgdc759d8">
-<p>
-实现 Rendering Debugger 的 Editor 代码在 Packages\com.unity.render-pipelines.core\Editor\Debugging\DebugWindow.cs。可以将自己的扩展嵌入到其中。可以参考 URP 中 DebugDisplaySettingsRendering 的实现。<br />
-</p>
 </div>
+<div id="outline-container-org08e74d7" class="outline-3">
+<h3 id="org08e74d7">Shader</h3>
+<div class="outline-text-3" id="text-org08e74d7">
 </div>
-</div>
-<div id="outline-container-org4673f29" class="outline-3">
-<h3 id="org4673f29">Shader</h3>
-<div class="outline-text-3" id="text-org4673f29">
-</div>
-<div id="outline-container-org52352b2" class="outline-4">
-<h4 id="org52352b2">MultiPass</h4>
-<div class="outline-text-4" id="text-org52352b2">
+<div id="outline-container-org1932144" class="outline-4">
+<h4 id="org1932144">MultiPass</h4>
+<div class="outline-text-4" id="text-org1932144">
 <p>
 方案 1： shader 中多个 Pass。会打断 SRP Batch。<br />
 方案 2： 为同一个物体使用多个材质<br />
@@ -574,35 +830,35 @@ Script Debugging = True<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-org568fb32" class="outline-4">
-<h4 id="org568fb32">Lightmap 烘培</h4>
-<div class="outline-text-4" id="text-org568fb32">
+<div id="outline-container-org1587f71" class="outline-4">
+<h4 id="org1587f71">Lightmap 烘培</h4>
+<div class="outline-text-4" id="text-org1587f71">
 <p>
-<a href="./UnityCatLikeCoding.html#org6bd9ab0">Lightmap 烘培</a><br />
+<a href="./UnityCatLikeCoding.html#org74543a1">Lightmap 烘培</a><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-orge895121" class="outline-3">
-<h3 id="orge895121">Misc</h3>
-<div class="outline-text-3" id="text-orge895121">
+<div id="outline-container-org9e9d388" class="outline-3">
+<h3 id="org9e9d388">Misc</h3>
+<div class="outline-text-3" id="text-org9e9d388">
 </div>
-<div id="outline-container-orgee9466b" class="outline-4">
-<h4 id="orgee9466b">Upgrade Buildin Shader To URP</h4>
-<div class="outline-text-4" id="text-orgee9466b">
+<div id="outline-container-org4a990d3" class="outline-4">
+<h4 id="org4a990d3">Upgrade Buildin Shader To URP</h4>
+<div class="outline-text-4" id="text-org4a990d3">
 </div>
-<div id="outline-container-orgf019368" class="outline-5">
-<h5 id="orgf019368">Point Light Effect Error</h5>
-<div class="outline-text-5" id="text-orgf019368">
+<div id="outline-container-orgedc8015" class="outline-5">
+<h5 id="orgedc8015">Point Light Effect Error</h5>
+<div class="outline-text-5" id="text-orgedc8015">
 <ul class="org-ul">
 <li><a href="http://www.kittehface.com/2020/05/light-universal-render-pipeline-to.html">http://www.kittehface.com/2020/05/light-universal-render-pipeline-to.html</a><br /></li>
 <li><a href="https://forum.unity.com/threads/lwrp-urp-point-light-issues.809382/">https://forum.unity.com/threads/lwrp-urp-point-light-issues.809382/</a><br /></li>
 </ul>
 </div>
 </div>
-<div id="outline-container-org536a028" class="outline-5">
-<h5 id="org536a028">Common</h5>
-<div class="outline-text-5" id="text-org536a028">
+<div id="outline-container-org832bf7b" class="outline-5">
+<h5 id="org832bf7b">Common</h5>
+<div class="outline-text-5" id="text-org832bf7b">
 <p>
 URP 提供了下面工具，实现自动将 Buildin Shader 升级为 URP。<br />
 Edit/Render Pipeline/Universal Render Pipeline/Upgrade Selected Materials to UniversalRP Materials<br />
@@ -619,18 +875,18 @@ com.unity.render-pipelines.universal@10.5.0\Editor\UniversalRenderPipelineMateri
 </div>
 </div>
 </div>
-<div id="outline-container-org9fa4f00" class="outline-4">
-<h4 id="org9fa4f00">Unity Buildin 和 URP 支持的 Feature 对比</h4>
-<div class="outline-text-4" id="text-org9fa4f00">
+<div id="outline-container-orgb1ea38b" class="outline-4">
+<h4 id="orgb1ea38b">Unity Buildin 和 URP 支持的 Feature 对比</h4>
+<div class="outline-text-4" id="text-orgb1ea38b">
 <ul class="org-ul">
 <li><a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.0/manual/universalrp-builtin-feature-comparison.html">https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.0/manual/universalrp-builtin-feature-comparison.html</a><br /></li>
 <li>Upgrading shaders from Built-in <a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.0/manual/upgrading-your-shaders.html">https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.0/manual/upgrading-your-shaders.html</a><br /></li>
 </ul>
 </div>
 </div>
-<div id="outline-container-org7f6ba79" class="outline-4">
-<h4 id="org7f6ba79">创建一个 Lit Shader Graph 默认文件，生成的 shader 代码</h4>
-<div class="outline-text-4" id="text-org7f6ba79">
+<div id="outline-container-org38f7b9d" class="outline-4">
+<h4 id="org38f7b9d">创建一个 Lit Shader Graph 默认文件，生成的 shader 代码</h4>
+<div class="outline-text-4" id="text-org38f7b9d">
 <p>
 下面文件是对 Lit Shader Graph 默认文件简化后的 shader 代码。<br />
 <a href="./URP/urp_lit_shader_graph.shader">./URP/urp_lit_shader_graph.shader</a><br />
@@ -718,15 +974,15 @@ shader 的 vert frag 入口函数被定义在 com.unity.render-pipelines.univers
 </p>
 </div>
 </div>
-<div id="outline-container-orgb839c9e" class="outline-4">
-<h4 id="orgb839c9e">URP Buildin GI 比较</h4>
-<div class="outline-text-4" id="text-orgb839c9e">
+<div id="outline-container-org2bc24bb" class="outline-4">
+<h4 id="org2bc24bb">URP Buildin GI 比较</h4>
+<div class="outline-text-4" id="text-org2bc24bb">
 <p>
 下图为图 1<br />
 </p>
 
 
-<div id="org835bff2" class="figure">
+<div id="orgb5b6817" class="figure">
 <p><img src="./URP/gi_compare_01.png" alt="gi_compare_01.png" width="1500px" /><br />
 </p>
 </div>
@@ -735,7 +991,7 @@ shader 的 vert frag 入口函数被定义在 com.unity.render-pipelines.univers
 下图为图 2<br />
 </p>
 
-<div id="org785bb35" class="figure">
+<div id="orga355205" class="figure">
 <p><img src="./URP/gi_compare_02.png" alt="gi_compare_02.png" width="1500px" /><br />
 </p>
 </div>
@@ -744,7 +1000,7 @@ shader 的 vert frag 入口函数被定义在 com.unity.render-pipelines.univers
 下图为图 3<br />
 </p>
 
-<div id="org87047c3" class="figure">
+<div id="org22d58ff" class="figure">
 <p><img src="./URP/gi_compare_03.png" alt="gi_compare_03.png" width="1500px" /><br />
 </p>
 </div>
@@ -753,7 +1009,7 @@ shader 的 vert frag 入口函数被定义在 com.unity.render-pipelines.univers
 下图为图 4<br />
 </p>
 
-<div id="orga6abf25" class="figure">
+<div id="orgc56c7f2" class="figure">
 <p><img src="./URP/gi_compare_04.png" alt="gi_compare_04.png" width="1500px" /><br />
 </p>
 </div>
@@ -762,7 +1018,7 @@ shader 的 vert frag 入口函数被定义在 com.unity.render-pipelines.univers
 下图为图 5<br />
 </p>
 
-<div id="org368db3e" class="figure">
+<div id="org7d7bfc2" class="figure">
 <p><img src="./URP/gi_compare_05.png" alt="gi_compare_05.png" width="1500px" /><br />
 </p>
 </div>
@@ -781,28 +1037,46 @@ LightProbe 数据来自 AmbientColor，场景中方向光，场景中物体反�
 </div>
 </div>
 </div>
-<div id="outline-container-orgf32f3b1" class="outline-2">
-<h2 id="orgf32f3b1">HDRP</h2>
-<div class="outline-text-2" id="text-orgf32f3b1">
+<div id="outline-container-orgcf20d0b" class="outline-2">
+<h2 id="orgcf20d0b">HDRP</h2>
+<div class="outline-text-2" id="text-orgcf20d0b">
 </div>
-<div id="outline-container-org71117d7" class="outline-3">
-<h3 id="org71117d7">Setup</h3>
-<div class="outline-text-3" id="text-org71117d7">
+<div id="outline-container-org7c941de" class="outline-3">
+<h3 id="org7c941de">Base</h3>
+<div class="outline-text-3" id="text-org7c941de">
+</div>
+<div id="outline-container-orge4be3be" class="outline-4">
+<h4 id="orge4be3be">Setup</h4>
+<div class="outline-text-4" id="text-orge4be3be">
 <ol class="org-ol">
 <li>安装 HDRP package<br /></li>
 <li>打开 HDRP 设置向导 Window/Rendering/HDRP Wizard, 如果有设置错误，直接点击 FixAll<br /></li>
 </ol>
 </div>
 </div>
-</div>
+<div id="outline-container-orgc014b60" class="outline-4">
+<h4 id="orgc014b60">源码分析</h4>
+<div class="outline-text-4" id="text-orgc014b60">
+<p>
+下图为 HDRP 处理流程：<br />
+</p>
 
-<div id="outline-container-orge61499c" class="outline-2">
-<h2 id="orge61499c">ERROR</h2>
-<div class="outline-text-2" id="text-orge61499c">
+
+<div id="org4d64abb" class="figure">
+<p><img src="./URP/hdrp-flow.jpg" alt="hdrp-flow.jpg" /><br />
+</p>
 </div>
-<div id="outline-container-org73e3a05" class="outline-4">
-<h4 id="org73e3a05">Material 'Liquid' with Shader 'Custom/MyEffect/Unlit/Liquid' doesn't have a texture property '_MainTex' UnityEngine.GUIUtility:ProcessEvent (int,intptr,bool&amp;)</h4>
-<div class="outline-text-4" id="text-org73e3a05">
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf8eefcf" class="outline-2">
+<h2 id="orgf8eefcf">ERROR</h2>
+<div class="outline-text-2" id="text-orgf8eefcf">
+</div>
+<div id="outline-container-org9750c3c" class="outline-4">
+<h4 id="org9750c3c">Material 'Liquid' with Shader 'Custom/MyEffect/Unlit/Liquid' doesn't have a texture property '_MainTex' UnityEngine.GUIUtility:ProcessEvent (int,intptr,bool&amp;)</h4>
+<div class="outline-text-4" id="text-org9750c3c">
 <p>
 URP 中使用_BaseMap 代替了_MainTex。并在_BaseMap 的前面标记了[MainTexture]。Editor 中有代码依赖_MainTex 命名，所以导致了该错误。<br />
 在 Shader 'Custom/MyEffect/Unlit/Liquid' 的 Property 部分添加如下代码就可以解决该问题<br />
@@ -822,14 +1096,15 @@ URP 中使用_BaseMap 代替了_MainTex。并在_BaseMap 的前面标记了[Main
 </div>
 </div>
 
-<div id="outline-container-org1be03d7" class="outline-2">
-<h2 id="org1be03d7">参考资料</h2>
-<div class="outline-text-2" id="text-org1be03d7">
+<div id="outline-container-orga6ecdd3" class="outline-2">
+<h2 id="orga6ecdd3">参考资料</h2>
+<div class="outline-text-2" id="text-orga6ecdd3">
 <ul class="org-ul">
 <li>CoreRP Library API <a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.core@14.0/api/">https://docs.unity3d.com/Packages/com.unity.render-pipelines.core@14.0/api/</a><br /></li>
 <li>CoreRP Library Manual <a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.core@14.0/manual/">https://docs.unity3d.com/Packages/com.unity.render-pipelines.core@14.0/manual/</a><br /></li>
 <li>Universal RP API <a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@14.0/api/">https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@14.0/api/</a><br /></li>
 <li>Universal RP Manual <a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@14.0/manual/">https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@14.0/manual/</a><br /></li>
+<li>Graphics Github <a href="https://github.com/Unity-Technologies/Graphics">https://github.com/Unity-Technologies/Graphics</a><br /></li>
 </ul>
 </div>
 </div>

@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-06-27 Tue 22:35 -->
+<!-- 2023-11-28 Tue 17:24 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>GPUProReference</title>
@@ -70,7 +70,11 @@
 <li><a href="#org7c25427">Real Time Markov Decision Processes for Crowd Simulation&#xa0;&#xa0;&#xa0;<span class="tag"><span class="Compute">Compute</span></span></a></li>
 </ul>
 </li>
-<li><a href="#orge96e4d4">2016&#xa0;&#xa0;&#xa0;<span class="tag"><span class="2016GPUPro">2016GPUPro</span></span></a></li>
+<li><a href="#orge96e4d4">2016&#xa0;&#xa0;&#xa0;<span class="tag"><span class="2016GPUPro">2016GPUPro</span></span></a>
+<ul>
+<li><a href="#org0ccc401">Fine Pruned Tiled Light Lists&#xa0;&#xa0;&#xa0;<span class="tag"><span class="Lighting">Lighting</span></span></a></li>
+</ul>
+</li>
 <li><a href="#org3bb5024">2015&#xa0;&#xa0;&#xa0;<span class="tag"><span class="2015GPUPro">2015GPUPro</span></span></a></li>
 <li><a href="#orgbf34e23">2014&#xa0;&#xa0;&#xa0;<span class="tag"><span class="2014GPUPro">2014GPUPro</span></span></a></li>
 <li><a href="#org4572392">2013&#xa0;&#xa0;&#xa0;<span class="tag"><span class="2013GPUPro">2013GPUPro</span></span></a></li>
@@ -137,7 +141,7 @@
 <p>
 GPUProReference note.<br />
 </p>
-<div class="HTML" id="orge57d1b2">
+<div class="HTML" id="org1843eb1">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -213,7 +217,7 @@ PRT 的表述具有普遍性，以至于它实际上可以捕捉到所有可能�
 在本章中，我们介绍了一种将基于噪声的程序性纹理合成与非周期性平铺算法相结合的方法。我们描述了对几个流行的程序性噪声函数的修改，这些函数直接产生包含最小的完整 Wang tile set 的纹理图。我们的方法可以作为预处理步骤或在应用程序运行时使用。此外，我们对在 GPU 上实现 Wang 瓦片的算法[Wei 2004]做了一些改进。我们展示了我们的修改是如何为大量基于噪声的程序生成的纹理实现非周期性平铺的（见图 3.1 中的一个例子）。最后，我们分析了这些修改对性能的影响，并讨论了它们的局限性。<br />
 </p>
 
-<div id="org71d7ce9" class="figure">
+<div id="org143df12" class="figure">
 <p><img src="./GPUProReference/nonperiodic-tiling.png" alt="nonperiodic-tiling.png" width="512px" /><br />
 </p>
 </div>
@@ -265,7 +269,7 @@ PRT 的表述具有普遍性，以至于它实际上可以捕捉到所有可能�
 </p>
 
 
-<div id="org1f013b5" class="figure">
+<div id="orgebe7865" class="figure">
 <p><img src="./GPUProReference/horizon-zero-dawn-snow.png" alt="horizon-zero-dawn-snow.png" width="512px" /><br />
 </p>
 </div>
@@ -293,7 +297,7 @@ PRT 的表述具有普遍性，以至于它实际上可以捕捉到所有可能�
 </p>
 
 
-<div id="orge96ad46" class="figure">
+<div id="org9bc3e48" class="figure">
 <p><img src="./GPUProReference/softshadow-dappled-light-src.png" alt="softshadow-dappled-light-src.png" width="512px" /><br />
 </p>
 </div>
@@ -318,7 +322,7 @@ PRT 的表述具有普遍性，以至于它实际上可以捕捉到所有可能�
 在本文中，我们描述了一种视差校正算法，使用静态 ShadowMap 渲染动态光源的 sweeping 阴影。在《Far Cry 5》中，视差校正的使用使得用两种不同的技术渲染的动态阴影之间实现了相当的无缝过渡：近处的阴影采用层叠式阴影图（CSM）每帧更新一次，远处的阴影采用自适应阴影图（ASM）覆盖 500 米范围，每 2500 帧更新一次。因此，我们使用相对昂贵的 CSM 来渲染距离玩家相机仅 30 米范围内的阴影，这对于一个开放世界的游戏来说是相当短的范围。<br />
 </p>
 
-<div id="org25a4f99" class="figure">
+<div id="org127d0ae" class="figure">
 <p><img src="./GPUProReference/cached-shadowmap.png" alt="cached-shadowmap.png" width="512px" /><br />
 </p>
 </div>
@@ -351,7 +355,7 @@ PRT 的表述具有普遍性，以至于它实际上可以捕捉到所有可能�
 Heitz 和 Neyret[2018]最近为随机纹理（通常是自然纹理，如苔藓、花岗岩、沙子、树皮等）引入了一种新的按实例程序化纹理方法。他们的算法将一个小的纹理实例作为输入，并合成一个具有相同外观的无限输出，如图 2.1 所示。该算法是一个简单的 tiling-and-blending 增强方案，由一个直方图保护的混合算子，以防止由线性混合引起的视觉 artifacts。因此，实现的基石是这个新的混合算子，它需要专门的预计算。在这一章中，我们研究了这种算法的实际实现细节，与原文相比有一些改进。本章附有一个 C++的 OpenGL 演示，这些代码片段都是从中提取的。<br />
 </p>
 
-<div id="orgda041a6" class="figure">
+<div id="org0f02629" class="figure">
 <p><img src="./GPUProReference/procedural-stochastic-tex.png" alt="procedural-stochastic-tex.png" width="512px" /><br />
 </p>
 </div>
@@ -413,7 +417,7 @@ Vulkan 是一个新的显式(explicit)的跨平台图形 API。它引入了许�
 与现有的解决方案相比，使用 DXR 在寻找折射和反射光线的镜面交叉点和动态 3D 场景方面有几个好处。图 1.1(a)描述了这一点&#x2013;来自太阳的黄色光线与折射表面相互作用，并"变成"折射的红色光线，照射到棕色的接收几何体上。图 1.1(b)显示的是反射光线，它照射在紫色的接收几何体上。<br />
 </p>
 
-<div id="org10a5ecb" class="figure">
+<div id="orgf5977bc" class="figure">
 <p><img src="./GPUProReference/refracted-reflected-rays.png" alt="refracted-reflected-rays.png" width="512px" /><br />
 </p>
 </div>
@@ -426,7 +430,7 @@ Vulkan 是一个新的显式(explicit)的跨平台图形 API。它引入了许�
 对于一个有折射水界面的场景（未显示），图 1.2 显示了由阴影图产生的阴影。结果，箱盖的阴影轮廓是直的。图 1.3 显示的是由非相干折射光线产生的影子，因此箱盖的影子是弯曲的，并随着表面的移动以物理上正确的方式变形。<br />
 </p>
 
-<div id="org2986a8a" class="figure">
+<div id="org701e134" class="figure">
 <p><img src="./GPUProReference/shadow-vs.png" alt="shadow-vs.png" width="512px" /><br />
 </p>
 </div>
@@ -479,7 +483,7 @@ Vulkan 是一个新的显式(explicit)的跨平台图形 API。它引入了许�
 </p>
 
 
-<div id="org698b925" class="figure">
+<div id="org220fef6" class="figure">
 <p><img src="./GPUProReference/tone-shading.png" alt="tone-shading.png" /><br />
 </p>
 </div>
@@ -531,6 +535,18 @@ Vulkan 是一个新的显式(explicit)的跨平台图形 API。它引入了许�
 <div id="outline-container-orge96e4d4" class="outline-3">
 <h3 id="orge96e4d4">2016&#xa0;&#xa0;&#xa0;<span class="tag"><span class="2016GPUPro">2016GPUPro</span></span></h3>
 <div class="outline-text-3" id="text-orge96e4d4">
+</div>
+<div id="outline-container-org0ccc401" class="outline-4">
+<h4 id="org0ccc401">Fine Pruned Tiled Light Lists&#xa0;&#xa0;&#xa0;<span class="tag"><span class="Lighting">Lighting</span></span></h4>
+<div class="outline-text-4" id="text-org0ccc401">
+<p>
+本章我们展示了一个新的 tiled lighting 的变体，其主要目标是针对 AMD Graphics Core Next 架构进行优化。该方案以及在 Rise of the Tomb Raider (古墓丽影：崛起)中被使用。特别是，我们充分发挥了 asynchronous compute 的优势，将 light list 的生成和 shadow maps 的渲染交叉并行。为每个 tile 生成 light list 被分为两步来执行，这两个步骤都在相同的 compute kernel 内。首先是一个初始的粗糙的 pass，其使用简单的屏幕空间的 AABB bounding volume 相交测试在 local storage 生成一个 light list，该步骤不考虑 light type。第二步执行精细修剪(fine pruning)，其对粗糙的 light list 和 tile 中的每个像素进行测试，判断像素对应的点在 3D 空间中是否在光源范围内，这步会考虑光源真正的形状。<br />
+</p>
+
+<p>
+此外，我们还为 tiled deferred 和 tiled forward 提供了一种混合方案。<br />
+</p>
+</div>
 </div>
 </div>
 <div id="outline-container-org3bb5024" class="outline-3">

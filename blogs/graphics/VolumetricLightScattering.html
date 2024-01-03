@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-06-27 Tue 22:36 -->
+<!-- 2023-11-28 Tue 17:24 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>VolumetricLightScattering</title>
@@ -44,6 +44,16 @@
 <li><a href="#orgd706d52">RayMarching LightShaft 2</a></li>
 <li><a href="#org3becdaf">UE4 LightShafts</a></li>
 <li><a href="#org145a6c0">Volumetric Light</a></li>
+<li><a href="#org1ae0806">Volumetric Light Beam</a>
+<ul>
+<li><a href="#org4c6225a">源码分析</a>
+<ul>
+<li><a href="#org274e7ea">根据 CameraDepthRT 计算屏幕上某点到摄像机的距离</a></li>
+</ul>
+</li>
+<li><a href="#org50c3597">参考资料</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -54,7 +64,7 @@
 <p>
 VolumetricLightScattering note.<br />
 </p>
-<div class="HTML" id="org16d7c77">
+<div class="HTML" id="org55de554">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -107,6 +117,10 @@ VolumetricLightScattering note.<br />
 </p>
 
 <p>
+波长 = 光速 * 1/频率<br />
+</p>
+
+<p>
 空气分子对光的散射就属于 Rayleigh Scattering，瑞利散射是各向同性的，吸收可以忽略。<br />
 </p>
 
@@ -124,7 +138,7 @@ VolumetricLightScattering note.<br />
 <h4 id="org9998af5">米氏散射</h4>
 <div class="outline-text-4" id="text-org9998af5">
 <p>
-当大气中粒子的直径与辐射的波长相当时发生的散射。这种散射主要由大气中的微粒，如烟、尘埃、小水滴及气溶胶等引起。米氏散射的散射强度与频率的二次方成正比，并且散射在光线向前方向比向后方向更强,方向性比较明显。<br />
+当大气中粒子的直径与辐射的波长相当时发生的散射。这种散射主要由大气中的微粒，如烟、尘埃、小水滴及气溶胶等引起。米氏散射的散射强度与波长的二次方成反比，并且散射在光线向前方向比向后方向更强,方向性比较明显。<br />
 </p>
 
 <p>
@@ -148,26 +162,177 @@ VolumetricLightScattering note.<br />
 <li>渲染光源方向的深度图<br /></li>
 <li>渲染摄像机方向的深度图<br /></li>
 <li>以摄像机原点为射线原点，以摄像机到当前着色点方向为射线方向，以摄像机深度为射线最远距离。<br /></li>
-<li>若当前 RayMarching 点不在阴影中，则表示该点对 LightShaft 效果有贡献，否则无贡献。<br />
+<li>若当前 RayMarching 点不在阴影中，并且 RayMarching 点在光源范围内，则表示该点对 LightShaft 效果有贡献，否则无贡献。<br />
 <ul class="org-ul">
 <li>将当前 RayMarching 点转化到光源空间内，若 RayMarching 点的深度 &lt;= 光源空间 DepthRT 深度，则表示其不在阴影中。<br /></li>
 </ul></li>
 </ol>
 
+<p>
+Tips:<br />
+方向光范围是无限大，所以只需要考虑 RayMarching 点是否在阴影中<br />
+Point Light 和 Spot Light 的范围都是有限的，需要考虑 RayMarching 点是否在光源范围内<br />
+</p>
 
-<div id="org8aaf7d2" class="figure">
+
+<div id="org905a6d9" class="figure">
 <p><img src="./VolumetricLightScattering/god-ray.jpg" alt="god-ray.jpg" width="800px" /><br />
 </p>
 </div>
 
 
-<div id="org9dae08c" class="figure">
+<div id="orgf4785e8" class="figure">
 <p><img src="./VolumetricLightScattering/god-ray2.jpg" alt="god-ray2.jpg" width="800px" /><br />
 </p>
 </div>
-</div>
+
+<p>
+下面代码实现了方向光的体积光效果:<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #4f97d7; font-weight: bold;">Shader</span> <span style="color: #2d9574;">"Hidden/Toguchi/PostProcessing/LightShaft"</span>
+{
+    <span style="color: #4f97d7; font-weight: bold;">Properties</span>
+    {
+        <span style="color: #7590db;">_MainTex</span> (<span style="color: #2d9574;">"Texture"</span>, <span style="color: #4f97d7; font-weight: bold;">2D</span>) = <span style="color: #2d9574;">"white"</span> {}
+    }
+
+HLSLINCLUDE
+<span style="color: #bc6ec5;">    #include</span> <span style="color: #2d9574;">"Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"</span>
+<span style="color: #bc6ec5;">    #include</span> <span style="color: #2d9574;">"Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"</span>
+<span style="color: #bc6ec5;">    #include</span> <span style="color: #2d9574;">"Packages/com.unity.render-pipelines.universal/Shaders/PostProcessing/Common.hlsl"</span>
+
+    TEXTURE2D_X(<span style="color: #7590db;">_MainTex</span>);
+    TEXTURE2D_X_FLOAT(<span style="color: #7590db;">_CameraDepthTexture</span>);
+    SAMPLER(sampler_CameraDepthTexture);
+
+    TEXTURE2D_X(<span style="color: #7590db;">_LightShaftTempTex</span>);
+
+    <span style="color: #ce537a; font-weight: bold;">half4</span> <span style="color: #7590db;">_MainTex_ST</span>;
+    <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">_MainTex_TexelSize</span>;
+
+    <span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #7590db;">_CamWorldSpace</span>;
+    <span style="color: #ce537a; font-weight: bold;">float4x4</span> <span style="color: #7590db;">_CamFrustum</span>, <span style="color: #7590db;">_CamToWorld</span>;
+    <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">_MaxIterations</span>;
+    <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #7590db;">_MaxDistance</span>;
+    <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #7590db;">_MinDistance</span>;
+
+    <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #7590db;">_Intensity</span>;
+
+    <span style="color: #4f97d7; font-weight: bold;">struct</span> RayVaryings
+    {
+        <span style="color: #ce537a; font-weight: bold;">float4</span> positionCS    : <span style="color: #a45bad;">SV_POSITION</span>;
+        <span style="color: #ce537a; font-weight: bold;">float2</span> uv            : <span style="color: #a45bad;">TEXCOORD0</span>;
+        <span style="color: #ce537a; font-weight: bold;">float4</span> ray           : <span style="color: #a45bad;">TEXCOORD1</span>;
+    };
+
+    RayVaryings <span style="color: #bc6ec5; font-weight: bold;">Vert_Ray</span>(Attributes input)
+    {
+        RayVaryings output;
+        output.positionCS = TransformObjectToHClip(input.positionOS.xyz);
+        output.uv = input.uv;
+
+        <span style="color: #ce537a; font-weight: bold;">int</span> index = output.uv.x + 2 * output.uv.y;
+        output.ray = <span style="color: #7590db;">_CamFrustum</span>[index];
+
+        <span style="color: #4f97d7; font-weight: bold;">return</span> output;
+    }
+
+    <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #bc6ec5; font-weight: bold;">GetRandomNumber</span>(<span style="color: #ce537a; font-weight: bold;">float2</span> texCoord, <span style="color: #ce537a; font-weight: bold;">int</span> Seed)
+    {
+        <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #bc6ec5; font-weight: bold;">frac</span>(<span style="color: #4f97d7;">sin</span>(<span style="color: #4f97d7;">dot</span>(texCoord.xy, <span style="color: #ce537a; font-weight: bold;">float2</span>(12.9898, 78.233)) + Seed) * 43758.5453);
+    }
+
+    <span style="color: #ce537a; font-weight: bold;">half4</span> <span style="color: #bc6ec5; font-weight: bold;">SimpleRaymarching</span>(<span style="color: #ce537a; font-weight: bold;">float3</span> rayOrigin, <span style="color: #ce537a; font-weight: bold;">float3</span> rayDirection, <span style="color: #ce537a; font-weight: bold;">float</span> depth)
+    {
+        <span style="color: #ce537a; font-weight: bold;">half4</span> result = <span style="color: #ce537a; font-weight: bold;">float4</span>(<span style="color: #7590db;">_MainLightColor</span>.xyz, 1) * <span style="color: #7590db;">_Intensity</span>;
+
+        <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #4f97d7;">step</span> = <span style="color: #7590db;">_MaxDistance</span> / <span style="color: #7590db;">_MaxIterations</span>;
+        <span style="color: #ce537a; font-weight: bold;">float</span> t = <span style="color: #7590db;">_MinDistance</span> + <span style="color: #4f97d7;">step</span> * GetRandomNumber(rayDirection, <span style="color: #7590db;">_Time</span>.y * 100);
+        <span style="color: #ce537a; font-weight: bold;">float</span> alpha = 0;
+
+        <span style="color: #4f97d7; font-weight: bold;">for</span>(<span style="color: #ce537a; font-weight: bold;">int</span> i = 0; i &lt; <span style="color: #7590db;">_MaxIterations</span>; i++)
+        {
+            <span style="color: #4f97d7; font-weight: bold;">if</span>(t &gt; <span style="color: #7590db;">_MaxDistance</span> || t &gt;= depth)
+            {
+                <span style="color: #4f97d7; font-weight: bold;">break</span>;
+            }
+
+            <span style="color: #ce537a; font-weight: bold;">float3</span> p = rayOrigin + rayDirection * t;
+
+            <span style="color: #ce537a; font-weight: bold;">float4</span> shadowCoord = TransformWorldToShadowCoord(p);
+            <span style="color: #ce537a; font-weight: bold;">float</span> shadow = SAMPLE_TEXTURE2D_SHADOW(<span style="color: #7590db;">_MainLightShadowmapTexture</span>, sampler_MainLightShadowmapTexture, shadowCoord);
+            <span style="color: #4f97d7; font-weight: bold;">if</span>(shadow &gt;= 1) <span style="color: #2aa1ae; background-color: #292e34;">// &#24403;&#21069;&#28857;&#19981;&#22312;&#38452;&#24433;&#20013;</span>
+            {
+                alpha += <span style="color: #4f97d7;">step</span> * 0.2;
+            }
+
+            t += <span style="color: #4f97d7;">step</span>;
+        }
+
+        result.a *= <span style="color: #4f97d7;">saturate</span>(alpha);
+
+        <span style="color: #4f97d7; font-weight: bold;">return</span> result;
+    }
+
+    <span style="color: #ce537a; font-weight: bold;">half4</span> <span style="color: #bc6ec5; font-weight: bold;">Frag</span>(RayVaryings input) : <span style="color: #a45bad;">SV_Target</span>
+    {
+        <span style="color: #ce537a; font-weight: bold;">float</span> depth = SAMPLE_TEXTURE2D_X(<span style="color: #7590db;">_CameraDepthTexture</span>, sampler_LinearClamp, input.uv).r;
+        depth = Linear01Depth(depth, <span style="color: #7590db;">_ZBufferParams</span>);
+        depth *= <span style="color: #4f97d7;">length</span>(input.ray);
+
+        <span style="color: #ce537a; font-weight: bold;">float3</span> rayOrigin = <span style="color: #7590db;">_CamWorldSpace</span>;
+        <span style="color: #ce537a; font-weight: bold;">float3</span> rayDir = <span style="color: #4f97d7;">normalize</span>(input.ray);
+        <span style="color: #ce537a; font-weight: bold;">float4</span> result = SimpleRaymarching(rayOrigin, rayDir, depth);
+
+        <span style="color: #4f97d7; font-weight: bold;">return</span> result;
+    }
+
+    <span style="color: #ce537a; font-weight: bold;">half4</span> <span style="color: #bc6ec5; font-weight: bold;">Frag_Combine</span>(Varyings input) : <span style="color: #a45bad;">SV_Target</span>
+    {
+        <span style="color: #ce537a; font-weight: bold;">half4</span> color = SAMPLE_TEXTURE2D_X(<span style="color: #7590db;">_MainTex</span>, sampler_LinearClamp , input.uv);
+        <span style="color: #ce537a; font-weight: bold;">half4</span> shaft = SAMPLE_TEXTURE2D_X(<span style="color: #7590db;">_LightShaftTempTex</span>, sampler_LinearClamp, input.uv);
+
+        color.rgb = color.rgb * (1 - shaft.a) + shaft.rgb * shaft.a;
+        <span style="color: #4f97d7; font-weight: bold;">return</span> color;
+    }
+ENDHLSL
+
+    <span style="color: #4f97d7; font-weight: bold;">SubShader</span>
+    {
+        <span style="color: #4f97d7; font-weight: bold;">Tags</span> { <span style="color: #2d9574;">"RenderType"</span> = <span style="color: #2d9574;">"Opaque"</span> <span style="color: #2d9574;">"RenderPipeline"</span> = <span style="color: #2d9574;">"UniversalPipeline"</span>}
+        <span style="color: #4f97d7; font-weight: bold;">LOD</span> 100
+        <span style="color: #4f97d7; font-weight: bold;">ZTest</span> Always <span style="color: #4f97d7; font-weight: bold;">ZWrite</span> Off <span style="color: #4f97d7; font-weight: bold;">Cull</span> Off
+
+        <span style="color: #4f97d7; font-weight: bold;">Pass</span>
+        {
+            <span style="color: #4f97d7; font-weight: bold;">Name</span> <span style="color: #2d9574;">"GradientFog"</span>
+
+            HLSLPROGRAM
+<span style="color: #bc6ec5;">                #pragma</span> vertex Vert_Ray
+<span style="color: #bc6ec5;">                #pragma</span> fragment Frag
+            ENDHLSL
+        }
+
+        <span style="color: #4f97d7; font-weight: bold;">Pass</span>
+        {
+            <span style="color: #4f97d7; font-weight: bold;">Name</span> <span style="color: #2d9574;">"Combine"</span>
+
+            HLSLPROGRAM
+<span style="color: #bc6ec5;">                #pragma</span> vertex Vert
+<span style="color: #bc6ec5;">                #pragma</span> fragment Frag_Combine
+            ENDHLSL
+        }
+    }
+}
+</pre>
 </div>
 
+<ul class="org-ul">
+<li><a href="https://github.com/togucchi/urp-postprocessing-examples">https://github.com/togucchi/urp-postprocessing-examples</a><br /></li>
+</ul>
+</div>
+</div>
 <div id="outline-container-org6d39ff2" class="outline-4">
 <h4 id="org6d39ff2">RayMarching LightShaft 1</h4>
 <div class="outline-text-4" id="text-org6d39ff2">
@@ -181,7 +346,7 @@ VolumetricLightScattering note.<br />
 </ol>
 
 
-<div id="org13e09e7" class="figure">
+<div id="org2049d8c" class="figure">
 <p><img src="./VolumetricLightScattering/fake-god-ray-01.jpg" alt="fake-god-ray-01.jpg" width="800px" /><br />
 </p>
 </div>
@@ -236,7 +401,7 @@ light scattering with opengl <a href="https://fabiensanglard.net/lightScattering
 </ol>
 
 
-<div id="orga91c0a0" class="figure">
+<div id="org66d42c2" class="figure">
 <p><img src="./VolumetricLightScattering/god-ray3.jpg" alt="god-ray3.jpg" width="800px" /><br />
 </p>
 </div>
@@ -272,6 +437,49 @@ Bloom 方法<br />
 <ul class="org-ul">
 <li><a href="https://developer.nvidia.com/gpugems/gpugems3/part-ii-light-and-shadows/chapter-13-volumetric-light-scattering-post-process">https://developer.nvidia.com/gpugems/gpugems3/part-ii-light-and-shadows/chapter-13-volumetric-light-scattering-post-process</a><br /></li>
 </ul>
+</div>
+</div>
+<div id="outline-container-org1ae0806" class="outline-4">
+<h4 id="org1ae0806">Volumetric Light Beam</h4>
+<div class="outline-text-4" id="text-org1ae0806">
+</div>
+<div id="outline-container-org4c6225a" class="outline-5">
+<h5 id="org4c6225a">源码分析</h5>
+<div class="outline-text-5" id="text-org4c6225a">
+</div>
+<div id="outline-container-org274e7ea" class="outline-6">
+<h6 id="org274e7ea">根据 CameraDepthRT 计算屏幕上某点到摄像机的距离</h6>
+<div class="outline-text-6" id="text-org274e7ea">
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #4f97d7; font-weight: bold;">inline</span> <span style="color: #ce537a; font-weight: bold;">float</span> Depth_PS_GetSceneDepthFromEye(<span style="color: #ce537a; font-weight: bold;">float4</span> uv, <span style="color: #ce537a; font-weight: bold;">float3</span> posViewSpace)
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">// rawDepth: depth rt&#20013;&#23384;&#20648;&#30340;depth&#20540; [0, 1], non linear</span>
+    <span style="color: #ce537a; font-weight: bold;">float</span> rawDepth = VLBSampleDepthTexture(uv);
+    <span style="color: #2aa1ae; background-color: #292e34;">// linearDepthPersp: &#24403;&#21069;&#20687;&#32032;&#28857;&#30340;camera space &#19979;&#30340;z&#20540;</span>
+    <span style="color: #ce537a; font-weight: bold;">float</span> linearDepthPersp = VLBLinearEyeDepth(rawDepth);
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// transform perspective depth from near plane to distance based on the eye</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// acosViewDirZ: &#24403;&#21069;&#20687;&#32032;&#28857;&#26041;&#21521; &#21644; &#25668;&#20687;&#26426;&#26041;&#21521;&#30340;&#22841;&#35282;&#30340; cos &#20540;</span>
+    <span style="color: #ce537a; font-weight: bold;">float</span> acosViewDirZ = <span style="color: #4f97d7;">abs</span>(<span style="color: #4f97d7;">normalize</span>(posViewSpace.xyz).z); <span style="color: #2aa1ae; background-color: #292e34;">// TODO precompute that in VS?</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// linearDepthPersp: &#24403;&#21069;&#20687;&#32032;&#28857;&#21040; camera &#30340;&#36317;&#31163;</span>
+    linearDepthPersp /= acosViewDirZ;
+
+    <span style="color: #ce537a; font-weight: bold;">float</span> linearDepthOrtho = Depth_PS_GetLinearDepthOrtho(rawDepth);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #bc6ec5; font-weight: bold;">lerp</span>(linearDepthPersp, linearDepthOrtho, VLB_CAMERA_ORTHO);
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org50c3597" class="outline-5">
+<h5 id="org50c3597">参考资料</h5>
+<div class="outline-text-5" id="text-org50c3597">
+<ul class="org-ul">
+<li>VLB Asset Store <a href="https://assetstore.unity.com/packages/vfx/shaders/volumetric-light-beam-99888">https://assetstore.unity.com/packages/vfx/shaders/volumetric-light-beam-99888</a><br /></li>
+<li>VLB Doc <a href="http://saladgamer.com/vlb-doc/">http://saladgamer.com/vlb-doc/</a><br /></li>
+</ul>
+</div>
 </div>
 </div>
 </div>

@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-06-27 Tue 22:35 -->
+<!-- 2023-11-28 Tue 17:24 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Game104MordernGameEngine</title>
@@ -123,7 +123,7 @@
 <p>
 Game104MordernGameEngine note.<br />
 </p>
-<div class="HTML" id="orgdd40bf2">
+<div class="HTML" id="org7c6169a">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -323,7 +323,7 @@ Freeze Lighting on Surface Cache<br />
 <li>如何处理多次 bounce。使用下面流程来实现多次 bounce<br /></li>
 </ol>
 
-<div id="org3281314" class="figure">
+<div id="org1804306" class="figure">
 <p><img src="./Games104MordenGameEngine/lighting-cache-pipeline.png" alt="lighting-cache-pipeline.png" width="512px" /><br />
 </p>
 </div>
@@ -357,7 +357,7 @@ Global DF Tracing 通过 Voxel Lighting 来得到光照信息。与传统的 Vox
 </p>
 
 
-<div id="orgb369123" class="figure">
+<div id="org49ebd0b" class="figure">
 <p><img src="./Games104MordenGameEngine/voxel-lighting-data-layout.png" alt="voxel-lighting-data-layout.png" width="240px" /><br />
 </p>
 </div>
@@ -510,8 +510,8 @@ Probe 数据包含了 Radiance 和 HitDistance, 使用 Octahedron Mapping 来存
 <li>相邻的 Texel 对应的方向也是相邻的<br /></li>
 </ul>
 
-<p width="400px">
-<img src="./Games104MordenGameEngine/screenspace-probe.png" alt="screenspace-probe.png" width="400px" /><br />
+<p>
+<img src="./Games104MordenGameEngine/screenspace-probe.png" alt="screenspace-probe.png" /><br />
 Octahedron Mapping 有以下两个优点：<br />
 </p>
 <ol class="org-ol">
@@ -529,12 +529,8 @@ Octahedron Mapping 有以下两个优点：<br />
 
 <p>
 渲染一个像素时，需要取其附近的 4 个 Probe 来进行插值，由当前像素的世界空间位置和法线可以得到一个平面，将 4 个 Probe 的中心点投影到这个平面，可以得到每个 Probe 中心点到该平面的投影距离，如下图所示:<br />
+<img src="./Games104MordenGameEngine/check-probe-failed.png" alt="check-probe-failed.png" /><br />
 </p>
-
-<div id="orga56dfd0" class="figure">
-<p><img src="./Games104MordenGameEngine/check-probe-failed.png" alt="check-probe-failed.png" width="220px" /><br />
-</p>
-</div>
 
 <p>
 利用这些投影距离，使用一个错误函数来计算是否可以进行插值。<br />
@@ -561,14 +557,14 @@ Octahedron Mapping 有以下两个优点：<br />
 </ul>
 
 
-<div id="org8ac7885" class="figure">
-<p><img src="./Games104MordenGameEngine/hammersley-points.png" alt="hammersley-points.png" width="220px" /><br />
+<div id="orgc710317" class="figure">
+<p><img src="./Games104MordenGameEngine/hammersley-points.png" alt="hammersley-points.png" /><br />
 </p>
 </div>
 
 
-<div id="org6b92d8d" class="figure">
-<p><img src="./Games104MordenGameEngine/temporal-accumulation-probes.png" alt="temporal-accumulation-probes.png" width="220px" /><br />
+<div id="org51c8bed" class="figure">
+<p><img src="./Games104MordenGameEngine/temporal-accumulation-probes.png" alt="temporal-accumulation-probes.png" /><br />
 </p>
 </div>
 </div>
@@ -629,22 +625,10 @@ Octahedron Mapping 有以下两个优点：<br />
 <li>过滤时可以忽略 normal 的不同，只考虑深度权重<br /></li>
 <li>不能简单地将旁边的 Probe 数据按照深度权重叠加到当前 Probe，需要更复杂的权重计算<br />
 <ul class="org-ul">
-<li><p>
-若从当前 Probe 发射一条 ray a 和某个物体的某点相交, 连接相邻 Probe 和该交点得到 ray b，如果 ray a 和 ray b 夹角大于 10 度，则不应该考虑相邻 Probe 的贡献<br />
-</p>
-
-<div id="org0c5094d" class="figure">
-<p><img src="./Games104MordenGameEngine/probe-filter-angle-error.png" alt="probe-filter-angle-error.png" width="520px" /><br />
-</p>
-</div></li>
-<li><p>
-对于一个特定的方向，以该方向从当前 Probe 发射 ray a 在距离 da 处和场景相交，以相同方向从相邻 Probe 发射 ray b 在距离 db 处和场景相交，若 da 和 db 相差很大，则不应该考虑相邻 Probe 的贡献<br />
-</p>
-
-<div id="org4952025" class="figure">
-<p><img src="./Games104MordenGameEngine/probe-filter-distance-error.png" alt="probe-filter-distance-error.png" width="520px" /><br />
-</p>
-</div></li>
+<li>若从当前 Probe 发射一条 ray a 和某个物体的某点相交, 连接相邻 Probe 和该交点得到 ray b，如果 ray a 和 ray b 夹角大于 10 度，则不应该考虑相邻 Probe 的贡献<br />
+<img src="./Games104MordenGameEngine/probe-filter-angle-error.png" alt="probe-filter-angle-error.png" /><br /></li>
+<li>对于一个特定的方向，以该方向从当前 Probe 发射 ray a 在距离 da 处和场景相交，以相同方向从相邻 Probe 发射 ray b 在距离 db 处和场景相交，若 da 和 db 相差很大，则不应该考虑相邻 Probe 的贡献<br />
+<img src="./Games104MordenGameEngine/probe-filter-distance-error.png" alt="probe-filter-distance-error.png" /><br /></li>
 </ul></li>
 </ul>
 </div>
@@ -698,7 +682,7 @@ Octahedron Mapping 有以下两个优点：<br />
 World Space Probe 发射的射线必须跳过 4 个 World Space Probes 组成的立方体的对角线长度，立方体内部的信息由 Screen Space Probe 发射的 Ray 来考虑<br />
 </p>
 
-<div id="org400279c" class="figure">
+<div id="org610f6af" class="figure">
 <p><img src="./Games104MordenGameEngine/worldspace-probe-skip-footprint.png" alt="worldspace-probe-skip-footprint.png" width="520px" /><br />
 </p>
 </div>
@@ -707,7 +691,7 @@ World Space Probe 发射的射线必须跳过 4 个 World Space Probes 组成的
 Screen Probe 射线必须覆盖 interpolation footprint + skipped distance<br />
 </p>
 
-<div id="org1d9f691" class="figure">
+<div id="org51ac64a" class="figure">
 <p><img src="./Games104MordenGameEngine/screenspace-probe-skip.png" alt="screenspace-probe-skip.png" width="520px" /><br />
 </p>
 </div>
@@ -721,7 +705,7 @@ Light leaking Problem<br />
 将 Screen Space Probe 发射射线 a，前进最大距离后，直接将射线 a 和 World Space Probe 发射的同交点射线 b 连接起来，如此处理漏光，如下图所示：<br />
 </p>
 
-<div id="orgfcee55f" class="figure">
+<div id="org66804f7" class="figure">
 <p><img src="./Games104MordenGameEngine/screenspace-light-leak.png" alt="screenspace-light-leak.png" width="320px" /><br />
 </p>
 </div>
@@ -762,7 +746,7 @@ Light leaking Problem<br />
 <h5 id="org3c7d4a1">Final Integration with SH</h5>
 <div class="outline-text-5" id="text-org3c7d4a1">
 
-<div id="org465635c" class="figure">
+<div id="org7de975e" class="figure">
 <p><img src="./Games104MordenGameEngine/lumen-final-sh-lighting.png" alt="lumen-final-sh-lighting.png" width="420px" /><br />
 </p>
 </div>

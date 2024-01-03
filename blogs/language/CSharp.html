@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-06-27 Tue 22:36 -->
+<!-- 2023-11-28 Tue 17:24 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Programing in CSharp</title>
@@ -220,7 +220,7 @@
 <li><a href="#org0690288"><span class="todo TODO">TODO</span> 正则表达式</a>
 <ul>
 <li><a href="#org614b494">正则表达式匹配 ftp list directory detial</a></li>
-<li><a href="#org52a10ee">参考资料</a></li>
+<li><a href="#org289a657">参考资料</a></li>
 </ul>
 </li>
 </ul>
@@ -314,6 +314,7 @@
 <li><a href="#org0e09c08">Base</a>
 <ul>
 <li><a href="#org6cecd95">查看本地 dotnet version</a></li>
+<li><a href="#org1148e56">生成 32 位 guid</a></li>
 </ul>
 </li>
 <li><a href="#org7c2e017">Collections</a>
@@ -375,14 +376,14 @@
 </li>
 </ul>
 </li>
-<li><a href="#org289a657">参考资料</a></li>
+<li><a href="#orgbe306de">参考资料</a></li>
 </ul>
 </div>
 </div>
 <p>
 csharp language note.<br />
 </p>
-<div class="HTML" id="org1eb98cb">
+<div class="HTML" id="org1bec584">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -2302,6 +2303,13 @@ public class Node&lt;T&gt; where T : new() /</i> 指定 T 支持不带参数的�
 public class Node&lt;T&gt; where T : class <i>/ 指定 T 可以被赋值为 null<br />
 public class ComMgr&lt;ComType&gt; where ComType : Component /</i> 指定 ComType 为 Component 类型或 Component 的派生类<br />
 </p>
+
+<p>
+下面链接中给出了各种 where 指定的约束示例：<br />
+</p>
+<ul class="org-ul">
+<li><a href="https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/generics/constraints-on-type-parameters">https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/generics/constraints-on-type-parameters</a><br /></li>
+</ul>
 <div class="org-src-container">
 <pre class="src src-csharp">  <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Node</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt;:<span style="color: #ce537a; font-weight: bold;">IComparable</span>&lt;<span style="color: #ce537a; font-weight: bold;">Node</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt;&gt; <span style="color: #4f97d7; font-weight: bold;">where</span> T : <span style="color: #ce537a; font-weight: bold;">IComparable</span>&lt;<span style="color: #ce537a; font-weight: bold;">T</span>&gt;
   {
@@ -2659,9 +2667,9 @@ Console.WriteLine (mutableStr);
 </div>
 </div>
 </div>
-<div id="outline-container-org52a10ee" class="outline-5">
-<h5 id="org52a10ee">参考资料</h5>
-<div class="outline-text-5" id="text-org52a10ee">
+<div id="outline-container-org289a657" class="outline-5">
+<h5 id="org289a657">参考资料</h5>
+<div class="outline-text-5" id="text-org289a657">
 <ol class="org-ol">
 <li>C#正则表达式语言 <a href="https://msdn.microsoft.com/zh-cn/library/az24scfc(v=vs.110).aspx">https://msdn.microsoft.com/zh-cn/library/az24scfc(v=vs.110).aspx</a><br /></li>
 </ol>
@@ -3582,6 +3590,34 @@ overwrite 表示重新实现从父类派生而来的方法，需要关键字 new
 </ul>
 </div>
 </div>
+<div id="outline-container-org1148e56" class="outline-4">
+<h4 id="org1148e56">生成 32 位 guid</h4>
+<div class="outline-text-4" id="text-org1148e56">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">System</span>.<span style="color: #7590db;">Text</span>;
+
+<span style="color: #4f97d7; font-weight: bold;">private</span> System.Security.Cryptography.<span style="color: #ce537a; font-weight: bold;">SHA1</span> <span style="color: #7590db;">hash</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">System</span>.Security.Cryptography.<span style="color: #bc6ec5; font-weight: bold;">SHA1CryptoServiceProvider</span>();
+
+<span style="color: #4f97d7; font-weight: bold;">private</span> <span style="color: #ce537a; font-weight: bold;">uint</span> <span style="color: #bc6ec5; font-weight: bold;">GetUInt32HashCode</span>(<span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #7590db;">strText</span>)
+{
+    <span style="color: #4f97d7; font-weight: bold;">if</span> (<span style="color: #ce537a; font-weight: bold;">string</span>.<span style="color: #bc6ec5; font-weight: bold;">IsNullOrEmpty</span>(strText)) <span style="color: #4f97d7; font-weight: bold;">return</span> 0;
+
+    <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">Unicode Encode Covering all characterset</span>
+    <span style="color: #ce537a; font-weight: bold;">byte</span>[] <span style="color: #7590db;">byteContents</span>   = Encoding.Unicode.<span style="color: #bc6ec5; font-weight: bold;">GetBytes</span>(strText);
+    <span style="color: #ce537a; font-weight: bold;">byte</span>[] <span style="color: #7590db;">hashText</span>       = hash.<span style="color: #bc6ec5; font-weight: bold;">ComputeHash</span>(byteContents);
+    <span style="color: #ce537a; font-weight: bold;">uint</span>   <span style="color: #7590db;">hashCodeStart</span>  = BitConverter.<span style="color: #bc6ec5; font-weight: bold;">ToUInt32</span>(hashText, 0);
+    <span style="color: #ce537a; font-weight: bold;">uint</span>   <span style="color: #7590db;">hashCodeMedium</span> = BitConverter.<span style="color: #bc6ec5; font-weight: bold;">ToUInt32</span>(hashText, 8);
+    <span style="color: #ce537a; font-weight: bold;">uint</span>   <span style="color: #7590db;">hashCodeEnd</span>    = BitConverter.<span style="color: #bc6ec5; font-weight: bold;">ToUInt32</span>(hashText, 16);
+    <span style="color: #ce537a; font-weight: bold;">var</span>    <span style="color: #7590db;">hashCode</span>       = hashCodeStart ^ hashCodeMedium ^ hashCodeEnd;
+    <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #ce537a; font-weight: bold;">uint</span>.MaxValue - hashCode;
+}
+</pre>
+</div>
+<ul class="org-ul">
+<li><a href="https://stackoverflow.com/questions/63615950/generate-unique-id-from-string-in-c-sharp">https://stackoverflow.com/questions/63615950/generate-unique-id-from-string-in-c-sharp</a><br /></li>
+</ul>
+</div>
+</div>
 </div>
 <div id="outline-container-org7c2e017" class="outline-3">
 <h3 id="org7c2e017">Collections</h3>
@@ -3775,6 +3811,7 @@ System.Environment.<span style="color: #bc6ec5; font-weight: bold;">GetFolderPat
 <pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">System</span>.<span style="color: #7590db;">IO</span>;
 <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">f</span> = <span style="color: #2d9574;">"a/b/c/d.txt"</span>
 
+Console.<span style="color: #bc6ec5; font-weight: bold;">WriteLine</span>(f.<span style="color: #bc6ec5; font-weight: bold;">Replace</span>(<span style="color: #2d9574;">".txt"</span>, <span style="color: #2d9574;">""</span>));                <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">a/b/c/d</span>
 Console.<span style="color: #bc6ec5; font-weight: bold;">WriteLine</span>(Path.<span style="color: #bc6ec5; font-weight: bold;">GetDirectoryName</span>(f));             <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">a/b/c</span>
 Console.<span style="color: #bc6ec5; font-weight: bold;">WriteLine</span>(Path.<span style="color: #bc6ec5; font-weight: bold;">GetFileName</span>(f));                  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">d.txt</span>
 Console.<span style="color: #bc6ec5; font-weight: bold;">WriteLine</span>(Path.<span style="color: #bc6ec5; font-weight: bold;">GetFileNameWithoutExtension</span>(f));  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">d</span>
@@ -3937,37 +3974,42 @@ Directory.<span style="color: #bc6ec5; font-weight: bold;">Create</span>(path); 
 <h5 id="org30365d4">复制文件和目录</h5>
 <div class="outline-text-5" id="text-org30365d4">
 <div class="org-src-container">
-<pre class="src src-csharp">  <span style="color: #4f97d7; font-weight: bold;">using</span> System.IO;
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">System</span>.<span style="color: #7590db;">IO</span>;
 
-  <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">CopyDirectory</span>(<span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #7590db;">srcPath</span>, <span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #7590db;">desPath</span>)
-  {
-      <span style="color: #4f97d7; font-weight: bold;">try</span>
-      {
-          <span style="color: #ce537a; font-weight: bold;">DirectoryInfo</span> <span style="color: #7590db;">dirInfo</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">DirectoryInfo</span>(srcPath);
-          <span style="color: #ce537a; font-weight: bold;">FileSystemInfo</span>[] <span style="color: #7590db;">fileSysInfos</span> = dirInfo.<span style="color: #bc6ec5; font-weight: bold;">GetFileSystemInfos</span>();
-          <span style="color: #4f97d7; font-weight: bold;">foreach</span>(<span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">fileSysInfo</span> <span style="color: #4f97d7; font-weight: bold;">in</span> fileSysInfos)
-          {
-              <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">subDesPath</span> = desPath + <span style="color: #2d9574;">"/"</span> + fileSysInfo.Name;
-              <span style="color: #4f97d7; font-weight: bold;">if</span>(fileSysInfo <span style="color: #4f97d7; font-weight: bold;">is</span> DirectoryInfo)
-              {
-                  <span style="color: #4f97d7; font-weight: bold;">if</span>(<span style="color: #a45bad;">!</span>Directory.<span style="color: #bc6ec5; font-weight: bold;">Exists</span>(subDesPath))
-                  {
-                      Directory.<span style="color: #bc6ec5; font-weight: bold;">CreateDirectory</span>(subDesPath);
-                  }
-                  <span style="color: #bc6ec5; font-weight: bold;">CopyDirectory</span>(fileSysInfo.FullName, subDesPath);
-              }
-              <span style="color: #4f97d7; font-weight: bold;">else</span>
-              {
-                  File.<span style="color: #bc6ec5; font-weight: bold;">Copy</span>(fileSysInfo.FullName, subDesPath, <span style="color: #a45bad;">true</span>);
-              }
-          }
-      }
-      <span style="color: #4f97d7; font-weight: bold;">catch</span>(<span style="color: #ce537a; font-weight: bold;">Exception</span> <span style="color: #7590db;">e</span>)
-      {
-          Console.<span style="color: #bc6ec5; font-weight: bold;">WriteLine</span>(e);
-          <span style="color: #4f97d7; font-weight: bold;">throw</span>;
-      }
-  }
+<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">CopyDirectory</span>(<span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #7590db;">srcPath</span>, <span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #7590db;">desPath</span>)
+{
+    <span style="color: #4f97d7; font-weight: bold;">try</span>
+    {
+        <span style="color: #4f97d7; font-weight: bold;">if</span> (<span style="color: #a45bad;">!</span>Directory.<span style="color: #bc6ec5; font-weight: bold;">Exists</span>(desPath))
+        {
+            <span style="color: #ce537a; font-weight: bold;">DirectoryInfo</span> <span style="color: #7590db;">desDirInfo</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">DirectoryInfo</span>(desPath);
+            desDirInfo.<span style="color: #bc6ec5; font-weight: bold;">Create</span>();
+        }
+        <span style="color: #ce537a; font-weight: bold;">DirectoryInfo</span> <span style="color: #7590db;">dirInfo</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">DirectoryInfo</span>(srcPath);
+        <span style="color: #ce537a; font-weight: bold;">FileSystemInfo</span>[] <span style="color: #7590db;">fileSysInfos</span> = dirInfo.<span style="color: #bc6ec5; font-weight: bold;">GetFileSystemInfos</span>();
+        <span style="color: #4f97d7; font-weight: bold;">foreach</span>(<span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">fileSysInfo</span> <span style="color: #4f97d7; font-weight: bold;">in</span> fileSysInfos)
+        {
+            <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">subDesPath</span> = desPath + <span style="color: #2d9574;">"/"</span> + fileSysInfo.Name;
+            <span style="color: #4f97d7; font-weight: bold;">if</span>(fileSysInfo <span style="color: #4f97d7; font-weight: bold;">is</span> DirectoryInfo)
+            {
+                <span style="color: #4f97d7; font-weight: bold;">if</span>(<span style="color: #a45bad;">!</span>Directory.<span style="color: #bc6ec5; font-weight: bold;">Exists</span>(subDesPath))
+                {
+                    Directory.<span style="color: #bc6ec5; font-weight: bold;">CreateDirectory</span>(subDesPath);
+                }
+                <span style="color: #bc6ec5; font-weight: bold;">CopyDirectory</span>(fileSysInfo.FullName, subDesPath);
+            }
+            <span style="color: #4f97d7; font-weight: bold;">else</span>
+            {
+                File.<span style="color: #bc6ec5; font-weight: bold;">Copy</span>(fileSysInfo.FullName, subDesPath, <span style="color: #a45bad;">true</span>);
+            }
+        }
+    }
+    <span style="color: #4f97d7; font-weight: bold;">catch</span>(<span style="color: #ce537a; font-weight: bold;">Exception</span> <span style="color: #7590db;">e</span>)
+    {
+        Console.<span style="color: #bc6ec5; font-weight: bold;">WriteLine</span>(e);
+        <span style="color: #4f97d7; font-weight: bold;">throw</span>;
+    }
+}
 </pre>
 </div>
 </div>
@@ -4015,9 +4057,9 @@ Directory.<span style="color: #bc6ec5; font-weight: bold;">Create</span>(path); 
 </div>
 </div>
 </div>
-<div id="outline-container-org289a657" class="outline-2">
-<h2 id="org289a657">参考资料</h2>
-<div class="outline-text-2" id="text-org289a657">
+<div id="outline-container-orgbe306de" class="outline-2">
+<h2 id="orgbe306de">参考资料</h2>
+<div class="outline-text-2" id="text-orgbe306de">
 <ul class="org-ul">
 <li>.Net 系列文章 <a href="http://www.cnblogs.com/anding/p/5226343.html">http://www.cnblogs.com/anding/p/5226343.html</a><br /></li>
 </ul>

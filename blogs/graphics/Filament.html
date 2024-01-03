@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-06-27 Tue 22:35 -->
+<!-- 2023-11-28 Tue 17:24 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Filament</title>
@@ -44,7 +44,31 @@
 </ul>
 </li>
 <li><a href="#orge8f7e2a">SourceCode</a></li>
-<li><a href="#org8dcd679">参考资料</a></li>
+<li><a href="#org95e234d">Physically Based Rendering in Filament</a>
+<ul>
+<li><a href="#org6440d93">Material system</a></li>
+<li><a href="#orgfce12fb">Lighting</a></li>
+<li><a href="#org7311891">Volumetric effects</a></li>
+<li><a href="#orgacd486a">Imaging pipeline</a>
+<ul>
+<li><a href="#org8c0629a">Physically based camera</a>
+<ul>
+<li><a href="#orgddd2e3d">Exposure settings</a></li>
+<li><a href="#orgc5fa7e3">Exposure value</a></li>
+<li><a href="#orgaeb1b4b">Exposure</a></li>
+<li><a href="#org76889e6">Automatic exposure</a></li>
+<li><a href="#org95760e5">Bloom</a></li>
+</ul>
+</li>
+<li><a href="#orgf0e5471">Optics post-processing</a></li>
+<li><a href="#org7a164e8">Filmic post-processing</a></li>
+<li><a href="#org5d77a7c">Light path</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org9d42728">Filament Materials Guide</a></li>
+<li><a href="#orgb55433c">参考资料</a></li>
 </ul>
 </li>
 </ul>
@@ -53,7 +77,7 @@
 <p>
 Filament note.<br />
 </p>
-<div class="HTML" id="org1ba494a">
+<div class="HTML" id="orgde5e036">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -157,10 +181,565 @@ cmake ..
 <div id="outline-container-orge8f7e2a" class="outline-3">
 <h3 id="orge8f7e2a">SourceCode</h3>
 </div>
+<div id="outline-container-org95e234d" class="outline-3">
+<h3 id="org95e234d">Physically Based Rendering in Filament</h3>
+<div class="outline-text-3" id="text-org95e234d">
+</div>
+<div id="outline-container-org6440d93" class="outline-4">
+<h4 id="org6440d93">Material system</h4>
+</div>
+<div id="outline-container-orgfce12fb" class="outline-4">
+<h4 id="orgfce12fb">Lighting</h4>
+</div>
+<div id="outline-container-org7311891" class="outline-4">
+<h4 id="org7311891">Volumetric effects</h4>
+</div>
+<div id="outline-container-orgacd486a" class="outline-4">
+<h4 id="orgacd486a">Imaging pipeline</h4>
+<div class="outline-text-4" id="text-orgacd486a">
+<p>
+在 Lighting 部分，描述了光如何和场景中的表面以物理的方式进行交互的。为了达到可信的结果，我们必须进一步考虑如何将光照方程计算出的场景亮度（scene luminance）转换为可显示的像素值。<br />
+</p>
 
-<div id="outline-container-org8dcd679" class="outline-3">
-<h3 id="org8dcd679">参考资料</h3>
-<div class="outline-text-3" id="text-org8dcd679">
+<p>
+我们将要使用的一系列变换构成了如下的 imaging pipeline：<br />
+<img src="./Filament/imaging-pipeline.jpg" alt="imaging-pipeline.jpg" /><br />
+</p>
+
+<p>
+Tips:<br />
+OETF 是指在目标颜色空间应用 opto-electronic transfer function。为了简洁，上图中没有包含 vignette、bloom 等 post-processing 步骤。<br />
+</p>
+</div>
+
+<div id="outline-container-org8c0629a" class="outline-5">
+<h5 id="org8c0629a">Physically based camera</h5>
+<div class="outline-text-5" id="text-org8c0629a">
+<p>
+图片变换处理的第一步是使用 physically based camera 对场景的输出亮度（scene‘是 outgoing luminance）进行适当的曝光。也就是上面提到的 Normalized luminance 步骤。<br />
+</p>
+</div>
+<div id="outline-container-orgddd2e3d" class="outline-6">
+<h6 id="orgddd2e3d">Exposure settings</h6>
+<div class="outline-text-6" id="text-orgddd2e3d">
+<p>
+因为我们在整个光照处理过程中使用光度单位，所以到达相机的光是亮度（luminance） L，单位为 cd/m²。到达相机传感器的光可以覆盖一个很大的范围，从星光的 0.00001 cd/m² 到太阳的 10^9 cd/m²。由于我们显然无法处理和记录如此大的值范围，因此我们需要重新映射它们。<br />
+</p>
+
+<p>
+这种范围重新映射是在相机中通过将传感器曝光一段时间来完成的。为了最大限度地利用传感器的有限范围，场景的光线范围被集中在“中间灰”（middle gray）周围，中间灰是黑色和白色之间的中间值。<br />
+</p>
+
+<p>
+曝光是通过手动或自动操作以下 3 个设置来实现的：<br />
+</p>
+<ul class="org-ul">
+<li>光圈（aperture）<br /></li>
+<li>快门速度（shutter speed）<br /></li>
+<li>感光度（ISO）<br /></li>
+</ul>
+
+<p>
+光圈、快门速度和感光度是摄影中最重要的三个设置。这三个设置共同决定了到达相机传感器的光量，从而决定了曝光值, 还会影响图像的其他方面，如景深、运动模糊和噪点。<br />
+<img src="./Filament/cam-exposure-3factors.jpg" alt="cam-exposure-3factors.jpg" /><br />
+</p>
+</div>
+<ul class="org-ul">
+<li><a id="org1786bcd"></a>光圈<br />
+<div class="outline-text-7" id="text-org1786bcd">
+<p>
+光圈用 N 表示，以 f-stop（f 值）为单位，用于控制相机系统的光圈开度。由于 f 值表示镜头焦距与入口瞳孔直径的比值，因此高 f 值（f/16）表示小光圈，低 f 值（f/1.4）表示大光圈。除了曝光之外，光圈设置还控制景深。<br />
+</p>
+</div>
+</li>
+<li><a id="org457c9c3"></a>快门速度<br />
+<div class="outline-text-7" id="text-org457c9c3">
+<p>
+快门速度用 t 表示，以秒（s）为单位，用于控制光圈打开的时间（它还控制电子或机械快门的时间）。除了曝光之外，快门速度还控制运动模糊。<br />
+</p>
+</div>
+</li>
+<li><a id="orgef31046"></a>感光度<br />
+<div class="outline-text-7" id="text-orgef31046">
+<p>
+感光度用 S 表示，以 ISO 为单位，用于控制到达传感器的光被量化的方式。由于其单位，此设置通常简称为“ISO”或“ISO 设置”。除了曝光之外，感光度设置还控制噪点量。<br />
+</p>
+
+<p>
+下图展示了，在光圈和快门保持不变的情况下，提升 ISO 可以提升画面的曝光度:<br />
+<img src="./Filament/cam-sensitivity.jpg" alt="cam-sensitivity.jpg" /><br />
+</p>
+</div>
+</li>
+<li><a id="orgfb8466c"></a>思考<br />
+<ul class="org-ul">
+<li><a id="orgb477b55"></a>为什么需要曝光？<br />
+<div class="outline-text-8" id="text-orgb477b55">
+<p>
+传感器可以记录的亮度范围是有限的，其范围比真实世界的亮度范围要小很多。曝光调整（和/或灯光调整）的目的是控制从主体照射到胶片上的光线的量，以确保阴影和高光细节的“重要”区域不超出胶片的可用曝光范围。但是，在某些情况下，场景的亮度范围可能超过感光元件的曝光宽容度。在这种情况下，感光元件只能记录部分亮度范围内的细节，而其他亮度范围内的细节将会丢失。<br />
+</p>
+</div>
+</li>
+<li><a id="orga5d5365"></a>什么是曝光宽容度？<br />
+<div class="outline-text-8" id="text-orga5d5365">
+<p>
+曝光宽容度是指感光元件能够正确记录光线强度范围的能力。曝光宽容度越大，感光元件能够记录的亮度范围就越大。曝光宽容度通常以 EV 值来表示。EV 值越大，曝光宽容度就越大。<br />
+</p>
+</div>
+</li>
+<li><a id="orgadbfe56"></a>什么是正确的曝光?<br />
+<div class="outline-text-8" id="text-orgadbfe56">
+<p>
+“正确”曝光可以定义为实现摄影师意图的曝光。<br />
+</p>
+
+<p>
+一种更技术性的方法认为，摄影胶片（或传感器）有物理上有限的可用曝光范围，有时称其为动态范围。如果照片的任何部分的实际曝光超出该范围，胶片就无法准确记录。例如，在一个非常简单的模型中，超出范围的值将被记录为“黑色”（曝光不足）或“白色”（曝光过度），而不是描述“细节”所需的精确的渐变色调。因此，曝光调整（和/或灯光调整）的目的是控制从主体照射到胶片上的光线的量，以确保阴影和高光细节的“重要”区域不超出胶片的可用曝光范围。这确保在拍摄过程中不会丢失任何“重要”信息。<br />
+</p>
+
+<p>
+摄影师可以仔细地过度曝光或欠曝照片以消除“无关紧要”或“不需要”的细节；例如，使白色祭坛布看起来洁白无瑕，或模仿黑色电影中浓重的、无情的阴影。但是，在后期处理过程中丢弃记录的信息在技术上比尝试“重新创建”未记录的信息要容易得多。<br />
+</p>
+
+<p>
+在光线强烈或刺眼的场景中，高光和阴影亮度值之间的比率很可能大于胶片的最大和最小可用曝光值之间的比率。在这种情况下，调整相机的曝光设置（仅对整个图像进行更改，不针对图像的特定部分进行更改）只能让摄影师在曝光不足的阴影或曝光过度的高光之间进行选择；它不能同时将两者都带到可用的曝光范围内。处理这种情况的方法包括：使用补光来增加阴影区域的亮度；使用渐变中性密度滤镜、遮挡物、网布或剪影来降低落在被认为太亮的区域上的亮度；或者以不同的曝光拍摄多张照片，然后在 HDRI 过程中将它们组合在一起。<br />
+</p>
+
+<p>
+下面文章，描述了如何通过拍摄多张照片，然后在 HDRI 过程中将他们组合起来：<br />
+</p>
+
+<ul class="org-ul">
+<li>Multi-exposure HDR capture <a href="https://en.wikipedia.org/wiki/Multi-exposure_HDR_capture">https://en.wikipedia.org/wiki/Multi-exposure_HDR_capture</a><br /></li>
+</ul>
+</div>
+</li>
+<li><a id="org3a2c155"></a>使用灰卡调整曝光的原理？<br />
+<div class="outline-text-8" id="text-org3a2c155">
+<p>
+人对世界感知不是线性的而是对数的。这里不是单指光通量，还包括对重量、数量、音量、时间等。<br />
+达到准确的曝光的期望是：让曝光正好处于“某种”平衡亮部和暗部的正中间并且尽可能多的记录细节。<br />
+</p>
+
+<p>
+50%反射率的灰色在灰阶渐变中几乎偏向白色了，完全不在中间，会导致暗部细节不够。而 18%反射率的灰色，在人眼里正好处于黑白渐变正中间。<br />
+</p>
+
+<p>
+在摄影中，通常将中灰色（18% Grey）作为参考标准。如果图像中的中灰色区域看起来正常，则说明曝光是正确的。<br />
+如果图像中的中灰色区域看起来过暗，则说明曝光过低。可以通过增加光圈或减小快门速度来提高曝光。<br />
+如果图像中的中灰色区域看起来过亮，则说明曝光过高。可以通过减小光圈或增加快门速度来降低曝光。<br />
+</p>
+
+<ul class="org-ul">
+<li>18%灰板的原理是什么？ <a href="https://www.zhihu.com/question/19865979">https://www.zhihu.com/question/19865979</a><br /></li>
+</ul>
+</div>
+</li>
+<li><a id="orge3a3ae2"></a>人眼看到的灰卡和相机拍出的灰卡颜色亮度一致，就说明曝光设置正确吗？<br />
+<div class="outline-text-8" id="text-orge3a3ae2">
+<p>
+不一定。人眼看到的灰卡和相机拍出的灰卡颜色亮度一致，只是说明相机的曝光设置能够将灰卡的反射率正确地记录下来。但是，这并不意味着照片中的所有细节都被正确地记录下来了。<br />
+</p>
+
+<p>
+在某些情况下，即使人眼看到的灰卡和相机拍出的灰卡颜色亮度一致，照片中的阴影区域或高光区域仍然可能曝光不足或过度。例如，在逆光场景中，相机的自动曝光模式可能会将天空作为主体来测光，从而导致主体曝光不足。<br />
+</p>
+
+<p>
+因此，仅仅依靠人眼看到的灰卡和相机拍出的灰卡颜色亮度一致来判断曝光是否正确是不够的。还需要结合其他因素来判断，例如照片中的阴影区域和高光区域是否曝光正常。<br />
+</p>
+
+<p>
+总而言之，人眼看到的灰卡和相机拍出的灰卡颜色亮度一致，只是判断曝光是否正确的一个参考标准。还需要结合其他因素来综合判断，以确保照片中的所有细节都被正确地记录下来。<br />
+</p>
+</div>
+</li>
+</ul>
+</li>
+<li><a id="org8dcd679"></a>参考资料<br />
+<div class="outline-text-7" id="text-org8dcd679">
+<ul class="org-ul">
+<li>单反科普 | 感光度 ISO <a href="https://zhuanlan.zhihu.com/p/46716827">https://zhuanlan.zhihu.com/p/46716827</a><br /></li>
+<li>Exposure <a href="https://en.wikipedia.org/wiki/Exposure_(photography)">https://en.wikipedia.org/wiki/Exposure_(photography)</a><br /></li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-orgc5fa7e3" class="outline-6">
+<h6 id="orgc5fa7e3">Exposure value</h6>
+<div class="outline-text-6" id="text-orgc5fa7e3">
+<p>
+由于在我们的公式中引用这三个设置会很麻烦，因此我们使用曝光值 EV 来概括“曝光三要素”。但是，曝光值 EV 只考虑光圈和快门速度，给定感光度下的曝光值 EVs 才综合了曝光三要素。<br />
+EV 以 2 为底的对数刻度表示，1 EV 的差异称为 1 档。一个正档（+1 EV）对应于亮度的两倍，一个负档（-1 EV）对应于亮度的二分之一。<br />
+</p>
+
+<p>
+公式 98 显示了 EV 的正式定义:<br />
+<img src="./Filament/exposure-value.jpg" alt="exposure-value.jpg" /><br />
+</p>
+
+<p>
+请注意，这个定义只与光圈和快门速度有关，与感光度无关（所以曝光值并不能完全描述曝光）。按照惯例，通常选择感光度为 ISO 100，此时对应的曝光值为 EV100，因为我们要使用这个约定，所以我们需要能够将 EV100 表示为感光度的函数（这样，就可以将任意感光度对应的曝光值转化为 EV100）。由于我们知道 EV 是一个以 2 为底的对数刻度，其中每档都将亮度增加或减少一倍，因此我们可以正式定义 EVs，即在给定感光度下的曝光值为如下公式 99:<br />
+<img src="./Filament/exposure-value01.jpg" alt="exposure-value01.jpg" /><br />
+</p>
+
+<p>
+注意：EV 和 EVs 的区别，EVs 为给定感光度下的曝光值。<br />
+</p>
+
+<p>
+通过相机曝光三要素计算 EV100 就很简单了，如下公式 100：<br />
+<img src="./Filament/exposure-value02.jpg" alt="exposure-value02.jpg" /><br />
+</p>
+
+<p>
+请注意，操作者（摄影师等）可以使用光圈、快门速度和感光度的几种组合来实现相同的曝光（以及 EV）。这样就可以在达到相同曝光的情况下，进行一些艺术控制（景深与运动模糊与颗粒度）。<br />
+</p>
+
+<p>
+我们假设使用的是数码传感器，这意味着我们不需要考虑互易率（reciprocity）失效。互易率失效是指当曝光时间过长或过短时，感光材料对光的敏感度会发生变化的现象。在胶片摄影中，互易率失效是需要考虑的一个重要因素。但是，在数码摄影中，互易率失效的影响相对较小，因此通常可以忽略不计。<br />
+</p>
+</div>
+
+<ul class="org-ul">
+<li><a id="org0866416"></a>Exposure value and luminance<br />
+<div class="outline-text-7" id="text-org0866416">
+<p>
+相机类似于测光表，能够测量场景的平均亮度并将其转换为 EV 以实现自动曝光，或至少为用户提供曝光指导。给定每个设备的校准常数 K，可以将 EV 定义为场景亮度 L 的函数（公式 101）:<br />
+<img src="./Filament/exposure-value03.jpg" alt="exposure-value03.jpg" /><br />
+</p>
+
+<p>
+测光表是一种用于测量光线强度的仪器。它通常用于摄影中，以帮助摄影师确定正确的曝光设置。<br />
+常数 K 是反射式测光表校正常数，它因制造商而异。我们可以找到两个常用的值：12.5（Canon, Nikon and Sekonic 使用）和 14（Pentax and Minolta 使用）。鉴于佳能和尼康相机的广泛普及，以及我们自己对世光测光表的喜爱，我们选择使用 K=12.5。<br />
+</p>
+
+<p>
+由于我们要使用 EV100，我们可以将 K 和 S 代入公式 101，得到公式 102。<br />
+</p>
+
+
+<div id="org628c79c" class="figure">
+<p><img src="./Filament/exposure-value04.jpg" alt="exposure-value04.jpg" /><br />
+</p>
+</div>
+
+<p>
+根据这种关系，我们可以在引擎中实现自动曝光，首先测量帧的平均亮度。实现此目的的一种简单方法是将亮度缓冲区降采样到 1 个像素并读取其值。不幸的是，这种技术很不稳定，很容易受到极端值的影响。许多游戏使用了一种不同的方法，就是使用亮度直方图来去除极端值。<br />
+</p>
+
+<p>
+为了验证和测试，可以根据给定的 EV 计算亮度：<br />
+<img src="./Filament/exposure-value05.jpg" alt="exposure-value05.jpg" /><br />
+</p>
+
+<p>
+相关推导可以查看如下文章：<br />
+</p>
+<ul class="org-ul">
+<li>EVMeter-理论篇 <a href="https://www.emoe.xyz/evmeter-theory/">https://www.emoe.xyz/evmeter-theory/</a><br /></li>
+</ul>
+</div>
+</li>
+<li><a id="org37390e1"></a>Exposure value and illuminance<br />
+<div class="outline-text-7" id="text-org37390e1">
+<p>
+给定每个设备的校准常数 C，可以将 EV 定义为照度 E 的函数：<br />
+</p>
+
+
+<div id="org666c4a0" class="figure">
+<p><img src="./Filament/exposure-value06.jpg" alt="exposure-value06.jpg" /><br />
+</p>
+</div>
+
+<p>
+常数 C 是入射式测光表校正常数，它因制造商和/或传感器类型而异。有两种常见的传感器类型：平面传感器和半球形传感器。对于平面传感器，一个常见的值是 250。对于半球形传感器，我们可以找到两个常见的值：320（美能达使用）和 340（世光使用）。<br />
+</p>
+
+<p>
+由于我们要使用 EV100，我们可以将 S 代入公式 104，得到公式 105。<br />
+</p>
+
+
+<div id="org8a91a9f" class="figure">
+<p><img src="./Filament/exposure-value07.jpg" alt="exposure-value07.jpg" /><br />
+</p>
+</div>
+
+<p>
+然后可以根据给定的 EV 计算照度。对于 C=250 的平面传感器，我们得到公式 106。<br />
+</p>
+
+
+<div id="orgbe98c30" class="figure">
+<p><img src="./Filament/exposure-value08.jpg" alt="exposure-value08.jpg" /><br />
+</p>
+</div>
+
+<p>
+对于 C=340 的半球形传感器，我们得到公式 107。<br />
+<img src="./Filament/exposure-value09.jpg" alt="exposure-value09.jpg" /><br />
+</p>
+
+<p>
+相关推导可以查看如下文章：<br />
+</p>
+<ul class="org-ul">
+<li>EVMeter-理论篇 <a href="https://www.emoe.xyz/evmeter-theory/">https://www.emoe.xyz/evmeter-theory/</a><br /></li>
+</ul>
+</div>
+</li>
+<li><a id="org7137fa7"></a>Exposure compensation<br />
+<div class="outline-text-7" id="text-org7137fa7">
+<p>
+尽管曝光值实际上表示相机的各种设置组合，但摄影师通常用它来描述光线强度。这就是为什么相机允许摄影师应用曝光补偿以对图像执行过度曝光或欠曝光。此设置可用于进行艺术控制，但也可用于实现正确的曝光。<br />
+</p>
+
+<p>
+应用曝光补偿 EC 与向曝光值添加偏移量一样简单，如公式 108 所示:<br />
+<img src="./Filament/exposure-value10.jpg" alt="exposure-value10.jpg" /><br />
+</p>
+
+<p>
+该公式使用负号是因为我们使用 EC（以 f 档为单位）来调整最终曝光。增加 EV 类似于缩小镜头光圈（或降低快门速度或降低感光度）。较高的 EV 会生成较暗的图像。<br />
+</p>
+
+<p>
+以下是一些摄影师使用曝光补偿的示例：<br />
+拍摄雪景时，摄影师可能会增加曝光补偿，以确保雪景不会曝光不足。<br />
+拍摄人像时，摄影师可能会降低曝光补偿，以确保人像不会曝光过度。<br />
+拍摄夜景时，摄影师可能会增加曝光补偿，以确保夜景不会曝光不足。<br />
+在逆光场景中，天空的亮度可能非常高，而主体的亮度可能非常低。在这种情况下，相机的测光表可能会将天空作为主体来测光，从而导致主体曝光不足。此时可以使用曝光补偿来降低曝光，以便将主体曝光正确。<br />
+</p>
+
+<p>
+曝光补偿是一个强大的工具，可帮助摄影师拍摄出曝光正确的图像。<br />
+</p>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-orgaeb1b4b" class="outline-6">
+<h6 id="orgaeb1b4b">Exposure</h6>
+<div class="outline-text-6" id="text-orgaeb1b4b">
+<p>
+为了将场景亮度转换为归一化的亮度(normalized luminance)，我们需要使用 photometric exposure（或 luminous exposure），或到达相机传感器的 scence luminouse 量。photometric exposure 以 lux*seconds 为单位表示，记为 H，由如下公式 109 给出：<br />
+</p>
+
+
+<div id="org2acbb37" class="figure">
+<p><img src="./Filament/exposure-value11.jpg" alt="exposure-value11.jpg" /><br />
+</p>
+</div>
+
+<p>
+其中：<br />
+</p>
+
+<p>
+L 是场景的亮度<br />
+t 是快门速度<br />
+N 是光圈<br />
+q 是镜头和晕影衰减（通常 q=0.65）<br />
+</p>
+
+<p>
+该定义没有考虑传感器灵敏度。有三种方法可以将 photometric exposure 和 sensitivity（感光度灵敏度）联系起来：基于饱和的速度(saturation-based speed)、基于噪声的速度(noise-based speed)和标准输出灵敏度(standard output sensitivity)。<br />
+</p>
+
+<p>
+我们选择基于饱和的速度关系，它给出了 Hsat，即不会导致相机输出裁剪或溢出的最大可能曝光（方程 110）：<br />
+</p>
+
+<p>
+<img src="./Filament/exposure-value12.jpg" alt="exposure-value12.jpg" /><br />
+我们将方程 110 和 109 合并在方程 111 中，就可以计算出给定曝光设置 S 、N 和 t 所对应的使传感器饱和的最大亮度 Lmax：<br />
+</p>
+
+<p>
+<img src="./Filament/exposure-value13.jpg" alt="exposure-value13.jpg" /><br />
+然后可以使用此最大亮度来归一化入射亮度 L，如方程 112 所示：<br />
+</p>
+
+
+<div id="orge63458d" class="figure">
+<p><img src="./Filament/exposure-value14.jpg" alt="exposure-value14.jpg" /><br />
+</p>
+</div>
+
+<p>
+可以使用方程 98 对 Lmax 进行简化，S=100 和 q=0.65：<br />
+<img src="./Filament/exposure-value15.jpg" alt="exposure-value15.jpg" /><br />
+</p>
+
+<p>
+清单 42 显示了如何将曝光项直接应用于片段着色器中计算的像素颜色:<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// Computes the camera's EV100 from exposure settings</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// aperture in f-stops</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// shutterSpeed in seconds</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// sensitivity in ISO</span>
+<span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #bc6ec5; font-weight: bold;">exposureSettings</span>(<span style="color: #ce537a; font-weight: bold;">float</span> aperture, <span style="color: #ce537a; font-weight: bold;">float</span> shutterSpeed, <span style="color: #ce537a; font-weight: bold;">float</span> sensitivity) {
+    <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #bc6ec5; font-weight: bold;">log2</span>((aperture * aperture) / shutterSpeed * 100.0 / sensitivity);
+}
+
+<span style="color: #2aa1ae; background-color: #292e34;">// Computes the exposure normalization factor from</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// the camera's EV100</span>
+<span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #bc6ec5; font-weight: bold;">exposure</span>(<span style="color: #ce537a; font-weight: bold;">float</span> ev100) {
+    <span style="color: #4f97d7; font-weight: bold;">return</span> 1.0 / (<span style="color: #4f97d7;">pow</span>(2.0, ev100) * 1.2);
+}
+
+<span style="color: #ce537a; font-weight: bold;">float</span> ev100 = exposureSettings(aperture, shutterSpeed, sensitivity);
+<span style="color: #ce537a; font-weight: bold;">float</span> exposure = exposure(ev100);
+
+vec4 color = evaluateLighting();
+color.rgb *= exposure;
+</pre>
+</div>
+
+<ul class="org-ul">
+<li><a href="https://en.wikipedia.org/wiki/Film_speed">https://en.wikipedia.org/wiki/Film_speed</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org76889e6" class="outline-6">
+<h6 id="org76889e6">Automatic exposure</h6>
+<div class="outline-text-6" id="text-org76889e6">
+<p>
+上述过程依赖于艺术家手动设置相机的曝光设置。在实践中，这可能会很麻烦，因为相机移动和动态效果会极大地影响场景的亮度。我们知道如何从给定的亮度计算曝光值（<a href="#org0866416">Exposure value and luminance</a>），所以可以将相机转换为点测光表。要做到这一点，我们需要测量场景的亮度。<br />
+</p>
+
+<p>
+自动曝光原理如下：<br />
+<img src="./Filament/auto-exposure-03.jpg" alt="auto-exposure-03.jpg" /><br />
+</p>
+
+<p>
+有两种常用的测量场景亮度的方法：<br />
+</p>
+
+<ul class="org-ul">
+<li>Luminance downsampling：通过连续降采样上一帧直到获得 1×1 的亮度 buffer，该 buffer 可以在 CPU 上读取（这也可以使用计算着色器实现）。其存储了场景的平均亮度。第一次降采样必须首先提取每个像素的亮度。这种技术可能不稳定，其输出应该随着时间推移进行平滑处理。<br /></li>
+
+<li>Using a luminance histogram：这种技术比前一种方法有优势，因为它可以忽略极端值并提供更稳定的结果。<br /></li>
+</ul>
+
+<p>
+这两种方法都会在乘以反射率后找到平均亮度。这并不完全正确，另一种方法是保留一个包含乘以表面反射率之前每个像素亮度的亮度缓冲区。这在计算和内存方面都很昂贵。<br />
+</p>
+
+<p>
+这两种技术还将测光系统限制为平均测光，其中每个像素对最终曝光具有相同的影响（或权重）。相机通常提供 3 种测光模式：<br />
+</p>
+
+<ul class="org-ul">
+<li>点测光：其中只有图像中心的一个小圆圈会影响最终曝光。该圆圈通常是整个图像尺寸的 1% 到 5%。<br /></li>
+<li>中央重点测光：对位于屏幕中心的场景亮度值给予更大的影响。<br /></li>
+<li>多区域或矩阵测光：对于每个制造商都不同的测光模式。这种模式的目标是优先考虑场景中最重要的部分的曝光。这通常通过将图像分成网格并对每个单元格进行分类（使用焦点信息、最小/最大亮度等）来实现。高级实现会尝试将场景与已知的数据库进行比较，以实现适当的曝光（逆光日落、阴天雪景等）。<br /></li>
+</ul>
+</div>
+
+<ul class="org-ul">
+<li><a id="org5dffb88"></a>Spot metering<br />
+<div class="outline-text-7" id="text-org5dffb88">
+<p>
+使用 Spot metering 测光模式时，每个 luminance 值的权重 w 按照如下公式计算：<br />
+</p>
+
+
+<div id="org76b1f9d" class="figure">
+<p><img src="./Filament/auto-exposure-00.jpg" alt="auto-exposure-00.jpg" /><br />
+</p>
+</div>
+
+<p>
+p 为像素的位置，s为 spot 的中心位置，sr 为 spot 的半径。<br />
+</p>
+</div>
+</li>
+<li><a id="orgfc8af99"></a>Center-weighted metering<br />
+<div class="outline-text-7" id="text-orgfc8af99">
+
+<div id="org6437ac9" class="figure">
+<p><img src="./Filament/auto-exposure-01.jpg" alt="auto-exposure-01.jpg" /><br />
+</p>
+</div>
+
+<p>
+c 为中心点位置，smooth 和 GLSL 中的 smoothstep 函数类似。<br />
+</p>
+</div>
+</li>
+<li><a id="org9ded915"></a>Adaptation<br />
+<div class="outline-text-7" id="text-org9ded915">
+<p>
+为了平滑测光结果，我们可以使用如下公式：<br />
+</p>
+
+
+<div id="orge816f87" class="figure">
+<p><img src="./Filament/auto-exposure-02.jpg" alt="auto-exposure-02.jpg" /><br />
+</p>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-org95760e5" class="outline-6">
+<h6 id="org95760e5">Bloom</h6>
+<div class="outline-text-6" id="text-org95760e5">
+<p>
+因为 EV 值尺度几乎是感知线性的，所以曝光值也被经常用作光照单位。这意味着我们可以让艺术家使用曝光补偿作为单位来指定灯光或自发光表面的强度。发射光的强度就会和曝光设置有关。应尽量避免使用曝光补偿作为光照单位，但在需要强制（或取消）表现自发光表面周围的 Bloom 效果，使其与相机设置无关时，使用曝光补偿作为光照单位可能很有用（例如，游戏中的光剑应该始终有 Bloom 效果）。<br />
+</p>
+
+<p>
+使用下面公式可以计算 bloom 对应的 luminance：<br />
+<img src="./Filament/exposure-bloom.jpg" alt="exposure-bloom.jpg" /><br />
+</p>
+
+<p>
+上面公式推导可以参考： <a href="#org0866416">Exposure value and luminance</a><br />
+</p>
+
+<p>
+下面代码可用于实现 emissive bloom:<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-shader">vec4 <span style="color: #bc6ec5; font-weight: bold;">surfaceShading</span>()
+{
+    vec4 color = evaluateLights();
+    <span style="color: #2aa1ae; background-color: #292e34;">// rgb = color, w = exposure compensation</span>
+    vec4 emissive = getEmissive();
+    color.rgb += emissive.rgb * <span style="color: #4f97d7;">pow</span>(2.0, ev100 + emissive.w - 3.0);
+    color.rgb *= exposure;
+    <span style="color: #4f97d7; font-weight: bold;">return</span> color;
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf0e5471" class="outline-5">
+<h5 id="orgf0e5471">Optics post-processing</h5>
+</div>
+<div id="outline-container-org7a164e8" class="outline-5">
+<h5 id="org7a164e8">Filmic post-processing</h5>
+</div>
+<div id="outline-container-org5d77a7c" class="outline-5">
+<h5 id="org5d77a7c">Light path</h5>
+</div>
+</div>
+</div>
+<div id="outline-container-org9d42728" class="outline-3">
+<h3 id="org9d42728">Filament Materials Guide</h3>
+</div>
+<div id="outline-container-orgb55433c" class="outline-3">
+<h3 id="orgb55433c">参考资料</h3>
+<div class="outline-text-3" id="text-orgb55433c">
 <ul class="org-ul">
 <li><a href="https://github.com/google/filament/blob/main/BUILDING.md">https://github.com/google/filament/blob/main/BUILDING.md</a><br /></li>
 <li>Google Filament 源码学习（一）：Filament 编译<a href="https://blog.csdn.net/jiamada/article/details/113783322">https://blog.csdn.net/jiamada/article/details/113783322</a><br /></li>

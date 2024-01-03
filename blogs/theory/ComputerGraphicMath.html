@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-06-27 Tue 22:36 -->
+<!-- 2024-01-03 Wed 16:13 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>ComputerGraphicMath</title>
@@ -66,6 +66,12 @@
 <li><a href="#orgb18fd29">3D Cartesian Space</a>
 <ul>
 <li><a href="#org882e0d3">Left-handed vs Right-handed Coordinate Spaces</a></li>
+<li><a href="#orgc423698">坐标系惯例</a>
+<ul>
+<li><a href="#org2e9e939">Graphic API 坐标系惯例</a></li>
+<li><a href="#org9f5d816">各种应用的坐标系惯例</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -75,7 +81,15 @@
 <li><a href="#org3cd540f">Vector Cross Product</a></li>
 </ul>
 </li>
-<li><a href="#org1b28f76">Chapter3 Multiple Coordinate Spaces</a></li>
+<li><a href="#org1b28f76">Chapter3 Multiple Coordinate Spaces</a>
+<ul>
+<li><a href="#orge73621e">Basis Vectors and Coordinate Space Transformations</a>
+<ul>
+<li><a href="#org268cba4">Basis Vectors</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a href="#orgc713fdf">Chapter4 Introduction to Matrix</a>
 <ul>
 <li><a href="#org4ba67c4">Matrix 的数学定义</a>
@@ -103,7 +117,7 @@
 </ul>
 </li>
 <li><a href="#org7f305cc">Scale</a></li>
-<li><a href="#org50f430e">Orthographic Projection</a></li>
+<li><a href="#org6929743">Orthographic Projection</a></li>
 <li><a href="#orgc4316ab">Reflection</a></li>
 <li><a href="#org925c7bb">Shearing</a></li>
 <li><a href="#org626734e">Combining Transformations</a></li>
@@ -119,7 +133,7 @@
 <li><a href="#org125f408">Determinants of Arbitrary nxn Matrices</a></li>
 <li><a href="#org86ac476">Geometric Interpretation of Determinant</a>
 <ul>
-<li><a href="#org216e54f">参考资料</a></li>
+<li><a href="#org83c28f3">参考资料</a></li>
 </ul>
 </li>
 </ul>
@@ -163,6 +177,7 @@
 <li><a href="#org087a5a2">Axis-Angle And Exponential Map Representations</a></li>
 <li><a href="#orgf97f2f7">Quaternions</a>
 <ul>
+<li><a href="#orgf454ad3">Base</a></li>
 <li><a href="#orgf274c47">Quaternions 和 Axis-Angle 的关系</a></li>
 <li><a href="#org81cfb26">Quaternions 的基本属性和操作</a>
 <ul>
@@ -197,7 +212,7 @@
 <li><a href="#orgdc438ba">可能变为非法的表示</a></li>
 </ul>
 </li>
-<li><a href="#orge072307">Converting between Representations</a>
+<li><a href="#org4861460">Converting between Representations</a>
 <ul>
 <li><a href="#org4f4ecca">EulerAngle 和 Matrix 之间的转换</a></li>
 <li><a href="#orgbe9a818">Quaternion 和 Matrix 之间的转换</a></li>
@@ -220,7 +235,7 @@
 <ul>
 <li><a href="#orgca21978">Rays</a></li>
 <li><a href="#org048a653">Special 2D Representations of Lines</a></li>
-<li><a href="#orgf51fbb1">Converting between Representations</a></li>
+<li><a href="#orgfcfc106">Converting between Representations</a></li>
 </ul>
 </li>
 <li><a href="#org11376ef">Planes</a>
@@ -263,7 +278,7 @@
 <li><a href="#org29e2af3">Pixel Aspect Ratio 像素宽高比</a></li>
 <li><a href="#org7cf1e7a">The View Frustum 视景体</a></li>
 <li><a href="#orga877f75">Field of View and Zoom</a></li>
-<li><a href="#orgc7f4610">Orthographic Projection</a></li>
+<li><a href="#org814adac">Orthographic Projection</a></li>
 </ul>
 </li>
 <li><a href="#org0f70230">Coordinate Spaces</a>
@@ -271,15 +286,16 @@
 <li><a href="#orga217ee8">Clip Space and the Clip Matrix</a></li>
 <li><a href="#org31d49a3">The Clip Matrix: Preparing For Projection</a>
 <ul>
-<li><a href="#org1ebf154">透视投影矩阵</a></li>
-<li><a href="#org6387a86">正交投影矩阵</a></li>
+<li><a href="#orgf1bc329">透视投影矩阵</a></li>
+<li><a href="#org4cb1c52">正交投影矩阵</a></li>
 </ul>
 </li>
 <li><a href="#org62a5be7">The Clip Matrix: Applying Zoom and Preparing for Clipping</a>
 <ul>
-<li><a href="#orgc5c67ef">透视投影矩阵</a></li>
-<li><a href="#org5157ed0">正交投影矩阵</a></li>
+<li><a href="#org774e483">透视裁剪矩阵</a></li>
+<li><a href="#orgb48d42a">正交裁剪矩阵</a></li>
 <li><a href="#orgc982102">OpenGL 裁剪矩阵</a></li>
+<li><a href="#org82e1dd3">D3D 裁剪矩阵</a></li>
 </ul>
 </li>
 <li><a href="#org48b4ffc">Screen Space</a>
@@ -318,21 +334,7 @@
 </li>
 <li><a href="#orge179c42">投影变换</a>
 <ul>
-<li><a href="#org240eae0">投影变换推导</a></li>
-<li><a href="#org4243bbc">投影变换及其逆变换推导</a>
-<ul>
-<li><a href="#org9c7f7d5">为什么离 near plane 越远，depth 精度越小？</a></li>
-</ul>
-</li>
-<li><a href="#org7ef805c">Clip Space 是怎样的？</a></li>
 <li><a href="#orgfd74310">自己做深度剔除</a></li>
-<li><a href="#orgb50b5d4">如何从深度缓冲区中重建世界空间位置?</a>
-<ul>
-<li><a href="#org14c460c">使用投影矩阵逆矩阵</a></li>
-<li><a href="#org3861fc2">使用摄像机</a></li>
-</ul>
-</li>
-<li><a href="#orgdf2d3ea">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#org750acb5">迹</a></li>
@@ -341,7 +343,7 @@
 </ul>
 </li>
 <li><a href="#org5f5a3ab">Clipping</a></li>
-<li><a href="#org7f27a00">参考资料</a></li>
+<li><a href="#orge9b415f">参考资料</a></li>
 </ul>
 </div>
 </div>
@@ -349,7 +351,7 @@
 3D Math Primer for Graphics and Game Development, 2nd Edition 翻译。<br />
 Mathematics for 3D Game Programming and Computer Graphics, 3rd Edition 翻译。<br />
 </p>
-<div class="HTML" id="org70f06ed">
+<div class="HTML" id="org906dd0c">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -379,28 +381,261 @@ Mathematics for 3D Game Programming and Computer Graphics, 3rd Edition 翻译。
 <h5 id="org882e0d3">Left-handed vs Right-handed Coordinate Spaces</h5>
 <div class="outline-text-5" id="text-org882e0d3">
 
-<div id="orgffe9f62" class="figure">
+<div id="org30f115e" class="figure">
 <p><img src="./ComputerGraphicMath/00_01_03_left_right_hand_rule.jpg" alt="00_01_03_left_right_hand_rule.jpg" /><br />
 </p>
 </div>
-
+</div>
+</div>
+<div id="outline-container-orgc423698" class="outline-5">
+<h5 id="orgc423698">坐标系惯例</h5>
+<div class="outline-text-5" id="text-orgc423698">
 <p>
 <a id="orgb83ea35"></a><br />
-本书的默认惯例，坐标系为左手坐标系，向量为行向量。<br />
-PhysicalBasedRendering  坐标系为左手坐标系，向量为列向量<br />
-Direct 坐标系为左手坐标系，向量为行向量。<br />
-OpenGL 坐标系为右手坐标系，向量为列向量。<br />
-GRaster 坐标系为左手坐标系，向量为列向量。<br />
+</p>
+</div>
+<div id="outline-container-org2e9e939" class="outline-6">
+<h6 id="org2e9e939">Graphic API 坐标系惯例</h6>
+<div class="outline-text-6" id="text-org2e9e939">
+<p>
+Graphic API 规定了 NDC 坐标系 和 Framebuffer 坐标系，所以投影矩阵通常还包含了适配到 Framebuffer 坐标系的变换。<br />
 </p>
 
-<p>
-Unity 坐标系为左手坐标系。<br />
-UE4   坐标系为左手坐标系。<br />
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">&#xa0;</th>
+<th scope="col" class="org-left">WorldSpace</th>
+<th scope="col" class="org-left">WorldUp</th>
+<th scope="col" class="org-left">ViewSpace</th>
+<th scope="col" class="org-left">NDC</th>
+<th scope="col" class="org-left">向量</th>
+<th scope="col" class="org-left">矩阵</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">Direct and Metal</td>
+<td class="org-left">左手</td>
+<td class="org-left">y</td>
+<td class="org-left">左手</td>
+<td class="org-left">左手[0, 1]</td>
+<td class="org-left">行向量</td>
+<td class="org-left">右乘</td>
+</tr>
+
+<tr>
+<td class="org-left">OpenGL</td>
+<td class="org-left">右手</td>
+<td class="org-left">y</td>
+<td class="org-left">右手</td>
+<td class="org-left">左手[-1,1]</td>
+<td class="org-left">列向量</td>
+<td class="org-left">左乘</td>
+</tr>
+
+<tr>
+<td class="org-left">Vulkan</td>
+<td class="org-left">右手</td>
+<td class="org-left">y</td>
+<td class="org-left">右手</td>
+<td class="org-left">右手[0, 1]</td>
+<td class="org-left">列向量</td>
+<td class="org-left">左乘</td>
+</tr>
+</tbody>
+</table>
+
+
+<div id="orgb88e9cc" class="figure">
+<p><img src="../graphics/Vulkan/d3d-opengl-vulkan-coordinate-system.jpg" alt="d3d-opengl-vulkan-coordinate-system.jpg" /><br />
 </p>
+</div>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">&#xa0;</th>
+<th scope="col" class="org-left">Framebuffer</th>
+<th scope="col" class="org-left">Texture sampling</th>
+<th scope="col" class="org-left">Texture uploading</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">D3D and Metal</td>
+<td class="org-left">+Y is down, (0, 0) is TopLeft</td>
+<td class="org-left">+Y is down, (0, 0) is TopLeft</td>
+<td class="org-left">+Y is down, (0, 0) is TopLeft</td>
+</tr>
+
+<tr>
+<td class="org-left">OpenGL</td>
+<td class="org-left">+Y is up, (0, 0) is BottomLeft</td>
+<td class="org-left">+Y is up,   (0, 0) is BottomLeft</td>
+<td class="org-left">+Y is up,   (0, 0) is BottomLeft</td>
+</tr>
+
+<tr>
+<td class="org-left">Vulkan</td>
+<td class="org-left">+Y is down, (0, 0) is TopLeft</td>
+<td class="org-left">+Y is down, (0, 0) is TopLeft</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+</tbody>
+</table>
+
+<ul class="org-ul">
+<li><a href="https://docs.google.com/document/d/1pXTWc8U2_pz-2hUMUv6jeS-cnjPa37Rie30rzO5slnI/edit#heading=h.aso76kw12n2f">https://docs.google.com/document/d/1pXTWc8U2_pz-2hUMUv6jeS-cnjPa37Rie30rzO5slnI/edit#heading=h.aso76kw12n2f</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org9f5d816" class="outline-6">
+<h6 id="org9f5d816">各种应用的坐标系惯例</h6>
+<div class="outline-text-6" id="text-org9f5d816">
+<p>
+本书的默认惯例，坐标系为左手坐标系，向量为行向量。<br />
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">&#xa0;</th>
+<th scope="col" class="org-left">WorldSpace</th>
+<th scope="col" class="org-left">WorldUp</th>
+<th scope="col" class="org-left">ViewSpace</th>
+<th scope="col" class="org-left">NDC</th>
+<th scope="col" class="org-left">向量</th>
+<th scope="col" class="org-left">矩阵</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">PhysicalBasedRendering</td>
+<td class="org-left">左手</td>
+<td class="org-left">y</td>
+<td class="org-left">左手</td>
+<td class="org-left">左手[0, 1]</td>
+<td class="org-left">列向量</td>
+<td class="org-left">左乘</td>
+</tr>
+
+<tr>
+<td class="org-left">Unity</td>
+<td class="org-left">左手</td>
+<td class="org-left">y</td>
+<td class="org-left">右手</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">列向量</td>
+<td class="org-left">左乘</td>
+</tr>
+
+<tr>
+<td class="org-left">Unreal</td>
+<td class="org-left">左手</td>
+<td class="org-left">z</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">Houdini</td>
+<td class="org-left">右手</td>
+<td class="org-left">y</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">Blender</td>
+<td class="org-left">右手</td>
+<td class="org-left">z</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">3dsMax</td>
+<td class="org-left">右手</td>
+<td class="org-left">z</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">Maya</td>
+<td class="org-left">右手</td>
+<td class="org-left">y</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+</tbody>
+</table>
+
+
+<div id="orgf081a8e" class="figure">
+<p><img src="./ComputerGraphicMath/coordinate-system.jpeg" alt="coordinate-system.jpeg" /><br />
+</p>
+</div>
 
 <ul class="org-ul">
 <li><a href="#org3e1f085">行向量和列向量对比</a><br /></li>
 </ul>
+</div>
 </div>
 </div>
 </div>
@@ -418,7 +653,7 @@ UE4   坐标系为左手坐标系。<br />
 </p>
 
 
-<div id="orga61c858" class="figure">
+<div id="org21f5ecc" class="figure">
 <p><img src="./ComputerGraphicMath/00_02_12_vector_cross01.jpg" alt="00_02_12_vector_cross01.jpg" /><br />
 </p>
 </div>
@@ -433,6 +668,33 @@ UE4   坐标系为左手坐标系。<br />
 </div>
 <div id="outline-container-org1b28f76" class="outline-3">
 <h3 id="org1b28f76">Chapter3 Multiple Coordinate Spaces</h3>
+<div class="outline-text-3" id="text-org1b28f76">
+</div>
+<div id="outline-container-orge73621e" class="outline-4">
+<h4 id="orge73621e">Basis Vectors and Coordinate Space Transformations</h4>
+<div class="outline-text-4" id="text-orge73621e">
+</div>
+<div id="outline-container-org268cba4" class="outline-5">
+<h5 id="org268cba4">Basis Vectors</h5>
+<div class="outline-text-5" id="text-org268cba4">
+<p>
+任何一个向量都可以分解为一系列轴对齐的位移。即 v = xp + yq + zr. 这里的 p, q, r 就是 3D 空间的基向量。<br />
+基向量不必是互相垂直的，如下图展示的 2D 空间中，p 和 q 基向量长度相同，但不垂直：<br />
+<img src="./ComputerGraphicMath/00_03_basis-vector01.jpg" alt="00_03_basis-vector01.jpg" /><br />
+</p>
+
+<p>
+基：若一组向量可生成 n 维空间（该空间上的任意向量都可由该组向量线性表示）且该组向量线性无关（该组向量无共线）那么这组向量的个数一定为 n，此时称这组向量为该 n 维空间的一组基。<br />
+正交基：如果一个空间的一组基两两正交，则称这组基为一组正交基。<br />
+标准正交基：对于一个空间的一组正交基，这组基的所有向量的模均为 1，则称这组基是一组标准正交基。<br />
+</p>
+
+<ul class="org-ul">
+<li>向量的线性表示、线性相关、线性无关 <a href="https://zhuanlan.zhihu.com/p/32986536">https://zhuanlan.zhihu.com/p/32986536</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
 </div>
 <div id="outline-container-orgc713fdf" class="outline-3">
 <h3 id="orgc713fdf">Chapter4 Introduction to Matrix</h3>
@@ -452,7 +714,7 @@ UE4   坐标系为左手坐标系。<br />
 <p>
 下面是数学中矩阵的书面表示，其为 4x3 的矩阵(4 行 3 列)，矩阵通常使用大写字幕表示<br />
 </p>
-<pre class="example" id="org0280fe8">
+<pre class="example" id="org97d3529">
     m11 m12 m13
 M = m21 m22 m23
     m31 m32 m33
@@ -462,7 +724,7 @@ M = m21 m22 m23
 <p>
 当行数和列数相同时，称矩阵为方矩阵。如下 3x3 方阵：<br />
 </p>
-<pre class="example" id="org9e94ef5">
+<pre class="example" id="org3118123">
 m11 m12 m13
 m21 m22 m23
 m31 m32 m33
@@ -472,7 +734,7 @@ m31 m32 m33
 方阵中行数和列数相同的元素被称为对角线元素。<br />
 当方阵中除了对角线元素外其他元素都为 0，称这种方阵为对角方阵。如下 4x4 对角矩阵：<br />
 </p>
-<pre class="example" id="org523f55a">
+<pre class="example" id="orgdfb1a1c">
 3 0 0 0
 0 1 0 0
 0 0 5 0
@@ -482,8 +744,8 @@ m31 m32 m33
 <p>
 当对角方阵的对角线元素都为 1 时，称其为单位矩阵（记作 I）。如下 3x3 单位矩阵：<br />
 </p>
-<pre class="example" id="org452df72">
-1 0 0 
+<pre class="example" id="org2cd43b3">
+1 0 0
 0 1 0
 0 0 1
 </pre>
@@ -497,7 +759,7 @@ m31 m32 m33
 <div id="outline-container-org3682e87" class="outline-6">
 <h6 id="org3682e87">矩阵转置</h6>
 <div class="outline-text-6" id="text-org3682e87">
-<pre class="example" id="orga3f6998">
+<pre class="example" id="orgb5835c2">
 =转置=&gt;
 a b c    a d g j
 d e f    b e h k
@@ -512,7 +774,7 @@ j k l
 <div id="outline-container-orgd041731" class="outline-6">
 <h6 id="orgd041731">矩阵和标量相乘</h6>
 <div class="outline-text-6" id="text-orgd041731">
-<pre class="example" id="orgf78bae0">
+<pre class="example" id="org1327ce9">
        m11 m12 m13 m14    km11 km12 km13 km14
 kM = k m21 m22 m23 m24 =  km21 km22 km23 km24
        m31 m32 m33 m34    km31 km32 km33 km34
@@ -543,7 +805,7 @@ kM = k m21 m22 m23 m24 =  km21 km22 km23 km24
 <p>
 向量[x, y, z]做为行向量时，矩阵每一行对应变换后新坐标空间的基向量(使用当前坐标系表示)，平移量在第 4 行。<br />
 </p>
-<pre class="example" id="orgc366699">
+<pre class="example" id="org6ba640b">
            m11 m12 m13
 [x, y, z]  m21 m22 m23  =  [xm11+ym21+zm31, xm12+ym22+zm32, xm13+ym23+zm33]
            m31 m32 m33
@@ -552,7 +814,7 @@ kM = k m21 m22 m23 m24 =  km21 km22 km23 km24
 <p>
 向量[x, y, z]做为列向量时，矩阵每一列对应变换后新坐标空间的基向量(使用当前坐标系表示)，平移量在第 4 列。<br />
 </p>
-<pre class="example" id="org1661f11">
+<pre class="example" id="org2e125ea">
 m11 m12 m13   x     xm11+ym12+zm13
 m21 m22 m23 * y  =  xm21+ym22+zm23
 m31 m32 m33   z     xm31+ym32+zm33
@@ -573,20 +835,20 @@ OpenGL  使用列向量<br />
 <p>
 如果某本书中使用了列向量的形式，那么和本书相比相同的方程中，对应的矩阵需要被转置，这样才能使行向量形式和列向量形式的向量与矩阵相乘得到的向量的各个分量相一致。此时矩阵的每一列表示新坐标系的坐标轴的基向量。<br />
 </p>
-<pre class="example" id="org87bee21">
+<pre class="example" id="org7e51202">
            m11 m12 m13
-[x, y, z]  m21 m22 m23  =  [xm11+ym21+zm31, xm12+ym22+zm32, xm13+ym23+zm33]   // 行向量 
+[x, y, z]  m21 m22 m23  =  [xm11+ym21+zm31, xm12+ym22+zm32, xm13+ym23+zm33]   // 行向量
            m31 m32 m33
 </pre>
 
-<pre class="example" id="org103d9fd">
+<pre class="example" id="org6c2aa05">
 m11 m21 m31   x     xm11+ym21+zm31
 m12 m22 m32 * y  =  xm12+ym22+zm32                                            // 列向量 矩阵转置
 m13 m23 m33   z     xm13+ym23+zm33
 </pre>
 
 <ul class="org-ul">
-<li>OpenGL 中矩阵的行主序与列主序 <a href="https://www.jianshu.com/p/bfc8327eaad3">https://www.jianshu.com/p/bfc8327eaad3</a><br /></li>
+<li>OpenGL 中矩阵的行主序与列主序 <a href="https://www.jianshu.com/p/bfc8327eaad3">https://www.jianshu.com/p/bfc8327eaad3</a>  (有道云备份)<br /></li>
 </ul>
 </div>
 </div>
@@ -634,7 +896,7 @@ m13 m23 m33   z     xm13+ym23+zm33
 </p>
 
 
-<div id="orgf5d1598" class="figure">
+<div id="org2f15337" class="figure">
 <p><img src="./ComputerGraphicMath/05_01_2dRotation.png" alt="05_01_2dRotation.png" /><br />
 </p>
 </div>
@@ -673,9 +935,9 @@ m13 m23 m33   z     xm13+ym23+zm33
 </div>
 </div>
 
-<div id="outline-container-org50f430e" class="outline-4">
-<h4 id="org50f430e">Orthographic Projection</h4>
-<div class="outline-text-4" id="text-org50f430e">
+<div id="outline-container-org6929743" class="outline-4">
+<h4 id="org6929743">Orthographic Projection</h4>
+<div class="outline-text-4" id="text-org6929743">
 <p>
 投影到坐标轴<br />
 <img src="./ComputerGraphicMath/05_03_OrthographicAxis.png" alt="05_03_OrthographicAxis.png" /><br />
@@ -793,7 +1055,7 @@ minor 依据下面图示规则取正负号就是 cofactor<br />
 </ul>
 
 
-<div id="orgc527c72" class="figure">
+<div id="org12d3d80" class="figure">
 <p><img src="./ComputerGraphicMath/00_06_01_matrix_determinant_nxn.jpg" alt="00_06_01_matrix_determinant_nxn.jpg" /><br />
 </p>
 </div>
@@ -801,11 +1063,11 @@ minor 依据下面图示规则取正负号就是 cofactor<br />
 <p>
 下面为矩阵行列式的一些重要性质：<br />
 </p>
-<pre class="example" id="orga859fd1">
-1. 单位矩阵的行列式为1 .     
-|I| = 1      
+<pre class="example" id="org30da40e">
+1. 单位矩阵的行列式为1 .
+|I| = 1
 2. 矩阵积行列式等于矩阵行列式的积
-|AB| = |A||B| 
+|AB| = |A||B|
 |M1M2M3...| = |M1||M2||M3|...
 3. 矩阵的行列式和矩阵转置的行列式相等
 |M^T| = |M|
@@ -839,9 +1101,9 @@ detM &gt; 1, 表示变换使物体尺寸放大。<br />
 <li>如果矩阵的行列式为负数，则矩阵包含反射（即：镜像）；<br /></li>
 </ol>
 </div>
-<div id="outline-container-org216e54f" class="outline-6">
-<h6 id="org216e54f">参考资料</h6>
-<div class="outline-text-6" id="text-org216e54f">
+<div id="outline-container-org83c28f3" class="outline-6">
+<h6 id="org83c28f3">参考资料</h6>
+<div class="outline-text-6" id="text-org83c28f3">
 <ul class="org-ul">
 <li>行列式的本质是什么？ <a href="https://www.matongxue.com/madocs/247/">https://www.matongxue.com/madocs/247/</a><br /></li>
 </ul>
@@ -912,6 +1174,10 @@ detM &gt; 1, 表示变换使物体尺寸放大。<br />
 <div id="outline-container-org30c11e5" class="outline-4">
 <h4 id="org30c11e5">Orthogonal Matrices</h4>
 <div class="outline-text-4" id="text-org30c11e5">
+<p>
+正交矩阵是方块矩阵，行向量和列向量皆为正交的单位向量。<br />
+</p>
+
 <ul class="org-ul">
 <li>正交矩阵的几何意义是什么？  <a href="https://www.zhihu.com/question/304059390/answer/552179956">https://www.zhihu.com/question/304059390/answer/552179956</a>  有道云备份<br /></li>
 </ul>
@@ -933,7 +1199,7 @@ detM &gt; 1, 表示变换使物体尺寸放大。<br />
 <h5 id="orgd78091d">A Pinhole Camera</h5>
 <div class="outline-text-5" id="text-orgd78091d">
 
-<div id="org1d0bc87" class="figure">
+<div id="org78dced1" class="figure">
 <p><img src="./ComputerGraphicMath/20_06_10_pinhole_camera.jpg" alt="20_06_10_pinhole_camera.jpg" /><br />
 </p>
 </div>
@@ -947,7 +1213,7 @@ detM &gt; 1, 表示变换使物体尺寸放大。<br />
 <a id="org4b252f2"></a><br />
 </p>
 
-<pre class="example" id="org038251c">
+<pre class="example" id="orgb7e28ef">
 p′ = [dx/z dy/z d] = [dx/z dy/z dz/z] = [x y z] / (z/d)
 
           | 1 0 0 0   |
@@ -1085,6 +1351,14 @@ ExponentialMap 形式非常适用于表示角速度，当旋转角度非常小�
 <h4 id="orgf97f2f7">Quaternions</h4>
 <div class="outline-text-4" id="text-orgf97f2f7">
 </div>
+<div id="outline-container-orgf454ad3" class="outline-5">
+<h5 id="orgf454ad3">Base</h5>
+<div class="outline-text-5" id="text-orgf454ad3">
+<ul class="org-ul">
+<li>带你探秘四维的神秘数字——四元数 <a href="https://www.bilibili.com/video/BV1654y1k7B8/?t=298&amp;vd_source=36597ac15683c2bddfe189d605ca1fa4">https://www.bilibili.com/video/BV1654y1k7B8/?t=298&amp;vd_source=36597ac15683c2bddfe189d605ca1fa4</a><br /></li>
+</ul>
+</div>
+</div>
 <div id="outline-container-orgf274c47" class="outline-5">
 <h5 id="orgf274c47">Quaternions 和 Axis-Angle 的关系</h5>
 <div class="outline-text-5" id="text-orgf274c47">
@@ -1094,7 +1368,7 @@ ExponentialMap 形式非常适用于表示角速度，当旋转角度非常小�
 </p>
 
 
-<div id="orgc0f0611" class="figure">
+<div id="orge9021f7" class="figure">
 <p><img src="./ComputerGraphicMath/20_05_11_QAxisAngleRelationShip.jpg" alt="20_05_11_QAxisAngleRelationShip.jpg" /><br />
 </p>
 </div>
@@ -1139,7 +1413,7 @@ q 和-q 表示相同的角位移。同一个角位移有两个不同的四元数
 </p>
 
 
-<div id="orgf35ba05" class="figure">
+<div id="org1deed05" class="figure">
 <p><img src="./ComputerGraphicMath/20_05_11_QuaternionMagnitude.jpg" alt="20_05_11_QuaternionMagnitude.jpg" /><br />
 </p>
 </div>
@@ -1150,7 +1424,7 @@ q 和-q 表示相同的角位移。同一个角位移有两个不同的四元数
 <h6 id="orgbc4a8d2">四元数的共轭 四元数的逆</h6>
 <div class="outline-text-6" id="text-orgbc4a8d2">
 
-<div id="org455add7" class="figure">
+<div id="orgff8f0da" class="figure">
 <p><img src="./ComputerGraphicMath/20_05_11_QuaternionConjugateAndInverse.jpg" alt="20_05_11_QuaternionConjugateAndInverse.jpg" /><br />
 </p>
 </div>
@@ -1202,7 +1476,7 @@ q* 表示绕 n 旋转 -&Theta;<br />
 <h6 id="orgc4f68b3">四元数 log exp(Exponential) power(Exponentiation) 标量的乘法</h6>
 <div class="outline-text-6" id="text-orgc4f68b3">
 
-<div id="orgc83381c" class="figure">
+<div id="orgdfc3a04" class="figure">
 <p><img src="./ComputerGraphicMath/20_05_11_QuaternionLogExp.jpg" alt="20_05_11_QuaternionLogExp.jpg" /><br />
 </p>
 </div>
@@ -1377,7 +1651,8 @@ Slerp 需要解决的两个问题:<br />
 qpq* 可用来旋转点的证明可以参考下面文章的描述：<br />
 </p>
 <ul class="org-ul">
-<li><a href="https://www.zhihu.com/question/41485992">https://www.zhihu.com/question/41485992</a><br /></li>
+<li>为什么实际旋转角度是四元数里面的角度的两倍？ <a href="https://www.zhihu.com/question/41485992">https://www.zhihu.com/question/41485992</a><br /></li>
+<li>证明三元数不存在 <a href="https://www.zhihu.com/question/394183137">https://www.zhihu.com/question/394183137</a> 有道云备份<br /></li>
 </ul>
 </div>
 </div>
@@ -1482,15 +1757,15 @@ qpq* 可用来旋转点的证明可以参考下面文章的描述：<br />
 </div>
 </div>
 
-<div id="outline-container-orge072307" class="outline-4">
-<h4 id="orge072307">Converting between Representations</h4>
-<div class="outline-text-4" id="text-orge072307">
+<div id="outline-container-org4861460" class="outline-4">
+<h4 id="org4861460">Converting between Representations</h4>
+<div class="outline-text-4" id="text-org4861460">
 </div>
 <div id="outline-container-org4f4ecca" class="outline-5">
 <h5 id="org4f4ecca">EulerAngle 和 Matrix 之间的转换</h5>
 <div class="outline-text-5" id="text-org4f4ecca">
 
-<div id="org4a91e25" class="figure">
+<div id="org95a5079" class="figure">
 <p><img src="./ComputerGraphicMath/20_05_13_EulerAngleToMatrix.jpg" alt="20_05_13_EulerAngleToMatrix.jpg" /><br />
 </p>
 </div>
@@ -1659,7 +1934,7 @@ y = mx + b   m 为斜率，b为截距<br />
 ax + by = d<br />
 假设直线的法向量 n=[a, b], 用向量表示上面方程：<br />
 </p>
-<pre class="example" id="orge016d78">
+<pre class="example" id="org379dabd">
       |a |
 |x y| |b | = d
 </pre>
@@ -1679,9 +1954,9 @@ n 描述了直线的朝向，d描述了直线的位置。另一种表示直线�
 </p>
 </div>
 </div>
-<div id="outline-container-orgf51fbb1" class="outline-5">
-<h5 id="orgf51fbb1">Converting between Representations</h5>
-<div class="outline-text-5" id="text-orgf51fbb1">
+<div id="outline-container-orgfcfc106" class="outline-5">
+<h5 id="orgfcfc106">Converting between Representations</h5>
+<div class="outline-text-5" id="text-orgfcfc106">
 <p>
 两点表示法与参数表示法互相转化：<br />
 </p>
@@ -1823,7 +2098,7 @@ dot(n, q-O) 为 q 点在 n 方向上到原点的距离，d为平面到原点的�
 <h5 id="org622969e">Calculating Barycentric Coordinates</h5>
 <div class="outline-text-5" id="text-org622969e">
 
-<div id="org2f8b7b2" class="figure">
+<div id="orgec84099" class="figure">
 <p><img src="./ComputerGraphicMath/00_09_06_barycentric_coord_calc.jpg" alt="00_09_06_barycentric_coord_calc.jpg" /><br />
 </p>
 </div>
@@ -1860,7 +2135,7 @@ p 有可能不在三角形所在的平面上，此时 p 的重心坐标是未定
 <h5 id="org78592df">Special Points</h5>
 <div class="outline-text-5" id="text-org78592df">
 
-<div id="org6a5bfcd" class="figure">
+<div id="org13b719f" class="figure">
 <p><img src="./ComputerGraphicMath/00_09_06_special_points.jpg" alt="00_09_06_special_points.jpg" /><br />
 </p>
 </div>
@@ -1944,7 +2219,7 @@ BRDF 需要满足如下条件从而保证在物理上是合理的：<br />
 </p>
 
 
-<div id="org8cc8a5b" class="figure">
+<div id="org33b3808" class="figure">
 <p><img src="./ComputerGraphicMath/20_06_10_radiometry_photometry_quntity.jpg" alt="20_06_10_radiometry_photometry_quntity.jpg" /><br />
 </p>
 </div>
@@ -1959,7 +2234,7 @@ BRDF 需要满足如下条件从而保证在物理上是合理的：<br />
 </p>
 
 
-<div id="org1ac6c13" class="figure">
+<div id="org54fbb3b" class="figure">
 <p><img src="./ComputerGraphicMath/20_06_10_rendering_equation.jpg" alt="20_06_10_rendering_equation.jpg" /><br />
 </p>
 </div>
@@ -1982,7 +2257,7 @@ BRDF 需要满足如下条件从而保证在物理上是合理的：<br />
 </p>
 
 
-<div id="orgfb133e7" class="figure">
+<div id="orgfedccd4" class="figure">
 <p><img src="./ComputerGraphicMath/20_06_10_output_windows.jpg" alt="20_06_10_output_windows.jpg" /><br />
 </p>
 </div>
@@ -2055,9 +2330,9 @@ zoomy/zoomx = winPhysx/winPhysy = winResx/winResy * pixPhysx/pixPhysy = winResx/
 </ul>
 </div>
 </div>
-<div id="outline-container-orgc7f4610" class="outline-5">
-<h5 id="orgc7f4610">Orthographic Projection</h5>
-<div class="outline-text-5" id="text-orgc7f4610">
+<div id="outline-container-org814adac" class="outline-5">
+<h5 id="org814adac">Orthographic Projection</h5>
+<div class="outline-text-5" id="text-org814adac">
 <p>
 正交投影没有 FOV，因为正交投影的视景体为正方体。我们没有使用两个角度来定义视景体 x 和 y 方向上的尺寸, 而是通过视景体的宽和高来定义。变焦倍数也有不同的意义，其和视景体的尺寸相关：<br />
 zoom = 2/size;<br />
@@ -2091,10 +2366,13 @@ size = 2/zoom;<br />
 <h5 id="org31d49a3">The Clip Matrix: Preparing For Projection</h5>
 <div class="outline-text-5" id="text-org31d49a3">
 </div>
-<div id="outline-container-org1ebf154" class="outline-6">
-<h6 id="org1ebf154">透视投影矩阵</h6>
-<div class="outline-text-6" id="text-org1ebf154">
-<pre class="example" id="org8eea204">
+<div id="outline-container-orgf1bc329" class="outline-6">
+<h6 id="orgf1bc329">透视投影矩阵</h6>
+<div class="outline-text-6" id="text-orgf1bc329">
+<p>
+perspective projection<br />
+</p>
+<pre class="example" id="org0c60c4d">
           | 1 0 0 0 |
           | 0 1 0 0 |
 [x y z 1] | 0 0 1 1 | = [x y z z] ==&gt; [x/z y/z 1]
@@ -2132,13 +2410,14 @@ d 表示投影平面到焦点（投影中心点）的距离。上面之所以没
 </ul>
 </div>
 
-<div id="outline-container-org6387a86" class="outline-6">
-<h6 id="org6387a86">正交投影矩阵</h6>
-<div class="outline-text-6" id="text-org6387a86">
+<div id="outline-container-org4cb1c52" class="outline-6">
+<h6 id="org4cb1c52">正交投影矩阵</h6>
+<div class="outline-text-6" id="text-org4cb1c52">
 <p>
+orthogonal projection<br />
 正交投影时，我们不希望执行透视除法，所以其投影矩阵如下：<br />
 </p>
-<pre class="example" id="org68e3128">
+<pre class="example" id="org1cd4063">
           | 1 0 0 0 |
           | 0 1 0 0 |
 [x y z 1] | 0 0 1 0 | = [x y z 1] ==&gt; [x y z]
@@ -2152,15 +2431,15 @@ d 表示投影平面到焦点（投影中心点）的距离。上面之所以没
 <h5 id="org62a5be7">The Clip Matrix: Applying Zoom and Preparing for Clipping</h5>
 <div class="outline-text-5" id="text-org62a5be7">
 </div>
-<div id="outline-container-orgc5c67ef" class="outline-6">
-<h6 id="orgc5c67ef">透视投影矩阵</h6>
-<div class="outline-text-6" id="text-orgc5c67ef">
+<div id="outline-container-org774e483" class="outline-6">
+<h6 id="org774e483">透视裁剪矩阵</h6>
+<div class="outline-text-6" id="text-org774e483">
 <p>
 裁剪矩阵的第二个目标是缩放 x,y,z 分量，使得六个裁剪平面有简单的形式。如下图所示，注意如果两个摄像机的 near 和 far 分别相等，那么这两个摄像机的视景体被变换到裁剪空间后是完全相同的，但是变换所使用的矩阵各不相同。<br />
 <img src="./ComputerGraphicMath/20_03_17_perspective.jpg" alt="20_03_17_perspective.jpg" /><br />
 </p>
 
-<pre class="example" id="org7ee7ace">
+<pre class="example" id="org8847bf9">
 // 缩放后，满足如下任何一个不等式的点在视景体外面：
 Bottom   y &lt; −w
 Top      y &gt; w
@@ -2183,7 +2462,7 @@ Far      z &gt; w
 <p>
 对于 near 和 far 裁剪平面，缩放后近平面的 z 值变为-near，远平面的 z 值变为 far，这样执行透视除法后，z的范围变为[-1,1]。由此可得到 z 和 z'的关系为：<br />
 </p>
-<pre class="example" id="org7698c7d">
+<pre class="example" id="org4de0fa2">
 Z'  = AZ+B
 -Zn = AZn+B
 Zf  = AZf+B
@@ -2199,8 +2478,8 @@ zoomx 0       0              0
 
 // 坐标经过上面的裁剪矩阵变换后得到的坐标
 // 在视景体近平面上的点
-(0, 0,   n, 1) * Mproj = (0, 0, -n, n) 
-// 在视景体近平面前面的点 
+(0, 0,   n, 1) * Mproj = (0, 0, -n, n)
+// 在视景体近平面前面的点
 (0, 0, n/2, 1) * Mproj = (0, 0, n(n-3f)/(2(f-n)), n/2)
 
 DirectX 规定裁剪变换后视景体的 z 值范围为 0&lt;=z&lt;=w，其对应的投影矩阵为：
@@ -2211,12 +2490,132 @@ zoomx 0       0              0
 </pre>
 </div>
 <ul class="org-ul">
-<li><a id="orgbc8798d"></a>Q&amp;A: 当 z 为 0 时，透视除法不是会出现除 0 的问题么？<br />
-<div class="outline-text-7" id="text-orgbc8798d">
+<li><a id="org0157b85"></a>透视裁剪变换及其逆变换推导<br />
+<div class="outline-text-7" id="text-org0157b85">
+<p>
+fov 增大，画面中物体变小，画面容纳内容增多。<br />
+<img src="./ComputerGraphicMath/21_01_11_projMatrix001.jpg" alt="21_01_11_projMatrix001.jpg" /><br />
+<img src="./ComputerGraphicMath/21_01_11_projMatrix002.jpg" alt="21_01_11_projMatrix002.jpg" /><br />
+<img src="./ComputerGraphicMath/21_01_11_projMatrix005.jpg" alt="21_01_11_projMatrix005.jpg" /><br />
+</p>
+</div>
+</li>
+<li><a id="orgb37bd27"></a>推导 D3D 透视裁剪矩阵<br />
+<div class="outline-text-7" id="text-orgb37bd27">
+
+<div id="orgcc1cd61" class="figure">
+<p><img src="./ComputerGraphicMath/21_01_11_projMatrix004.jpg" alt="21_01_11_projMatrix004.jpg" /><br />
+</p>
+</div>
+</div>
+</li>
+<li><a id="org2ca204f"></a>为什么上面推导出的透视裁剪矩阵和 OpenGL 的透视裁剪矩阵不同？<br />
+<div class="outline-text-7" id="text-org2ca204f">
+<p>
+上面推导透视裁剪矩阵时，我们做了如下两个假设：<br />
+</p>
+<ol class="org-ol">
+<li>viewFrustum 在 view space 的 +z axis。所以，viewZ&gt;0，wp=viewZ 透视除法后 (x*zoomx/wp, y*zoomy/wp) 正负号不会变。<br /></li>
+<li>view space 为左手坐标系。所以，执行投影变换后，clip space 和 ndc space 也为左手坐标系<br /></li>
+</ol>
+
+<p>
+而 OpenGL 的规则为下面两点：<br />
+</p>
+<ol class="org-ol">
+<li>viewFrustum 在 view space 的 -z axis。所以，viewZ &lt; 0, wp=viewZ 若不做特殊处理，透视除法后 (x*zoomx/wp, y*zoomy/wp) 正负号会变。这会导致画面左右翻转上下翻转，为了解决该问题，透视投影矩阵需要对 z 进行翻转。<br /></li>
+<li>view space 为右手坐标系。并且对 z 做了翻转，所以，执行投影变换后，clip space 和 ndc space 也为左手坐标系<br /></li>
+</ol>
+</div>
+<ul class="org-ul">
+<li><a id="orge58d758"></a>推导 OpenGL 透视裁剪矩阵<br />
+<div class="outline-text-8" id="text-orge58d758">
+
+<div id="orgd9a2117" class="figure">
+<p><img src="./ComputerGraphicMath/21_01_11_projMatrix006.jpg" alt="21_01_11_projMatrix006.jpg" /><br />
+</p>
+</div>
+</div>
+</li>
+<li><a id="orgd0bdbc2"></a>通过矩阵变换来推导 OpenGL 透视裁剪矩阵<br />
+<div class="outline-text-8" id="text-orgd0bdbc2">
+<p>
+将上面的裁剪矩阵转化为 OpenGL 使用的形式，首先需要对 z 进行翻转（将 opengl view space 变换为 my view space）, 然后在执行上面的投影变换，最后对所得的矩阵进行转置（将矩阵右乘方式变换为左乘）<br />
+</p>
+
+<pre class="example" id="org2b0d729">
+对 z 进行翻转
+1  0  0  0       zoomx 0       0              0     zoomx 0       0              0
+0  1  0  0   *   0     zoomy   0              0  =  0     zoomy   0              0
+0  0 -1  0       0     0       (f+n)/(f-n)    1     0     0       -(f+n)/(f-n)  -1
+0  0  0  1       0     0       −2nf/(f−n)     0     0     0       −2nf/(f−n)     0
+对上面矩阵进行转置得到 OpenGL 的透视裁剪矩阵：
+zoomx 0       0              0
+0     zoomy   0              0
+0     0       -(f+n)/(f-n)   −2nf/(f−n)
+0     0       -1             0
+</pre>
+</div>
+</li>
+</ul>
+</li>
+<li><a id="org34f60d7"></a>LinearEyeDepth 和 Linear01Depth 推导<br />
+<div class="outline-text-7" id="text-org34f60d7">
+
+<div id="orgda0dbb0" class="figure">
+<p><img src="./ComputerGraphicMath/depthToEyeZ_LinearZ.jpg" alt="depthToEyeZ_LinearZ.jpg" /><br />
+</p>
+</div>
+</div>
+</li>
+<li><a id="org9c7f7d5"></a>为什么离 near plane 越远，depth 精度越小？<br />
+<div class="outline-text-7" id="text-org9c7f7d5">
+<p>
+GeoGebra 软件打开下面文件，可以动态改变 near 和 far 的值:<br />
+<a href="./ComputerGraphicMath/21_01_11_zfighting.ggb">./ComputerGraphicMath/21_01_11_zfighting.ggb</a><br />
+</p>
+
+
+<div id="orgc4659fc" class="figure">
+<p><img src="./ComputerGraphicMath/21_01_11_projMatrix003.jpg" alt="21_01_11_projMatrix003.jpg" /><br />
+</p>
+</div>
+</div>
+</li>
+<li><a id="org76d5d0b"></a>另一种古老的投影裁剪矩阵推导方法<br />
+<div class="outline-text-7" id="text-org76d5d0b">
+<p>
+摄像机坐标系下，未执行投影变换时，Z值范围为[-f, -n]。<br />
+NDC 坐标的 Z 值范围为[-1,1]<br />
+ZBuffer 中存储[0,1]范围的 Z 值<br />
+</p>
+
+
+<div id="orgf492a8e" class="figure">
+<p><img src="./ComputerGraphicMath/20_01_06_projMatrix.png" alt="20_01_06_projMatrix.png" /><br />
+</p>
+</div>
+
+<ul class="org-ul">
+<li>OpenGL Projection Matrix <a href="http://www.songho.ca/opengl/gl_projectionmatrix.html">http://www.songho.ca/opengl/gl_projectionmatrix.html</a><br /></li>
+</ul>
+</div>
+</li>
+<li><a id="org7ef805c"></a>Clip Space 是怎样的？<br />
+<div class="outline-text-7" id="text-org7ef805c">
+<p>
+<img src="./ComputerGraphicMath/20_03_17_clipSpace.png" alt="20_03_17_clipSpace.png" /><br />
+<img src="./ComputerGraphicMath/20_03_17_orthographic.jpg" alt="20_03_17_orthographic.jpg" /><br />
+<img src="./ComputerGraphicMath/20_03_17_perspective.jpg" alt="20_03_17_perspective.jpg" /><br />
+</p>
+</div>
+</li>
+<li><a id="orgc3b8f90"></a>当 z 为 0 时，透视除法不是会出现除 0 的问题么？<br />
+<div class="outline-text-7" id="text-orgc3b8f90">
 <p>
 在执行投影变换之前会先执行 View 变换，将物体从世界坐标系转换为摄像机坐标系下，此时 z 为物体到摄像机原点的距离，摄像机设置了近平面 near，z 小于 near 的物体都会被裁剪掉，后续就不会发生除 0 的情况了。<br />
 </p>
-<pre class="example" id="org75dbbc4">
+<pre class="example" id="orgdce7384">
 // 下面为摄像机坐标系下(0,0,0)点 执行透视投影的过程
               zoomx 0      0            0
               0     zoomy  0            0
@@ -2233,14 +2632,14 @@ zoomx 0       0              0
 </li>
 </ul>
 </div>
-<div id="outline-container-org5157ed0" class="outline-6">
-<h6 id="org5157ed0">正交投影矩阵</h6>
-<div class="outline-text-6" id="text-org5157ed0">
+<div id="outline-container-orgb48d42a" class="outline-6">
+<h6 id="orgb48d42a">正交裁剪矩阵</h6>
+<div class="outline-text-6" id="text-orgb48d42a">
 <p>
 正交投影时，因为其没有透视除法，所以裁剪变换后的 x,y,z 的范围直接就是[-1,1] 。如下图所示，由此可得到 p 和 p'的关系为：<br />
 <img src="./ComputerGraphicMath/20_03_17_orthographic.jpg" alt="20_03_17_orthographic.jpg" /><br />
 </p>
-<pre class="example" id="orgfb39e21">
+<pre class="example" id="org75ee1da">
 w 为视景体的宽 h为视景体的高
 
 X' = AX+B
@@ -2272,33 +2671,70 @@ zoomx 0       0              0
 <div id="outline-container-orgc982102" class="outline-6">
 <h6 id="orgc982102">OpenGL 裁剪矩阵</h6>
 <div class="outline-text-6" id="text-orgc982102">
-<pre class="example" id="org2a66022">
-上面的裁剪矩阵基于本书的默认惯例，即坐标系为左手坐标系，向量为行向量。
-Direct坐标系为左手坐标系，向量为行向量。
-OpenGL坐标系为右手坐标系，向量为列向量。
-将上面的裁剪矩阵转化为OpenGL使用的形式，首先需要将矩阵转置，其次，由于右手坐标系摄像机空间中-z指向屏幕内，而其裁剪空间+z指向屏幕内(OpenGL的裁剪空间其实为左手坐标系)。因此需要将输入的z值取反。
+<p>
+上面的裁剪矩阵基于本书的默认惯例，即坐标系为左手坐标系，向量为行向量，矩阵右乘。<br />
+OpenGL 坐标系为右手坐标系，向量为列向量，矩阵左乘。<br />
+</p>
+</div>
+<ul class="org-ul">
+<li><a id="orgd5e5d6c"></a>OpenGL 透视裁剪矩阵<br />
+<div class="outline-text-7" id="text-orgd5e5d6c">
+<p>
+<a href="#orge58d758">推导 OpenGL 透视裁剪矩阵</a><br />
+<a href="#orgd0bdbc2">通过矩阵变换来推导 OpenGL 透视裁剪矩阵</a><br />
+</p>
+</div>
+</li>
 
-Tips: 为何OpenGL的NDC坐标系为左手？
-为了将NDC坐标系原点和屏幕坐标原点一致。
-如果NDC坐标系依然为右手，为了让z缓冲区中越小的值表示越近，越大的值表示越远，需要让坐标系正z方向指向屏幕内，即需要绕y旋转180度，此时坐标系的原点变为了右下角。
-如果NDC坐标系转换为左手，此时坐标系正z方向指向屏幕内，且NDC坐标系原点在左下角。
-
-由此可得OpenGL的透视投影矩阵为：
-zoomx 0       0              0
-0     zoomy   0              0
-0     0       -(f+n)/(f-n)   −2nf/(f−n)
-0     0       -1             0
-
-对应的OpenGL的正交投影矩阵为：
+<li><a id="orgc53e095"></a>OpenGL 正交投影矩阵<br />
+<div class="outline-text-7" id="text-orgc53e095">
+<pre class="example" id="org46dac1c">
+OpenGL的正交投影矩阵为：
 zoomx 0       0              0
 0     zoomy   0              0
 0     0       -2/(f-n)       −(f+n)/(f−n)
 0     0       0              1
 </pre>
 </div>
+</li>
+<li><a id="org6bcd845"></a>为何 OpenGL 的 NDC 坐标系为左手？<br />
+<div class="outline-text-7" id="text-org6bcd845">
+<p>
+为了将 NDC 坐标系原点和屏幕坐标原点一致。<br />
+如果 NDC 坐标系依然为右手，为了让 z 缓冲区中越小的值表示越近，越大的值表示越远，需要让坐标系正 z 方向指向屏幕内，即需要绕 y 旋转 180 度，此时坐标系的原点变为了右下角。<br />
+如果 NDC 坐标系转换为左手，此时坐标系正 z 方向指向屏幕内，且 NDC 坐标系原点在左下角。<br />
+</p>
 </div>
+</li>
+</ul>
 </div>
+<div id="outline-container-org82e1dd3" class="outline-6">
+<h6 id="org82e1dd3">D3D 裁剪矩阵</h6>
+<div class="outline-text-6" id="text-org82e1dd3">
+<p>
+Direct 坐标系为左手坐标系，向量为行向量，矩阵右乘。<br />
+<a href="#orgb48d42a">正交裁剪矩阵</a><br />
+<a href="#orgb37bd27">推导 D3D 透视裁剪矩阵</a><br />
+</p>
+<pre class="example" id="orgbb7d9a3">
+正交投影矩阵
+zoomx 0       0              0
+0     zoomy   0              0
+0     0       1/(f-n)        0
+0     0       n/(n-f)        1
 
+透视投影矩阵
+zoomx 0       0              0
+0     zoomy   0              0
+0     0       f/(f-n)        1
+0     0       nf/(n-f)       0
+</pre>
+<ul class="org-ul">
+<li><a href="https://learn.microsoft.com/en-us/windows/win32/dxtecharts/the-direct3d-transformation-pipeline">https://learn.microsoft.com/en-us/windows/win32/dxtecharts/the-direct3d-transformation-pipeline</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
 <div id="outline-container-org48b4ffc" class="outline-5">
 <h5 id="org48b4ffc">Screen Space</h5>
 <div class="outline-text-5" id="text-org48b4ffc">
@@ -2473,7 +2909,7 @@ Tips: 需要注意的是通过新的物体坐标系的基向量和坐标原点�
 <h4 id="org6cd0775">矩阵平移变换实例</h4>
 <div class="outline-text-4" id="text-org6cd0775">
 
-<div id="org297086d" class="figure">
+<div id="orge300519" class="figure">
 <p><img src="ComputerGraphicMath/8_1_transform_obj_coordidate.jpg" alt="8_1_transform_obj_coordidate.jpg" /><br />
 </p>
 </div>
@@ -2516,7 +2952,7 @@ yAxis = (0, 1)<br />
 需要注意的是平移变换通过额外的维度来实现的，所以上面文件中，\(a_o\) 只在二维坐标系中正确，在三维坐标系中其正确的坐标应该是 (4,2,2)<br />
 </p>
 
-\begin{align}  
+\begin{align}
 &如上图，世界坐标系 W 通过向 x 正方向平移 3 向 y 正方向平移 1 可以变换为物体坐标系 O \nonumber\\
 &向 x 正方形平移 3，向 y 正方形平移 1 的变换矩阵为：\nonumber\\
 &\left[
@@ -2536,7 +2972,7 @@ yAxis = (0, 1)<br />
 \right]\nonumber\\
 &A_w=(2,2)为用世界坐标系 W 表示的一个点, a_o=(1,1)为用物体坐标系 O 表示的一个点\\
 &A_o 为在物体坐标系 O 中表示 A_w 点，a_w 为在世界坐标系中表示 a_o 点\\
-&A_w = 
+&A_w =
 \left[2, 2, 1\right]
 \,
 \left[
@@ -2547,7 +2983,7 @@ yAxis = (0, 1)<br />
 \end{matrix}
 \right] =
 \left[-1, 1, 1\right] = A_o \nonumber\\
-&A_w = 
+&A_w =
 \left[2, 2, 1, 1\right]
 \,
 \left[
@@ -2559,7 +2995,7 @@ yAxis = (0, 1)<br />
 \end{matrix}
 \right] =
 \left[-1, 1, 2, 1\right] = A_o \nonumber\\
-&a_o = 
+&a_o =
 \left[1, 1, 1\right]
 \,
 \left[
@@ -2570,7 +3006,7 @@ yAxis = (0, 1)<br />
 \end{matrix}
 \right] =
 \left[4, 2, 1\right] = a_w \nonumber\\
-&a_o = 
+&a_o =
 \left[1, 1, 1, 1\right]
 \,
 \left[
@@ -2582,65 +3018,13 @@ yAxis = (0, 1)<br />
 \end{matrix}
 \right] =
 \left[4, 2, 2, 1\right] = a_w \nonumber\\
-\end{align} 
+\end{align}
 </div>
 </div>
 </div>
 <div id="outline-container-orge179c42" class="outline-3">
 <h3 id="orge179c42">投影变换</h3>
 <div class="outline-text-3" id="text-orge179c42">
-</div>
-<div id="outline-container-org240eae0" class="outline-4">
-<h4 id="org240eae0">投影变换推导</h4>
-<div class="outline-text-4" id="text-org240eae0">
-<p>
-摄像机坐标系下，未执行投影变换时，Z值范围为[-f, -n]。<br />
-NDC 坐标的 Z 值范围为[-1,1]<br />
-ZBuffer 中存储[0,1]范围的 Z 值<br />
-</p>
-
-
-<div id="org10d4fc9" class="figure">
-<p><img src="./ComputerGraphicMath/20_01_06_projMatrix.png" alt="20_01_06_projMatrix.png" /><br />
-</p>
-</div>
-</div>
-</div>
-<div id="outline-container-org4243bbc" class="outline-4">
-<h4 id="org4243bbc">投影变换及其逆变换推导</h4>
-<div class="outline-text-4" id="text-org4243bbc">
-<p>
-<img src="./ComputerGraphicMath/21_01_11_projMatrix001.jpg" alt="21_01_11_projMatrix001.jpg" /><br />
-<img src="./ComputerGraphicMath/21_01_11_projMatrix002.jpg" alt="21_01_11_projMatrix002.jpg" /><br />
-<img src="./ComputerGraphicMath/depthToEyeZ_LinearZ.jpg" alt="depthToEyeZ_LinearZ.jpg" /><br />
-</p>
-</div>
-<div id="outline-container-org9c7f7d5" class="outline-5">
-<h5 id="org9c7f7d5">为什么离 near plane 越远，depth 精度越小？</h5>
-<div class="outline-text-5" id="text-org9c7f7d5">
-<p>
-GeoGebra 软件打开下面文件，可以动态改变 near 和 far 的值:<br />
-<a href="./ComputerGraphicMath/21_01_11_zfighting.ggb">./ComputerGraphicMath/21_01_11_zfighting.ggb</a><br />
-</p>
-
-
-<div id="org78dce2e" class="figure">
-<p><img src="./ComputerGraphicMath/21_01_11_projMatrix003.jpg" alt="21_01_11_projMatrix003.jpg" /><br />
-</p>
-</div>
-</div>
-</div>
-</div>
-
-<div id="outline-container-org7ef805c" class="outline-4">
-<h4 id="org7ef805c">Clip Space 是怎样的？</h4>
-<div class="outline-text-4" id="text-org7ef805c">
-<p>
-<img src="./ComputerGraphicMath/20_03_17_clipSpace.png" alt="20_03_17_clipSpace.png" /><br />
-<img src="./ComputerGraphicMath/20_03_17_orthographic.jpg" alt="20_03_17_orthographic.jpg" /><br />
-<img src="./ComputerGraphicMath/20_03_17_perspective.jpg" alt="20_03_17_perspective.jpg" /><br />
-</p>
-</div>
 </div>
 <div id="outline-container-orgfd74310" class="outline-4">
 <h4 id="orgfd74310">自己做深度剔除</h4>
@@ -2662,9 +3046,9 @@ GeoGebra 软件打开下面文件，可以动态改变 near 和 far 的值:<br /
   {
       <span style="color: #ce537a; font-weight: bold;">float4</span> c = <span style="color: #ce537a; font-weight: bold;">float4</span>(0, 0, 0, 1);
 
-      <span style="color: #ce537a; font-weight: bold;">float2</span> uv = input.screenPos.xy / input.screenPos.w; 
+      <span style="color: #ce537a; font-weight: bold;">float2</span> uv = input.screenPos.xy / input.screenPos.w;
       <span style="color: #ce537a; font-weight: bold;">float</span> camDepth = SAMPLE_DEPTH_TEXTURE(<span style="color: #7590db;">_CameraDepthTexture</span>, uv);
-      camDepth = Linear01Depth (camDepth); 
+      camDepth = Linear01Depth (camDepth);
 
       <span style="color: #ce537a; font-weight: bold;">float</span> diff = <span style="color: #4f97d7;">saturate</span>(input.linearDepth - camDepth);
       c =<span style="color: #4f97d7;">lerp</span>(c, <span style="color: #ce537a; font-weight: bold;">float4</span>(1, 0, 0, 1),diff  &lt; 1);
@@ -2676,31 +3060,6 @@ GeoGebra 软件打开下面文件，可以动态改变 near 和 far 的值:<br /
 
 <ul class="org-ul">
 <li><a href="https://www.wonderm.cc/2019/03/04/CommandBuffer-01/">https://www.wonderm.cc/2019/03/04/CommandBuffer-01/</a><br /></li>
-</ul>
-</div>
-</div>
-<div id="outline-container-orgb50b5d4" class="outline-4">
-<h4 id="orgb50b5d4">如何从深度缓冲区中重建世界空间位置?</h4>
-<div class="outline-text-4" id="text-orgb50b5d4">
-</div>
-<div id="outline-container-org14c460c" class="outline-5">
-<h5 id="org14c460c">使用投影矩阵逆矩阵</h5>
-<div class="outline-text-5" id="text-org14c460c">
-<ul class="org-ul">
-<li>Unity 从深度缓冲重建世界空间位置<br /></li>
-<li>求投影矩阵的逆矩阵 <a href="https://www.cnblogs.com/back-to-the-past/p/12293520.html">https://www.cnblogs.com/back-to-the-past/p/12293520.html</a><br /></li>
-</ul>
-</div>
-</div>
-<div id="outline-container-org3861fc2" class="outline-5">
-<h5 id="org3861fc2">使用摄像机</h5>
-</div>
-</div>
-<div id="outline-container-orgdf2d3ea" class="outline-4">
-<h4 id="orgdf2d3ea">参考资料</h4>
-<div class="outline-text-4" id="text-orgdf2d3ea">
-<ul class="org-ul">
-<li>OpenGL Projection Matrix <a href="http://www.songho.ca/opengl/gl_projectionmatrix.html">http://www.songho.ca/opengl/gl_projectionmatrix.html</a><br /></li>
 </ul>
 </div>
 </div>
@@ -2753,7 +3112,7 @@ GeoGebra 软件打开下面文件，可以动态改变 near 和 far 的值:<br /
 </p>
 
 
-<div id="org4a858c4" class="figure">
+<div id="org564a014" class="figure">
 <p><img src="./ComputerGraphicMath/w_clipping_plane.jpg" alt="w_clipping_plane.jpg" /><br />
 </p>
 </div>
@@ -2772,9 +3131,9 @@ GeoGebra 软件打开下面文件，可以动态改变 near 和 far 的值:<br /
 </ul>
 </div>
 </div>
-<div id="outline-container-org7f27a00" class="outline-2">
-<h2 id="org7f27a00">参考资料</h2>
-<div class="outline-text-2" id="text-org7f27a00">
+<div id="outline-container-orge9b415f" class="outline-2">
+<h2 id="orge9b415f">参考资料</h2>
+<div class="outline-text-2" id="text-orge9b415f">
 <ul class="org-ul">
 <li>GeoGebra 数学工具 <a href="https://www.geogebra.org/geometry">https://www.geogebra.org/geometry</a><br /></li>
 </ul>

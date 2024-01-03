@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-06-27 Tue 22:36 -->
+<!-- 2024-01-03 Wed 16:03 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Tessellation</title>
@@ -27,15 +27,28 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orgba17381">Tessellation</a></li>
+<li><a href="#orgba17381">Tessellation</a>
+<ul>
+<li><a href="#org6f322b7">Example</a>
+<ul>
+<li><a href="#org62bca5b">vertex shader</a></li>
+<li><a href="#org2977b40">tessellation control shader</a></li>
+<li><a href="#org0087b9f">tessellation evaluation shader</a></li>
+<li><a href="#orga0c8050">fragment shader</a></li>
 <li><a href="#org3203f33">参考资料</a></li>
+</ul>
+</li>
+<li><a href="#org94117f8">参考资料</a></li>
+</ul>
+</li>
+<li><a href="#org904d9db">Mesh Shader</a></li>
 </ul>
 </div>
 </div>
 <p>
 Tessellation note.<br />
 </p>
-<div class="HTML" id="orgca019bc">
+<div class="HTML" id="org42ca39f">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -49,22 +62,290 @@ Tessellation note.<br />
 包含 3 个阶段, DirectX 中为 hull shader、tessellator、domain shader，OpenGL 中为 Tessellation Control Shader、Primitive Generator、Tessellation Evaluation Shader<br />
 </p>
 
-<p>
-OpenGL 中 Tessellation 阶段的处理流程如下：<br />
-</p>
 <ul class="org-ul">
-<li>step1   : patch 中的每一个顶点都会执行顶点着色器，每个 patch 中都包含顶点缓存中的多个控制点（CP）（控制点的最大值由驱动和 GPU 定义）；<br /></li>
-<li>step2.1 : TCS 着色器以顶点处理器处理之后的数据作为输入并生成和输出 patch，除此之外它也会产生 TLs；<br /></li>
-<li>step2.2 : 基于配置好的细分空间，通过获取 TCS 着色器中的 TL（细分层级）及其输出的拓扑结构，PG 会生成这个空间下的顶点位置和它们的连通性信息；<br /></li>
-<li>step2.3 : 所有生成的位于细分空间下的位置都会经过 TES 着色器进行处理；<br /></li>
-<li>step3   : 在第 3 步中生成的图元会沿着渲染管线继续传递，这些图元的具体数据来自于 TES 着色器，然后流程会继续推进到后面的 GS 阶段和光栅化阶段。<br /></li>
+<li>Tessellation Control Shader(TCS) 负责计算每个控制点（control point）的细分系数（tessellation factor）。细分系数是控制每个控制点生成多少个新的顶点。TCS 还可以指定生成新的顶点的方式，例如线性细分、三角形细分等。<br /></li>
+<li>Tessellation Evaluation Shader(TES) 负责根据 TCS 计算出的细分系数来生成新的顶点。TES 可以访问 TCS 输出的控制点，以及顶点属性（vertex attributes）。<br /></li>
+</ul>
+</div>
+
+<div id="outline-container-org6f322b7" class="outline-3">
+<h3 id="org6f322b7">Example</h3>
+<div class="outline-text-3" id="text-org6f322b7">
+</div>
+<div id="outline-container-org62bca5b" class="outline-4">
+<h4 id="org62bca5b">vertex shader</h4>
+<div class="outline-text-4" id="text-org62bca5b">
+<div class="org-src-container">
+<pre class="src src-shader">#version 410 core
+
+layout (location = 0) <span style="color: #4f97d7; font-weight: bold;">in</span> vec3 Position_VS_in;
+layout (location = 1) <span style="color: #4f97d7; font-weight: bold;">in</span> vec2 TexCoord_VS_in;
+layout (location = 2) <span style="color: #4f97d7; font-weight: bold;">in</span> vec3 Normal_VS_in;
+
+<span style="color: #4f97d7; font-weight: bold;">uniform</span> mat4 gWorld;
+
+<span style="color: #4f97d7; font-weight: bold;">out</span> vec3 WorldPos_CS_in;
+<span style="color: #4f97d7; font-weight: bold;">out</span> vec2 TexCoord_CS_in;
+<span style="color: #4f97d7; font-weight: bold;">out</span> vec3 Normal_CS_in;
+
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">main</span>()
+{
+    WorldPos_CS_in = (gWorld * vec4(Position_VS_in, 1.0)).xyz;
+    TexCoord_CS_in = TexCoord_VS_in;
+    Normal_CS_in = (gWorld * vec4(Normal_VS_in, 0.0)).xyz;
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org2977b40" class="outline-4">
+<h4 id="org2977b40">tessellation control shader</h4>
+<div class="outline-text-4" id="text-org2977b40">
+<div class="org-src-container">
+<pre class="src src-shader">#version 410 core
+
+<span style="color: #2aa1ae; background-color: #292e34;">// define the number of CPs in the output patch</span>
+layout (vertices = 3) <span style="color: #4f97d7; font-weight: bold;">out</span>;
+
+<span style="color: #4f97d7; font-weight: bold;">uniform</span> vec3 gEyeWorldPos;
+
+<span style="color: #2aa1ae; background-color: #292e34;">// attributes of the input CPs</span>
+<span style="color: #4f97d7; font-weight: bold;">in</span> vec3 WorldPos_CS_in[];
+<span style="color: #4f97d7; font-weight: bold;">in</span> vec2 TexCoord_CS_in[];
+<span style="color: #4f97d7; font-weight: bold;">in</span> vec3 Normal_CS_in[];
+
+<span style="color: #2aa1ae; background-color: #292e34;">// attributes of the output CPs</span>
+<span style="color: #4f97d7; font-weight: bold;">out</span> vec3 WorldPos_ES_in[];
+<span style="color: #4f97d7; font-weight: bold;">out</span> vec2 TexCoord_ES_in[];
+<span style="color: #4f97d7; font-weight: bold;">out</span> vec3 Normal_ES_in[];
+
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">main</span>()
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">// Set the control points of the output patch</span>
+    TexCoord_ES_in[gl_InvocationID] = TexCoord_CS_in[gl_InvocationID];
+    Normal_ES_in[gl_InvocationID] = Normal_CS_in[gl_InvocationID];
+    WorldPos_ES_in[gl_InvocationID] = WorldPos_CS_in[gl_InvocationID];
+    <span style="color: #2aa1ae; background-color: #292e34;">// Calculate the distance from the camera to the three control points</span>
+    <span style="color: #ce537a; font-weight: bold;">float</span> EyeToVertexDistance0 = <span style="color: #4f97d7;">distance</span>(gEyeWorldPos, WorldPos_ES_in[0]);
+    <span style="color: #ce537a; font-weight: bold;">float</span> EyeToVertexDistance1 = <span style="color: #4f97d7;">distance</span>(gEyeWorldPos, WorldPos_ES_in[1]);
+    <span style="color: #ce537a; font-weight: bold;">float</span> EyeToVertexDistance2 = <span style="color: #4f97d7;">distance</span>(gEyeWorldPos, WorldPos_ES_in[2]);
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// Calculate the tessellation levels</span>
+    gl_TessLevelOuter[0] = GetTessLevel(EyeToVertexDistance1, EyeToVertexDistance2);
+    gl_TessLevelOuter[1] = GetTessLevel(EyeToVertexDistance2, EyeToVertexDistance0);
+    gl_TessLevelOuter[2] = GetTessLevel(EyeToVertexDistance0, EyeToVertexDistance1);
+    gl_TessLevelInner[0] = gl_TessLevelOuter[2];
+}
+
+<span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #bc6ec5; font-weight: bold;">GetTessLevel</span>(<span style="color: #ce537a; font-weight: bold;">float</span> Distance0, <span style="color: #ce537a; font-weight: bold;">float</span> Distance1)
+{
+    <span style="color: #ce537a; font-weight: bold;">float</span> AvgDistance = (Distance0 + Distance1) / 2.0;
+
+    <span style="color: #4f97d7; font-weight: bold;">if</span> (AvgDistance &lt;= 2.0) {
+        <span style="color: #4f97d7; font-weight: bold;">return</span> 10.0;
+    }
+    <span style="color: #4f97d7; font-weight: bold;">else</span> <span style="color: #bc6ec5; font-weight: bold;">if</span> (AvgDistance &lt;= 5.0) {
+        <span style="color: #4f97d7; font-weight: bold;">return</span> 7.0;
+    }
+    <span style="color: #4f97d7; font-weight: bold;">else</span> {
+        <span style="color: #4f97d7; font-weight: bold;">return</span> 3.0;
+    }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org0087b9f" class="outline-4">
+<h4 id="org0087b9f">tessellation evaluation shader</h4>
+<div class="outline-text-4" id="text-org0087b9f">
+<div class="org-src-container">
+<pre class="src src-shader">#version 410 core
+
+layout(triangles, equal_spacing, ccw) <span style="color: #4f97d7; font-weight: bold;">in</span>;
+<span style="color: #4f97d7; font-weight: bold;">uniform</span> mat4 gVP;
+<span style="color: #4f97d7; font-weight: bold;">uniform</span> <span style="color: #ce537a; font-weight: bold;">sampler2D</span> gDisplacementMap;
+<span style="color: #4f97d7; font-weight: bold;">uniform</span> <span style="color: #ce537a; font-weight: bold;">float</span> gDispFactor;
+
+<span style="color: #4f97d7; font-weight: bold;">in</span> vec3 WorldPos_ES_in[];
+<span style="color: #4f97d7; font-weight: bold;">in</span> vec2 TexCoord_ES_in[];
+<span style="color: #4f97d7; font-weight: bold;">in</span> vec3 Normal_ES_in[];
+
+<span style="color: #4f97d7; font-weight: bold;">out</span> vec3 WorldPos_FS_in;
+<span style="color: #4f97d7; font-weight: bold;">out</span> vec2 TexCoord_FS_in;
+<span style="color: #4f97d7; font-weight: bold;">out</span> vec3 Normal_FS_in;
+
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">main</span>()
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">// Interpolate the attributes of the output vertex using the barycentric coordinates</span>
+    TexCoord_FS_in = interpolate2D(TexCoord_ES_in[0], TexCoord_ES_in[1], TexCoord_ES_in[2]);
+    Normal_FS_in = interpolate3D(Normal_ES_in[0], Normal_ES_in[1], Normal_ES_in[2]);
+    Normal_FS_in = <span style="color: #4f97d7;">normalize</span>(Normal_FS_in);
+    WorldPos_FS_in = interpolate3D(WorldPos_ES_in[0], WorldPos_ES_in[1], WorldPos_ES_in[2]);
+    <span style="color: #2aa1ae; background-color: #292e34;">// Displace the vertex along the normal</span>
+    <span style="color: #ce537a; font-weight: bold;">float</span> Displacement = <span style="color: #4f97d7; font-weight: bold;">texture</span>(gDisplacementMap, TexCoord_FS_in.xy).x;
+    WorldPos_FS_in += Normal_FS_in * Displacement * gDispFactor;
+    gl_Position = gVP * vec4(WorldPos_FS_in, 1.0);
+}
+
+vec2 <span style="color: #bc6ec5; font-weight: bold;">interpolate2D</span>(vec2 v0, vec2 v1, vec2 v2)
+{
+    <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #bc6ec5; font-weight: bold;">vec2</span>(gl_TessCoord.x) * v0 + vec2(gl_TessCoord.y) * v1 + vec2(gl_TessCoord.z) * v2;
+}
+
+vec3 <span style="color: #bc6ec5; font-weight: bold;">interpolate3D</span>(vec3 v0, vec3 v1, vec3 v2)
+{
+    <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #bc6ec5; font-weight: bold;">vec3</span>(gl_TessCoord.x) * v0 + vec3(gl_TessCoord.y) * v1 + vec3(gl_TessCoord.z) * v2;
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orga0c8050" class="outline-4">
+<h4 id="orga0c8050">fragment shader</h4>
+<div class="outline-text-4" id="text-orga0c8050">
+<div class="org-src-container">
+<pre class="src src-shader">#version 410 core
+
+<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">int</span> MAX_POINT_LIGHTS = 2;
+<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">int</span> MAX_SPOT_LIGHTS = 2;
+
+<span style="color: #4f97d7; font-weight: bold;">in</span> vec2 TexCoord_FS_in;
+<span style="color: #4f97d7; font-weight: bold;">in</span> vec3 Normal_FS_in;
+<span style="color: #4f97d7; font-weight: bold;">in</span> vec3 WorldPos_FS_in;
+
+<span style="color: #4f97d7; font-weight: bold;">out</span> vec4 FragColor;
+
+<span style="color: #4f97d7; font-weight: bold;">struct</span> BaseLight
+{
+    vec3 <span style="color: #4f97d7; font-weight: bold;">Color</span>;
+    <span style="color: #ce537a; font-weight: bold;">float</span> AmbientIntensity;
+    <span style="color: #ce537a; font-weight: bold;">float</span> DiffuseIntensity;
+};
+
+<span style="color: #4f97d7; font-weight: bold;">struct</span> DirectionalLight
+{
+    BaseLight Base;
+    vec3 Direction;
+};
+
+<span style="color: #4f97d7; font-weight: bold;">struct</span> Attenuation
+{
+    <span style="color: #ce537a; font-weight: bold;">float</span> Constant;
+    <span style="color: #ce537a; font-weight: bold;">float</span> Linear;
+    <span style="color: #ce537a; font-weight: bold;">float</span> Exp;
+};
+
+<span style="color: #4f97d7; font-weight: bold;">struct</span> PointLight
+{
+    BaseLight Base;
+    vec3 Position;
+    Attenuation Atten;
+};
+
+<span style="color: #4f97d7; font-weight: bold;">struct</span> SpotLight
+{
+    PointLight Base;
+    vec3 Direction;
+    <span style="color: #ce537a; font-weight: bold;">float</span> Cutoff;
+};
+
+<span style="color: #4f97d7; font-weight: bold;">uniform</span> <span style="color: #ce537a; font-weight: bold;">int</span> gNumPointLights;
+<span style="color: #4f97d7; font-weight: bold;">uniform</span> <span style="color: #ce537a; font-weight: bold;">int</span> gNumSpotLights;
+<span style="color: #4f97d7; font-weight: bold;">uniform</span> DirectionalLight gDirectionalLight;
+<span style="color: #4f97d7; font-weight: bold;">uniform</span> PointLight gPointLights[MAX_POINT_LIGHTS];
+<span style="color: #4f97d7; font-weight: bold;">uniform</span> SpotLight gSpotLights[MAX_SPOT_LIGHTS];
+<span style="color: #4f97d7; font-weight: bold;">uniform</span> <span style="color: #ce537a; font-weight: bold;">sampler2D</span> gColorMap;
+<span style="color: #4f97d7; font-weight: bold;">uniform</span> vec3 gEyeWorldPos;
+<span style="color: #4f97d7; font-weight: bold;">uniform</span> <span style="color: #ce537a; font-weight: bold;">float</span> gMatSpecularIntensity;
+<span style="color: #4f97d7; font-weight: bold;">uniform</span> <span style="color: #ce537a; font-weight: bold;">float</span> gSpecularPower;
+
+vec4 <span style="color: #bc6ec5; font-weight: bold;">CalcLightInternal</span>(BaseLight Light, vec3 LightDirection, vec3 Normal)
+{
+    vec4 AmbientColor = vec4(Light.<span style="color: #4f97d7; font-weight: bold;">Color</span> * Light.AmbientIntensity, 1.0f);
+    <span style="color: #ce537a; font-weight: bold;">float</span> DiffuseFactor = <span style="color: #4f97d7;">dot</span>(Normal, -LightDirection);
+
+    vec4 DiffuseColor  = vec4(0, 0, 0, 0);
+    vec4 SpecularColor = vec4(0, 0, 0, 0);
+
+    <span style="color: #4f97d7; font-weight: bold;">if</span> (DiffuseFactor &gt; 0) {
+        DiffuseColor = vec4(Light.<span style="color: #4f97d7; font-weight: bold;">Color</span> * Light.DiffuseIntensity * DiffuseFactor, 1.0f);
+
+        vec3 VertexToEye = <span style="color: #4f97d7;">normalize</span>(gEyeWorldPos - WorldPos_FS_in);
+        vec3 LightReflect = <span style="color: #4f97d7;">normalize</span>(<span style="color: #4f97d7;">reflect</span>(LightDirection, Normal));
+        <span style="color: #ce537a; font-weight: bold;">float</span> SpecularFactor = <span style="color: #4f97d7;">dot</span>(VertexToEye, LightReflect);
+        <span style="color: #4f97d7; font-weight: bold;">if</span> (SpecularFactor &gt; 0) {
+            SpecularFactor = <span style="color: #4f97d7;">pow</span>(SpecularFactor, gSpecularPower);
+            SpecularColor = vec4(Light.<span style="color: #4f97d7; font-weight: bold;">Color</span> * gMatSpecularIntensity * SpecularFactor, 1.0f);
+        }
+    }
+
+    <span style="color: #4f97d7; font-weight: bold;">return</span> (AmbientColor + DiffuseColor + SpecularColor);
+}
+
+vec4 <span style="color: #bc6ec5; font-weight: bold;">CalcDirectionalLight</span>(vec3 Normal)
+{
+    <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #bc6ec5; font-weight: bold;">CalcLightInternal</span>(gDirectionalLight.Base, gDirectionalLight.Direction, Normal);
+}
+
+vec4 <span style="color: #bc6ec5; font-weight: bold;">CalcPointLight</span>(PointLight l, vec3 Normal)
+{
+    vec3 LightDirection = WorldPos_FS_in - l.Position;
+    <span style="color: #ce537a; font-weight: bold;">float</span> Distance = <span style="color: #4f97d7;">length</span>(LightDirection);
+    LightDirection = <span style="color: #4f97d7;">normalize</span>(LightDirection);
+
+    vec4 <span style="color: #4f97d7; font-weight: bold;">Color</span> = CalcLightInternal(l.Base, LightDirection, Normal);
+    <span style="color: #ce537a; font-weight: bold;">float</span> AttenuationFactor =  l.Atten.Constant +
+                         l.Atten.Linear * Distance +
+                         l.Atten.Exp * Distance * Distance;
+
+    <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #4f97d7; font-weight: bold;">Color</span> / AttenuationFactor;
+}
+
+vec4 <span style="color: #bc6ec5; font-weight: bold;">CalcSpotLight</span>(SpotLight l, vec3 Normal)
+{
+    vec3 LightToPixel = <span style="color: #4f97d7;">normalize</span>(WorldPos_FS_in - l.Base.Position);
+    <span style="color: #ce537a; font-weight: bold;">float</span> SpotFactor = <span style="color: #4f97d7;">dot</span>(LightToPixel, l.Direction);
+
+    <span style="color: #4f97d7; font-weight: bold;">if</span> (SpotFactor &gt; l.Cutoff) {
+        vec4 <span style="color: #4f97d7; font-weight: bold;">Color</span> = CalcPointLight(l.Base, Normal);
+        <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #4f97d7; font-weight: bold;">Color</span> * (1.0 - (1.0 - SpotFactor) * 1.0/(1.0 - l.Cutoff));
+    }
+    <span style="color: #4f97d7; font-weight: bold;">else</span> {
+        <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #bc6ec5; font-weight: bold;">vec4</span>(0,0,0,0);
+    }
+}
+
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">main</span>()
+{
+    vec3 Normal = <span style="color: #4f97d7;">normalize</span>(Normal_FS_in);
+    vec4 TotalLight = CalcDirectionalLight(Normal);
+
+    <span style="color: #4f97d7; font-weight: bold;">for</span> (<span style="color: #ce537a; font-weight: bold;">int</span> i = 0 ; i &lt; gNumPointLights ; i++) {
+        TotalLight += CalcPointLight(gPointLights[i], Normal);
+    }
+
+    <span style="color: #4f97d7; font-weight: bold;">for</span> (<span style="color: #ce537a; font-weight: bold;">int</span> i = 0 ; i &lt; gNumSpotLights ; i++) {
+        TotalLight += CalcSpotLight(gSpotLights[i], Normal);
+    }
+
+    FragColor = <span style="color: #4f97d7; font-weight: bold;">texture</span>(gColorMap, TexCoord_FS_in.xy) * TotalLight;
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org3203f33" class="outline-4">
+<h4 id="org3203f33">参考资料</h4>
+<div class="outline-text-4" id="text-org3203f33">
+<ul class="org-ul">
+<li><a href="https://ogldev.org/www/tutorial30/tutorial30.html">https://ogldev.org/www/tutorial30/tutorial30.html</a><br /></li>
 </ul>
 </div>
 </div>
-
-<div id="outline-container-org3203f33" class="outline-2">
-<h2 id="org3203f33">参考资料</h2>
-<div class="outline-text-2" id="text-org3203f33">
+</div>
+<div id="outline-container-org94117f8" class="outline-3">
+<h3 id="org94117f8">参考资料</h3>
+<div class="outline-text-3" id="text-org94117f8">
 <p>
 Tessellation Unity 官网 <a href="https://docs.unity3d.com/Manual/SL-SurfaceShaderTessellation.html">https://docs.unity3d.com/Manual/SL-SurfaceShaderTessellation.html</a><br />
 Tessellation 手机兼容性报告 <a href="https://zhuanlan.zhihu.com/p/68886234">https://zhuanlan.zhihu.com/p/68886234</a><br />
@@ -80,6 +361,10 @@ PhongTessellation <a href="https://perso.telecom-paristech.fr/boubek/papers/Phon
 曲面细分基础 <a href="https://blog.csdn.net/cordova/article/details/80899013">https://blog.csdn.net/cordova/article/details/80899013</a><br />
 </p>
 </div>
+</div>
+</div>
+<div id="outline-container-org904d9db" class="outline-2">
+<h2 id="org904d9db">Mesh Shader</h2>
 </div>
 </div>
 <div id="postamble" class="status">

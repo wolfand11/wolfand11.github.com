@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-06-27 Tue 22:37 -->
+<!-- 2024-01-03 Wed 16:13 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Unity Note</title>
@@ -65,6 +65,46 @@
 <ul>
 <li><a href="#org8656ab0">Active Scene</a></li>
 <li><a href="#org29d5380">SceneUtility.GetScenePathByBuildIndex</a></li>
+<li><a href="#orga53b962">Scene-specific settings</a>
+<ul>
+<li><a href="#org7ee7d9e">Multipile Scenes</a>
+<ul>
+<li><a href="#orga30fe00">set up multiple scenes</a></li>
+<li><a href="#orgf2d7ae2">bake data in multiple scenes</a></li>
+</ul>
+</li>
+<li><a href="#orgb6d7fb9">RenderSettings (UnityEngine)</a>
+<ul>
+<li><a href="#org37e367d">skybox</a></li>
+<li><a href="#orga065921">ambientMode</a></li>
+<li><a href="#org80cedf8">ambientProbe</a></li>
+<li><a href="#org495b37b">defaultReflectionMode</a></li>
+<li><a href="#org151418c">参考资料</a></li>
+</ul>
+</li>
+<li><a href="#orgc2c4c61">LightmapSettings (UnityEngine)</a>
+<ul>
+<li><a href="#orgdda5f2b">lightmaps</a></li>
+<li><a href="#orgfdf9578">lightmapsMode</a></li>
+<li><a href="#org2c062ef">lightProbes</a></li>
+<li><a href="#org403a726">参考资料</a></li>
+</ul>
+</li>
+<li><a href="#orgf437f59">Lightmapping (UnityEditor)</a>
+<ul>
+<li><a href="#orgfacd56e">LightingDataAsset</a></li>
+<li><a href="#orgd1c065a">LightingSetings</a></li>
+</ul>
+</li>
+<li><a href="#org52de20d">ReflectionProbe</a>
+<ul>
+<li><a href="#orgdb5428b">defaultTexture</a></li>
+<li><a href="#org8a6c889">defaultTextureHDRDecodeValues</a></li>
+<li><a href="#orgecb37ad">参考资料</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#org2235560">Object</a>
@@ -79,11 +119,17 @@
 <li><a href="#org18e2619">GetComponent GetComponents</a></li>
 <li><a href="#orgb5b3b23">GameObject 定义的其他成员方法</a>
 <ul>
-<li><a href="#org74a13e4">Tips:</a></li>
+<li><a href="#org98375dc">Tips:</a></li>
 </ul>
 </li>
 <li><a href="#org31af94d">GameObject 和 Transform</a></li>
 <li><a href="#org788cc22">Get all DontDestroyOnLoad GameObjects</a></li>
+<li><a href="#org5cb8de7">Traverse Component</a></li>
+<li><a href="#org637f58d">layer</a>
+<ul>
+<li><a href="#org6d3a4c7">Base</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#org6ba4421">Transform</a>
@@ -112,9 +158,10 @@
 <li><a href="#orgf4620f6">RectTransform</a></li>
 <li><a href="#orgf09f59a">Matrix4x4</a>
 <ul>
+<li><a href="#org5a0a8f8">Matrix4x4[row][column]</a></li>
 <li><a href="#org1a96c8b">Matrix4x4.TRS</a></li>
 <li><a href="#org3fabd87">将 Matrix4x4 分解为 Translate Rotation Scale 矩阵</a></li>
-<li><a href="#orgafed819">参考资料</a></li>
+<li><a href="#org6edfda9">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#org71e2e15">Quaternion Euler</a>
@@ -136,7 +183,7 @@
 <li><a href="#orgac2ee03">本地旋转和全局旋转之间的转换 不同坐标系之间旋转的转换</a>
 <ul>
 <li><a href="#orgd4be95a">关于 localRotation 和 rotation：下面代码中为什么会输出 True？</a></li>
-<li><a href="#org01d265d">参考资料</a></li>
+<li><a href="#org0b12915">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#org04de34d">绕父节点旋转</a>
@@ -151,7 +198,7 @@
 <li><a href="#org88f50e8">PlayerLoop</a>
 <ul>
 <li><a href="#org00b7227">PlayerLoopSystem 组织方式</a></li>
-<li><a href="#org4c5d1ab">参考文档</a></li>
+<li><a href="#org7c3a201">参考文档</a></li>
 </ul>
 </li>
 <li><a href="#org5084a77">MonoBehavior</a>
@@ -160,7 +207,7 @@
 <ul>
 <li><a href="#org4858d87">同一个对象上各函数触发顺序</a></li>
 <li><a href="#org3e5bcc7">不同对象各函数触发顺序</a></li>
-<li><a href="#orge2e258b">参考文档</a></li>
+<li><a href="#org43c7e92">参考文档</a></li>
 </ul>
 </li>
 <li><a href="#org50ee8c5">单例 MonoBehavior</a></li>
@@ -185,16 +232,16 @@
 <ul>
 <li><a href="#org1e31601">循环播放动画</a>
 <ul>
-<li><a href="#orgd375e66">Animation</a></li>
-<li><a href="#org76c4f81">Animator</a></li>
+<li><a href="#org33a47b7">Animation</a></li>
+<li><a href="#org6cae3cc">Animator</a></li>
 </ul>
 </li>
 <li><a href="#orgfd94feb">暂停播放 恢复播放</a></li>
 <li><a href="#orgc7116df">判断动画是否正在播放 判断动画是否播放完</a></li>
 <li><a href="#orgaeed5c8">添加删除动画消息</a>
 <ul>
-<li><a href="#org0e73a8c">Animation</a></li>
-<li><a href="#orgff7d862">Animator</a></li>
+<li><a href="#orga540db5">Animation</a></li>
+<li><a href="#org2b0e883">Animator</a></li>
 </ul>
 </li>
 <li><a href="#org63f41a3">从某个时间点开始播放动画</a></li>
@@ -204,7 +251,7 @@
 <li><a href="#orgae08a0c">表情动画实现</a></li>
 <li><a href="#orgaf6fae8">动画中 Rig/Root Node 和 Animation/Motion/RootMotionNode 的差别</a>
 <ul>
-<li><a href="#orgdef754d">参考资料</a></li>
+<li><a href="#org2213d9c">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#org230767f">Animator Humanoid 是如何支持不同体型角色复用同一套动画的？</a></li>
@@ -213,28 +260,28 @@
 <ul>
 <li><a href="#org2ea1586">Avatar 中存储的数据</a>
 <ul>
-<li><a href="#org68ed975">Generic Avatar</a></li>
-<li><a href="#org8dfc428">Humanoid Avatar</a></li>
+<li><a href="#org9a418be">Generic Avatar</a></li>
+<li><a href="#org205142b">Humanoid Avatar</a></li>
 </ul>
 </li>
 <li><a href="#org44c1ac7">Avatar Rigging Skinning 术语</a></li>
-<li><a href="#orgd06a27d">Generic Avatar</a>
+<li><a href="#orgcf7922f">Generic Avatar</a>
 <ul>
 <li><a href="#orgb220a24">Root Node</a></li>
-<li><a href="#org2298583">参考资料</a></li>
+<li><a href="#org6af440f">参考资料</a></li>
 </ul>
 </li>
-<li><a href="#orgadca5ab">Humanoid Avatar</a>
+<li><a href="#orgbda8f03">Humanoid Avatar</a>
 <ul>
 <li><a href="#org5ed6916">Body Transform</a></li>
 <li><a href="#orgd0fd4e0">Root Motion Node</a></li>
-<li><a href="#orge0d120d">参考资料</a></li>
+<li><a href="#orgd77fb7a">参考资料</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li><a href="#org1ec09a3">AnimatorState.WriteDefaults</a></li>
-<li><a href="#orgad7167a">参考文档</a></li>
+<li><a href="#org9e7650a">参考文档</a></li>
 </ul>
 </li>
 <li><a href="#org83045eb">Attributes</a>
@@ -255,7 +302,7 @@
 <li><a href="#org63297cd">自定义属性显示名字</a></li>
 <li><a href="#orgbb7aa19">自定义属性只读</a></li>
 <li><a href="#org1862e14">NaughtyAttribute</a></li>
-<li><a href="#orgbb5cafe">参考资料</a></li>
+<li><a href="#org2ada43e">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#org9f7a2e3">Ray</a>
@@ -288,6 +335,7 @@
 <ul>
 <li><a href="#org79e9ed9">获取 camera Pixel Size</a></li>
 <li><a href="#orgb801714">判断物体是否在摄像机视野内</a></li>
+<li><a href="#org724811f">计算 Camera Corner</a></li>
 <li><a href="#org770f755">可视化 Frustum Planes</a></li>
 </ul>
 </li>
@@ -309,6 +357,7 @@
 <li><a href="#org8f5f3fb">SkinnedMeshRenderer</a>
 <ul>
 <li><a href="#org04f4f6d">SkinnedMeshRenderer 和 骨架</a></li>
+<li><a href="#org6794b23">SkinnedMeshRenderer Skin Bone Count</a></li>
 <li><a href="#org989e874">SkinnedMeshRenderer 和 Mesh</a></li>
 <li><a href="#org968994d">SkinnedMeshRenderer.sharedMesh</a></li>
 <li><a href="#orgf5f6321">SkinnedMeshRenderer 序列化</a>
@@ -324,22 +373,71 @@
 </li>
 </ul>
 </li>
+<li><a href="#orgf58cd03">BlendShape</a>
+<ul>
+<li><a href="#org07de8b2">Base</a></li>
+<li><a href="#orgcd9b3df">脚本中控制 BlendShape 权重。</a></li>
+</ul>
+</li>
 <li><a href="#org48af8c3">当模型只有一个骨骼时，SkinMesh 和 Mesh 的运算效率相差大吗？</a></li>
+</ul>
+</li>
+<li><a href="#org5e009e8">Timeline</a>
+<ul>
+<li><a href="#orgc0a8b05">Custom Timeline</a>
+<ul>
+<li><a href="#org49b13c4">Custom clips</a>
+<ul>
+<li><a href="#orga5d228c">继承 PlayableBehaviour 来实现 Clip 逻辑</a></li>
+<li><a href="#orgcf621f5">继承 PlayableAsset 来实现 Clip 数据</a></li>
+<li><a href="#orgc055851">使用相同的数据结构来封装 LightControlBehaviour 的参数和 LightControlAsset 的参数</a></li>
+</ul>
+</li>
+<li><a href="#orgaa835ef">Custom tracks</a>
+<ul>
+<li><a href="#orgae1959f">继承 TrackAsset 来实现 Track 数据</a></li>
+<li><a href="#orgb845902">定义 PlayableBehaviour 输入参数的结构体</a></li>
+<li><a href="#org43ef345">继承 PlayableBehaviour 来实现 Clip 逻辑</a></li>
+<li><a href="#orga383a03">继承 PlayableAsset 来实现 Clip 数据</a></li>
+</ul>
+</li>
+<li><a href="#org8f95936">Blending clips with a mixer</a>
+<ul>
+<li><a href="#org0c4a4ec">为 Track 创建 Mixer</a></li>
+<li><a href="#orgee69b34">实现 LightControlMixerBehaviour</a></li>
+<li><a href="#orga16775a">重新实现 LightControlBehaviour</a></li>
+</ul>
+</li>
+<li><a href="#org9c4b491">Animating custom clips</a>
+<ul>
+<li><a href="#orgaa38e58">在 LightControlAsset 中创建 LightControlBehaviour 的 template</a></li>
+<li><a href="#org4d7b795">为 LightControlBehaviour 添加 Serializable 属性</a></li>
+<li><a href="#orgf8f562e">添加关键帧以修改 color 和 intensity</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org40a624b">Example</a>
+<ul>
+<li><a href="#org3594598">Timeline 控制 Postprocess</a></li>
+</ul>
+</li>
+<li><a href="#org9f8246c">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#org34c1b8a">Lod LodGroup</a>
 <ul>
 <li><a href="#orgb4dac88">Lod.screenRelativeTransitionHeight</a></li>
 <li><a href="#orga723d86">Quality.LodBias</a></li>
-<li><a href="#org0b4edab">Misc</a>
+<li><a href="#org4608501">Misc</a>
 <ul>
 <li><a href="#org2d26426">同一个 Renderer 可以在不同的 Lod 中</a></li>
 </ul>
 </li>
-<li><a href="#org8fee53c">参考资料</a></li>
+<li><a href="#org9c197b3">参考资料</a></li>
 </ul>
 </li>
-<li><a href="#org215b6a1">Materials</a>
+<li><a href="#orgbe9a395">Materials</a>
 <ul>
 <li><a href="#org2c5e19b">使用 shaderMaterial 编辑器下每次运行，材质都被修改</a></li>
 </ul>
@@ -364,7 +462,7 @@
 </ul>
 </li>
 <li><a href="#org38f5afe">Assembly Definition</a></li>
-<li><a href="#orge4ed6f6">Misc</a>
+<li><a href="#org1e07525">Misc</a>
 <ul>
 <li><a href="#org2fc31c5">如何在编辑器中实时查看脚本私有变量的值？</a></li>
 <li><a href="#orgfbbb1ae">如何将 Texture2D 保存为 png 图片？</a></li>
@@ -418,27 +516,62 @@
 </li>
 <li><a href="#org44c6c1e">EditorWindow</a>
 <ul>
-<li><a href="#orgb70550f">EditorGUILayout</a></li>
-<li><a href="#orga06b725">绘制只读控件</a></li>
+<li><a href="#orgb70550f">EditorGUILayout</a>
+<ul>
+<li><a href="#org1b54cb7">foldout</a></li>
+<li><a href="#org5852bb0">GetRect GetLastRect GetControlRect</a></li>
+</ul>
+</li>
+<li><a href="#orga06b725">绘制只读控件</a>
+<ul>
+<li><a href="#org5280c8c">case 1</a></li>
+<li><a href="#orgc0f4a3e">case 2</a></li>
+</ul>
+</li>
 <li><a href="#org3845ecf">EditorWindow 窗口大小</a></li>
+<li><a href="#orgba091d9">EditorStyles</a>
+<ul>
+<li><a href="#org86021a7">box frameBox SearchTextField</a></li>
+<li><a href="#orgf695197">参考资料</a></li>
+</ul>
+</li>
 <li><a href="#org9c56c70">如何在 EditorWindow 中绘制模型？</a></li>
 <li><a href="#org2408b3a">EditorWindow 中绘制列表</a></li>
+<li><a href="#org9cbb006">Editor 复用 Inspector</a></li>
 <li><a href="#orgccf4c79">EditorWindow 协程</a>
 <ul>
-<li><a href="#org86c4a69">Base</a></li>
+<li><a href="#orgc4b4c7d">Base</a></li>
 <li><a href="#orge7b3943">StartCoroutine without EditorWindow</a></li>
+<li><a href="#org29fe8a0">EditorWaitForSeconds</a></li>
 <li><a href="#orgde7a8e4">yield break 提前退出</a></li>
-<li><a href="#orgf0006b3">参考资料</a></li>
+<li><a href="#org6f22b5c">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#org8bafea0">组合多个工具到一个 EditorWindow</a></li>
 </ul>
 </li>
 <li><a href="#orgfd758cc">自定义 ToolBar</a></li>
-<li><a href="#org008712c">scriptable object</a>
+<li><a href="#org2404c1d">ScriptableObject</a>
 <ul>
-<li><a href="#org432a07b">create scriptable object asset</a></li>
-<li><a href="#org778d317">实时应用被编辑的变量</a></li>
+<li><a href="#org432a07b">create scriptable object asset</a>
+<ul>
+<li><a href="#org96d2d05">方法 1</a></li>
+<li><a href="#org8be21f8">方法 2</a></li>
+</ul>
+</li>
+<li><a href="#org496cbf7">参考资料</a></li>
+</ul>
+</li>
+<li><a href="#org8ec22a5">SerializedObject</a>
+<ul>
+<li><a href="#org3c17e5d">Base</a></li>
+<li><a href="#org2fa8ee0">数据同步</a>
+<ul>
+<li><a href="#orgdb8407a">Object to SerializedObject</a></li>
+<li><a href="#orga486d50">SerializedObject to Object</a></li>
+</ul>
+</li>
+<li><a href="#org0ed434d">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#org1085cdc">Tools</a>
@@ -447,7 +580,6 @@
 <li><a href="#org1ee3616">设置 Animator 的 AnimationClip loop 属性</a></li>
 <li><a href="#org5c0af93">代码设置 CacheServer</a></li>
 <li><a href="#org715b1a8">按照指定条件获取工程中的资源</a></li>
-<li><a href="#org354a18d">创建 ScriptableObject</a></li>
 <li><a href="#orgf66906a">修改 prefab</a></li>
 <li><a href="#org8fd782c">提取 FBX 中 Mesh 并保存为 asset</a></li>
 </ul>
@@ -463,7 +595,7 @@
 </ul>
 </li>
 <li><a href="#orgb30ea2b">TextureImporter</a></li>
-<li><a href="#orgb3a9bd4">Misc</a>
+<li><a href="#orga1340fc">Misc</a>
 <ul>
 <li><a href="#orgda59ac3">Path</a>
 <ul>
@@ -473,6 +605,13 @@
 </ul>
 </li>
 <li><a href="#org6a0deee">binary2text</a></li>
+<li><a href="#org00d0a72">Sirenix.OdinInspector</a></li>
+<li><a href="#orgffc2659">OpenSource Tools</a>
+<ul>
+<li><a href="#org27afaf5">NaughtyAttributes</a></li>
+<li><a href="#orgb572e6a">Others</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#org9540677">Build</a>
@@ -573,10 +712,10 @@
 </li>
 <li><a href="#orgca6d071">Draw Call Batching</a>
 <ul>
-<li><a href="#org83034cc">Materials</a></li>
+<li><a href="#org03314e5">Materials</a></li>
 <li><a href="#orgaff15f9">Dynamic Batching</a>
 <ul>
-<li><a href="#orge7878d4">Tips:</a></li>
+<li><a href="#orgb12a5b2">Tips:</a></li>
 </ul>
 </li>
 <li><a href="#org75d735f">Static Batching</a></li>
@@ -602,7 +741,7 @@
 <li><a href="#org50cf56a">Animation Optimize</a>
 <ul>
 <li><a href="#orge104e98">MecanimPeformanceandOptimization</a></li>
-<li><a href="#org7041930">参考文档</a></li>
+<li><a href="#orgf96efda">参考文档</a></li>
 </ul>
 </li>
 <li><a href="#orgbcbba63">Occlusion culling</a>
@@ -610,12 +749,13 @@
 <li><a href="#orgbacb46d">Baisics</a></li>
 <li><a href="#org9b35dcb">Occlusion Areas</a></li>
 <li><a href="#orgafcb6c0">Occlusion Portals</a></li>
+<li><a href="#orge4016c9">Occlusion culling and Scene loading</a></li>
 <li><a href="#org0c4b1e4">Error</a>
 <ul>
 <li><a href="#org4b03527">Visibility Lines 不可见</a></li>
 </ul>
 </li>
-<li><a href="#org1e8d3cb">参考资料</a></li>
+<li><a href="#org234b8d8">参考资料</a></li>
 </ul>
 </li>
 </ul>
@@ -636,7 +776,7 @@
 <li><a href="#org8ab96db">Unity VS 工程中无法索引到 package 中的 c#代码</a></li>
 </ul>
 </li>
-<li><a href="#orgfe4c2da">参考资料</a></li>
+<li><a href="#org0f1486c">参考资料</a></li>
 </ul>
 </div>
 </div>
@@ -645,7 +785,7 @@
 相关代码放在: <a href="https://github.com/wolfand11/StudyProjects/tree/master/SDK/Unity">https://github.com/wolfand11/StudyProjects/tree/master/SDK/Unity</a><br />
 </p>
 
-<div class="HTML" id="orgb753fc2">
+<div class="HTML" id="org94c253e">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -693,6 +833,303 @@ SceneManager.SceneManager.GetActiveScene().GetRootGameObjects()不会返回被�
 <p>
 <a href="https://docs.unity3d.com/ScriptReference/SceneManagement.SceneUtility.html">https://docs.unity3d.com/ScriptReference/SceneManagement.SceneUtility.html</a><br />
 </p>
+</div>
+</div>
+<div id="outline-container-orga53b962" class="outline-4">
+<h4 id="orga53b962">Scene-specific settings</h4>
+<div class="outline-text-4" id="text-orga53b962">
+</div>
+<div id="outline-container-org7ee7d9e" class="outline-5">
+<h5 id="org7ee7d9e">Multipile Scenes</h5>
+<div class="outline-text-5" id="text-org7ee7d9e">
+</div>
+<div id="outline-container-orga30fe00" class="outline-6">
+<h6 id="orga30fe00">set up multiple scenes</h6>
+<div class="outline-text-6" id="text-orga30fe00">
+<p>
+下面列出的 Settings 都是每个场景一份的：<br />
+</p>
+<ul class="org-ul">
+<li>RenderSettings<br /></li>
+<li>LightmapSettings<br /></li>
+<li>NavMesh settings<br /></li>
+<li>Occlusion Culling 窗口中的 Scene settings<br /></li>
+</ul>
+
+<p>
+每个场景管理自己的 settings, 只有和该场景有关的 settings 才会被存储到该场景文件中。当你 active 一个新的 scene 时，unity 会用新的 scene 的 settings 代替前一个 scene 的 settings。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgf2d7ae2" class="outline-6">
+<h6 id="orgf2d7ae2">bake data in multiple scenes</h6>
+<div class="outline-text-6" id="text-orgf2d7ae2">
+</div>
+<ul class="org-ul">
+<li><a id="org74ee948"></a>Bake lightmaps with multiple scenes<br />
+<div class="outline-text-7" id="text-org74ee948">
+<p>
+Shadows 和 GI 光弹射会跨多个场景，但是，lightmaps 和 RealtimeGI 数据的加载和卸载是每个场景分开的。这意味着，多个场景不共享 lightmaps，可以一起安全卸载场景和它的 lightmaps。多个场景共享 Light Probe 数据，所以，为多个场景烘培的 LightProbes 会被同时加载。<br />
+</p>
+
+<p>
+打开多个场景，执行烘培，会对所有场景进行烘培，所有场景的 lightmaps 都会放到当前激活场景对应的目录内。<br />
+</p>
+</div>
+</li>
+<li><a id="orgebfd826"></a><span class="todo TODO">TODO</span> Bake NavMesh data with multiple scenes<br />
+<div class="outline-text-7" id="text-orgebfd826">
+<p>
+NavMesh 被放到 com.unity.ai.navigation packages 中了，需要安装该 package.<br />
+</p>
+</div>
+</li>
+
+<li><a id="org135f8c2"></a>Bake occlusion culling data with multiple scenes<br />
+<div class="outline-text-7" id="text-org135f8c2">
+<p>
+打开多个场景，执行烘培，会对所有场景进行烘培，所有场景的遮挡剔除数据都会放到当前激活场景对应的目录内的 OcclusionCullingData.asset 文件中。OcclusionCullingData.asset 文件内容如下：<br />
+</p>
+
+
+<div id="orgceb3343" class="figure">
+<p><img src="./UnityNote/multi-scenes-occlusion-data.jpg" alt="multi-scenes-occlusion-data.jpg" /><br />
+</p>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgb6d7fb9" class="outline-5">
+<h5 id="orgb6d7fb9">RenderSettings (UnityEngine)</h5>
+<div class="outline-text-5" id="text-orgb6d7fb9">
+<p>
+RenderSettings in UnityEngine namespace.<br />
+</p>
+</div>
+<div id="outline-container-org37e367d" class="outline-6">
+<h6 id="org37e367d">skybox</h6>
+<div class="outline-text-6" id="text-org37e367d">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">Material</span> <span style="color: #7590db;">skybox</span>;
+</pre>
+</div>
+
+<p>
+playmode 修改 skybox 材质后，需要调用  DynamicGI.UpdateEnvironment 来更新 ambient probe。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orga065921" class="outline-6">
+<h6 id="orga065921">ambientMode</h6>
+<div class="outline-text-6" id="text-orga065921">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">enum</span> <span style="color: #ce537a; font-weight: bold;">AmbientMode</span>
+{
+    <span style="color: #7590db;">Skybox</span>,     <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Skybox-based or custom ambient lighting.</span>
+    <span style="color: #7590db;">Trilight</span>,   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Trilight ambient lighting.</span>
+    <span style="color: #7590db;">Flat</span>,       <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Flat ambient lighting.</span>
+    <span style="color: #7590db;">Custom</span>      <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Ambient lighting is defined by a custom cubemap.</span>
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org80cedf8" class="outline-6">
+<h6 id="org80cedf8">ambientProbe</h6>
+<div class="outline-text-6" id="text-org80cedf8">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> Rendering.<span style="color: #ce537a; font-weight: bold;">SphericalHarmonicsL2</span> <span style="color: #7590db;">ambientProbe</span>;
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org495b37b" class="outline-6">
+<h6 id="org495b37b">defaultReflectionMode</h6>
+<div class="outline-text-6" id="text-org495b37b">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">enum</span> <span style="color: #ce537a; font-weight: bold;">DefaultReflectionMode</span>
+{
+    <span style="color: #7590db;">Skybox</span>,  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Skybox-based default reflection.</span>
+    <span style="color: #7590db;">Custom</span>   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Custom default reflection.</span>
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org151418c" class="outline-6">
+<h6 id="org151418c">参考资料</h6>
+<div class="outline-text-6" id="text-org151418c">
+<ul class="org-ul">
+<li><a href="https://docs.unity3d.com/ScriptReference/RenderSettings.html">https://docs.unity3d.com/ScriptReference/RenderSettings.html</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc2c4c61" class="outline-5">
+<h5 id="orgc2c4c61">LightmapSettings (UnityEngine)</h5>
+<div class="outline-text-5" id="text-orgc2c4c61">
+<p>
+LightmapSettings in UnityEngine namespace.<br />
+</p>
+</div>
+<div id="outline-container-orgdda5f2b" class="outline-6">
+<h6 id="orgdda5f2b">lightmaps</h6>
+<div class="outline-text-6" id="text-orgdda5f2b">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">LightmapData</span>[] <span style="color: #7590db;">lightmaps</span>;
+</pre>
+</div>
+
+<p>
+烘培场景时，会得到 LightmapData 数组 lightmaps。LightmapData 包含了 lightmapColor, lightmapDir, shadowMask。<br />
+对于某个 MeshRenderer 来说，lightmapIndex 属性指定了该 Mesh 使用 lightmaps 数组中第几个 LightmapData，lightmapScaleOffset 属性指定了采样 lightmap 贴图时，需要对 uv 坐标做的 offset 和 scale。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgfdf9578" class="outline-6">
+<h6 id="orgfdf9578">lightmapsMode</h6>
+<div class="outline-text-6" id="text-orgfdf9578">
+<p>
+NonDirectional         没有方向信息，只使用一张 lightmap 存储光照亮度。<br />
+CombinedDirectional    方向光的方向信息和间接光的方向信息组合在一起，被编码到第二张 lightmap 中。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org2c062ef" class="outline-6">
+<h6 id="org2c062ef">lightProbes</h6>
+<div class="outline-text-6" id="text-org2c062ef">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">LightProbes</span> <span style="color: #7590db;">lightProbes</span>;
+</pre>
+</div>
+</div>
+<ul class="org-ul">
+<li><a id="org0812d73"></a>LightProbes<br /></li>
+</ul>
+</div>
+
+<div id="outline-container-org403a726" class="outline-6">
+<h6 id="org403a726">参考资料</h6>
+<div class="outline-text-6" id="text-org403a726">
+<ul class="org-ul">
+<li><a href="https://docs.unity3d.com/ScriptReference/LightmapSettings.html">https://docs.unity3d.com/ScriptReference/LightmapSettings.html</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf437f59" class="outline-5">
+<h5 id="orgf437f59">Lightmapping (UnityEditor)</h5>
+<div class="outline-text-5" id="text-orgf437f59">
+<p>
+LightingSetings in UnityEditor namespace.<br />
+</p>
+</div>
+<div id="outline-container-orgfacd56e" class="outline-6">
+<h6 id="orgfacd56e">LightingDataAsset</h6>
+<div class="outline-text-6" id="text-orgfacd56e">
+<p>
+LightingDataAsset in UnityEditor namespace.<br />
+通过 Lightmapping.lightingDataAsset 来指定当前场景使用的 LightingDataAsset。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgd1c065a" class="outline-6">
+<h6 id="orgd1c065a">LightingSetings</h6>
+<div class="outline-text-6" id="text-orgd1c065a">
+<p>
+LightingSetings in UnityEngine namespace.<br />
+通过 Lightmapping.lightingSettings 来指定 LightingSetings。<br />
+</p>
+</div>
+<ul class="org-ul">
+<li><a id="org46c0256"></a>bakedGI<br />
+<div class="outline-text-7" id="text-org46c0256">
+<p>
+对当前场景是否使用 BakedGlobalIllumination 系统。<br />
+</p>
+
+<p>
+该值设置为 false 时，运行时，unity 不会加载该场景的预计算光照数据，Baked Lights 和 MixedLights 会被当作 real-time Lights。<br />
+</p>
+</div>
+</li>
+<li><a id="org0d70df6"></a>realtimeGI<br />
+<div class="outline-text-7" id="text-org0d70df6">
+<p>
+对当前场景是否使用 RealtimeGlobalIllumination 系统。<br />
+</p>
+
+<p>
+该值设置为 true 时，该场景使用 Enlighten Realtime Global Illumination 系统。<br />
+</p>
+</div>
+</li>
+<li><a id="org7403fec"></a>realtimeEnvironmentLighting<br />
+<div class="outline-text-7" id="text-org7403fec">
+<p>
+该属性决定了，unity 将 environment lighting 存储到哪类 lightmap。<br />
+</p>
+
+<p>
+当场景中同时使用 BakedGlobalIllumination system 和 EnlightenRealtimeGlobalIllumination system 时，realtimeEnvironmentLighting 为 true，则 unity 将 environment lighting 存储到 real-time lightmaps 中，否则存储到 baked lightmaps 中。<br />
+</p>
+</div>
+</li>
+<li><a id="orgab7ab47"></a>respectSceneVisibilityWhenBakingGI<br />
+<div class="outline-text-7" id="text-orgab7ab47">
+<p>
+该属性决定了，GameObject 的 Scene Visibility setting 是否会影响烘培。<br />
+</p>
+</div>
+</li>
+<li><a id="org0a17cb7"></a>参考资料<br />
+<div class="outline-text-7" id="text-org0a17cb7">
+<ul class="org-ul">
+<li><a href="https://docs.unity3d.com/ScriptReference/LightingSettings.html">https://docs.unity3d.com/ScriptReference/LightingSettings.html</a><br /></li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org52de20d" class="outline-5">
+<h5 id="org52de20d">ReflectionProbe</h5>
+<div class="outline-text-5" id="text-org52de20d">
+</div>
+<div id="outline-container-orgdb5428b" class="outline-6">
+<h6 id="orgdb5428b">defaultTexture</h6>
+<div class="outline-text-6" id="text-orgdb5428b">
+<p>
+read only.<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">Texture</span> <span style="color: #7590db;">defaultTexture</span>;
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org8a6c889" class="outline-6">
+<h6 id="org8a6c889">defaultTextureHDRDecodeValues</h6>
+<div class="outline-text-6" id="text-org8a6c889">
+<p>
+read only.<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">Vector4</span> <span style="color: #7590db;">defaultTextureHDRDecodeValues</span>;
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgecb37ad" class="outline-6">
+<h6 id="orgecb37ad">参考资料</h6>
+<div class="outline-text-6" id="text-orgecb37ad">
+<ul class="org-ul">
+<li><a href="https://docs.unity3d.com/ScriptReference/ReflectionProbe.html">https://docs.unity3d.com/ScriptReference/ReflectionProbe.html</a><br /></li>
+</ul>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -876,9 +1313,9 @@ DontDestroyOnLoad 只对场景中的 Root GameObjects 或他们上的组件有�
 </tbody>
 </table>
 </div>
-<div id="outline-container-org74a13e4" class="outline-5">
-<h5 id="org74a13e4">Tips:</h5>
-<div class="outline-text-5" id="text-org74a13e4">
+<div id="outline-container-org98375dc" class="outline-5">
+<h5 id="org98375dc">Tips:</h5>
+<div class="outline-text-5" id="text-org98375dc">
 <p>
 GetComponentInChildren(Type compType);<br />
 GetComponentsInChildren(Type compType);<br />
@@ -970,6 +1407,123 @@ new 出来的 GameObject 对象会自带一个 Transform 组件<br />
 </pre>
 </div></li>
 </ol>
+</div>
+</div>
+<div id="outline-container-org5cb8de7" class="outline-4">
+<h4 id="org5cb8de7">Traverse Component</h4>
+<div class="outline-text-4" id="text-org5cb8de7">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Utils</span>
+{
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #bc6ec5; font-weight: bold;">TraverseGObj</span>(<span style="color: #ce537a; font-weight: bold;">Func</span>&lt;<span style="color: #ce537a; font-weight: bold;">GameObject</span>, <span style="color: #ce537a; font-weight: bold;">bool</span><span style="color: #2aa1ae; background-color: #292e34;">/* </span><span style="color: #2aa1ae; background-color: #292e34;">isBreak</span><span style="color: #2aa1ae; background-color: #292e34;"> */</span>&gt; <span style="color: #7590db;">opt</span>, <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #7590db;">includeInactive</span> = <span style="color: #a45bad;">false</span>)
+    {
+        <span style="color: #4f97d7; font-weight: bold;">for</span> (<span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">sceneIdx</span> = 0; sceneIdx &lt; SceneManager.sceneCount; sceneIdx++)
+        {
+            <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">scene</span> = SceneManager.<span style="color: #bc6ec5; font-weight: bold;">GetSceneAt</span>(<span style="color: #ce537a; font-weight: bold;">sceneIdx</span>);
+            <span style="color: #4f97d7; font-weight: bold;">if</span> (<span style="color: #bc6ec5; font-weight: bold;">TraverseGObjInScene</span>(<span style="color: #ce537a; font-weight: bold;">scene</span>, <span style="color: #ce537a; font-weight: bold;">opt</span>))
+            {
+                <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #a45bad;">true</span>;
+            }
+        }
+        <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #a45bad;">false</span>;
+    }
+
+    <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">List</span>&lt;<span style="color: #ce537a; font-weight: bold;">Transform</span>&gt; <span style="color: #7590db;">__temp_transList</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">List</span>&lt;<span style="color: #ce537a; font-weight: bold;">Transform</span>&gt;();
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #bc6ec5; font-weight: bold;">TraverseGObjInScene</span>(<span style="color: #ce537a; font-weight: bold;">Scene</span> <span style="color: #7590db;">scene</span>, <span style="color: #ce537a; font-weight: bold;">Func</span>&lt;<span style="color: #ce537a; font-weight: bold;">GameObject</span>, <span style="color: #ce537a; font-weight: bold;">bool</span><span style="color: #2aa1ae; background-color: #292e34;">/* </span><span style="color: #2aa1ae; background-color: #292e34;">isBreak</span><span style="color: #2aa1ae; background-color: #292e34;"> */</span>&gt; <span style="color: #7590db;">opt</span>, <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #7590db;">includeInactive</span> = <span style="color: #a45bad;">false</span>)
+    {
+        <span style="color: #4f97d7; font-weight: bold;">if</span> (<span style="color: #a45bad;">!</span>scene.<span style="color: #bc6ec5; font-weight: bold;">IsValid</span>()) <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #a45bad;">false</span>;
+
+        <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">rootGObjs</span> = scene.<span style="color: #bc6ec5; font-weight: bold;">GetRootGameObjects</span>();
+        <span style="color: #4f97d7; font-weight: bold;">foreach</span> (<span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">gobj</span> <span style="color: #4f97d7; font-weight: bold;">in</span> rootGObjs)
+        {
+            <span style="color: #4f97d7; font-weight: bold;">if</span>(<span style="color: #a45bad;">!</span>includeInactive &amp;&amp; <span style="color: #a45bad;">!</span>gobj.activeSelf) <span style="color: #4f97d7; font-weight: bold;">continue</span>;
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">GetComponentsInChildren include gobj self</span>
+            gobj.<span style="color: #bc6ec5; font-weight: bold;">GetComponentsInChildren</span>&lt;<span style="color: #ce537a; font-weight: bold;">Transform</span>&gt;(<span style="color: #ce537a; font-weight: bold;">includeInactive</span>, <span style="color: #ce537a; font-weight: bold;">__temp_transList</span>);
+            <span style="color: #4f97d7; font-weight: bold;">foreach</span> (<span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">trans</span> <span style="color: #4f97d7; font-weight: bold;">in</span> __temp_transList)
+            {
+                <span style="color: #4f97d7; font-weight: bold;">if</span> (<span style="color: #bc6ec5; font-weight: bold;">opt</span>(trans.<span style="color: #ce537a; font-weight: bold;">gameObject</span>)) <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #a45bad;">true</span>;
+            }
+        }
+        <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #a45bad;">false</span>;
+    }
+
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #bc6ec5; font-weight: bold;">TraverseComp</span>&lt;<span style="color: #ce537a; font-weight: bold;">TComp</span>&gt;(<span style="color: #ce537a; font-weight: bold;">Func</span>&lt;<span style="color: #ce537a; font-weight: bold;">TComp</span>, <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #2aa1ae; background-color: #292e34;">/*</span><span style="color: #2aa1ae; background-color: #292e34;">isBreak</span><span style="color: #2aa1ae; background-color: #292e34;">*/</span>&gt; <span style="color: #7590db;">opt</span>, <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #7590db;">includeInactive</span> = <span style="color: #a45bad;">false</span>) <span style="color: #4f97d7; font-weight: bold;">where</span> TComp : <span style="color: #4f97d7; font-weight: bold;">class</span>
+    {
+        <span style="color: #bc6ec5; font-weight: bold;">TraverseGObj</span>((<span style="color: #ce537a; font-weight: bold;">gobj</span>) =&gt;
+        {
+            <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">comps</span> = gobj.<span style="color: #bc6ec5; font-weight: bold;">GetComponents</span>&lt;<span style="color: #ce537a; font-weight: bold;">TComp</span>&gt;();
+            <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">comp</span> = gobj.<span style="color: #bc6ec5; font-weight: bold;">GetComponent</span>&lt;<span style="color: #ce537a; font-weight: bold;">TComp</span>&gt;();
+            <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #bc6ec5; font-weight: bold;">opt</span>(<span style="color: #ce537a; font-weight: bold;">comp</span>);
+        }, <span style="color: #ce537a; font-weight: bold;">includeInactive</span>);
+        <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #a45bad;">false</span>;
+    }
+
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #bc6ec5; font-weight: bold;">TraverseCompInScene</span>&lt;<span style="color: #ce537a; font-weight: bold;">TComp</span>&gt;(<span style="color: #ce537a; font-weight: bold;">Scene</span> <span style="color: #7590db;">scene</span>, <span style="color: #ce537a; font-weight: bold;">Func</span>&lt;<span style="color: #ce537a; font-weight: bold;">TComp</span>, <span style="color: #ce537a; font-weight: bold;">bool</span><span style="color: #2aa1ae; background-color: #292e34;">/* </span><span style="color: #2aa1ae; background-color: #292e34;">isBreak</span><span style="color: #2aa1ae; background-color: #292e34;"> */</span>&gt; <span style="color: #7590db;">opt</span>, <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #7590db;">includeInactive</span> = <span style="color: #a45bad;">false</span>) <span style="color: #4f97d7; font-weight: bold;">where</span> TComp : <span style="color: #4f97d7; font-weight: bold;">class</span>
+    {
+        <span style="color: #bc6ec5; font-weight: bold;">TraverseGObjInScene</span>(<span style="color: #ce537a; font-weight: bold;">scene</span>, (<span style="color: #ce537a; font-weight: bold;">gobj</span>) =&gt;
+        {
+            <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">comp</span> = gobj.<span style="color: #bc6ec5; font-weight: bold;">GetComponent</span>&lt;<span style="color: #ce537a; font-weight: bold;">TComp</span>&gt;();
+            <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #bc6ec5; font-weight: bold;">opt</span>(<span style="color: #ce537a; font-weight: bold;">comp</span>);
+        }, <span style="color: #ce537a; font-weight: bold;">includeInactive</span>);
+        <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #a45bad;">false</span>;
+    }
+
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">TComp</span> <span style="color: #bc6ec5; font-weight: bold;">Find</span>&lt;<span style="color: #ce537a; font-weight: bold;">TComp</span>&gt;(<span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #7590db;">includeInactive</span> = <span style="color: #a45bad;">false</span>) <span style="color: #4f97d7; font-weight: bold;">where</span> TComp : <span style="color: #4f97d7; font-weight: bold;">class</span>
+    {
+        <span style="color: #ce537a; font-weight: bold;">TComp</span> <span style="color: #7590db;">retComp</span> = <span style="color: #a45bad;">null</span>;
+        <span style="color: #bc6ec5; font-weight: bold;">TraverseComp</span>&lt;<span style="color: #ce537a; font-weight: bold;">TComp</span>&gt;((<span style="color: #ce537a; font-weight: bold;">comp</span>) =&gt;
+        {
+            <span style="color: #4f97d7; font-weight: bold;">if</span> (comp != <span style="color: #a45bad;">null</span>)
+            {
+                retComp = comp;
+                <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #a45bad;">true</span>;
+            }
+            <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #a45bad;">false</span>;
+        });
+        <span style="color: #4f97d7; font-weight: bold;">return</span> retComp;
+    }
+
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">TComp</span> <span style="color: #bc6ec5; font-weight: bold;">FindInScene</span>&lt;<span style="color: #ce537a; font-weight: bold;">TComp</span>&gt;(<span style="color: #ce537a; font-weight: bold;">Scene</span> <span style="color: #7590db;">scene</span>, <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #7590db;">includeInactive</span> = <span style="color: #a45bad;">false</span>) <span style="color: #4f97d7; font-weight: bold;">where</span> TComp : <span style="color: #4f97d7; font-weight: bold;">class</span>
+    {
+        <span style="color: #ce537a; font-weight: bold;">TComp</span> <span style="color: #7590db;">retComp</span> = <span style="color: #a45bad;">null</span>;
+        <span style="color: #bc6ec5; font-weight: bold;">TraverseCompInScene</span>&lt;<span style="color: #ce537a; font-weight: bold;">TComp</span>&gt;(<span style="color: #ce537a; font-weight: bold;">scene</span>,(<span style="color: #ce537a; font-weight: bold;">comp</span>) =&gt;
+        {
+            <span style="color: #4f97d7; font-weight: bold;">if</span> (comp != <span style="color: #a45bad;">null</span>)
+            {
+                retComp = comp;
+                <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #a45bad;">true</span>;
+            }
+            <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #a45bad;">false</span>;
+        }, <span style="color: #ce537a; font-weight: bold;">includeInactive</span>);
+        <span style="color: #4f97d7; font-weight: bold;">return</span> retComp;
+    }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org637f58d" class="outline-4">
+<h4 id="org637f58d">layer</h4>
+<div class="outline-text-4" id="text-org637f58d">
+</div>
+<div id="outline-container-org6d3a4c7" class="outline-5">
+<h5 id="org6d3a4c7">Base</h5>
+<div class="outline-text-5" id="text-org6d3a4c7">
+<p>
+gameObject 只能在一个 layer 中，camera 通过使用 cullingMask 来有选择渲染场景物体。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">hideLayer</span> = LayerMask.<span style="color: #bc6ec5; font-weight: bold;">NameToLayer</span>(<span style="color: #2d9574;">"Hide"</span>);
+gObj.layer = hideLayer;
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">everthing layer</span>
+<span style="color: #ce537a; font-weight: bold;">LayerMask</span> <span style="color: #7590db;">mask</span> = ~0;
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">remove hideLayer from everthing layer</span>
+mask &amp;= ~(1&lt;&lt;hideLayer);
+camera.cullingMask = mask;
+</pre>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -1196,6 +1750,32 @@ gObj.transfrom.<span style="color: #bc6ec5; font-weight: bold;">LookAt</span>(Tr
 unity 中的矩阵是列主序的，采用矩阵左乘法。<br />
 </p>
 </div>
+<div id="outline-container-org5a0a8f8" class="outline-4">
+<h4 id="org5a0a8f8">Matrix4x4[row][column]</h4>
+<div class="outline-text-4" id="text-org5a0a8f8">
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">unity c++ &#23618;&#20351;&#29992;float &#25968;&#32452;&#26469;&#34920;&#31034;&#30697;&#38453;</span>
+<span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #7590db;">m_Data</span>[16];
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">float &#25968;&#32452;&#20013;&#30697;&#38453;&#20197;&#21015;&#20027;&#24207;&#23384;&#20648;, m12 &#34920;&#31034; &#30697;&#38453; 1 &#34892; 2 &#21015;&#30340;&#20803;&#32032;</span>
+m_Data[0] <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">column0 - m00</span>
+m_Data[1] <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">column0 - m10</span>
+m_Data[2] <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">column0 - m20</span>
+m_Data[3] <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">column0 - m30</span>
+
+m_Data[4] <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">column1 - m01</span>
+m_Data[5] <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">column1 - m11</span>
+m_Data[6] <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">column1 - m21</span>
+m_Data[7] <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">column1 - m31</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#35775;&#38382;&#30697;&#38453;&#25351;&#23450;&#20803;&#32032;</span>
+Matrix4x4 mat;
+mat.m12 == mat[1][2]  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">1 &#34892; 2 &#21015;&#30340;&#20803;&#32032;</span>
+</pre>
+</div>
+</div>
+</div>
+
 <div id="outline-container-org1a96c8b" class="outline-4">
 <h4 id="org1a96c8b">Matrix4x4.TRS</h4>
 <div class="outline-text-4" id="text-org1a96c8b">
@@ -1223,9 +1803,9 @@ Debug.<span style="color: #bc6ec5; font-weight: bold;">Log</span>(<span style="c
 </div>
 </div>
 </div>
-<div id="outline-container-orgafed819" class="outline-4">
-<h4 id="orgafed819">参考资料</h4>
-<div class="outline-text-4" id="text-orgafed819">
+<div id="outline-container-org6edfda9" class="outline-4">
+<h4 id="org6edfda9">参考资料</h4>
+<div class="outline-text-4" id="text-org6edfda9">
 <ul class="org-ul">
 <li><a href="https://docs.unity3d.com/ScriptReference/Matrix4x4.html">https://docs.unity3d.com/ScriptReference/Matrix4x4.html</a><br /></li>
 <li><a href="http://www.mamicode.com/info-detail-1082848.html">http://www.mamicode.com/info-detail-1082848.html</a><br /></li>
@@ -1390,9 +1970,9 @@ Debug.<span style="color: #bc6ec5; font-weight: bold;">Log</span>(<span style="c
 </div>
 </div>
 </div>
-<div id="outline-container-org01d265d" class="outline-5">
-<h5 id="org01d265d">参考资料</h5>
-<div class="outline-text-5" id="text-org01d265d">
+<div id="outline-container-org0b12915" class="outline-5">
+<h5 id="org0b12915">参考资料</h5>
+<div class="outline-text-5" id="text-org0b12915">
 <ul class="org-ul">
 <li><a href="https://answers.unity.com/questions/275565/what-is-the-rotation-equivalent-of-inversetransfor.html">https://answers.unity.com/questions/275565/what-is-the-rotation-equivalent-of-inversetransfor.html</a><br /></li>
 </ul>
@@ -1460,9 +2040,9 @@ d.subSystem 中只有处理逻辑<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-org4c5d1ab" class="outline-4">
-<h4 id="org4c5d1ab">参考文档</h4>
-<div class="outline-text-4" id="text-org4c5d1ab">
+<div id="outline-container-org7c3a201" class="outline-4">
+<h4 id="org7c3a201">参考文档</h4>
+<div class="outline-text-4" id="text-org7c3a201">
 <ul class="org-ul">
 <li>LowLevel.PlayerLoop <a href="https://docs.unity3d.com/ScriptReference/LowLevel.PlayerLoop.html">https://docs.unity3d.com/ScriptReference/LowLevel.PlayerLoop.html</a><br /></li>
 <li>LowLevel.PlayerLoopSystem <a href="https://docs.unity3d.com/ScriptReference/LowLevel.PlayerLoopSystem.html">https://docs.unity3d.com/ScriptReference/LowLevel.PlayerLoopSystem.html</a><br /></li>
@@ -1487,7 +2067,7 @@ d.subSystem 中只有处理逻辑<br />
 <li><p>
 调用顺序如下<br />
 </p>
-<pre class="example" id="org3f145a4">
+<pre class="example" id="org5a47997">
   OnValidate -&gt; OnValidate-&gt; Awake -&gt; OnEnable -&gt; Start -&gt;
   FixedUpdate -&gt; Update-&gt; LateUpdate -&gt;
   (OnPreRender -&gt; OnPostRender -&gt; OnRenderImage)
@@ -1680,7 +2260,7 @@ Awake 比 标记为 RuntimeInitializeOnLoadMethod 的静态函数先调用<br />
 <p>
 场景中有如下对象树，其各个对象的脚本中函数触发如下描述：<br />
 </p>
-<pre class="example" id="org2e62087">
+<pre class="example" id="orgb47bc17">
 场景对象树：
 Cube2
 Camera-depth1
@@ -1778,9 +2358,9 @@ Camera2 -OnDestroy
 </pre>
 </div>
 </div>
-<div id="outline-container-orge2e258b" class="outline-5">
-<h5 id="orge2e258b">参考文档</h5>
-<div class="outline-text-5" id="text-orge2e258b">
+<div id="outline-container-org43c7e92" class="outline-5">
+<h5 id="org43c7e92">参考文档</h5>
+<div class="outline-text-5" id="text-org43c7e92">
 <p>
 <a href="https://docs.unity3d.com/Manual/ExecutionOrder.html">https://docs.unity3d.com/Manual/ExecutionOrder.html</a><br />
 </p>
@@ -1794,7 +2374,7 @@ Camera2 -OnDestroy
 单例 MonoBehavior 被添加到多个 GameObject 上后，对于每个 GameObject，都分别实例化了一个 MonoBehavior 对象，这些对象和你自己实例化的单例不是同一个对象。<br />
 创建 MonoBehavior 单例是不被允许的，会提示下面错误:<br />
 </p>
-<pre class="example" id="org509632b">
+<pre class="example" id="org840bb39">
 You are trying to create a MonoBehaviour using the 'new' keyword.  This is not allowed.  MonoBehaviours can only be added using AddComponent().  Alternatively, your script can inherit from ScriptableObject or no base class at all
 </pre>
 </div>
@@ -1929,10 +2509,10 @@ obj.transform.<span style="color: #bc6ec5; font-weight: bold;">SetParent</span>(
 <h5 id="org1e31601">循环播放动画</h5>
 <div class="outline-text-5" id="text-org1e31601">
 </div>
-<div id="outline-container-orgd375e66" class="outline-6">
-<h6 id="orgd375e66">Animation</h6>
-<div class="outline-text-6" id="text-orgd375e66">
-<pre class="example" id="org1b06450">
+<div id="outline-container-org33a47b7" class="outline-6">
+<h6 id="org33a47b7">Animation</h6>
+<div class="outline-text-6" id="text-org33a47b7">
+<pre class="example" id="orgea8cf44">
 Normal Loop
 - 方案 1: 在 AnimationClip 级别上的实现
 设置 AnimationClip 的 WrapMode=Loop
@@ -1950,10 +2530,10 @@ PingPong
 </pre>
 </div>
 </div>
-<div id="outline-container-org76c4f81" class="outline-6">
-<h6 id="org76c4f81">Animator</h6>
-<div class="outline-text-6" id="text-org76c4f81">
-<pre class="example" id="org17eb4d7">
+<div id="outline-container-org6cae3cc" class="outline-6">
+<h6 id="org6cae3cc">Animator</h6>
+<div class="outline-text-6" id="text-org6cae3cc">
+<pre class="example" id="orge2d68f4">
 Normal Loop
 - 方案 1: 在 AnimationClip 级别上的实现
 勾选 AnimationClip 的 Loop 选项
@@ -2045,11 +2625,11 @@ Animator 中没有判断动画是否在播放的方法.<br />
 </pre>
 </div>
 </div>
-<div id="outline-container-org0e73a8c" class="outline-6">
-<h6 id="org0e73a8c">Animation</h6>
+<div id="outline-container-orga540db5" class="outline-6">
+<h6 id="orga540db5">Animation</h6>
 </div>
-<div id="outline-container-orgff7d862" class="outline-6">
-<h6 id="orgff7d862">Animator</h6>
+<div id="outline-container-org2b0e883" class="outline-6">
+<h6 id="org2b0e883">Animator</h6>
 </div>
 </div>
 <div id="outline-container-org63f41a3" class="outline-5">
@@ -2096,9 +2676,9 @@ Rig/Root Node 用于指定 Generic 模型的 Body Transform，Humanoid 模型的
 Animation/Motion/RootMotionNode 用于指定特定动画对应的 Root Motion Node，播放该动画时，会完全使用选择的 Root Motion Node 来驱动播放动画的 GameObject。<br />
 </p>
 </div>
-<div id="outline-container-orgdef754d" class="outline-5">
-<h5 id="orgdef754d">参考资料</h5>
-<div class="outline-text-5" id="text-orgdef754d">
+<div id="outline-container-org2213d9c" class="outline-5">
+<h5 id="org2213d9c">参考资料</h5>
+<div class="outline-text-5" id="text-org2213d9c">
 <ul class="org-ul">
 <li>UE4 官方文档 <a href="https://docs.unrealengine.com/en-US/Engine/Animation/RootMotion">https://docs.unrealengine.com/en-US/Engine/Animation/RootMotion</a><br /></li>
 <li>Unity RootMotion 使用 <a href="https://www.cnblogs.com/wantnon/p/5163513.html">https://www.cnblogs.com/wantnon/p/5163513.html</a><br /></li>
@@ -2139,10 +2719,10 @@ Animation/Motion/RootMotionNode 用于指定特定动画对应的 Root Motion No
 <h5 id="org2ea1586">Avatar 中存储的数据</h5>
 <div class="outline-text-5" id="text-org2ea1586">
 </div>
-<div id="outline-container-org68ed975" class="outline-6">
-<h6 id="org68ed975">Generic Avatar</h6>
-<div class="outline-text-6" id="text-org68ed975">
-<pre class="example" id="orgcefd442">
+<div id="outline-container-org9a418be" class="outline-6">
+<h6 id="org9a418be">Generic Avatar</h6>
+<div class="outline-text-6" id="text-org9a418be">
+<pre class="example" id="orge9dd42e">
 Avatar:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2243,10 +2823,10 @@ Avatar:
 </pre>
 </div>
 </div>
-<div id="outline-container-org8dfc428" class="outline-6">
-<h6 id="org8dfc428">Humanoid Avatar</h6>
-<div class="outline-text-6" id="text-org8dfc428">
-<pre class="example" id="orgf764210">
+<div id="outline-container-org205142b" class="outline-6">
+<h6 id="org205142b">Humanoid Avatar</h6>
+<div class="outline-text-6" id="text-org205142b">
+<pre class="example" id="orgd19c153">
 Avatar:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2390,9 +2970,9 @@ Avatar:
 </ul>
 </div>
 </div>
-<div id="outline-container-orgd06a27d" class="outline-5">
-<h5 id="orgd06a27d">Generic Avatar</h5>
-<div class="outline-text-5" id="text-orgd06a27d">
+<div id="outline-container-orgcf7922f" class="outline-5">
+<h5 id="orgcf7922f">Generic Avatar</h5>
+<div class="outline-text-5" id="text-orgcf7922f">
 <p>
 人形模型是一种非常特殊的结构，他包含至少 15 个按照特定方式组织的骨骼，这大致符合一个真实人类的骨架。其他类型的模型属于非人形，非人形模型之间骨骼结构有非常大的差异。Unity 解决非人形模型复杂性的方式是只需要知道骨架的根节点,这个骨骼类似于人形角色的质心。Generic Avatar 只需要映射一个骨骼，因此不需要 Humanoid Avatar 那样复杂的配置流程。<br />
 </p>
@@ -2416,9 +2996,9 @@ Root Node 相当于 Humanoid 中的 Body Transform<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-org2298583" class="outline-6">
-<h6 id="org2298583">参考资料</h6>
-<div class="outline-text-6" id="text-org2298583">
+<div id="outline-container-org6af440f" class="outline-6">
+<h6 id="org6af440f">参考资料</h6>
+<div class="outline-text-6" id="text-org6af440f">
 <ul class="org-ul">
 <li><a href="https://docs.unity3d.com/Manual/GenericAnimations.html">https://docs.unity3d.com/Manual/GenericAnimations.html</a><br /></li>
 <li><a href="https://docs.unity3d.com/Manual/FBXImporter-Rig.html">https://docs.unity3d.com/Manual/FBXImporter-Rig.html</a><br /></li>
@@ -2426,9 +3006,9 @@ Root Node 相当于 Humanoid 中的 Body Transform<br />
 </div>
 </div>
 </div>
-<div id="outline-container-orgadca5ab" class="outline-5">
-<h5 id="orgadca5ab">Humanoid Avatar</h5>
-<div class="outline-text-5" id="text-orgadca5ab">
+<div id="outline-container-orgbda8f03" class="outline-5">
+<h5 id="orgbda8f03">Humanoid Avatar</h5>
+<div class="outline-text-5" id="text-orgbda8f03">
 </div>
 <div id="outline-container-org5ed6916" class="outline-6">
 <h6 id="org5ed6916">Body Transform</h6>
@@ -2452,9 +3032,9 @@ Body Transform 是角色的质心。其被用于 Mecanim 的重定向引擎来�
 </div>
 </div>
 
-<div id="outline-container-orge0d120d" class="outline-6">
-<h6 id="orge0d120d">参考资料</h6>
-<div class="outline-text-6" id="text-orge0d120d">
+<div id="outline-container-orgd77fb7a" class="outline-6">
+<h6 id="orgd77fb7a">参考资料</h6>
+<div class="outline-text-6" id="text-orgd77fb7a">
 <ul class="org-ul">
 <li>Root Motion-how it works <a href="https://docs.unity3d.com/Manual/RootMotion.html">https://docs.unity3d.com/Manual/RootMotion.html</a><br /></li>
 <li>Unity 动画系统的 RootMotion <a href="https://zhuanlan.zhihu.com/p/44714595">https://zhuanlan.zhihu.com/p/44714595</a><br /></li>
@@ -2485,9 +3065,9 @@ WriteDefaults 的工作方式如下：<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgad7167a" class="outline-4">
-<h4 id="orgad7167a">参考文档</h4>
-<div class="outline-text-4" id="text-orgad7167a">
+<div id="outline-container-org9e7650a" class="outline-4">
+<h4 id="org9e7650a">参考文档</h4>
+<div class="outline-text-4" id="text-org9e7650a">
 <p>
 Unity-Animator 学习文档 <a href="http://www.cnblogs.com/hont/p/5097407.html">http://www.cnblogs.com/hont/p/5097407.html</a><br />
 </p>
@@ -2822,9 +3402,9 @@ NaughtyAttribute 是一个开源的 Unity 插件，其提供了很多扩展的 A
 </ul>
 </div>
 </div>
-<div id="outline-container-orgbb5cafe" class="outline-4">
-<h4 id="orgbb5cafe">参考资料</h4>
-<div class="outline-text-4" id="text-orgbb5cafe">
+<div id="outline-container-org2ada43e" class="outline-4">
+<h4 id="org2ada43e">参考资料</h4>
+<div class="outline-text-4" id="text-org2ada43e">
 <ul class="org-ul">
 <li>TooltipAttribute <a href="https://docs.unity3d.com/2021.3/Documentation/ScriptReference/TooltipAttribute.html">https://docs.unity3d.com/2021.3/Documentation/ScriptReference/TooltipAttribute.html</a><br /></li>
 <li>Unity3D Attributes 用法小结 <a href="http://blog.csdn.net/qq_24642743/article/details/75092091">http://blog.csdn.net/qq_24642743/article/details/75092091</a><br /></li>
@@ -3107,6 +3687,32 @@ Windows Store Apps: Application.persistentDataPath points to &lt;user&gt;\AppDat
 </div>
 </div>
 </div>
+<div id="outline-container-org724811f" class="outline-4">
+<h4 id="org724811f">计算 Camera Corner</h4>
+<div class="outline-text-4" id="text-org724811f">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">LeftBottom LeftUp RightUp RightBottom</span>
+<span style="color: #ce537a; font-weight: bold;">Vector3</span>[] <span style="color: #7590db;">frustumNearCorners</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Vector3</span>[4];
+<span style="color: #ce537a; font-weight: bold;">Vector3</span>[] <span style="color: #7590db;">frustumFarCorners</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Vector3</span>[4];
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">CalcFrustumCorners</span>()
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">0-leftBottom 1-leftTop 2-rightTop 3-rightBottom</span>
+    _camera.<span style="color: #bc6ec5; font-weight: bold;">CalculateFrustumCorners</span>(<span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Rect</span>(0, 0, 1, 1), _camera.nearClipPlane, Camera.MonoOrStereoscopicEye.Mono, frustumNearCorners);
+    _camera.<span style="color: #bc6ec5; font-weight: bold;">CalculateFrustumCorners</span>(<span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Rect</span>(0, 0, 1, 1), _camera.farClipPlane, Camera.MonoOrStereoscopicEye.Mono, frustumFarCorners);
+
+    <span style="color: #4f97d7; font-weight: bold;">for</span> (<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">i</span> = 0; i &lt; 4; i++)
+    {
+        frustumNearCorners[i] = transform.<span style="color: #bc6ec5; font-weight: bold;">TransformPoint</span>(frustumNearCorners[i]);
+        frustumFarCorners[i] = transform.<span style="color: #bc6ec5; font-weight: bold;">TransformPoint</span>(frustumFarCorners[i]);
+    }
+}
+</pre>
+</div>
+<ul class="org-ul">
+<li><a href="https://docs.unity3d.com/ScriptReference/Camera.CalculateFrustumCorners.html">https://docs.unity3d.com/ScriptReference/Camera.CalculateFrustumCorners.html</a><br /></li>
+</ul>
+</div>
+</div>
 <div id="outline-container-org770f755" class="outline-4">
 <h4 id="org770f755">可视化 Frustum Planes</h4>
 <div class="outline-text-4" id="text-org770f755">
@@ -3149,7 +3755,7 @@ Windows Store Apps: Application.persistentDataPath points to &lt;user&gt;\AppDat
 </div>
 
 
-<div id="org7529fd3" class="figure">
+<div id="org28c2051" class="figure">
 <p><img src="./UnityNote/vis_frustum_planes.jpg" alt="vis_frustum_planes.jpg" /><br />
 </p>
 </div>
@@ -3282,6 +3888,22 @@ Mesh.boneWeights 中记录了模型的每个顶点，对于相关骨骼的权重
 </div>
 </div>
 
+<div id="outline-container-org6794b23" class="outline-5">
+<h5 id="org6794b23">SkinnedMeshRenderer Skin Bone Count</h5>
+<div class="outline-text-5" id="text-org6794b23">
+<p>
+ModelImporter.maxBonesPerVertex   定义每个顶点最多可以关联多少个关节，该选项会修改底层 Mesh 数据。当原始数据中，顶点关联的骨骼多于该数量时，权重低的数据被删除<br />
+QualitySettings.skinWeights       定义蒙皮的时候，每个顶点最多可以关联多少个关节。该选项不会修改底层 Mesh 数据，该选项对项目中所有 mesh 都生效。<br />
+SkinnedMeshRenderer.quality       定义蒙皮的时候，每个顶点最多可以关联多少个关节。该选项不会修改底层 Mesh 数据，该选项对当前 mesh 生效。<br />
+</p>
+
+<ul class="org-ul">
+<li><a href="https://docs.unity3d.com/ScriptReference/ModelImporter-maxBonesPerVertex.html">https://docs.unity3d.com/ScriptReference/ModelImporter-maxBonesPerVertex.html</a><br /></li>
+<li><a href="https://docs.unity3d.com/ScriptReference/QualitySettings-skinWeights.html">https://docs.unity3d.com/ScriptReference/QualitySettings-skinWeights.html</a><br /></li>
+<li><a href="https://docs.unity3d.com/ScriptReference/SkinnedMeshRenderer-quality.html">https://docs.unity3d.com/ScriptReference/SkinnedMeshRenderer-quality.html</a><br /></li>
+</ul>
+</div>
+</div>
 <div id="outline-container-org989e874" class="outline-5">
 <h5 id="org989e874">SkinnedMeshRenderer 和 Mesh</h5>
 <div class="outline-text-5" id="text-org989e874">
@@ -3329,7 +3951,7 @@ Unity 中没有将 SkinnedMeshRenderer 序列化为 Asset，SkinnedMeshRenderer 
 <p>
 可以自己实现 SkinnedMeshRenderer 的序列化，将其保存为如下结构的 Asset<br />
 </p>
-<pre class="example" id="org14cbc8e">
+<pre class="example" id="org97d0042">
 - smr_clothes_xxx
 	- bone_dict = {clothes:[bone1,bone2,......], gauze:[bone1,bone2,......]}
 	- mesh_dict = {clothes:MeshObject, gauze:MeshObject}
@@ -3431,6 +4053,66 @@ Skeleton fbx 开启 GameObject Optimize，保留所有挂点和 SMR 用到的 ro
 </div>
 </div>
 </div>
+<div id="outline-container-orgf58cd03" class="outline-4">
+<h4 id="orgf58cd03">BlendShape</h4>
+<div class="outline-text-4" id="text-orgf58cd03">
+<p>
+FBX 导入设置需要勾选 BlendShapes。<br />
+</p>
+</div>
+<div id="outline-container-org07de8b2" class="outline-5">
+<h5 id="org07de8b2">Base</h5>
+<div class="outline-text-5" id="text-org07de8b2">
+<p>
+下面方法都属于 Mesh Component<br />
+</p>
+<ul class="org-ul">
+<li>void AddBlendShapeFrame(shapeName, float frameWeight, Vector3[] deltaVertices, Vector3[] deltaNormals, Vector3[] deltaTangents)<br />
+添加一个名为 shapeName 的 blend shape。delta 数组长度需要和顶点数量一致，deltaNormals deltaTangents 可以为 null<br /></li>
+<li>GraphicsBuffer GetBlendShapeBuffer(layout)<br />
+获取一个 GraphicsBuffer，其提供对 GPU blend shape 顶点数据的读写访问. 模型不需要标记为可读写 |<br /></li>
+<li>BlendShapeBufferRange GetBlendShapeBufferRange(int blendShapeIndex)<br />
+获取给定 blendShape 的起始 index 和结束 index<br /></li>
+<li>void GetBlendShapeFrameVertices(int shapeIndex, int frameIndex, Vector3[] deltaVertices, Vector3[] deltaNormals, Vector3[] deltaTangents)<br />
+获取指定 blendShape 的指定 frame 的数据<br /></li>
+<li>float GetBlendShapeFrameWeight(int shapeIndex, int frameIndex)<br />
+获取指定 blendShape 的指定 frame 的权重<br /></li>
+<li>int GetBlendShapeIndex(string blendShapeName)<br />
+由 name 得到 index<br /></li>
+<li>string GetBlendShapeName(int shapeIndex)<br />
+由 index 得到 name<br /></li>
+</ul>
+
+<p>
+下面方法属于 SkinnedMeshRenderer Component<br />
+</p>
+<ul class="org-ul">
+<li>float GetBlendShapeWeight(int index)<br /></li>
+<li>void SetBlendShapeWeight(int index, float value)<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgcd9b3df" class="outline-5">
+<h5 id="orgcd9b3df">脚本中控制 BlendShape 权重。</h5>
+<div class="outline-text-5" id="text-orgcd9b3df">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">IncreaseBSsWeight</span>(<span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #7590db;">delta</span>)
+{
+    <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">bsCount</span> = smr.sharedMesh.blendShapeCount;
+    <span style="color: #4f97d7; font-weight: bold;">for</span>(<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">i</span>=0; i&lt;bsCount; i++)
+    {
+        <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">oldBSW</span> = smr.<span style="color: #bc6ec5; font-weight: bold;">GetBlendShapeWeight</span>(i);
+        smr.<span style="color: #bc6ec5; font-weight: bold;">SetBlendShapeWeight</span>(i, oldBSW+delta);
+    }
+}
+</pre>
+</div>
+<ul class="org-ul">
+<li><a href="https://docs.unity3d.com/Manual/BlendShapes.html">https://docs.unity3d.com/Manual/BlendShapes.html</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
 <div id="outline-container-org48af8c3" class="outline-4">
 <h4 id="org48af8c3">当模型只有一个骨骼时，SkinMesh 和 Mesh 的运算效率相差大吗？</h4>
 <div class="outline-text-4" id="text-org48af8c3">
@@ -3452,6 +4134,424 @@ Skeleton fbx 开启 GameObject Optimize，保留所有挂点和 SMR 用到的 ro
 </div>
 </div>
 
+<div id="outline-container-org5e009e8" class="outline-3">
+<h3 id="org5e009e8">Timeline</h3>
+<div class="outline-text-3" id="text-org5e009e8">
+</div>
+<div id="outline-container-orgc0a8b05" class="outline-4">
+<h4 id="orgc0a8b05">Custom Timeline</h4>
+<div class="outline-text-4" id="text-orgc0a8b05">
+</div>
+<div id="outline-container-org49b13c4" class="outline-5">
+<h5 id="org49b13c4">Custom clips</h5>
+<div class="outline-text-5" id="text-org49b13c4">
+<p>
+使用一个简单示例来进行说明： 该示例使用 custom clip 控制灯光的颜色和亮度<br />
+创建一个自定义的 clip，我们需要实现两个脚本：<br />
+</p>
+<ol class="org-ol">
+<li>继承自 PlayableAsset 来实现数据<br /></li>
+<li>继承自 PlayableBehaviour 来实现逻辑<br /></li>
+</ol>
+</div>
+<div id="outline-container-orga5d228c" class="outline-6">
+<h6 id="orga5d228c">继承 PlayableBehaviour 来实现 Clip 逻辑</h6>
+<div class="outline-text-6" id="text-orga5d228c">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">LightControlBehaviour</span> : <span style="color: #ce537a; font-weight: bold;">PlayableBehaviour</span>
+{
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">Light</span> <span style="color: #7590db;">light</span> = <span style="color: #a45bad;">null</span>;
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">Color</span> <span style="color: #7590db;">color</span> = Color.white;
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #7590db;">intensity</span> = 1f;
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#22312;&#27599;&#27425;Update&#26102;&#37117;&#20250;&#35843;&#29992;ProcessFrame</span>
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">ProcessFrame</span>(<span style="color: #ce537a; font-weight: bold;">Playable</span> <span style="color: #7590db;">playable</span>, <span style="color: #ce537a; font-weight: bold;">FrameData</span> <span style="color: #7590db;">info</span>, <span style="color: #ce537a; font-weight: bold;">object</span> <span style="color: #7590db;">playerData</span>)
+    {
+        <span style="color: #4f97d7; font-weight: bold;">if</span> (light != <span style="color: #a45bad;">null</span>)
+        {
+            light.color = color;
+            light.intensity = intensity;
+        }
+    }
+}
+</pre>
+</div>
+<p>
+不止可以重写(override) ProcessFrame 函数，还可以重写(override)其他一些函数来控制，custom clip 的行为。下面链接列出了所有可重写(override)的函数：<br />
+</p>
+<ul class="org-ul">
+<li><a href="https://docs.unity3d.com/ScriptReference/Playables.PlayableBehaviour.html">https://docs.unity3d.com/ScriptReference/Playables.PlayableBehaviour.html</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgcf621f5" class="outline-6">
+<h6 id="orgcf621f5">继承 PlayableAsset 来实现 Clip 数据</h6>
+<div class="outline-text-6" id="text-orgcf621f5">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">LightControlAsset</span> : <span style="color: #ce537a; font-weight: bold;">PlayableAsset</span>
+{
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">ExposedReference</span>&lt;<span style="color: #ce537a; font-weight: bold;">Light</span>&gt; <span style="color: #7590db;">light</span>;
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">Color</span> <span style="color: #7590db;">color</span> = Color.white;
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #7590db;">intensity</span> = 1.0f;
+
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">Playable</span> <span style="color: #bc6ec5; font-weight: bold;">CreatePlayable</span> (<span style="color: #ce537a; font-weight: bold;">PlayableGraph</span> <span style="color: #7590db;">graph</span>, <span style="color: #ce537a; font-weight: bold;">GameObject</span> <span style="color: #7590db;">owner</span>)
+    {
+        <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">playable</span> = <span style="color: #a45bad;">ScriptPlayable</span>&lt;<span style="color: #ce537a; font-weight: bold;">LightControlBehaviour</span>&gt;.<span style="color: #bc6ec5; font-weight: bold;">Create</span>(graph);
+
+        <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">lightControlBehaviour</span> = playable.<span style="color: #bc6ec5; font-weight: bold;">GetBehaviour</span>();
+        lightControlBehaviour.light = light.<span style="color: #bc6ec5; font-weight: bold;">Resolve</span>(graph.<span style="color: #bc6ec5; font-weight: bold;">GetResolver</span>());
+        lightControlBehaviour.color = color;
+        lightControlBehaviour.intensity = intensity;
+
+        <span style="color: #4f97d7; font-weight: bold;">return</span> playable;
+    }
+}
+</pre>
+</div>
+<p>
+PlayableAsset 有两个目的。首先，其包含了 clip 数据，其会被序列化到 Timeline Asset 中。其次，其会创建 PlayableBehaviour，而 PlayableBehaviour 最终会被添加到 Playable Graph 中。<br />
+Playable Graph 是一个有向无环图 (DAG)，它表示一个播放序列。PlayableBehaviour 是一个抽象类，它表示 Playable Graph 中的一个节点。PlayableBehaviour 的子类用于实现各种类型的播放行为，例如动画、音频和视频播放。<br />
+</p>
+
+<p>
+Tips:<br />
+</p>
+<ul class="org-ul">
+<li>PlayableAsset 并不会记录每一帧的数据，其只是记录 PlayableBehaviour 的输入参数，每一帧如何变化，可以在 PlayableBehaviour 中实现。<br /></li>
+</ul>
+<p>
+例如：动画对应的 PlayableAsset 中包含了对应的 AnimationClip，AnimationClip 记录了每一帧的数据，并不是 PlayableAsset 记录每一帧的数据。<br />
+所以，LightControlBehaviour 的参数和 LightControlAsset 的参数可以使用相同的结构体进行封装。<br />
+</p>
+<ul class="org-ul">
+<li>PlayableBehaviour 不会存储数据，PlayableBehaviour 需要的数据由 PlayableAsset 传入<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgc055851" class="outline-6">
+<h6 id="orgc055851">使用相同的数据结构来封装 LightControlBehaviour 的参数和 LightControlAsset 的参数</h6>
+<div class="outline-text-6" id="text-orgc055851">
+<div class="org-src-container">
+<pre class="src src-csharp">[System.Serializable]
+<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">struct</span> LightControlSetting3
+{
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">Color</span> <span style="color: #7590db;">color</span>;
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #7590db;">intensity</span>;
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">ExposedReference</span>&lt;<span style="color: #ce537a; font-weight: bold;">Light</span>&gt; <span style="color: #7590db;">light</span>;
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">LightControlSetting3</span> <span style="color: #bc6ec5; font-weight: bold;">Default</span>()
+    {
+        <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">LightControlSetting3</span>()
+        {
+            color = Color.white,
+            intensity = 1f,
+            light = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">ExposedReference</span>&lt;<span style="color: #ce537a; font-weight: bold;">Light</span>&gt;(),
+        };
+    }
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgaa835ef" class="outline-5">
+<h5 id="orgaa835ef">Custom tracks</h5>
+<div class="outline-text-5" id="text-orgaa835ef">
+<p>
+前面例子的一个缺点是，你需要为每个 clips 赋予一个 Light Component。当有很多 clips 时，这样做会很麻烦。你可以使用绑定到对象的 track 来解决该问题。<br />
+一个 track 可以绑定一个 object 或一个 component，这样其上的每个 clip 就可以直接在该绑定对象上执行操作。<br />
+</p>
+</div>
+<div id="outline-container-orgae1959f" class="outline-6">
+<h6 id="orgae1959f">继承 TrackAsset 来实现 Track 数据</h6>
+<div class="outline-text-6" id="text-orgae1959f">
+<p>
+创建一个 custom track，除前面提到的两个脚本外，你还需要扩展 TrackAsset，如下：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp">[<span style="color: #bc6ec5; font-weight: bold;">TrackClipType</span>(<span style="color: #4f97d7; font-weight: bold;">typeof</span>(LightControlAsset))]   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25351;&#23450;track&#25509;&#21463;&#30340;clip type</span>
+[<span style="color: #bc6ec5; font-weight: bold;">TrackBindingType</span>(<span style="color: #4f97d7; font-weight: bold;">typeof</span>(Light))]            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25351;&#23450; track &#32465;&#23450;&#30340;&#23545;&#35937;&#65292;&#20854;&#21487;&#20197;&#20026;&#19968;&#20010;GameObject&#65292;&#25110;&#19968;&#20010;Component&#65292;&#25110;&#19968;&#20010;Asset</span>
+<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> LightControlTrack : <span style="color: #ce537a; font-weight: bold;">TrackAsset</span> {}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgb845902" class="outline-6">
+<h6 id="orgb845902">定义 PlayableBehaviour 输入参数的结构体</h6>
+<div class="outline-text-6" id="text-orgb845902">
+<div class="org-src-container">
+<pre class="src src-csharp">[System.Serializable]
+<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">struct</span> LightControlSetting
+{
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">Color</span> <span style="color: #7590db;">color</span>;
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #7590db;">intensity</span>;
+
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">LightControlSetting</span> <span style="color: #bc6ec5; font-weight: bold;">Default</span>()
+    {
+        <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">LightControlSetting</span>()
+        {
+            color = Color.white,
+            intensity = 1f
+        };
+    }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org43ef345" class="outline-6">
+<h6 id="org43ef345">继承 PlayableBehaviour 来实现 Clip 逻辑</h6>
+<div class="outline-text-6" id="text-org43ef345">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">LightControlBehaviour</span> : <span style="color: #ce537a; font-weight: bold;">PlayableBehaviour</span>
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">public Light light = null;    // &#19981;&#38656;&#35201;&#25351;&#23450;light component</span>
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">LightControlSetting</span> <span style="color: #7590db;">setting</span> = LightControlSetting.<span style="color: #bc6ec5; font-weight: bold;">Default</span>();
+
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">ProcessFrame</span>(<span style="color: #ce537a; font-weight: bold;">Playable</span> <span style="color: #7590db;">playable</span>, <span style="color: #ce537a; font-weight: bold;">FrameData</span> <span style="color: #7590db;">info</span>, <span style="color: #ce537a; font-weight: bold;">object</span> <span style="color: #7590db;">playerData</span>)
+    {
+        <span style="color: #ce537a; font-weight: bold;">Light</span> <span style="color: #7590db;">light</span> = playerData <span style="color: #4f97d7; font-weight: bold;">as</span> Light;
+
+        <span style="color: #4f97d7; font-weight: bold;">if</span> (light != <span style="color: #a45bad;">null</span>)
+        {
+            light.color = setting.color;
+            light.intensity = setting.intensity;
+        }
+    }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orga383a03" class="outline-6">
+<h6 id="orga383a03">继承 PlayableAsset 来实现 Clip 数据</h6>
+<div class="outline-text-6" id="text-orga383a03">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">LightControlAsset</span> : <span style="color: #ce537a; font-weight: bold;">PlayableAsset</span>
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">public ExposedReference&lt;Light&gt; light;  // &#19981;&#38656;&#35201;&#25351;&#23450; Light Component</span>
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">LightControlSetting</span> <span style="color: #7590db;">setting</span> = LightControlSetting.<span style="color: #bc6ec5; font-weight: bold;">Default</span>();
+
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">Playable</span> <span style="color: #bc6ec5; font-weight: bold;">CreatePlayable</span> (<span style="color: #ce537a; font-weight: bold;">PlayableGraph</span> <span style="color: #7590db;">graph</span>, <span style="color: #ce537a; font-weight: bold;">GameObject</span> <span style="color: #7590db;">owner</span>)
+    {
+        <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">playable</span> = <span style="color: #a45bad;">ScriptPlayable</span>&lt;<span style="color: #ce537a; font-weight: bold;">LightControlBehaviour</span>&gt;.<span style="color: #bc6ec5; font-weight: bold;">Create</span>(graph);
+
+        <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">lightControlBehaviour</span> = playable.<span style="color: #bc6ec5; font-weight: bold;">GetBehaviour</span>();
+        <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">lightControlBehaviour.light = light.Resolve(graph.GetResolver());</span>
+        lightControlBehaviour.setting = setting;
+
+        <span style="color: #4f97d7; font-weight: bold;">return</span> playable;
+    }
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org8f95936" class="outline-5">
+<h5 id="org8f95936">Blending clips with a mixer</h5>
+<div class="outline-text-5" id="text-org8f95936">
+<p>
+Timeline 支持将多个 clips 重叠来实现 blending 和 crossfading。你需要创建一个 mixer 来访问多个 clips 的数据以实现这些功能。<br />
+</p>
+
+<p>
+和 LightControlBehaviour 一样，mixer 也派生自 PlayableBehaviour，并且也是通过重写(override) ProcessFrame 来实现功能的。<br />
+</p>
+</div>
+<div id="outline-container-org0c4a4ec" class="outline-6">
+<h6 id="org0c4a4ec">为 Track 创建 Mixer</h6>
+<div class="outline-text-6" id="text-org0c4a4ec">
+<div class="org-src-container">
+<pre class="src src-csharp">[<span style="color: #bc6ec5; font-weight: bold;">TrackClipType</span>(<span style="color: #4f97d7; font-weight: bold;">typeof</span>(LightControlAsset1))] <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25351;&#23450;track&#25509;&#21463;&#30340;clip type</span>
+[<span style="color: #bc6ec5; font-weight: bold;">TrackBindingType</span>(<span style="color: #4f97d7; font-weight: bold;">typeof</span>(Light))] <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25351;&#23450; track &#32465;&#23450;&#30340;&#23545;&#35937;&#65292;&#20854;&#21487;&#20197;&#20026;&#19968;&#20010;GameObject&#65292;&#25110;&#19968;&#20010;Component&#65292;&#25110;&#19968;&#20010;Asset</span>
+<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> LightControlTrack1 : <span style="color: #ce537a; font-weight: bold;">TrackAsset</span>
+{
+     <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">Playable</span> <span style="color: #bc6ec5; font-weight: bold;">CreateTrackMixer</span>(<span style="color: #ce537a; font-weight: bold;">PlayableGraph</span> <span style="color: #7590db;">graph</span>, <span style="color: #ce537a; font-weight: bold;">GameObject</span> <span style="color: #7590db;">go</span>, <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">inputCount</span>)
+     {
+         <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #a45bad;">ScriptPlayable</span>&lt;<span style="color: #ce537a; font-weight: bold;">LightControlMixerBehaviour1</span>&gt;.<span style="color: #bc6ec5; font-weight: bold;">Create</span>(graph, inputCount);
+     }
+}
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgee69b34" class="outline-6">
+<h6 id="orgee69b34">实现 LightControlMixerBehaviour</h6>
+<div class="outline-text-6" id="text-orgee69b34">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">LightControlMixerBehaviour1</span> : <span style="color: #ce537a; font-weight: bold;">PlayableBehaviour</span>
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">NOTE: This function is called at runtime and edit time.  Keep that in mind when setting the values of properties.</span>
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">ProcessFrame</span>(<span style="color: #ce537a; font-weight: bold;">Playable</span> <span style="color: #7590db;">playable</span>, <span style="color: #ce537a; font-weight: bold;">FrameData</span> <span style="color: #7590db;">info</span>, <span style="color: #ce537a; font-weight: bold;">object</span> <span style="color: #7590db;">playerData</span>)
+    {
+        <span style="color: #ce537a; font-weight: bold;">Light</span> <span style="color: #7590db;">trackBinding</span> = playerData <span style="color: #4f97d7; font-weight: bold;">as</span> Light;
+        <span style="color: #ce537a; font-weight: bold;">LightControlSetting</span> <span style="color: #7590db;">finalSetting</span> = LightControlSetting.<span style="color: #bc6ec5; font-weight: bold;">Default</span>();
+
+        <span style="color: #4f97d7; font-weight: bold;">if</span> (<span style="color: #a45bad;">!</span>trackBinding)
+            <span style="color: #4f97d7; font-weight: bold;">return</span>;
+
+        <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">inputCount</span> = playable.GetInputCount (); <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">get the number of all clips on this track</span>
+
+        <span style="color: #4f97d7; font-weight: bold;">for</span> (<span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">i</span> = 0; i &lt; inputCount; i++)
+        {
+            <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #7590db;">inputWeight</span> = playable.<span style="color: #bc6ec5; font-weight: bold;">GetInputWeight</span>(i);
+            <span style="color: #ce537a; font-weight: bold;">ScriptPlayable</span>&lt;<span style="color: #ce537a; font-weight: bold;">LightControlBehaviour1</span>&gt; <span style="color: #7590db;">inputPlayable</span> = (<span style="color: #ce537a; font-weight: bold;">ScriptPlayable</span>&lt;<span style="color: #ce537a; font-weight: bold;">LightControlBehaviour1</span>&gt;)playable.<span style="color: #bc6ec5; font-weight: bold;">GetInput</span>(i);
+            <span style="color: #ce537a; font-weight: bold;">LightControlBehaviour1</span> <span style="color: #7590db;">input</span> = inputPlayable.<span style="color: #bc6ec5; font-weight: bold;">GetBehaviour</span>();
+
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Use the above variables to process each frame of this playable.</span>
+            finalSetting.intensity += input.setting.intensity * inputWeight;
+            finalSetting.color += input.setting.color * inputWeight;
+        }
+
+        <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">assign the result to the bound object</span>
+        trackBinding.intensity = finalSetting.intensity;
+        trackBinding.color = finalSetting.color;
+    }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orga16775a" class="outline-6">
+<h6 id="orga16775a">重新实现 LightControlBehaviour</h6>
+<div class="outline-text-6" id="text-orga16775a">
+<p>
+所有逻辑都移动到 LightControlMixerBehaviour 中了，所以，LightControlBehaviour1 中不需要任何处理逻辑<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">LightControlBehaviour1</span> : <span style="color: #ce537a; font-weight: bold;">PlayableBehaviour</span>
+{
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">LightControlSetting</span> <span style="color: #7590db;">setting</span> = LightControlSetting.<span style="color: #bc6ec5; font-weight: bold;">Default</span>();
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org9c4b491" class="outline-5">
+<h5 id="org9c4b491">Animating custom clips</h5>
+<div class="outline-text-5" id="text-org9c4b491">
+<p>
+使用 templates 可以实现对 template 的属性设置关键帧。<br />
+</p>
+
+<p>
+在前面第一个例子中，在 PlayableAsset 和 PlayableBehaviour 中，都有一个 Light Component 的引用，一个颜色值，一个 intensity 值。在 PlayableAsset 的 Inspector 中来设置这些数据，然后在运行时，创建 graph 时，将这些数据 copy 到 PlayableBehaviour 中。<br />
+</p>
+
+<p>
+上面这种方式有数据的冗余，需要时刻保证数据的同步，这样非常容易导致错误。使用 PlayabelBehaviour 的模板概念，在 PlayableAsset 中创建一个 PlayableBehaviour 的引用，这种方式就不会有数据冗余了。并且使用 template，支持对 template 的属性设置关键帧。<br />
+</p>
+
+<p>
+TIPS:<br />
+</p>
+<ul class="org-ul">
+<li>使用 template，Custom Clip 和 Custom Track 都支持为 template 的属性设置关键帧。<br /></li>
+</ul>
+</div>
+
+<div id="outline-container-orgaa38e58" class="outline-6">
+<h6 id="orgaa38e58">在 LightControlAsset 中创建 LightControlBehaviour 的 template</h6>
+<div class="outline-text-6" id="text-orgaa38e58">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">LightControlAsset2</span> : <span style="color: #ce537a; font-weight: bold;">PlayableAsset</span>
+{
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">LightControlBehaviour2</span> <span style="color: #7590db;">template</span>;
+
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">Playable</span> <span style="color: #bc6ec5; font-weight: bold;">CreatePlayable</span> (<span style="color: #ce537a; font-weight: bold;">PlayableGraph</span> <span style="color: #7590db;">graph</span>, <span style="color: #ce537a; font-weight: bold;">GameObject</span> <span style="color: #7590db;">owner</span>)
+    {
+        <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">playable</span> = <span style="color: #a45bad;">ScriptPlayable</span>&lt;<span style="color: #ce537a; font-weight: bold;">LightControlBehaviour2</span>&gt;.<span style="color: #bc6ec5; font-weight: bold;">Create</span>(graph, template);
+        <span style="color: #4f97d7; font-weight: bold;">return</span> playable;
+    }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org4d7b795" class="outline-6">
+<h6 id="org4d7b795">为 LightControlBehaviour 添加 Serializable 属性</h6>
+<div class="outline-text-6" id="text-org4d7b795">
+<p>
+需要为 LightControlBehaviour 添加 Serializable 属性，否则 PlayableAsset 的 Inspector 上不显示 LightControlSetting 参数。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">TIPS: &#20351;&#29992; PlayableBehaviour template &#38656;&#35201;&#28155;&#21152; [System.Serializable]</span>
+[System.Serializable]
+<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> LightControlBehaviour2 : <span style="color: #ce537a; font-weight: bold;">PlayableBehaviour</span>
+{
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">LightControlSetting</span> <span style="color: #7590db;">setting</span> = LightControlSetting.<span style="color: #bc6ec5; font-weight: bold;">Default</span>();
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf8f562e" class="outline-6">
+<h6 id="orgf8f562e">添加关键帧以修改 color 和 intensity</h6>
+<div class="outline-text-6" id="text-orgf8f562e">
+<p>
+如下面方式进行操作即可。<br />
+<img src="./UnityNote/timeline-extension0.jpg" alt="timeline-extension0.jpg" /><br />
+</p>
+
+<p>
+Tips:<br />
+只有当 LightControlSetting 为 struct 时，并且结构体内的成员为值类型时，才支持为该成员添加关键帧。如下面的代码只有 Enabled 属性可以添加关键帧：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp">[<span style="color: #7590db;">Serializable</span>]
+<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">struct</span> ChromaticAberrationParams
+{
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #7590db;">Enabled</span>;
+    <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">public float Intensity;</span>
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">AnimationCurve</span> <span style="color: #7590db;">Intensity</span>;
+
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">ChromaticAberrationParams</span> <span style="color: #bc6ec5; font-weight: bold;">Default</span>()
+    {
+        <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">param</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">ChromaticAberrationParams</span>()
+        {
+            Enabled = <span style="color: #a45bad;">false</span>,
+            <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">Intensity = 0.0f</span>
+            Intensity = AnimationCurve.<span style="color: #bc6ec5; font-weight: bold;">Constant</span>(0, 1, 1.0f),
+        };
+        <span style="color: #4f97d7; font-weight: bold;">return</span> param;
+    }
+}
+</pre>
+</div>
+
+<div id="orgb6ac4f5" class="figure">
+<p><img src="./UnityNote/timeline-extension1.jpg" alt="timeline-extension1.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org40a624b" class="outline-4">
+<h4 id="org40a624b">Example</h4>
+<div class="outline-text-4" id="text-org40a624b">
+</div>
+<div id="outline-container-org3594598" class="outline-5">
+<h5 id="org3594598">Timeline 控制 Postprocess</h5>
+<div class="outline-text-5" id="text-org3594598">
+<p>
+<a href="../graphics/UnityPostprocess.html#orgcf9d20e">使用 Timeline 来控制 Volume 后期效果的参数</a><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org9f8246c" class="outline-4">
+<h4 id="org9f8246c">参考资料</h4>
+<div class="outline-text-4" id="text-org9f8246c">
+<ul class="org-ul">
+<li><a href="https://docs.unity3d.com/Packages/com.unity.timeline@1.8/manual/index.html">https://docs.unity3d.com/Packages/com.unity.timeline@1.8/manual/index.html</a><br /></li>
+<li><a href="https://blog.unity.com/engine-platform/extending-timeline-practical-guide">https://blog.unity.com/engine-platform/extending-timeline-practical-guide</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
 <div id="outline-container-org34c1b8a" class="outline-3">
 <h3 id="org34c1b8a">Lod LodGroup</h3>
 <div class="outline-text-3" id="text-org34c1b8a">
@@ -3479,9 +4579,9 @@ Quality.LodBias 是一个 0 到正无穷大的分数。当 0&lt;Quality.LodBias&
 </p>
 </div>
 </div>
-<div id="outline-container-org0b4edab" class="outline-4">
-<h4 id="org0b4edab">Misc</h4>
-<div class="outline-text-4" id="text-org0b4edab">
+<div id="outline-container-org4608501" class="outline-4">
+<h4 id="org4608501">Misc</h4>
+<div class="outline-text-4" id="text-org4608501">
 </div>
 <div id="outline-container-org2d26426" class="outline-5">
 <h5 id="org2d26426">同一个 Renderer 可以在不同的 Lod 中</h5>
@@ -3492,9 +4592,9 @@ Quality.LodBias 是一个 0 到正无穷大的分数。当 0&lt;Quality.LodBias&
 </div>
 </div>
 </div>
-<div id="outline-container-org8fee53c" class="outline-4">
-<h4 id="org8fee53c">参考资料</h4>
-<div class="outline-text-4" id="text-org8fee53c">
+<div id="outline-container-org9c197b3" class="outline-4">
+<h4 id="org9c197b3">参考资料</h4>
+<div class="outline-text-4" id="text-org9c197b3">
 <ul class="org-ul">
 <li>Unity 官网 Lod LodGroup 使用 Example <a href="https://docs.unity3d.com/ScriptReference/LODGroup.SetLODs.html">https://docs.unity3d.com/ScriptReference/LODGroup.SetLODs.html</a><br /></li>
 <li>Unity 官网 LodGroup 文档 <a href="https://docs.unity3d.com/Manual/class-LODGroup.html">https://docs.unity3d.com/Manual/class-LODGroup.html</a><br /></li>
@@ -3503,9 +4603,9 @@ Quality.LodBias 是一个 0 到正无穷大的分数。当 0&lt;Quality.LodBias&
 </div>
 </div>
 </div>
-<div id="outline-container-org215b6a1" class="outline-3">
-<h3 id="org215b6a1">Materials</h3>
-<div class="outline-text-3" id="text-org215b6a1">
+<div id="outline-container-orgbe9a395" class="outline-3">
+<h3 id="orgbe9a395">Materials</h3>
+<div class="outline-text-3" id="text-orgbe9a395">
 </div>
 <div id="outline-container-org2c5e19b" class="outline-4">
 <h4 id="org2c5e19b">使用 shaderMaterial 编辑器下每次运行，材质都被修改</h4>
@@ -3756,9 +4856,9 @@ Edit-&gt;Project Setting-&gt;Time -&gt;Fixed Timestep<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-orge4ed6f6" class="outline-3">
-<h3 id="orge4ed6f6">Misc</h3>
-<div class="outline-text-3" id="text-orge4ed6f6">
+<div id="outline-container-org1e07525" class="outline-3">
+<h3 id="org1e07525">Misc</h3>
+<div class="outline-text-3" id="text-org1e07525">
 </div>
 <div id="outline-container-org2fc31c5" class="outline-4">
 <h4 id="org2fc31c5">如何在编辑器中实时查看脚本私有变量的值？</h4>
@@ -4277,7 +5377,7 @@ gameview.<span style="color: #bc6ec5; font-weight: bold;">Repaint</span>();
 <div id="outline-container-orgc18a340" class="outline-5">
 <h5 id="orgc18a340">快捷键规则</h5>
 <div class="outline-text-5" id="text-orgc18a340">
-<pre class="example" id="orga736deb">
+<pre class="example" id="orgb46fc0a">
 % = ctrl(windows) / cmd(osx)
 # = Shift
 &amp; = Alt
@@ -4544,28 +5644,23 @@ HOME, END, PGUP, PGDN = 键盘上的特殊功能键
 
     <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">OnInspectorGUI</span>()
     {
-        serializedObject.<span style="color: #bc6ec5; font-weight: bold;">Update</span>();
+        particleObj = EditorGUILayout.<span style="color: #bc6ec5; font-weight: bold;">ObjectField</span>(<span style="color: #2d9574;">"ParticleFile"</span>, particleObj, <span style="color: #4f97d7; font-weight: bold;">typeof</span>(UnityEngine.Object), <span style="color: #a45bad;">false</span>);
+        <span style="color: #4f97d7; font-weight: bold;">if</span>(particleObj==<span style="color: #a45bad;">null</span>)
         {
-
-            particleObj = EditorGUILayout.<span style="color: #bc6ec5; font-weight: bold;">ObjectField</span>(<span style="color: #2d9574;">"ParticleFile"</span>, particleObj, <span style="color: #4f97d7; font-weight: bold;">typeof</span>(UnityEngine.Object), <span style="color: #a45bad;">false</span>);
-            <span style="color: #4f97d7; font-weight: bold;">if</span>(particleObj==<span style="color: #a45bad;">null</span>)
-            {
-                scriptObj.particlePath = <span style="color: #2d9574;">""</span>;
-            }
-            <span style="color: #4f97d7; font-weight: bold;">else</span>
-            {
-                <span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #7590db;">tmpPath</span> = AssetDatabase.<span style="color: #bc6ec5; font-weight: bold;">GetAssetPath</span>(particleObj);
-                scriptObj.particlePath = tmpPath.<span style="color: #bc6ec5; font-weight: bold;">Replace</span>(GResMgrDefine.ABRootPath+<span style="color: #2d9574;">"/"</span>, <span style="color: #2d9574;">""</span>);
-            }
-            EditorGUILayout.<span style="color: #bc6ec5; font-weight: bold;">LabelField</span>(<span style="color: #2d9574;">"ParticleFileURL"</span>, scriptObj.particlePath);
-
-            <span style="color: #4f97d7; font-weight: bold;">if</span> (GUILayout.<span style="color: #bc6ec5; font-weight: bold;">Button</span>(<span style="color: #2d9574;">"Play"</span>))
-            {
-                Debug.<span style="color: #bc6ec5; font-weight: bold;">Log</span>(scriptObj.particlePath);
-                scriptObj.<span style="color: #bc6ec5; font-weight: bold;">Play</span>();
-            }
+            scriptObj.particlePath = <span style="color: #2d9574;">""</span>;
         }
-        serializedObject.<span style="color: #bc6ec5; font-weight: bold;">ApplyModifiedProperties</span>();
+        <span style="color: #4f97d7; font-weight: bold;">else</span>
+        {
+            <span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #7590db;">tmpPath</span> = AssetDatabase.<span style="color: #bc6ec5; font-weight: bold;">GetAssetPath</span>(particleObj);
+            scriptObj.particlePath = tmpPath.<span style="color: #bc6ec5; font-weight: bold;">Replace</span>(GResMgrDefine.ABRootPath+<span style="color: #2d9574;">"/"</span>, <span style="color: #2d9574;">""</span>);
+        }
+        EditorGUILayout.<span style="color: #bc6ec5; font-weight: bold;">LabelField</span>(<span style="color: #2d9574;">"ParticleFileURL"</span>, scriptObj.particlePath);
+
+        <span style="color: #4f97d7; font-weight: bold;">if</span> (GUILayout.<span style="color: #bc6ec5; font-weight: bold;">Button</span>(<span style="color: #2d9574;">"Play"</span>))
+        {
+            Debug.<span style="color: #bc6ec5; font-weight: bold;">Log</span>(scriptObj.particlePath);
+            scriptObj.<span style="color: #bc6ec5; font-weight: bold;">Play</span>();
+        }
     }
 }
 </pre>
@@ -4729,6 +5824,12 @@ EditorGUILayout.EndHorizontal ();
 <span style="color: #2aa1ae; background-color: #292e34;">//</span><span style="color: #2aa1ae; background-color: #292e34;">Make a small space between the previous control and the following.</span>
 EditorGUILayout.<span style="color: #bc6ec5; font-weight: bold;">Space</span>();
 
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">- select from enum</span>
+scriptObj.switchType = (<span style="color: #ce537a; font-weight: bold;">SwitchType</span>)EditorGUILayout.<span style="color: #bc6ec5; font-weight: bold;">EnumPopup</span>(<span style="color: #2d9574;">"Switch Type"</span>, scriptObj.switchType);
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">- select from list</span>
+scriptObj.compTypeIndex = EditorGUILayout.<span style="color: #bc6ec5; font-weight: bold;">Popup</span>(<span style="color: #2d9574;">"compType"</span>, scriptObj.compTypeIndex, compTypeStrArr);
+
 <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">- &#28155;&#21152;&#28378;&#21160;&#26465; &#38480;&#23450;&#28378;&#21160;&#21306;&#22495;</span>
 scrollPos = GUI.<span style="color: #bc6ec5; font-weight: bold;">BeginScrollView</span>(<span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Rect</span>(0, 10, 500, 600), scrollPos, <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Rect</span>(-20, 0, 770, 600));
 <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">......</span>
@@ -4748,10 +5849,72 @@ GUI.<span style="color: #bc6ec5; font-weight: bold;">Label</span>(<span style="c
 </pre>
 </div>
 </div>
+<div id="outline-container-org1b54cb7" class="outline-6">
+<h6 id="org1b54cb7">foldout</h6>
+<div class="outline-text-6" id="text-org1b54cb7">
+<p>
+EditorGUI.Foldout<br />
+</p>
+
+<ul class="org-ul">
+<li><a href="https://docs.unity3d.com/ScriptReference/EditorGUI.Foldout.html">https://docs.unity3d.com/ScriptReference/EditorGUI.Foldout.html</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org5852bb0" class="outline-6">
+<h6 id="org5852bb0">GetRect GetLastRect GetControlRect</h6>
+<div class="outline-text-6" id="text-org5852bb0">
+<p>
+GetRect|GetControlRect 预留布局位置<br />
+自动布局和固定布局交替使用时，需要获取 rect 数据。需要注意的是，GetRect 函数本身就是预留空间，无论你是否在该空间绘制东西，这片空间都会占用<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">Rect</span> <span style="color: #7590db;">rect</span> = GUILayoutUtility.<span style="color: #bc6ec5; font-weight: bold;">GetRect</span>(10, EditorGUIUtility.singleLineHeight*5);
+GUILayout.<span style="color: #bc6ec5; font-weight: bold;">Button</span>(<span style="color: #2d9574;">"&#25105;&#26159;&#19979;&#38754;&#30340;&#25511;&#20214;"</span>, GUILayout.<span style="color: #bc6ec5; font-weight: bold;">Width</span>(100), GUILayout.<span style="color: #bc6ec5; font-weight: bold;">Height</span>(100));
+</pre>
+</div>
+
+<p>
+GetControlRect 和上面两个函数的作用差不多<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">rect</span> = EditorGUILayout.<span style="color: #bc6ec5; font-weight: bold;">GetControlRect</span>(GUILayout.<span style="color: #bc6ec5; font-weight: bold;">height</span>(50));
+GUILayout.<span style="color: #bc6ec5; font-weight: bold;">Button</span>(<span style="color: #2d9574;">"&#25105;&#26159;&#19979;&#19968;&#20010;&#25511;&#20214;"</span>);
+</pre>
+</div>
+
+<p>
+GetLastRect 获取上一个控件的 rect 位置<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp">GUILayout.<span style="color: #bc6ec5; font-weight: bold;">Button</span>(<span style="color: #2d9574;">"My button"</span>);
+<span style="color: #4f97d7; font-weight: bold;">if</span> (Event.current.type == EventType.Repaint &amp;&amp; GUILayoutUtility.<span style="color: #bc6ec5; font-weight: bold;">GetLastRect</span>().<span style="color: #bc6ec5; font-weight: bold;">Contains</span>(Event.current.mousePosition))
+{
+    GUILayout.<span style="color: #bc6ec5; font-weight: bold;">Label</span>(<span style="color: #2d9574;">"Mouse over!"</span>);
+}
+<span style="color: #4f97d7; font-weight: bold;">else</span>
+{
+    GUILayout.<span style="color: #bc6ec5; font-weight: bold;">Label</span>(<span style="color: #2d9574;">"Mouse somewhere else"</span>);
+}
+</pre>
+</div>
+
+<ul class="org-ul">
+<li><a href="https://docs.unity3d.com/ScriptReference/GUILayoutUtility.GetLastRect.html">https://docs.unity3d.com/ScriptReference/GUILayoutUtility.GetLastRect.html</a><br /></li>
+<li><a href="https://docs.unity3d.com/ScriptReference/GUILayoutUtility.GetRect.html">https://docs.unity3d.com/ScriptReference/GUILayoutUtility.GetRect.html</a><br /></li>
+<li><a href="https://docs.unity3d.com/ScriptReference/EditorGUILayout.GetControlRect.html">https://docs.unity3d.com/ScriptReference/EditorGUILayout.GetControlRect.html</a><br /></li>
+<li><a href="https://blog.csdn.net/qq_33574890/article/details/120941469">https://blog.csdn.net/qq_33574890/article/details/120941469</a><br /></li>
+</ul>
+</div>
+</div>
 </div>
 <div id="outline-container-orga06b725" class="outline-5">
 <h5 id="orga06b725">绘制只读控件</h5>
 <div class="outline-text-5" id="text-orga06b725">
+</div>
+<div id="outline-container-org5280c8c" class="outline-6">
+<h6 id="org5280c8c">case 1</h6>
+<div class="outline-text-6" id="text-org5280c8c">
 <div class="org-src-container">
 <pre class="src src-csharp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">- &#32472;&#21046;&#21482;&#35835;&#25511;&#20214;</span>
 EditorGUI.<span style="color: #bc6ec5; font-weight: bold;">BeginDisabledGroup</span>(canJump == <span style="color: #a45bad;">false</span>);
@@ -4765,16 +5928,67 @@ EditorGUI.<span style="color: #bc6ec5; font-weight: bold;">EndDisabledGroup</spa
 </ul>
 </div>
 </div>
+<div id="outline-container-orgc0f4a3e" class="outline-6">
+<h6 id="orgc0f4a3e">case 2</h6>
+<div class="outline-text-6" id="text-orgc0f4a3e">
+<div class="org-src-container">
+<pre class="src src-csharp">GUI.enable = <span style="color: #a45bad;">false</span>;
+EditorGUILayout.<span style="color: #bc6ec5; font-weight: bold;">Label</span>(<span style="color: #2d9574;">"Test"</span>);
+GUI.enable = <span style="color: #a45bad;">true</span>;
+</pre>
+</div>
+</div>
+</div>
+</div>
 <div id="outline-container-org3845ecf" class="outline-5">
 <h5 id="org3845ecf">EditorWindow 窗口大小</h5>
 <div class="outline-text-5" id="text-org3845ecf">
 <div class="org-src-container">
-<pre class="src src-csharp">  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25351;&#23450;&#22823;&#23567;Window</span>
-  <span style="color: #bc6ec5; font-weight: bold;">GetWindowWithRect</span>&lt;<span style="color: #ce537a; font-weight: bold;">SVCCombinorWindow</span>&gt;(<span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Rect</span>(0, 0, 256, 256), <span style="color: #a45bad;">true</span>);
+<pre class="src src-csharp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#25351;&#23450;&#22823;&#23567;Window</span>
+<span style="color: #bc6ec5; font-weight: bold;">GetWindowWithRect</span>&lt;<span style="color: #ce537a; font-weight: bold;">SVCCombinorWindow</span>&gt;(<span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Rect</span>(0, 0, 256, 256), <span style="color: #a45bad;">true</span>);
 
-  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21487;&#21464;&#22823;&#23567;&#30340;Window</span>
-  <span style="color: #bc6ec5; font-weight: bold;">GetWindow</span>&lt;<span style="color: #ce537a; font-weight: bold;">SVCCombinorWindow</span>&gt;(<span style="color: #a45bad;">true</span>);
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21487;&#21464;&#22823;&#23567;&#30340;Window, &#24182;&#25351;&#23450;&#26368;&#23567;&#23610;&#23544;</span>
+<span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">window</span> = <span style="color: #bc6ec5; font-weight: bold;">GetWindow</span>&lt;<span style="color: #ce537a; font-weight: bold;">SVCCombinorWindow</span>&gt;(<span style="color: #a45bad;">true</span>);
+window.minSize = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Vector2</span>(400, 400);
 </pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgba091d9" class="outline-5">
+<h5 id="orgba091d9">EditorStyles</h5>
+<div class="outline-text-5" id="text-orgba091d9">
+</div>
+<div id="outline-container-org86021a7" class="outline-6">
+<h6 id="org86021a7">box frameBox SearchTextField</h6>
+<div class="outline-text-6" id="text-org86021a7">
+<div class="org-src-container">
+<pre class="src src-csharp">EditorGUILayout.<span style="color: #bc6ec5; font-weight: bold;">BeginVertical</span>(<span style="color: #2d9574;">"box"</span>);
+EditorGUILayout.<span style="color: #bc6ec5; font-weight: bold;">LabelField</span>(<span style="color: #2d9574;">"&#36825;&#26159;&#12304;box&#12305;&#26679;&#24335;&#65292;&#29992;&#20110;&#26174;&#31034;&#38754;&#26495;&#30340;&#20998;&#21306;"</span>);
+EditorGUILayout.<span style="color: #bc6ec5; font-weight: bold;">Vector3Field</span>(<span style="color: #2d9574;">"&#27604;&#22914;&#36825;&#26159;&#19968;&#20010;Vec3 Field"</span>, Vector3.one);
+EditorGUILayout.<span style="color: #bc6ec5; font-weight: bold;">BeginToggleGroup</span>(<span style="color: #2d9574;">"&#27604;&#22914;&#36825;&#26159;&#19968;&#20010;Toggle Group"</span>, <span style="color: #a45bad;">false</span>);
+EditorGUILayout.<span style="color: #bc6ec5; font-weight: bold;">HelpBox</span>(<span style="color: #2d9574;">"&#27604;&#22914;&#36825;&#26159;&#19968;&#20010;HelpBox"</span>, MessageType.Warning);
+EditorGUILayout.<span style="color: #bc6ec5; font-weight: bold;">TextArea</span>(<span style="color: #2d9574;">"&#27604;&#22914;&#36825;&#26159;&#19968;&#20010;TextArea"</span>);
+EditorGUILayout.<span style="color: #bc6ec5; font-weight: bold;">EndToggleGroup</span>();
+EditorGUILayout.<span style="color: #bc6ec5; font-weight: bold;">EndVertical</span>();
+
+EditorGUILayout.<span style="color: #bc6ec5; font-weight: bold;">Space</span>(10);
+
+EditorGUILayout.<span style="color: #bc6ec5; font-weight: bold;">BeginVertical</span>(<span style="color: #2d9574;">"frameBox"</span>);
+EditorGUILayout.<span style="color: #bc6ec5; font-weight: bold;">LabelField</span>(<span style="color: #2d9574;">"&#36825;&#26159;&#12304;frameBox&#12305;&#26679;&#24335;&#65292;&#29992;&#20110;&#26174;&#31034;&#38754;&#26495;&#30340;&#20998;&#21306;"</span>);
+EditorGUILayout.<span style="color: #bc6ec5; font-weight: bold;">BoundsField</span>(<span style="color: #2d9574;">"&#27604;&#22914;&#36825;&#26159;&#19968;&#20010;BoundField"</span>, <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Bounds</span>());
+EditorGUILayout.<span style="color: #bc6ec5; font-weight: bold;">Slider</span>(<span style="color: #2d9574;">"&#27604;&#22914;&#36825;&#26159;&#19968;&#20010;Slider"</span>, 5, 0, 10);
+EditorGUILayout.<span style="color: #bc6ec5; font-weight: bold;">TextArea</span>(<span style="color: #2d9574;">"&#36825;&#26159;&#19968;&#20010;&#12304;SearchTextField&#12305;&#26679;&#24335;&#30340;&#25991;&#26412;&#26694;"</span>, <span style="color: #2d9574;">"SearchTextField"</span>);
+EditorGUILayout.<span style="color: #bc6ec5; font-weight: bold;">EndVertical</span>();
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf695197" class="outline-6">
+<h6 id="orgf695197">参考资料</h6>
+<div class="outline-text-6" id="text-orgf695197">
+<ul class="org-ul">
+<li><a href="https://github.com/Unity-Technologies/UnityCsReference/blob/master/Editor/Mono/GUI/EditorStyles.cs">https://github.com/Unity-Technologies/UnityCsReference/blob/master/Editor/Mono/GUI/EditorStyles.cs</a><br /></li>
+</ul>
 </div>
 </div>
 </div>
@@ -4873,13 +6087,34 @@ EditorGUI.<span style="color: #bc6ec5; font-weight: bold;">EndDisabledGroup</spa
 </div>
 </div>
 </div>
+<div id="outline-container-org9cbb006" class="outline-5">
+<h5 id="org9cbb006">Editor 复用 Inspector</h5>
+<div class="outline-text-5" id="text-org9cbb006">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">LightingScenarioGroupTools</span> : <span style="color: #ce537a; font-weight: bold;">EditorWindow</span>
+{
+    <span style="color: #4f97d7; font-weight: bold;">private</span> UnityEditor.<span style="color: #ce537a; font-weight: bold;">Editor</span> <span style="color: #7590db;">lsgEditor</span>;
+
+    <span style="color: #4f97d7; font-weight: bold;">private</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">OnGUI</span>()
+    {
+        <span style="color: #4f97d7; font-weight: bold;">if</span> (lsgEditor == <span style="color: #a45bad;">null</span>)
+        {
+            lsgEditor = UnityEditor.Editor.<span style="color: #bc6ec5; font-weight: bold;">CreateEditor</span>(lightScenarioGroup);
+        }
+        lsgEditor.<span style="color: #bc6ec5; font-weight: bold;">OnInspectorGUI</span>();
+    }
+}
+</pre>
+</div>
+</div>
+</div>
 <div id="outline-container-orgccf4c79" class="outline-5">
 <h5 id="orgccf4c79">EditorWindow 协程</h5>
 <div class="outline-text-5" id="text-orgccf4c79">
 </div>
-<div id="outline-container-org86c4a69" class="outline-6">
-<h6 id="org86c4a69">Base</h6>
-<div class="outline-text-6" id="text-org86c4a69">
+<div id="outline-container-orgc4b4c7d" class="outline-6">
+<h6 id="orgc4b4c7d">Base</h6>
+<div class="outline-text-6" id="text-orgc4b4c7d">
 <div class="org-src-container">
 <pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">System</span>.<span style="color: #7590db;">Collections</span>;
 <span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">Unity</span>.<span style="color: #7590db;">EditorCoroutines</span>.<span style="color: #7590db;">Editor</span>;
@@ -4923,6 +6158,15 @@ EditorCoroutineUtility.<span style="color: #bc6ec5; font-weight: bold;">StartCor
 </div>
 </div>
 </div>
+<div id="outline-container-org29fe8a0" class="outline-6">
+<h6 id="org29fe8a0">EditorWaitForSeconds</h6>
+<div class="outline-text-6" id="text-org29fe8a0">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">yield</span> <span style="color: #4f97d7; font-weight: bold;">return</span>  <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">EditorWaitForSeconds</span>(1.0f);
+</pre>
+</div>
+</div>
+</div>
 <div id="outline-container-orgde7a8e4" class="outline-6">
 <h6 id="orgde7a8e4">yield break 提前退出</h6>
 <div class="outline-text-6" id="text-orgde7a8e4">
@@ -4943,9 +6187,9 @@ EditorCoroutineUtility.<span style="color: #bc6ec5; font-weight: bold;">StartCor
 </div>
 </div>
 </div>
-<div id="outline-container-orgf0006b3" class="outline-6">
-<h6 id="orgf0006b3">参考资料</h6>
-<div class="outline-text-6" id="text-orgf0006b3">
+<div id="outline-container-org6f22b5c" class="outline-6">
+<h6 id="org6f22b5c">参考资料</h6>
+<div class="outline-text-6" id="text-org6f22b5c">
 <ul class="org-ul">
 <li><a href="https://docs.unity.cn/Packages/com.unity.editorcoroutines@1.0/api/Unity.EditorCoroutines.Editor.EditorWindowCoroutineExtension.html">https://docs.unity.cn/Packages/com.unity.editorcoroutines@1.0/api/Unity.EditorCoroutines.Editor.EditorWindowCoroutineExtension.html</a><br /></li>
 </ul>
@@ -5040,13 +6284,34 @@ EditorCoroutineUtility.<span style="color: #bc6ec5; font-weight: bold;">StartCor
 </ul>
 </div>
 </div>
-<div id="outline-container-org008712c" class="outline-4">
-<h4 id="org008712c">scriptable object</h4>
-<div class="outline-text-4" id="text-org008712c">
+<div id="outline-container-org2404c1d" class="outline-4">
+<h4 id="org2404c1d">ScriptableObject</h4>
+<div class="outline-text-4" id="text-org2404c1d">
 </div>
 <div id="outline-container-org432a07b" class="outline-5">
 <h5 id="org432a07b">create scriptable object asset</h5>
 <div class="outline-text-5" id="text-org432a07b">
+</div>
+<div id="outline-container-org96d2d05" class="outline-6">
+<h6 id="org96d2d05">方法 1</h6>
+<div class="outline-text-6" id="text-org96d2d05">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">UnityEngine</span>;
+
+[<span style="color: #bc6ec5; font-weight: bold;">CreateAssetMenu</span>(menuName=<span style="color: #2d9574;">"MyAsset/Student"</span>)]
+<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> Student : <span style="color: #ce537a; font-weight: bold;">ScriptableObject</span>
+{
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">string</span> <span style="color: #7590db;">Name</span> { <span style="color: #4f97d7; font-weight: bold;">get</span>; <span style="color: #4f97d7; font-weight: bold;">set</span>; } = <span style="color: #2d9574;">"Jack"</span>;
+
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">age</span> { <span style="color: #4f97d7; font-weight: bold;">get</span>; <span style="color: #4f97d7; font-weight: bold;">set</span>; } = 10;
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org8be21f8" class="outline-6">
+<h6 id="org8be21f8">方法 2</h6>
+<div class="outline-text-6" id="text-org8be21f8">
 <div class="org-src-container">
 <pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">TestEditorHelper</span>
 {
@@ -5079,13 +6344,90 @@ EditorCoroutineUtility.<span style="color: #bc6ec5; font-weight: bold;">StartCor
 </div>
 </div>
 </div>
-<div id="outline-container-org778d317" class="outline-5">
-<h5 id="org778d317">实时应用被编辑的变量</h5>
-<div class="outline-text-5" id="text-org778d317">
+</div>
+<div id="outline-container-org496cbf7" class="outline-5">
+<h5 id="org496cbf7">参考资料</h5>
+<div class="outline-text-5" id="text-org496cbf7">
+<ul class="org-ul">
+<li><a href="https://docs.unity3d.com/ScriptReference/ScriptableObject.html">https://docs.unity3d.com/ScriptReference/ScriptableObject.html</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org8ec22a5" class="outline-4">
+<h4 id="org8ec22a5">SerializedObject</h4>
+<div class="outline-text-4" id="text-org8ec22a5">
+</div>
+<div id="outline-container-org3c17e5d" class="outline-5">
+<h5 id="org3c17e5d">Base</h5>
+<div class="outline-text-5" id="text-org3c17e5d">
+<p>
+Unity 对象有如下两种修改方式：<br />
+直接修改 object: EditorUtility.SetDirty(obj) + AssetDatabase.SaveAssets()<br />
+通过 SerializedObject 修改 object: so.ApplyModifiedProperties();<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org2fa8ee0" class="outline-5">
+<h5 id="org2fa8ee0">数据同步</h5>
+<div class="outline-text-5" id="text-org2fa8ee0">
+<p>
+SetDirty = real -&gt; serial<br />
+ApplyModifiedProperties = serial -&gt; real<br />
+Update = real -&gt; serial<br />
+</p>
+
+<p>
+TIPS:<br />
+</p>
+<ul class="org-ul">
+<li>real is real object<br /></li>
+<li>serial is serialized object<br /></li>
+</ul>
+</div>
+<div id="outline-container-orgdb8407a" class="outline-6">
+<h6 id="orgdb8407a">Object to SerializedObject</h6>
+<div class="outline-text-6" id="text-orgdb8407a">
+<p>
+直接对 Object 进行修改，调用 SerializedObject 的 Update 方法同步 Object 的修改给 SerialziedObject<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orga486d50" class="outline-6">
+<h6 id="orga486d50">SerializedObject to Object</h6>
+<div class="outline-text-6" id="text-orga486d50">
+<p>
+通过 SerializedObject 修改 Object，调用 SerializedObject 的 ApplyModifiedProperties 方法将修改同步给 Object<br />
+</p>
 <div class="org-src-container">
-<pre class="src src-csharp">usePassInfoArrSO.<span style="color: #bc6ec5; font-weight: bold;">ApplyModifiedProperties</span>();
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">System</span>.<span style="color: #7590db;">Linq</span>;
+<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">UnityEditor</span>;
+<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">UnityEngine</span>;
+
+<span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Example2</span>
+{
+    [<span style="color: #bc6ec5; font-weight: bold;">MenuItem</span>(<span style="color: #2d9574;">"Edit/Reset Selected Objects Position"</span>)]
+    <span style="color: #4f97d7; font-weight: bold;">static</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">ResetPosition</span>()
+    {
+        <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">transforms</span> = Selection.gameObjects.<span style="color: #bc6ec5; font-weight: bold;">Select</span>(go =&gt; go.transform).<span style="color: #bc6ec5; font-weight: bold;">ToArray</span>();
+        <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">so</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">SerializedObject</span>(<span style="color: #ce537a; font-weight: bold;">transforms</span>);
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">you can Shift+Right Click on property names in the Inspector to see their paths</span>
+        so.<span style="color: #bc6ec5; font-weight: bold;">FindProperty</span>(<span style="color: #2d9574;">"m_LocalPosition"</span>).vector3Value = Vector3.zero;
+        so.<span style="color: #bc6ec5; font-weight: bold;">ApplyModifiedProperties</span>();
+    }
+}
 </pre>
 </div>
+</div>
+</div>
+</div>
+<div id="outline-container-org0ed434d" class="outline-5">
+<h5 id="org0ed434d">参考资料</h5>
+<div class="outline-text-5" id="text-org0ed434d">
+<ul class="org-ul">
+<li><a href="https://docs.unity3d.com/ScriptReference/SerializedObject.html">https://docs.unity3d.com/ScriptReference/SerializedObject.html</a><br /></li>
+<li><a href="https://forum.unity.com/threads/does-serializedobject-applymodifiedproperties-work-on-all-changes.463015/">https://forum.unity.com/threads/does-serializedobject-applymodifiedproperties-work-on-all-changes.463015/</a><br /></li>
+</ul>
 </div>
 </div>
 </div>
@@ -5172,9 +6514,6 @@ Types 可以是内置类型也可以是用户自己定义的脚本类。不指�
 <li><a href="https://docs.unity3d.com/ScriptReference/AssetDatabase.FindAssets.html">https://docs.unity3d.com/ScriptReference/AssetDatabase.FindAssets.html</a><br /></li>
 </ul>
 </div>
-</div>
-<div id="outline-container-org354a18d" class="outline-5">
-<h5 id="org354a18d">创建 ScriptableObject</h5>
 </div>
 <div id="outline-container-orgf66906a" class="outline-5">
 <h5 id="orgf66906a">修改 prefab</h5>
@@ -5303,9 +6642,9 @@ Animation Compression: Unity 5 <a href="http://nfrechette.github.io/2017/01/30/a
 </ul>
 </div>
 </div>
-<div id="outline-container-orgb3a9bd4" class="outline-3">
-<h3 id="orgb3a9bd4">Misc</h3>
-<div class="outline-text-3" id="text-orgb3a9bd4">
+<div id="outline-container-orga1340fc" class="outline-3">
+<h3 id="orga1340fc">Misc</h3>
+<div class="outline-text-3" id="text-orga1340fc">
 </div>
 <div id="outline-container-orgda59ac3" class="outline-4">
 <h4 id="orgda59ac3">Path</h4>
@@ -5417,6 +6756,39 @@ Player 日志存放目录<br />
 </div>
 </div>
 </div>
+<div id="outline-container-org00d0a72" class="outline-4">
+<h4 id="org00d0a72">Sirenix.OdinInspector</h4>
+<div class="outline-text-4" id="text-org00d0a72">
+<ul class="org-ul">
+<li><a href="https://odininspector.com/documentation/sirenix.odininspector">https://odininspector.com/documentation/sirenix.odininspector</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgffc2659" class="outline-4">
+<h4 id="orgffc2659">OpenSource Tools</h4>
+<div class="outline-text-4" id="text-orgffc2659">
+</div>
+<div id="outline-container-org27afaf5" class="outline-5">
+<h5 id="org27afaf5">NaughtyAttributes</h5>
+<div class="outline-text-5" id="text-org27afaf5">
+<ul class="org-ul">
+<li>NaughtyAttributes <a href="https://github.com/dbrizov/NaughtyAttributes">https://github.com/dbrizov/NaughtyAttributes</a><br /></li>
+<li>NaughtyAttributes Doc <a href="https://dbrizov.github.io/na-docs/index.html">https://dbrizov.github.io/na-docs/index.html</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgb572e6a" class="outline-5">
+<h5 id="orgb572e6a">Others</h5>
+<div class="outline-text-5" id="text-orgb572e6a">
+<ul class="org-ul">
+<li>LucidEditor <a href="https://github.com/AnnulusGames/LucidEditor">https://github.com/AnnulusGames/LucidEditor</a><br /></li>
+<li>unity-toolbar-extender <a href="https://github.com/marijnz/unity-toolbar-extender">https://github.com/marijnz/unity-toolbar-extender</a><br /></li>
+<li>Unity 数据可视化图表插件 <a href="https://github.com/XCharts-Team/XCharts">https://github.com/XCharts-Team/XCharts</a><br /></li>
+<li>Unity-Editor-Toolbox <a href="https://github.com/arimger/Unity-Editor-Toolbox">https://github.com/arimger/Unity-Editor-Toolbox</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
 </div>
 <div id="outline-container-org9540677" class="outline-3">
 <h3 id="org9540677">Build</h3>
@@ -5471,7 +6843,7 @@ packages-lock.json 记录了间接依赖的 packages 及其版本<br />
 <p>
 在 manifest.json 文件中添加如下内容，在 package manager 中就可以看到 newtonsoft-json 插件了<br />
 </p>
-<pre class="example" id="orgb8bdba2">
+<pre class="example" id="org53ad222">
 "com.unity.nuget.newtonsoft-json": "2.0.0"
 </pre>
 </div>
@@ -5596,7 +6968,7 @@ Edit/Shortcuts  可以查看所有快捷键设置<br />
 <div id="outline-container-orgaea589d" class="outline-3">
 <h3 id="orgaea589d">Optimizing Graphics Performance</h3>
 <div class="outline-text-3" id="text-orgaea589d">
-<pre class="example" id="orgdc60b0b">
+<pre class="example" id="orgd940015">
 翻译自 OptimizingGraphicsPerformance.html
 </pre>
 <p>
@@ -5860,7 +7232,7 @@ fixed - 10 位浮点数格式，适用于颜色，光照计算和其他高性能
 <div id="outline-container-orgca6d071" class="outline-3">
 <h3 id="orgca6d071">Draw Call Batching</h3>
 <div class="outline-text-3" id="text-orgca6d071">
-<pre class="example" id="org6bf8314">
+<pre class="example" id="org81bd212">
 翻译自 DrawCallBatching.html
 </pre>
 <p>
@@ -5869,9 +7241,9 @@ Unity 使用 static batching 来处理这种情况。静态批处理的目标是
 Unity 中内置的批处理支持比简单地合并几何体到模型中要有很显著的好处。在 Unity5.0 中，开始时只有一个构建的索引缓存区，然后对于大网格的每一个可见的子网格，会提交一个绘制调用。<br />
 </p>
 </div>
-<div id="outline-container-org83034cc" class="outline-4">
-<h4 id="org83034cc">Materials</h4>
-<div class="outline-text-4" id="text-org83034cc">
+<div id="outline-container-org03314e5" class="outline-4">
+<h4 id="org03314e5">Materials</h4>
+<div class="outline-text-4" id="text-org03314e5">
 <p>
 只有共享相同材质的物体才可以被 batch 在一起。所以，如果你想好的 batching，你需要尽可能在多个不同物体之间共享材质。<br />
 如果你有两个不同的材质他们只是贴图不同，你可以将这些贴图合并到一个大贴图中（这个处理过程经常被称做贴图地图）。当贴图在同一个贴图地图中时，你就可以用一个材质来代替多个不同材质了。<br />
@@ -5886,9 +7258,9 @@ Unity 中内置的批处理支持比简单地合并几何体到模型中要有�
 Unity 可以自动 batch 移动的物体到相同的 draw call 中，条件是他们需要共享相同的材质以及满足一些其他条件。Dynamic batching 是自动进行的并且不需要你的任何额外工作。<br />
 </p>
 </div>
-<div id="outline-container-orge7878d4" class="outline-5">
-<h5 id="orge7878d4">Tips:</h5>
-<div class="outline-text-5" id="text-orge7878d4">
+<div id="outline-container-orgb12a5b2" class="outline-5">
+<h5 id="orgb12a5b2">Tips:</h5>
+<div class="outline-text-5" id="text-orgb12a5b2">
 <ul class="org-ul">
 <li>批处理动态物体对于每个顶点都有负荷，所以只会应用于顶点属性总数少于 900 的网格。<br />
 <ol class="org-ol">
@@ -5945,7 +7317,7 @@ Unity 可以自动 batch 移动的物体到相同的 draw call 中，条件是�
 <div id="outline-container-orgcc2ad7d" class="outline-3">
 <h3 id="orgcc2ad7d">Modeling characters for optimal performance</h3>
 <div class="outline-text-3" id="text-orgcc2ad7d">
-<pre class="example" id="org39f91d6">
+<pre class="example" id="org6bff3c2">
 翻译自 ModelingOptimizedCharacters.html
 </pre>
 <p>
@@ -5997,7 +7369,7 @@ Below are some tips for designing character models to give optimal rendering spe
 <div id="outline-container-org76c2e52" class="outline-3">
 <h3 id="org76c2e52">Optimizing Shader Load Time</h3>
 <div class="outline-text-3" id="text-org76c2e52">
-<pre class="example" id="org976de8b">
+<pre class="example" id="org758a45e">
 翻译自 OptimizingShaderLoadTime.html
 </pre>
 <p>
@@ -6063,9 +7435,9 @@ ShaderVariantCollection 是一个基于着色器列表的资源，对于列表�
 </p>
 </div>
 </div>
-<div id="outline-container-org7041930" class="outline-4">
-<h4 id="org7041930">参考文档</h4>
-<div class="outline-text-4" id="text-org7041930">
+<div id="outline-container-orgf96efda" class="outline-4">
+<h4 id="orgf96efda">参考文档</h4>
+<div class="outline-text-4" id="text-orgf96efda">
 <p>
 <a href="https://gameinstitute.qq.com/community/detail/113452">https://gameinstitute.qq.com/community/detail/113452</a><br />
 </p>
@@ -6122,6 +7494,20 @@ Occlusion Portal(遮挡门)可以被打开也可以被关闭。当 Occlusion Por
 </div>
 </div>
 
+<div id="outline-container-orge4016c9" class="outline-4">
+<h4 id="orge4016c9">Occlusion culling and Scene loading</h4>
+<div class="outline-text-4" id="text-orge4016c9">
+<p>
+假设运行时，需要同时加载 3 个场景。那么，在制作时，需要利用多场景编辑对这 3 个场景一起烘培 OcclusionCullingData。如下图是 3 个场景一起烘培产生的数据：<br />
+<img src="./UnityNote/multi-scenes-occlusion-data.jpg" alt="multi-scenes-occlusion-data.jpg" /><br />
+加载场景时，首先，使用 LoadSceneMode.Single 模式加载 3 个场景中的其中一个场景 A，此时，Unity 会将当前激活的场景及其 occlusion 数据卸载，然后，unity 才会加载场景 A 以及 3 个场景共用的 occlusion data。之后，使用 LoadSceneMode.Additive 模式加载其他场景时，若 unity 发现加载场景的 occlusion data 和当前激活场景的 occlusion data 一样，occlusion culling 就可以在多场景模式下正常工作了。<br />
+</p>
+
+<ul class="org-ul">
+<li><a href="https://docs.unity3d.com/2020.3/Documentation/Manual/occlusion-culling-scene-loading.html">https://docs.unity3d.com/2020.3/Documentation/Manual/occlusion-culling-scene-loading.html</a><br /></li>
+</ul>
+</div>
+</div>
 <div id="outline-container-org0c4b1e4" class="outline-4">
 <h4 id="org0c4b1e4">Error</h4>
 <div class="outline-text-4" id="text-org0c4b1e4">
@@ -6134,13 +7520,14 @@ Occlusion Portal(遮挡门)可以被打开也可以被关闭。当 Occlusion Por
 <li>SceneView 下 OcclusionCulling/Visibility Lines 没有勾选。<br /></li>
 <li>SceneView 下 OcclusionCulling/Occlusion culling 没有勾选。<br /></li>
 <li>摄像机不在 CameraVolumes 内部。<br /></li>
+<li>Gizmos 没有打开<br /></li>
 </ul>
 </div>
 </div>
 </div>
-<div id="outline-container-org1e8d3cb" class="outline-4">
-<h4 id="org1e8d3cb">参考资料</h4>
-<div class="outline-text-4" id="text-org1e8d3cb">
+<div id="outline-container-org234b8d8" class="outline-4">
+<h4 id="org234b8d8">参考资料</h4>
+<div class="outline-text-4" id="text-org234b8d8">
 <ul class="org-ul">
 <li><a href="https://thegamedev.guru/unity-performance/occlusion-culling-tutorial/">https://thegamedev.guru/unity-performance/occlusion-culling-tutorial/</a><br /></li>
 <li><a href="https://blog.unity.com/technology/occlusion-culling-in-unity-4-3-the-basics">https://blog.unity.com/technology/occlusion-culling-in-unity-4-3-the-basics</a><br /></li>
@@ -6213,7 +7600,7 @@ GameObject.Destroy(com);<br />
 <div id="outline-container-orgb6c5e88" class="outline-3">
 <h3 id="orgb6c5e88">Unity 中插件下载目录在哪儿？</h3>
 <div class="outline-text-3" id="text-orgb6c5e88">
-<pre class="example" id="org1b5f21b">
+<pre class="example" id="org9033594">
 - Win7/win8
 	C:\Users\accountName\AppData\Roaming\Unity\Asset Store
 - mac 下
@@ -6238,8 +7625,8 @@ GameObject.Destroy(com);<br />
 </div>
 </div>
 </div>
-<div id="outline-container-orgfe4c2da" class="outline-2">
-<h2 id="orgfe4c2da">参考资料</h2>
+<div id="outline-container-org0f1486c" class="outline-2">
+<h2 id="org0f1486c">参考资料</h2>
 </div>
 </div>
 <div id="postamble" class="status">

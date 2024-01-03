@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-06-27 Tue 22:35 -->
+<!-- 2023-11-28 Tue 17:24 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>ComputeShader</title>
@@ -29,34 +29,38 @@
 <ul>
 <li><a href="#org624e68b">ComputeShader</a>
 <ul>
+<li><a href="#orga93e4c5">Base</a></li>
 <li><a href="#org17f40e2">GPUDrivenTerrain</a>
 <ul>
 <li><a href="#orgd902dc3">DataStructure</a></li>
-<li><a href="#org0b8cbbc">Implement 0</a>
+<li><a href="#org6a14cf4">实现无高度图版本</a>
 <ul>
+<li><a href="#org9fca6ce">创建 plane mesh</a></li>
 <li><a href="#org8204dd1">使用 plane 平铺场景</a></li>
-</ul>
-</li>
-<li><a href="#org2d48acc">Implement 1</a>
-<ul>
 <li><a href="#org09b8360">构建四叉树</a></li>
 <li><a href="#orgee9ba31">构建 patch</a></li>
 <li><a href="#orgd9812dd">渲染 patch</a></li>
 </ul>
 </li>
+<li><a href="#org34c23f7">实现高度图版本</a>
+<ul>
+<li><a href="#org5862142">引入高度图</a></li>
+<li><a href="#orgd80a7d0">Node Lod 分解</a></li>
 </ul>
 </li>
-<li><a href="#orgeba5465">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#org36007b4">参考资料</a></li>
+</ul>
+</li>
+<li><a href="#orga027839">参考资料</a></li>
 </ul>
 </div>
 </div>
 <p>
 ComputeShader note.<br />
 </p>
-<div class="HTML" id="orga6d4911">
+<div class="HTML" id="org14026cf">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -67,6 +71,14 @@ ComputeShader note.<br />
 <h2 id="org624e68b">ComputeShader</h2>
 <div class="outline-text-2" id="text-org624e68b">
 </div>
+<div id="outline-container-orga93e4c5" class="outline-3">
+<h3 id="orga93e4c5">Base</h3>
+<div class="outline-text-3" id="text-orga93e4c5">
+<p>
+<a href="./UnityCatLikeCoding.html#org663c5fd">Compute Shader Base</a><br />
+</p>
+</div>
+</div>
 <div id="outline-container-org17f40e2" class="outline-3">
 <h3 id="org17f40e2">GPUDrivenTerrain</h3>
 <div class="outline-text-3" id="text-org17f40e2">
@@ -74,9 +86,24 @@ ComputeShader note.<br />
 <div id="outline-container-orgd902dc3" class="outline-4">
 <h4 id="orgd902dc3">DataStructure</h4>
 <div class="outline-text-4" id="text-orgd902dc3">
-<p>
-world 10240m * 10240m<br />
-</p>
+<ul class="org-ul">
+<li>world 10240m * 10240m<br /></li>
+<li>world 被划分为多个 node, 最小的 node 大小为 64m，被称为一个 sector<br />
+<ul class="org-ul">
+<li>lod0 对应的 node 为 64m<br /></li>
+<li>node 大小随 lod 等级翻倍<br /></li>
+</ul></li>
+<li>每个 node 被划分为 8*8 个 patch<br />
+<ul class="org-ul">
+<li>lod0 对应的 patchXSize=64m/8=8m<br /></li>
+<li>patch 大小随 lod 等级翻倍<br /></li>
+</ul></li>
+<li>每个 patch 被划分为 16*16 个 grid<br />
+<ul class="org-ul">
+<li>lod0 对应的 gridXSize=8m/16=0.5m<br /></li>
+<li>grid 大小随 lod 等级翻倍<br /></li>
+</ul></li>
+</ul>
 
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
@@ -105,15 +132,15 @@ world 10240m * 10240m<br />
 <thead>
 <tr>
 <th scope="col" class="org-left">&#xa0;</th>
-<th scope="col" class="org-left">patchSize</th>
+<th scope="col" class="org-left">patchXSize</th>
 <th scope="col" class="org-left">gridPerPatch</th>
-<th scope="col" class="org-left">gridRes</th>
-<th scope="col" class="org-left">grid</th>
+<th scope="col" class="org-left">gridXSize</th>
+<th scope="col" class="org-left">gridXCount</th>
 <th scope="col" class="org-left">gridPerNode</th>
-<th scope="col" class="org-left">nodeSize</th>
-<th scope="col" class="org-left">node</th>
-<th scope="col" class="org-left">patchPerNode</th>
-<th scope="col" class="org-left">sectorPerNode</th>
+<th scope="col" class="org-left">nodeXSize</th>
+<th scope="col" class="org-left">nodeXCount</th>
+<th scope="col" class="org-left">patchXPerNode</th>
+<th scope="col" class="org-left">sectorXPerNode</th>
 </tr>
 </thead>
 <tbody>
@@ -196,16 +223,22 @@ world 10240m * 10240m<br />
 </tr>
 </tbody>
 </table>
+</div>
+</div>
 
+<div id="outline-container-org6a14cf4" class="outline-4">
+<h4 id="org6a14cf4">实现无高度图版本</h4>
+<div class="outline-text-4" id="text-org6a14cf4">
+</div>
+<div id="outline-container-org9fca6ce" class="outline-5">
+<h5 id="org9fca6ce">创建 plane mesh</h5>
+<div class="outline-text-5" id="text-org9fca6ce">
 <p>
-最小的 node 的大小为 64m*64m, 我们将 64m*64m 大小的地块称为一个 Sector。<br />
+patch 为渲染的最小单位，每个 patch 使用相同的 plane 作为 mesh。上面图表可以得出最小的 patchSize 为 8m，所以我们生成的 plane mesh 大小为 8m*8m.<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org0b8cbbc" class="outline-4">
-<h4 id="org0b8cbbc">Implement 0</h4>
-<div class="outline-text-4" id="text-org0b8cbbc">
-</div>
+
 <div id="outline-container-org8204dd1" class="outline-5">
 <h5 id="org8204dd1">使用 plane 平铺场景</h5>
 <div class="outline-text-5" id="text-org8204dd1">
@@ -235,11 +268,6 @@ world 10240m * 10240m<br />
 </pre>
 </div>
 </div>
-</div>
-</div>
-<div id="outline-container-org2d48acc" class="outline-4">
-<h4 id="org2d48acc">Implement 1</h4>
-<div class="outline-text-4" id="text-org2d48acc">
 </div>
 <div id="outline-container-org09b8360" class="outline-5">
 <h5 id="org09b8360">构建四叉树</h5>
@@ -278,28 +306,122 @@ Debug.<span style="color: #bc6ec5; font-weight: bold;">LogWarningFormat</span>(<
 <h5 id="orgee9ba31">构建 patch</h5>
 <div class="outline-text-5" id="text-orgee9ba31">
 <p>
-一个 node 分解为 8*8 个 patch<br />
+一个 node 分解为 8*8 个 patch, 得到每个 patch 对应的位置。<br />
 </p>
 </div>
 </div>
 <div id="outline-container-orgd9812dd" class="outline-5">
 <h5 id="orgd9812dd">渲染 patch</h5>
+<div class="outline-text-5" id="text-orgd9812dd">
+<ol class="org-ol">
+<li>在 vertex shader 中根据所属 patch 的位置和当前顶点的 localPos 得到当前顶点的 worldPos<br /></li>
+<li>根据当前顶点的 worldPos.xz 得到 heightTex 的采样 uv，从而得到当前顶点对应的 worldPos.y<br /></li>
+</ol>
+</div>
+</div>
+</div>
+<div id="outline-container-org34c23f7" class="outline-4">
+<h4 id="org34c23f7">实现高度图版本</h4>
+<div class="outline-text-4" id="text-org34c23f7">
+</div>
+<div id="outline-container-org5862142" class="outline-5">
+<h5 id="org5862142">引入高度图</h5>
+<div class="outline-text-5" id="text-org5862142">
+<p>
+高度图的每个像素表示的是 PlaneMesh 顶点的高度，相邻两个像素的间隔对应的是一个 grid。<br />
+根据顶点的世界坐标可以计算出顶点对应的采样 UV，对 HeightMap 进行采样得到顶点的高度。<br />
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">&#xa0;</th>
+<th scope="col" class="org-right">worldXSize(m)</th>
+<th scope="col" class="org-right">gridXSize(m)</th>
+<th scope="col" class="org-left">nodeXSize</th>
+<th scope="col" class="org-left">nodeXVertexCount</th>
+<th scope="col" class="org-left">worldXVertexCount</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">Lod0</td>
+<td class="org-right">1024</td>
+<td class="org-right">0.5</td>
+<td class="org-left">0.5*16*8=64</td>
+<td class="org-left">16*8=128</td>
+<td class="org-left">1024/0.5=2048</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-right">2048</td>
+<td class="org-right">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">2048/0.5=4096</td>
+</tr>
+
+<tr>
+<td class="org-left">Lod1</td>
+<td class="org-right">1024</td>
+<td class="org-right">1</td>
+<td class="org-left">1*16*8=128</td>
+<td class="org-left">128</td>
+<td class="org-left">1024/1=1024</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-right">2048</td>
+<td class="org-right">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">2048/1=2048</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div id="outline-container-orgd80a7d0" class="outline-5">
+<h5 id="orgd80a7d0">Node Lod 分解</h5>
+<div class="outline-text-5" id="text-orgd80a7d0">
+<p>
+引入高度图后，node 中心点的位置会由高度图所决定，一个 node 内，不同顶点的高度也会不同，之前计算所得的摄像机到 node 的距离就会不准确。我们可以通过下面方案来提高距离准确性：计算 node 范围内，最大高度和最小高度。以最大高度和最小高度的平均高度作为 node 的高度，来计算 node 的位置，然后再计算摄像机到 node 的距离。<br />
+</p>
+</div>
 </div>
 </div>
 </div>
 
-<div id="outline-container-orgeba5465" class="outline-3">
-<h3 id="orgeba5465">参考资料</h3>
-<div class="outline-text-3" id="text-orgeba5465">
+<div id="outline-container-org36007b4" class="outline-3">
+<h3 id="org36007b4">参考资料</h3>
+<div class="outline-text-3" id="text-org36007b4">
 <ul class="org-ul">
 <li><a href="https://github.com/wlgys8/GPUDrivenTerrainLearn">https://github.com/wlgys8/GPUDrivenTerrainLearn</a><br /></li>
+<li>天涯明月刀手游:如何应用 GPU Driven 优化渲染效果？ <a href="https://mp.weixin.qq.com/s/m3e_F5FL3O23FPTGa54wgA">https://mp.weixin.qq.com/s/m3e_F5FL3O23FPTGa54wgA</a><br /></li>
 </ul>
 </div>
 </div>
 </div>
-<div id="outline-container-org36007b4" class="outline-2">
-<h2 id="org36007b4">参考资料</h2>
-<div class="outline-text-2" id="text-org36007b4">
+<div id="outline-container-orga027839" class="outline-2">
+<h2 id="orga027839">参考资料</h2>
+<div class="outline-text-2" id="text-orga027839">
 <ul class="org-ul">
 <li><a href="https://docs.unity3d.com/Manual/SL-ShaderCompileTargets.html">https://docs.unity3d.com/Manual/SL-ShaderCompileTargets.html</a><br /></li>
 <li><a href="https://registry.khronos.org/OpenGL/extensions/ANDROID/ANDROID_extension_pack_es31a.txt">https://registry.khronos.org/OpenGL/extensions/ANDROID/ANDROID_extension_pack_es31a.txt</a><br /></li>

@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-06-27 Tue 22:36 -->
+<!-- 2024-01-03 Wed 16:03 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>UnityPostprocess</title>
@@ -30,13 +30,13 @@
 <li><a href="#org0526a37">UnityPostprocessStack Version 2</a>
 <ul>
 <li><a href="#org185564b">使用 PPS</a></li>
-<li><a href="#orgfa91cc4">Writing Custom Effects</a>
+<li><a href="#org8c0cfda">Writing Custom Effects</a>
 <ul>
 <li><a href="#org49f4c13">CSharp 实现</a></li>
 <li><a href="#org6355729">Shader 实现</a></li>
 </ul>
 </li>
-<li><a href="#org897a1b0">Source Code</a>
+<li><a href="#orga1d1c2d">Source Code</a>
 <ul>
 <li><a href="#org5c3f0cb">Q&amp;A</a>
 <ul>
@@ -54,7 +54,7 @@
 </li>
 </ul>
 </li>
-<li><a href="#org666ba5a">参考资料</a></li>
+<li><a href="#orgf1b0b86">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#org2c85040">URP Postprocess</a>
@@ -65,24 +65,41 @@
 <li><a href="#org23a5b3d">为摄像机指定 VolumeTrigger 和 VolumeLayerMask</a></li>
 </ul>
 </li>
-<li><a href="#org9e0bbdd">Writing Custom Effects</a>
+<li><a href="#org6d8dd44">Writing Custom Effects</a>
 <ul>
 <li><a href="#org5b8bf16">自定义 RenderFeature</a></li>
-<li><a href="#orgc844670"><span class="todo TODO">TODO</span> 添加后期效果到 Volume 中</a>
+<li><a href="#orgc844670">添加后期效果到 Volume 中</a>
 <ul>
 <li><a href="#org58af0e1">扩展 VolumeComponent</a></li>
+<li><a href="#org882fe05">实现 LightShaftSamplerPass</a></li>
+<li><a href="#orgee55c29">将 LightShaftSamplerPass 添加到 PostProcessPasses</a></li>
 </ul>
 </li>
-<li><a href="#orgcf9d20e">使用 Timeline 来控制 Volume 后期效果的参数</a></li>
-<li><a href="#org3b19798">URP Blit</a></li>
+<li><a href="#orgcf9d20e">使用 Timeline 来控制 Volume 后期效果的参数</a>
+<ul>
+<li><a href="#orgf553da1">定义 Timeline 需要控制的 Volume 后期效果参数结构体</a></li>
+<li><a href="#org1d4e4d4">在 Update 中将后期效果参数同步给 VolumeComponent</a></li>
 </ul>
 </li>
-<li><a href="#org3f71542">Source Code</a>
+<li><a href="#org3b19798">URP Blit</a>
+<ul>
+<li><a href="#orgf93160c">方案 1</a></li>
+<li><a href="#orgf76fcc9">方案 2</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org988f9ff">Source Code</a>
 <ul>
 <li><a href="#org0485e04">代码结构</a></li>
+<li><a href="#org2e3b837">Q&amp;A</a>
+<ul>
+<li><a href="#orgee5f1c2">GetFullScreenTriangleVertexPosition GetFullScreenTriangleTexCoord</a></li>
 </ul>
 </li>
-<li><a href="#orgb3dde17">参考资料</a></li>
+</ul>
+</li>
+<li><a href="#org334a70b">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#org82dcf5e">Common</a>
@@ -100,7 +117,7 @@
 <p>
 UnityPostprocess note.<br />
 </p>
-<div class="HTML" id="org45c63f4">
+<div class="HTML" id="orge88f3c6">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -164,9 +181,9 @@ UnityPostprocess note.<br />
 </div>
 </div>
 </div>
-<div id="outline-container-orgfa91cc4" class="outline-3">
-<h3 id="orgfa91cc4">Writing Custom Effects</h3>
-<div class="outline-text-3" id="text-orgfa91cc4">
+<div id="outline-container-org8c0cfda" class="outline-3">
+<h3 id="org8c0cfda">Writing Custom Effects</h3>
+<div class="outline-text-3" id="text-org8c0cfda">
 </div>
 <div id="outline-container-org49f4c13" class="outline-4">
 <h4 id="org49f4c13">CSharp 实现</h4>
@@ -291,9 +308,9 @@ UnityPostprocess note.<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org897a1b0" class="outline-3">
-<h3 id="org897a1b0">Source Code</h3>
-<div class="outline-text-3" id="text-org897a1b0">
+<div id="outline-container-orga1d1c2d" class="outline-3">
+<h3 id="orga1d1c2d">Source Code</h3>
+<div class="outline-text-3" id="text-orga1d1c2d">
 </div>
 <div id="outline-container-org5c3f0cb" class="outline-4">
 <h4 id="org5c3f0cb">Q&amp;A</h4>
@@ -305,12 +322,8 @@ UnityPostprocess note.<br />
 <p>
 Postprocess 没有通过绘制两个三角形来实现绘制整个屏幕,而是通过绘制一个超出屏幕的大三角形来覆盖整个屏幕，这样不仅减少了 DrawCall，而且减少了 Overdraw(绘制两个三角形时，屏幕对角线占用的像素需要绘制两次，从而产生了 Overdraw).<br />
 下图为绘制 fullscreenTriangle 的图示，其中淡黄色区域为实际绘制的部分，其他部分都会被剔除。<br />
+<img src="./UnityPostprocess/20_03_22_fullscreenT.png" alt="20_03_22_fullscreenT.png" /><br />
 </p>
-
-<div id="orgf20dd56" class="figure">
-<p><img src="./UnityPostprocess/20_03_22_fullscreenT.png" alt="20_03_22_fullscreenT.png" width="300px" /><br />
-</p>
-</div>
 
 <div class="org-src-container">
 <pre class="src src-shader"><span style="color: #4f97d7; font-weight: bold;">static</span> Mesh s_FullscreenTriangle = null;
@@ -460,9 +473,9 @@ cmd.EndSample(<span style="color: #2d9574;">"GBloomPyramid-END"</span>);
 </div>
 </div>
 </div>
-<div id="outline-container-org666ba5a" class="outline-3">
-<h3 id="org666ba5a">参考资料</h3>
-<div class="outline-text-3" id="text-org666ba5a">
+<div id="outline-container-orgf1b0b86" class="outline-3">
+<h3 id="orgf1b0b86">参考资料</h3>
+<div class="outline-text-3" id="text-orgf1b0b86">
 <ul class="org-ul">
 <li>官方文档 <a href="https://docs.unity3d.com/Packages/com.unity.postprocessing@2.2/manual/Manipulating-the-Stack.html">https://docs.unity3d.com/Packages/com.unity.postprocessing@2.2/manual/Manipulating-the-Stack.html</a><br /></li>
 </ul>
@@ -512,9 +525,9 @@ uaCamData.volumeLayerMask = 1&lt;&lt;30;
 </div>
 </div>
 
-<div id="outline-container-org9e0bbdd" class="outline-3">
-<h3 id="org9e0bbdd">Writing Custom Effects</h3>
-<div class="outline-text-3" id="text-org9e0bbdd">
+<div id="outline-container-org6d8dd44" class="outline-3">
+<h3 id="org6d8dd44">Writing Custom Effects</h3>
+<div class="outline-text-3" id="text-org6d8dd44">
 <ul class="org-ul">
 <li><a href="https://github.com/yahiaetman/URPCustomPostProcessingStack">https://github.com/yahiaetman/URPCustomPostProcessingStack</a><br /></li>
 </ul>
@@ -528,73 +541,138 @@ uaCamData.volumeLayerMask = 1&lt;&lt;30;
 </div>
 </div>
 <div id="outline-container-orgc844670" class="outline-4">
-<h4 id="orgc844670"><span class="todo TODO">TODO</span> 添加后期效果到 Volume 中</h4>
+<h4 id="orgc844670">添加后期效果到 Volume 中</h4>
 <div class="outline-text-4" id="text-orgc844670">
 </div>
 <div id="outline-container-org58af0e1" class="outline-5">
 <h5 id="org58af0e1">扩展 VolumeComponent</h5>
 <div class="outline-text-5" id="text-org58af0e1">
+<p>
+Packages/com.unity.render-pipelines.universal/Runtime/Overrides/ScreenSpaceLightShaft.cs<br />
+</p>
 <div class="org-src-container">
 <pre class="src src-csharp">[Serializable, <span style="color: #bc6ec5; font-weight: bold;">VolumeComponentMenuForRenderPipeline</span>(<span style="color: #2d9574;">"Post-processing/Custom/Screen Space Light Shaft"</span>, <span style="color: #4f97d7; font-weight: bold;">typeof</span>(UniversalRenderPipeline))]
-<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> SSLightShaft: <span style="color: #ce537a; font-weight: bold;">VolumeComponent</span>, <span style="color: #ce537a; font-weight: bold;">IPostProcessComponent</span>
+<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> ScreenSpaceLightShaft: <span style="color: #ce537a; font-weight: bold;">VolumeComponent</span>, <span style="color: #ce537a; font-weight: bold;">IPostProcessComponent</span>
 {
-    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">ColorParameter</span> <span style="color: #7590db;">color</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">ColorParameter</span>(Color.white);
-    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">ClampedFloatParameter</span> <span style="color: #7590db;">intensity</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">ClampedFloatParameter</span>(1, 0, 10);
-    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">ClampedFloatParameter</span> <span style="color: #7590db;">constrast</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">ClampedFloatParameter</span>(2, 0, 10);
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">BoolParameter</span> <span style="color: #7590db;">isEnabled</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">BoolParameter</span>(<span style="color: #a45bad;">false</span>);
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">Vector2Parameter</span> <span style="color: #7590db;">toScreenSpace</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Vector2Parameter</span>(Vector2.one);
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">ClampedFloatParameter</span> <span style="color: #7590db;">kernelRadius</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">ClampedFloatParameter</span>(1, 0.1f, 4);
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">ClampedFloatParameter</span> <span style="color: #7590db;">depth</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">ClampedFloatParameter</span>(1, 0.1f, 4);
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">......</span>
 }
 </pre>
 </div>
-
+</div>
+</div>
+<div id="outline-container-org882fe05" class="outline-5">
+<h5 id="org882fe05">实现 LightShaftSamplerPass</h5>
+<div class="outline-text-5" id="text-org882fe05">
 <p>
-PostProcessPass 中添加 SSLightShaft 类型成员。<br />
+Packages/com.unity.render-pipelines.universal/Runtime/Passes/LightShaftSamplerPass.cs<br />
 </p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">LightShaftSamplerPass</span>: <span style="color: #ce537a; font-weight: bold;">ScriptableRenderPass</span>
+{
+    <span style="color: #4f97d7; font-weight: bold;">readonly</span> <span style="color: #ce537a; font-weight: bold;">Material</span> <span style="color: #7590db;">m_LightShaftSamplerMat</span>;
+    <span style="color: #4f97d7; font-weight: bold;">readonly</span> <span style="color: #ce537a; font-weight: bold;">GraphicsFormat</span> <span style="color: #7590db;">m_LightShaftRTFormat</span>;
+    <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">kRTWidth</span> = 64;
+    <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">int</span> <span style="color: #7590db;">kRTHeight</span> = 64;
+
+    <span style="color: #ce537a; font-weight: bold;">RenderTargetHandle</span>[] <span style="color: #7590db;">m_LightShaftRTHs</span>;
+    <span style="color: #ce537a; font-weight: bold;">RenderTargetHandle</span> <span style="color: #7590db;">m_LightShaftCoverageMap0</span>;
+    <span style="color: #ce537a; font-weight: bold;">RenderTargetHandle</span> <span style="color: #7590db;">m_LightShaftCoverageMap1</span>;
+    <span style="color: #ce537a; font-weight: bold;">ScreenSpaceLightShaft</span>[] <span style="color: #7590db;">m_LightShafts</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">ScreenSpaceLightShaft</span>[ScreenSpaceLightShaft.kLightShaftCount];
+    <span style="color: #ce537a; font-weight: bold;">DynamicArray</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt; <span style="color: #7590db;">m_ActiveLightShaftIndexArr</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">DynamicArray</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt;(ScreenSpaceLightShaft.kLightShaftCount);
+
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #bc6ec5; font-weight: bold;">LightShaftSamplerPass</span>(<span style="color: #ce537a; font-weight: bold;">RenderPassEvent</span> <span style="color: #7590db;">evt</span>, <span style="color: #ce537a; font-weight: bold;">PostProcessData</span> <span style="color: #7590db;">data</span>)
+    {
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">......</span>
+    }
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Execute</span>(<span style="color: #ce537a; font-weight: bold;">ScriptableRenderContext</span> <span style="color: #7590db;">context</span>, <span style="color: #4f97d7; font-weight: bold;">ref</span> <span style="color: #ce537a; font-weight: bold;">RenderingData</span> <span style="color: #7590db;">renderingData</span>)
+    {
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">......</span>
+    }
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">OnFinishCameraStackRendering</span>(<span style="color: #ce537a; font-weight: bold;">CommandBuffer</span> <span style="color: #7590db;">cmd</span>)
+    {
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">......</span>
+    }
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Cleanup</span>()
+    {
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">......</span>
+    }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgee55c29" class="outline-5">
+<h5 id="orgee55c29">将 LightShaftSamplerPass 添加到 PostProcessPasses</h5>
+<div class="outline-text-5" id="text-orgee55c29">
+<p>
+Packages/com.unity.render-pipelines.universal/Runtime/PostProcessPasses.cs<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">internal</span> <span style="color: #4f97d7; font-weight: bold;">struct</span> <span style="color: #ce537a; font-weight: bold;">PostProcessPasses</span> : <span style="color: #ce537a; font-weight: bold;">IDisposable</span>
+{
+    <span style="color: #ce537a; font-weight: bold;">ColorGradingLutPass</span> <span style="color: #7590db;">m_ColorGradingLutPass</span>;
+    <span style="color: #ce537a; font-weight: bold;">PostProcessPass</span> <span style="color: #7590db;">m_PostProcessPass</span>;
+    <span style="color: #ce537a; font-weight: bold;">PostProcessPass</span> <span style="color: #7590db;">m_FinalPostProcessPass</span>;
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#28155;&#21152; LightShaftSamplerPass</span>
+    <span style="color: #ce537a; font-weight: bold;">LightShaftSamplerPass</span> <span style="color: #7590db;">m_LightShaftSamplerPass</span>;
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">......</span>
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #bc6ec5; font-weight: bold;">PostProcessPasses</span>(<span style="color: #ce537a; font-weight: bold;">PostProcessData</span> <span style="color: #7590db;">rendererPostProcessData</span>, <span style="color: #ce537a; font-weight: bold;">Material</span> <span style="color: #7590db;">blitMaterial</span>)
+    {
+        m_ColorGradingLutPass = <span style="color: #a45bad;">null</span>;
+        m_PostProcessPass = <span style="color: #a45bad;">null</span>;
+        m_FinalPostProcessPass = <span style="color: #a45bad;">null</span>;
+        m_LightShaftSamplerPass = <span style="color: #a45bad;">null</span>;
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">......</span>
+
+        <span style="color: #bc6ec5; font-weight: bold;">Recreate</span>(rendererPostProcessData);
+    }
+
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Recreate</span>(<span style="color: #ce537a; font-weight: bold;">PostProcessData</span> <span style="color: #7590db;">data</span>)
+    {
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">......</span>
+
+        <span style="color: #4f97d7; font-weight: bold;">if</span> (data != <span style="color: #a45bad;">null</span>)
+        {
+            m_ColorGradingLutPass = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">ColorGradingLutPass</span>(RenderPassEvent.BeforeRenderingPrePasses, data);
+            m_PostProcessPass = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">PostProcessPass</span>(RenderPassEvent.BeforeRenderingPostProcessing, data, m_BlitMaterial);
+            m_FinalPostProcessPass = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">PostProcessPass</span>(RenderPassEvent.AfterRenderingPostProcessing, data, m_BlitMaterial);
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21019;&#24314; LightShaftSamplerPass</span>
+            m_LightShaftSamplerPass = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">LightShaftSamplerPass</span>(RenderPassEvent.BeforeRenderingTransparents, data);
+            m_CurrentPostProcessData = data;
+        }
+    }
+
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Dispose</span>()
+    {
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">always dispose unmanaged resources</span>
+        m_ColorGradingLutPass?.<span style="color: #bc6ec5; font-weight: bold;">Cleanup</span>();
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#28165;&#29702; m_LightShaftSamplerPass</span>
+        m_LightShaftSamplerPass?.<span style="color: #bc6ec5; font-weight: bold;">Cleanup</span>();
+        m_PostProcessPass?.<span style="color: #bc6ec5; font-weight: bold;">Cleanup</span>();
+        m_FinalPostProcessPass?.<span style="color: #bc6ec5; font-weight: bold;">Cleanup</span>();
+    }
+}
+</pre>
+</div>
 </div>
 </div>
 </div>
 <div id="outline-container-orgcf9d20e" class="outline-4">
 <h4 id="orgcf9d20e">使用 Timeline 来控制 Volume 后期效果的参数</h4>
 <div class="outline-text-4" id="text-orgcf9d20e">
+</div>
+<div id="outline-container-orgf553da1" class="outline-5">
+<h5 id="orgf553da1">定义 Timeline 需要控制的 Volume 后期效果参数结构体</h5>
+<div class="outline-text-5" id="text-orgf553da1">
+<p>
+Timeline 不会控制所有 Volume 的参数，定义 Timeline 的后期效果参数结构体，可以减少 Timeline 存储的数据量。另外，定义统一的结构体，可以同时适配 URP 和 HDRP。<br />
+</p>
 <div class="org-src-container">
-<pre class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Start</span>()
-{
-        m_volume = gameObject.<span style="color: #bc6ec5; font-weight: bold;">AddComponent</span>&lt;<span style="color: #ce537a; font-weight: bold;">Volume</span>&gt;();
-        m_volume.isGlobal = <span style="color: #a45bad;">true</span>;
-        m_volume.priority = 10;
-        <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">p</span> = ScriptableObject.<span style="color: #bc6ec5; font-weight: bold;">CreateInstance</span>&lt;<span style="color: #ce537a; font-weight: bold;">VolumeProfile</span>&gt;();
-        m_lensDistortion = p.<span style="color: #bc6ec5; font-weight: bold;">Add</span>&lt;<span style="color: #ce537a; font-weight: bold;">LensDistortion</span>&gt;();
-        m_vignette = p.<span style="color: #bc6ec5; font-weight: bold;">Add</span>&lt;<span style="color: #ce537a; font-weight: bold;">Vignette</span>&gt;();
-        m_chromaticAberration = p.<span style="color: #bc6ec5; font-weight: bold;">Add</span>&lt;<span style="color: #ce537a; font-weight: bold;">ChromaticAberration</span>&gt;();
-        m_volume.profile = p;
-}
-
-<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Update</span>()
-{
-    <span style="color: #4f97d7; font-weight: bold;">if</span> (m_lensDistortion)
-    {
-        m_lensDistortion.active = LensDistortion.Enabled;
-        m_lensDistortion.intensity.<span style="color: #bc6ec5; font-weight: bold;">Override</span>(LensDistortion.Intensity.<span style="color: #bc6ec5; font-weight: bold;">Evaluate</span>(ts));
-        m_lensDistortion.xMultiplier.<span style="color: #bc6ec5; font-weight: bold;">Override</span>(LensDistortion.XMultiplier.<span style="color: #bc6ec5; font-weight: bold;">Evaluate</span>(ts));
-        m_lensDistortion.yMultiplier.<span style="color: #bc6ec5; font-weight: bold;">Override</span>(LensDistortion.YMultiplier.<span style="color: #bc6ec5; font-weight: bold;">Evaluate</span>(ts));
-        m_lensDistortion.scale.<span style="color: #bc6ec5; font-weight: bold;">Override</span>(LensDistortion.Scale.<span style="color: #bc6ec5; font-weight: bold;">Evaluate</span>(ts));
-    }
-
-    <span style="color: #4f97d7; font-weight: bold;">if</span> (m_vignette)
-    {
-        m_vignette.active = Vignette.Enabled;
-        m_vignette.color.<span style="color: #bc6ec5; font-weight: bold;">Override</span>(Vignette.Color.<span style="color: #bc6ec5; font-weight: bold;">Evaluate</span>(ts));
-        m_vignette.center.<span style="color: #bc6ec5; font-weight: bold;">Override</span>(<span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Vector2</span>(Vignette.CenterX.<span style="color: #bc6ec5; font-weight: bold;">Evaluate</span>(<span style="color: #ce537a; font-weight: bold;">ts</span>), Vignette.CenterY.<span style="color: #bc6ec5; font-weight: bold;">Evaluate</span>(<span style="color: #ce537a; font-weight: bold;">ts</span>)));
-        m_vignette.intensity.<span style="color: #bc6ec5; font-weight: bold;">Override</span>(Vignette.Intensity.<span style="color: #bc6ec5; font-weight: bold;">Evaluate</span>(ts));
-        m_vignette.smoothness.<span style="color: #bc6ec5; font-weight: bold;">Override</span>(Vignette.Smoothness.<span style="color: #bc6ec5; font-weight: bold;">Evaluate</span>(ts));
-    }
-
-    <span style="color: #4f97d7; font-weight: bold;">if</span> (m_chromaticAberration)
-    {
-        m_chromaticAberration.active = ChromaticAberration.Enabled;
-        m_chromaticAberration.intensity.<span style="color: #bc6ec5; font-weight: bold;">Override</span>(ChromaticAberration.Intensity.<span style="color: #bc6ec5; font-weight: bold;">Evaluate</span>(ts));
-    }
-}
-
-[<span style="color: #7590db;">Serializable</span>]
+<pre class="src src-csharp">[<span style="color: #7590db;">Serializable</span>]
 <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> LensDistortionParams
 {
     <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #7590db;">Enabled</span> = <span style="color: #a45bad;">false</span>;
@@ -623,6 +701,52 @@ PostProcessPass 中添加 SSLightShaft 类型成员。<br />
 }
 </pre>
 </div>
+</div>
+</div>
+<div id="outline-container-org1d4e4d4" class="outline-5">
+<h5 id="org1d4e4d4">在 Update 中将后期效果参数同步给 VolumeComponent</h5>
+<div class="outline-text-5" id="text-org1d4e4d4">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Start</span>()
+{
+    m_volume = gameObject.<span style="color: #bc6ec5; font-weight: bold;">AddComponent</span>&lt;<span style="color: #ce537a; font-weight: bold;">Volume</span>&gt;();
+    m_volume.isGlobal = <span style="color: #a45bad;">true</span>;
+    m_volume.priority = 10;
+    <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">p</span> = ScriptableObject.<span style="color: #bc6ec5; font-weight: bold;">CreateInstance</span>&lt;<span style="color: #ce537a; font-weight: bold;">VolumeProfile</span>&gt;();
+    m_lensDistortion = p.<span style="color: #bc6ec5; font-weight: bold;">Add</span>&lt;<span style="color: #ce537a; font-weight: bold;">LensDistortion</span>&gt;();
+    m_vignette = p.<span style="color: #bc6ec5; font-weight: bold;">Add</span>&lt;<span style="color: #ce537a; font-weight: bold;">Vignette</span>&gt;();
+    m_chromaticAberration = p.<span style="color: #bc6ec5; font-weight: bold;">Add</span>&lt;<span style="color: #ce537a; font-weight: bold;">ChromaticAberration</span>&gt;();
+    m_volume.profile = p;
+}
+
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Update</span>()
+{
+    <span style="color: #4f97d7; font-weight: bold;">if</span> (m_lensDistortion)
+    {
+        m_lensDistortion.active = LensDistortion.Enabled;
+        m_lensDistortion.intensity.<span style="color: #bc6ec5; font-weight: bold;">Override</span>(LensDistortion.Intensity.<span style="color: #bc6ec5; font-weight: bold;">Evaluate</span>(ts));
+        m_lensDistortion.xMultiplier.<span style="color: #bc6ec5; font-weight: bold;">Override</span>(LensDistortion.XMultiplier.<span style="color: #bc6ec5; font-weight: bold;">Evaluate</span>(ts));
+        m_lensDistortion.yMultiplier.<span style="color: #bc6ec5; font-weight: bold;">Override</span>(LensDistortion.YMultiplier.<span style="color: #bc6ec5; font-weight: bold;">Evaluate</span>(ts));
+        m_lensDistortion.scale.<span style="color: #bc6ec5; font-weight: bold;">Override</span>(LensDistortion.Scale.<span style="color: #bc6ec5; font-weight: bold;">Evaluate</span>(ts));
+    }
+
+    <span style="color: #4f97d7; font-weight: bold;">if</span> (m_vignette)
+    {
+        m_vignette.active = Vignette.Enabled;
+        m_vignette.color.<span style="color: #bc6ec5; font-weight: bold;">Override</span>(Vignette.Color.<span style="color: #bc6ec5; font-weight: bold;">Evaluate</span>(ts));
+        m_vignette.center.<span style="color: #bc6ec5; font-weight: bold;">Override</span>(<span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Vector2</span>(Vignette.CenterX.<span style="color: #bc6ec5; font-weight: bold;">Evaluate</span>(<span style="color: #ce537a; font-weight: bold;">ts</span>), Vignette.CenterY.<span style="color: #bc6ec5; font-weight: bold;">Evaluate</span>(<span style="color: #ce537a; font-weight: bold;">ts</span>)));
+        m_vignette.intensity.<span style="color: #bc6ec5; font-weight: bold;">Override</span>(Vignette.Intensity.<span style="color: #bc6ec5; font-weight: bold;">Evaluate</span>(ts));
+        m_vignette.smoothness.<span style="color: #bc6ec5; font-weight: bold;">Override</span>(Vignette.Smoothness.<span style="color: #bc6ec5; font-weight: bold;">Evaluate</span>(ts));
+    }
+
+    <span style="color: #4f97d7; font-weight: bold;">if</span> (m_chromaticAberration)
+    {
+        m_chromaticAberration.active = ChromaticAberration.Enabled;
+        m_chromaticAberration.intensity.<span style="color: #bc6ec5; font-weight: bold;">Override</span>(ChromaticAberration.Intensity.<span style="color: #bc6ec5; font-weight: bold;">Evaluate</span>(ts));
+    }
+}
+</pre>
+</div>
 
 <ul class="org-ul">
 <li><a href="https://forum.unity.com/threads/keyframing-post-process-fx-values-with-timeline.520365/">https://forum.unity.com/threads/keyframing-post-process-fx-values-with-timeline.520365/</a><br /></li>
@@ -630,9 +754,35 @@ PostProcessPass 中添加 SSLightShaft 类型成员。<br />
 </ul>
 </div>
 </div>
+</div>
 <div id="outline-container-org3b19798" class="outline-4">
 <h4 id="org3b19798">URP Blit</h4>
 <div class="outline-text-4" id="text-org3b19798">
+</div>
+<div id="outline-container-orgf93160c" class="outline-5">
+<h5 id="orgf93160c">方案 1</h5>
+<div class="outline-text-5" id="text-orgf93160c">
+<p>
+利用 URP 中的 Blitter 来绘制全屏的三角形。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp">Blitter.<span style="color: #bc6ec5; font-weight: bold;">BlitCameraTexture</span>(<span style="color: #ce537a; font-weight: bold;">cmd</span>, <span style="color: #ce537a; font-weight: bold;">mSourceTexture</span>, <span style="color: #ce537a; font-weight: bold;">ssrRTH0</span>, <span style="color: #ce537a; font-weight: bold;">Material</span>, (<span style="color: #ce537a; font-weight: bold;">int</span>)ShaderPass.Raymarching);
+</pre>
+</div>
+
+<p>
+vertex shader 和 fragment shader 的实现可以复用 URP 的实现，也可参考 URP shader 实现自定义的 shader。<br />
+com.unity.render-pipelines.core@14.0.8/Runtime/Utilities/Blit.hlsl<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgf76fcc9" class="outline-5">
+<h5 id="orgf76fcc9">方案 2</h5>
+<div class="outline-text-5" id="text-orgf76fcc9">
+<p>
+自己实现绘制全屏三角形<br />
+</p>
+
 <div class="org-src-container">
 <pre class="src src-shader"><span style="color: #4f97d7; font-weight: bold;">Shader</span> <span style="color: #2d9574;">"Hidden/Blit"</span>
 {
@@ -710,9 +860,10 @@ PostProcessPass 中添加 SSLightShaft 类型成员。<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org3f71542" class="outline-3">
-<h3 id="org3f71542">Source Code</h3>
-<div class="outline-text-3" id="text-org3f71542">
+</div>
+<div id="outline-container-org988f9ff" class="outline-3">
+<h3 id="org988f9ff">Source Code</h3>
+<div class="outline-text-3" id="text-org988f9ff">
 </div>
 <div id="outline-container-org0485e04" class="outline-4">
 <h4 id="org0485e04">代码结构</h4>
@@ -748,11 +899,55 @@ com.unity.render-pipelines.universal@10.5.0<br />
 </p>
 </div>
 </div>
+
+<div id="outline-container-org2e3b837" class="outline-4">
+<h4 id="org2e3b837">Q&amp;A</h4>
+<div class="outline-text-4" id="text-org2e3b837">
+</div>
+<div id="outline-container-orgee5f1c2" class="outline-5">
+<h5 id="orgee5f1c2">GetFullScreenTriangleVertexPosition GetFullScreenTriangleTexCoord</h5>
+<div class="outline-text-5" id="text-orgee5f1c2">
+
+<div id="org678c7ab" class="figure">
+<p><img src="./UnityPostprocess/20_03_22_fullscreenT.png" alt="20_03_22_fullscreenT.png" /><br />
+</p>
 </div>
 
-<div id="outline-container-orgb3dde17" class="outline-3">
-<h3 id="orgb3dde17">参考资料</h3>
-<div class="outline-text-3" id="text-orgb3dde17">
+<div class="org-src-container">
+<pre class="src src-shader"><span style="color: #2aa1ae; background-color: #292e34;">// &#21482;&#32771;&#34385;xy,&#36890;&#36807;&#31532;&#19968;&#34892;&#20195;&#30721;&#24471;&#21040;&#65292;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// &#32034;&#24341;0, x: 0&lt;&lt;1=00, 00&amp;10=00 y: 00&amp;10=0&#65292;&#25152;&#20197;0&#21495;&#20301;&#23545;&#24212;&#22352;&#26631;&#20026;0,0</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// &#32034;&#24341;1, x: 1&lt;&lt;1=10, 10&amp;10=10 y: 01&amp;10=0, &#25152;&#20197;1&#21495;&#20301;&#23545;&#24212;&#22352;&#26631;&#20026;2,0</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// &#32034;&#24341;2, x: 2&lt;&lt;1=100, 100&amp;010=000 y:10&amp;10=10,&#25152;&#20197;2&#21495;&#20301;&#23545;&#24212;&#22352;&#26631;&#20026;0,2</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// *2-1&#26144;&#23556;&#21518;&#65292;&#39030;&#28857;&#30340;&#22352;&#26631;&#20026;</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// v0:-1&#65292;-1</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// v1:3&#65292;-1</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// v2:-1&#65292;3</span>
+<span style="color: #ce537a; font-weight: bold;">float4</span> <span style="color: #bc6ec5; font-weight: bold;">GetFullScreenTriangleVertexPosition</span>(uint vertexID, <span style="color: #ce537a; font-weight: bold;">float</span> z = UNITY_NEAR_CLIP_VALUE)
+{
+    <span style="color: #ce537a; font-weight: bold;">float2</span> uv = <span style="color: #ce537a; font-weight: bold;">float2</span>((vertexID &lt;&lt; 1) &amp; 2, vertexID &amp; 2);
+    <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #bc6ec5; font-weight: bold;">float4</span>(uv * 2.0 - 1.0, z, 1.0);
+}
+
+<span style="color: #2aa1ae; background-color: #292e34;">// &#32034;&#24341;0, x: 0&lt;&lt;1=00, 00&amp;10=00 y: 00&amp;10=0&#65292;&#25152;&#20197;0&#21495;&#20301;&#23545;&#24212;UV&#22352;&#26631;&#20026;0,0</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// &#32034;&#24341;1, x: 1&lt;&lt;1=10, 10&amp;10=10 y: 01&amp;10=0, &#25152;&#20197;1&#21495;&#20301;&#23545;&#24212;UV&#22352;&#26631;&#20026;2,0</span>
+<span style="color: #2aa1ae; background-color: #292e34;">// &#32034;&#24341;2, x: 2&lt;&lt;1=100, 100&amp;010=000 y:10&amp;10=10,&#25152;&#20197;2&#21495;&#20301;&#23545;&#24212;UV&#22352;&#26631;&#20026;0,2</span>
+<span style="color: #ce537a; font-weight: bold;">float2</span> <span style="color: #bc6ec5; font-weight: bold;">GetFullScreenTriangleTexCoord</span>(uint vertexID)
+{
+<span style="color: #bc6ec5;">#if</span> UNITY_UV_STARTS_AT_TOP
+    <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #bc6ec5; font-weight: bold;">float2</span>((vertexID &lt;&lt; 1) &amp; 2, 1.0 - (vertexID &amp; 2));
+<span style="color: #bc6ec5;">#else</span>
+    <span style="color: #4f97d7; font-weight: bold;">return</span> <span style="color: #bc6ec5; font-weight: bold;">float2</span>((vertexID &lt;&lt; 1) &amp; 2, vertexID &amp; 2);
+<span style="color: #bc6ec5;">#endif</span>
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org334a70b" class="outline-3">
+<h3 id="org334a70b">参考资料</h3>
+<div class="outline-text-3" id="text-org334a70b">
 <ul class="org-ul">
 <li><a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.0/manual/integration-with-post-processing.html">https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@12.0/manual/integration-with-post-processing.html</a><br /></li>
 <li><a href="https://github.com/sebastianhein/urp_kawase_blur">https://github.com/sebastianhein/urp_kawase_blur</a><br /></li>

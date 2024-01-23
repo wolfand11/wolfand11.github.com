@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-11-28 Tue 17:24 -->
+<!-- 2024-01-15 Mon 16:29 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>GeometricSkinningWithApproximateDualQuaternionBlending</title>
@@ -27,18 +27,18 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org0e97eee">2008 GeometricSkinningWithApproximateDualQuaternionBlending</a>
+<li><a href="#org7cf77a0">2008 GeometricSkinningWithApproximateDualQuaternionBlending</a>
 <ul>
-<li><a href="#org0863f44">Introduction</a></li>
-<li><a href="#orgfdd2c5c">Related Work</a></li>
-<li><a href="#org63818bf">Rigid Transformation Blending</a>
+<li><a href="#orge35196b">Introduction</a></li>
+<li><a href="#org717e327">Related Work</a></li>
+<li><a href="#orge0ce5c3">Rigid Transformation Blending</a>
 <ul>
-<li><a href="#org3d8bfe5">2D Case</a></li>
-<li><a href="#org8dadafc">3D Case</a></li>
+<li><a href="#org9b807a2">2D Case</a></li>
+<li><a href="#org1a46d28">3D Case</a></li>
 </ul>
 </li>
-<li><a href="#org6467c40">Misc</a></li>
-<li><a href="#orgb273654">参考资料</a></li>
+<li><a href="#orgd8ea3d7">Misc</a></li>
+<li><a href="#org022ce47">参考资料</a></li>
 </ul>
 </li>
 </ul>
@@ -47,20 +47,20 @@
 <p>
 GeometricSkinningWithApproximateDualQuaternionBlending note.<br />
 </p>
-<div class="HTML" id="orgf26fae5">
+<div class="HTML" id="org9f7aca4">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
 
 </div>
 
-<div id="outline-container-org0e97eee" class="outline-2">
-<h2 id="org0e97eee">2008 GeometricSkinningWithApproximateDualQuaternionBlending</h2>
-<div class="outline-text-2" id="text-org0e97eee">
+<div id="outline-container-org7cf77a0" class="outline-2">
+<h2 id="org7cf77a0">2008 GeometricSkinningWithApproximateDualQuaternionBlending</h2>
+<div class="outline-text-2" id="text-org7cf77a0">
 </div>
-<div id="outline-container-org0863f44" class="outline-3">
-<h3 id="org0863f44">Introduction</h3>
-<div class="outline-text-3" id="text-org0863f44">
+<div id="outline-container-orge35196b" class="outline-3">
+<h3 id="orge35196b">Introduction</h3>
+<div class="outline-text-3" id="text-orge35196b">
 <p>
 通过 matrices 或（quaternion, translation）pairs 来表示 rigid transformations，只是 SE(3) 的两种参数化方式。刚体变换并没有限制我们 blending，例如，（axis，angle，translation）3-tuples 或（axis，translation·sin(angle)）pairs 都支持 blending。即使我们限制自己通过线性组合进行混合，我们也可以通过考虑刚性变换的不同参数化来构建无限多种不同的混合方法。<br />
 </p>
@@ -80,9 +80,9 @@ GeometricSkinningWithApproximateDualQuaternionBlending note.<br />
 </div>
 </div>
 
-<div id="outline-container-orgfdd2c5c" class="outline-3">
-<h3 id="orgfdd2c5c">Related Work</h3>
-<div class="outline-text-3" id="text-orgfdd2c5c">
+<div id="outline-container-org717e327" class="outline-3">
+<h3 id="org717e327">Related Work</h3>
+<div class="outline-text-3" id="text-org717e327">
 <p>
 使用 linear blend skinning 来对 mesh 进行变形时，顶点的位置变换可以表示为如下公式 1：<br />
 <img src="./GeometricSkinningWithApproximateDualQuaternionBlending/01-vertex-pos-transform.jpg" alt="01-vertex-pos-transform.jpg" /><br />
@@ -127,9 +127,9 @@ v1 靠近关节 j1，v2 靠近关节 j2，若按照就近原则选取旋转中�
 </p>
 </div>
 </div>
-<div id="outline-container-org63818bf" class="outline-3">
-<h3 id="org63818bf">Rigid Transformation Blending</h3>
-<div class="outline-text-3" id="text-org63818bf">
+<div id="outline-container-orge0ce5c3" class="outline-3">
+<h3 id="orge0ce5c3">Rigid Transformation Blending</h3>
+<div class="outline-text-3" id="text-orge0ce5c3">
 <p>
 通过前面的讨论，我们对理想的 rigid transformation blending 方法更加明确了，其应该可以恰当的混合旋转中心，并且可以利用 quaternions 的优势恰当混合旋转部分。一个简单的想法是简单地线性混合旋转中心，并将它们与使用四元数计算的旋转耦合。不幸的是，如下面 2DCase 中讨论所示，这样做是不正确的。因此，在本节中，我们将讨论如何正确混合旋转中心。<br />
 </p>
@@ -140,15 +140,15 @@ v1 靠近关节 j1，v2 靠近关节 j2，若按照就近原则选取旋转中�
 </p>
 </div>
 
-<div id="outline-container-org3d8bfe5" class="outline-4">
-<h4 id="org3d8bfe5">2D Case</h4>
-<div class="outline-text-4" id="text-org3d8bfe5">
+<div id="outline-container-org9b807a2" class="outline-4">
+<h4 id="org9b807a2">2D Case</h4>
+<div class="outline-text-4" id="text-org9b807a2">
 <p>
 我们先通过一个 2D 的例子来说明混合 centers of rotation 的问题。下图中给出了两个 Rigid Transformation M1 和 M2，<br />
 </p>
 
 
-<div id="orgf4b58da" class="figure">
+<div id="orgd2ca6ae" class="figure">
 <p><img src="./GeometricSkinningWithApproximateDualQuaternionBlending/01-2d-rigid-trans-cor2.jpg" alt="01-2d-rigid-trans-cor2.jpg" /><br />
 </p>
 </div>
@@ -158,7 +158,7 @@ v1 靠近关节 j1，v2 靠近关节 j2，若按照就近原则选取旋转中�
 </p>
 
 
-<div id="org0a723dc" class="figure">
+<div id="org3168bc5" class="figure">
 <p><img src="./GeometricSkinningWithApproximateDualQuaternionBlending/01-2d-rigid-trans-cor3.jpg" alt="01-2d-rigid-trans-cor3.jpg" /><br />
 </p>
 </div>
@@ -168,7 +168,7 @@ v1 靠近关节 j1，v2 靠近关节 j2，若按照就近原则选取旋转中�
 </p>
 
 
-<div id="org50ab74d" class="figure">
+<div id="orgb64d30a" class="figure">
 <p><img src="./GeometricSkinningWithApproximateDualQuaternionBlending/01-normal-blending-trick.jpg" alt="01-normal-blending-trick.jpg" /><br />
 </p>
 </div>
@@ -185,15 +185,15 @@ v1 靠近关节 j1，v2 靠近关节 j2，若按照就近原则选取旋转中�
 </div>
 </div>
 
-<div id="outline-container-org8dadafc" class="outline-4">
-<h4 id="org8dadafc">3D Case</h4>
-<div class="outline-text-4" id="text-org8dadafc">
+<div id="outline-container-org1a46d28" class="outline-4">
+<h4 id="org1a46d28">3D Case</h4>
+<div class="outline-text-4" id="text-org1a46d28">
 <p>
 对偶四元数线性混合的一个巨大优点是，其支持多个 rigid transformations.<br />
 </p>
 
 
-<div id="orgc1aac97" class="figure">
+<div id="org11f498e" class="figure">
 <p><img src="./GeometricSkinningWithApproximateDualQuaternionBlending/01-dlb.jpg" alt="01-dlb.jpg" /><br />
 </p>
 </div>
@@ -201,13 +201,13 @@ v1 靠近关节 j1，v2 靠近关节 j2，若按照就近原则选取旋转中�
 </div>
 </div>
 
-<div id="outline-container-org6467c40" class="outline-3">
-<h3 id="org6467c40">Misc</h3>
+<div id="outline-container-orgd8ea3d7" class="outline-3">
+<h3 id="orgd8ea3d7">Misc</h3>
 </div>
 
-<div id="outline-container-orgb273654" class="outline-3">
-<h3 id="orgb273654">参考资料</h3>
-<div class="outline-text-3" id="text-orgb273654">
+<div id="outline-container-org022ce47" class="outline-3">
+<h3 id="org022ce47">参考资料</h3>
+<div class="outline-text-3" id="text-org022ce47">
 <ul class="org-ul">
 <li>蒙皮算法之对偶四元数 <a href="https://zhuanlan.zhihu.com/p/367418099">https://zhuanlan.zhihu.com/p/367418099</a><br /></li>
 <li>对偶数 <a href="https://www.bilibili.com/video/BV1pV411W7D9/?spm_id_from=333.788&amp;vd_source=36597ac15683c2bddfe189d605ca1fa4">https://www.bilibili.com/video/BV1pV411W7D9/?spm_id_from=333.788&amp;vd_source=36597ac15683c2bddfe189d605ca1fa4</a><br /></li>

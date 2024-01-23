@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-06-27 Tue 22:35 -->
+<!-- 2024-01-15 Mon 16:30 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>OffscreenParticles</title>
@@ -27,18 +27,18 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org2242754">OffscreenParticles</a>
+<li><a href="#org168ac7a">OffscreenParticles</a>
 <ul>
-<li><a href="#org26ccd18">原理</a></li>
-<li><a href="#org21ed153">实现</a>
+<li><a href="#orgbc6f3e5">原理</a></li>
+<li><a href="#org02585a3">实现</a>
 <ul>
-<li><a href="#org527a02d">downsampling depth</a></li>
-<li><a href="#org33eae72">offscreen particles</a></li>
-<li><a href="#orgf38c660">combine</a></li>
+<li><a href="#org34e0370">downsampling depth</a></li>
+<li><a href="#org1c53b3f">offscreen particles</a></li>
+<li><a href="#org782a262">combine</a></li>
 </ul>
 </li>
-<li><a href="#orgb87e838">缺点</a></li>
-<li><a href="#orgf375572">参考资料</a></li>
+<li><a href="#orga78f0be">缺点</a></li>
+<li><a href="#orgf054571">参考资料</a></li>
 </ul>
 </li>
 </ul>
@@ -47,40 +47,40 @@
 <p>
 OffscreenParticles note.<br />
 </p>
-<div class="HTML" id="orgeeec61f">
+<div class="HTML" id="org62cc6a3">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
 
 </div>
 
-<div id="outline-container-org2242754" class="outline-2">
-<h2 id="org2242754">OffscreenParticles</h2>
-<div class="outline-text-2" id="text-org2242754">
+<div id="outline-container-org168ac7a" class="outline-2">
+<h2 id="org168ac7a">OffscreenParticles</h2>
+<div class="outline-text-2" id="text-org168ac7a">
 </div>
-<div id="outline-container-org26ccd18" class="outline-3">
-<h3 id="org26ccd18">原理</h3>
-<div class="outline-text-3" id="text-org26ccd18">
+<div id="outline-container-orgbc6f3e5" class="outline-3">
+<h3 id="orgbc6f3e5">原理</h3>
+<div class="outline-text-3" id="text-orgbc6f3e5">
 <p>
 降低渲染粒子使用的 RenderTarget，从而减少粒子渲染的开销。该方法还适用于其他透明物体的渲染。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org21ed153" class="outline-3">
-<h3 id="org21ed153">实现</h3>
-<div class="outline-text-3" id="text-org21ed153">
+<div id="outline-container-org02585a3" class="outline-3">
+<h3 id="org02585a3">实现</h3>
+<div class="outline-text-3" id="text-org02585a3">
 </div>
-<div id="outline-container-org527a02d" class="outline-4">
-<h4 id="org527a02d">downsampling depth</h4>
-<div class="outline-text-4" id="text-org527a02d">
+<div id="outline-container-org34e0370" class="outline-4">
+<h4 id="org34e0370">downsampling depth</h4>
+<div class="outline-text-4" id="text-org34e0370">
 <p>
 渲染离屏粒子时，如果直接对高分辨率的 depth rt 进行点采样，来做深度剔除，会使得边界上的锯齿比较严重。对 depth rt 进行 Downsampling，并且选取采样范围内深度最大的值作为深度，此时离屏渲染粒子时，粒子和物体交界处，即使粒子在物体后面也会显示粒子，由于粒子的 alpha 混合可以一定程度减弱边界上的锯齿。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org33eae72" class="outline-4">
-<h4 id="org33eae72">offscreen particles</h4>
-<div class="outline-text-4" id="text-org33eae72">
+<div id="outline-container-org1c53b3f" class="outline-4">
+<h4 id="org1c53b3f">offscreen particles</h4>
+<div class="outline-text-4" id="text-org1c53b3f">
 <p>
 假设 blend 操作为 Blend SrcAlpha OneMinusSrcAlpha，可以推导出如下混合公式：<br />
 P3 = D(1-A1)(1-A2)(1-A3) + S1A1(1-A2)(1-A3) + S2A2(1-A3) + S3A3<br />
@@ -91,18 +91,18 @@ P3 = D(1-A1)(1-A2)(1-A3) + S1A1(1-A2)(1-A3) + S2A2(1-A3) + S3A3<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orgf38c660" class="outline-4">
-<h4 id="orgf38c660">combine</h4>
-<div class="outline-text-4" id="text-orgf38c660">
+<div id="outline-container-org782a262" class="outline-4">
+<h4 id="org782a262">combine</h4>
+<div class="outline-text-4" id="text-org782a262">
 <p>
 混合 ParticleRT 和 ColorRT(场景颜色) 时，ParticleRT.rgb + ColorRT.rgb * ParticleRT.a<br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgb87e838" class="outline-3">
-<h3 id="orgb87e838">缺点</h3>
-<div class="outline-text-3" id="text-orgb87e838">
+<div id="outline-container-orga78f0be" class="outline-3">
+<h3 id="orga78f0be">缺点</h3>
+<div class="outline-text-3" id="text-orga78f0be">
 <ol class="org-ol">
 <li>需要申请额外的 LowDepthRT ParticleRT, 还需要对深度进行 downsampling 以及合并操作, 这些都导致带宽消耗增加。当粒子所占屏幕面积不大时，粒子 Overdraw 不严重时，可能会导致负优化。<br /></li>
 <li>当分辨率降低比较多时，粒子和物体交界处的锯齿比较明显。<br /></li>
@@ -110,9 +110,9 @@ P3 = D(1-A1)(1-A2)(1-A3) + S1A1(1-A2)(1-A3) + S2A2(1-A3) + S3A3<br />
 </ol>
 </div>
 </div>
-<div id="outline-container-orgf375572" class="outline-3">
-<h3 id="orgf375572">参考资料</h3>
-<div class="outline-text-3" id="text-orgf375572">
+<div id="outline-container-orgf054571" class="outline-3">
+<h3 id="orgf054571">参考资料</h3>
+<div class="outline-text-3" id="text-orgf054571">
 <ul class="org-ul">
 <li>用 VDM 加速粒子渲染 <a href="https://zhuanlan.zhihu.com/p/24801448">https://zhuanlan.zhihu.com/p/24801448</a><br /></li>
 </ul>

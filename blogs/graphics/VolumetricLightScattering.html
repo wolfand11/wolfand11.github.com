@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-11-28 Tue 17:24 -->
+<!-- 2024-01-15 Mon 16:33 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>VolumetricLightScattering</title>
@@ -27,31 +27,31 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org12b6d85">VolumetricLightScattering</a>
+<li><a href="#orgd5c52c6">VolumetricLightScattering</a>
 <ul>
-<li><a href="#org3717271">Basic Knowledge</a>
+<li><a href="#org53dd2eb">Basic Knowledge</a>
 <ul>
-<li><a href="#orgdfb414d">体渲染相关概念</a></li>
-<li><a href="#org5aa4a58">丁达尔效应</a></li>
-<li><a href="#org89e57a6">瑞利散射</a></li>
-<li><a href="#org9998af5">米氏散射</a></li>
+<li><a href="#org24363ba">体渲染相关概念</a></li>
+<li><a href="#orgebd9943">丁达尔效应</a></li>
+<li><a href="#orgcdd5569">瑞利散射</a></li>
+<li><a href="#orgdd69e8c">米氏散射</a></li>
 </ul>
 </li>
-<li><a href="#org2dcbb02">LightShaft</a>
+<li><a href="#orgde8780e">LightShaft</a>
 <ul>
-<li><a href="#org3777ee5">RayMarching LightShaft 0</a></li>
-<li><a href="#org6d39ff2">RayMarching LightShaft 1</a></li>
-<li><a href="#orgd706d52">RayMarching LightShaft 2</a></li>
-<li><a href="#org3becdaf">UE4 LightShafts</a></li>
-<li><a href="#org145a6c0">Volumetric Light</a></li>
-<li><a href="#org1ae0806">Volumetric Light Beam</a>
+<li><a href="#org1b47451">RayMarching LightShaft 0</a></li>
+<li><a href="#org5084d9f">RayMarching LightShaft 1</a></li>
+<li><a href="#org78cd000">RayMarching LightShaft 2</a></li>
+<li><a href="#orgc1aa12c">UE4 LightShafts</a></li>
+<li><a href="#org9df46e7">Volumetric Light</a></li>
+<li><a href="#orgbe7cf26">Volumetric Light Beam</a>
 <ul>
-<li><a href="#org4c6225a">源码分析</a>
+<li><a href="#org31b1a89">源码分析</a>
 <ul>
-<li><a href="#org274e7ea">根据 CameraDepthRT 计算屏幕上某点到摄像机的距离</a></li>
+<li><a href="#org29ab3e6">根据 CameraDepthRT 计算屏幕上某点到摄像机的距离</a></li>
 </ul>
 </li>
-<li><a href="#org50c3597">参考资料</a></li>
+<li><a href="#org02618bf">参考资料</a></li>
 </ul>
 </li>
 </ul>
@@ -64,24 +64,24 @@
 <p>
 VolumetricLightScattering note.<br />
 </p>
-<div class="HTML" id="org55de554">
+<div class="HTML" id="org09b4a5a">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
 
 </div>
 
-<div id="outline-container-org12b6d85" class="outline-2">
-<h2 id="org12b6d85">VolumetricLightScattering</h2>
-<div class="outline-text-2" id="text-org12b6d85">
+<div id="outline-container-orgd5c52c6" class="outline-2">
+<h2 id="orgd5c52c6">VolumetricLightScattering</h2>
+<div class="outline-text-2" id="text-orgd5c52c6">
 </div>
-<div id="outline-container-org3717271" class="outline-3">
-<h3 id="org3717271">Basic Knowledge</h3>
-<div class="outline-text-3" id="text-org3717271">
+<div id="outline-container-org53dd2eb" class="outline-3">
+<h3 id="org53dd2eb">Basic Knowledge</h3>
+<div class="outline-text-3" id="text-org53dd2eb">
 </div>
-<div id="outline-container-orgdfb414d" class="outline-4">
-<h4 id="orgdfb414d">体渲染相关概念</h4>
-<div class="outline-text-4" id="text-orgdfb414d">
+<div id="outline-container-org24363ba" class="outline-4">
+<h4 id="org24363ba">体渲染相关概念</h4>
+<div class="outline-text-4" id="text-org24363ba">
 <p>
 吸收（absorption）：光能转化为介质内其它形式的能（如热能）。<br />
 外散射（out-scattering）：光打在介质粒子上散射到其它方向去了。<br />
@@ -94,9 +94,9 @@ VolumetricLightScattering note.<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org5aa4a58" class="outline-4">
-<h4 id="org5aa4a58">丁达尔效应</h4>
-<div class="outline-text-4" id="text-org5aa4a58">
+<div id="outline-container-orgebd9943" class="outline-4">
+<h4 id="orgebd9943">丁达尔效应</h4>
+<div class="outline-text-4" id="text-orgebd9943">
 <p>
 可见光的波长约在 400～700 nm 之间，当光线射入分散体系时，一部分自由地通过，一部分被吸收、反射或散射，可能发生以下三种情况：<br />
 （1）当光束通过粗分散体系，由于分散质的粒子大于入射光的波长，主要发生反射或折射现象，使体系呈现混浊。<br />
@@ -109,9 +109,9 @@ VolumetricLightScattering note.<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-org89e57a6" class="outline-4">
-<h4 id="org89e57a6">瑞利散射</h4>
-<div class="outline-text-4" id="text-org89e57a6">
+<div id="outline-container-orgcdd5569" class="outline-4">
+<h4 id="orgcdd5569">瑞利散射</h4>
+<div class="outline-text-4" id="text-orgcdd5569">
 <p>
 瑞利散射是由远小于辐射波长的粒子对光或其他电磁辐射的散射。散射量与光的波长的四次方成反比(波长越短 Rayleigh 散射越强)。<br />
 </p>
@@ -134,9 +134,9 @@ VolumetricLightScattering note.<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-org9998af5" class="outline-4">
-<h4 id="org9998af5">米氏散射</h4>
-<div class="outline-text-4" id="text-org9998af5">
+<div id="outline-container-orgdd69e8c" class="outline-4">
+<h4 id="orgdd69e8c">米氏散射</h4>
+<div class="outline-text-4" id="text-orgdd69e8c">
 <p>
 当大气中粒子的直径与辐射的波长相当时发生的散射。这种散射主要由大气中的微粒，如烟、尘埃、小水滴及气溶胶等引起。米氏散射的散射强度与波长的二次方成反比，并且散射在光线向前方向比向后方向更强,方向性比较明显。<br />
 </p>
@@ -151,13 +151,13 @@ VolumetricLightScattering note.<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org2dcbb02" class="outline-3">
-<h3 id="org2dcbb02">LightShaft</h3>
-<div class="outline-text-3" id="text-org2dcbb02">
+<div id="outline-container-orgde8780e" class="outline-3">
+<h3 id="orgde8780e">LightShaft</h3>
+<div class="outline-text-3" id="text-orgde8780e">
 </div>
-<div id="outline-container-org3777ee5" class="outline-4">
-<h4 id="org3777ee5">RayMarching LightShaft 0</h4>
-<div class="outline-text-4" id="text-org3777ee5">
+<div id="outline-container-org1b47451" class="outline-4">
+<h4 id="org1b47451">RayMarching LightShaft 0</h4>
+<div class="outline-text-4" id="text-org1b47451">
 <ol class="org-ol">
 <li>渲染光源方向的深度图<br /></li>
 <li>渲染摄像机方向的深度图<br /></li>
@@ -175,13 +175,13 @@ Point Light 和 Spot Light 的范围都是有限的，需要考虑 RayMarching �
 </p>
 
 
-<div id="org905a6d9" class="figure">
+<div id="orgbd893d8" class="figure">
 <p><img src="./VolumetricLightScattering/god-ray.jpg" alt="god-ray.jpg" width="800px" /><br />
 </p>
 </div>
 
 
-<div id="orgf4785e8" class="figure">
+<div id="orgd67cd0b" class="figure">
 <p><img src="./VolumetricLightScattering/god-ray2.jpg" alt="god-ray2.jpg" width="800px" /><br />
 </p>
 </div>
@@ -333,9 +333,9 @@ ENDHLSL
 </ul>
 </div>
 </div>
-<div id="outline-container-org6d39ff2" class="outline-4">
-<h4 id="org6d39ff2">RayMarching LightShaft 1</h4>
-<div class="outline-text-4" id="text-org6d39ff2">
+<div id="outline-container-org5084d9f" class="outline-4">
+<h4 id="org5084d9f">RayMarching LightShaft 1</h4>
+<div class="outline-text-4" id="text-org5084d9f">
 <ol class="org-ol">
 <li>渲染光源以及遮挡物到 OcclusionRT<br /></li>
 <li>正常渲染场景到 framebuffer<br /></li>
@@ -346,7 +346,7 @@ ENDHLSL
 </ol>
 
 
-<div id="org2049d8c" class="figure">
+<div id="orge3826cd" class="figure">
 <p><img src="./VolumetricLightScattering/fake-god-ray-01.jpg" alt="fake-god-ray-01.jpg" width="800px" /><br />
 </p>
 </div>
@@ -389,9 +389,9 @@ light scattering with opengl <a href="https://fabiensanglard.net/lightScattering
 </p>
 </div>
 </div>
-<div id="outline-container-orgd706d52" class="outline-4">
-<h4 id="orgd706d52">RayMarching LightShaft 2</h4>
-<div class="outline-text-4" id="text-orgd706d52">
+<div id="outline-container-org78cd000" class="outline-4">
+<h4 id="org78cd000">RayMarching LightShaft 2</h4>
+<div class="outline-text-4" id="text-org78cd000">
 <ol class="org-ol">
 <li>屏幕空间内，以当前着色点 pScreenUV 为原点，以光源着色点 lightScreenUV 为目标点。在这两个点之间进行 RayMarching。<br /></li>
 <li>若当前 RayMarching 点对应的深度为 1，则表示该点必定不在阴影中，其对 LightShaft 效果有贡献，否则无贡献。<br />
@@ -401,7 +401,7 @@ light scattering with opengl <a href="https://fabiensanglard.net/lightScattering
 </ol>
 
 
-<div id="org66d42c2" class="figure">
+<div id="org39f1187" class="figure">
 <p><img src="./VolumetricLightScattering/god-ray3.jpg" alt="god-ray3.jpg" width="800px" /><br />
 </p>
 </div>
@@ -412,12 +412,12 @@ Unity GodRay <a href="https://zhuanlan.zhihu.com/p/144037609">https://zhuanlan.z
 </div>
 </div>
 
-<div id="outline-container-org3becdaf" class="outline-4">
-<h4 id="org3becdaf">UE4 LightShafts</h4>
-<div class="outline-text-4" id="text-org3becdaf">
+<div id="outline-container-orgc1aa12c" class="outline-4">
+<h4 id="orgc1aa12c">UE4 LightShafts</h4>
+<div class="outline-text-4" id="text-orgc1aa12c">
 <p>
 Occlusion 方法<br />
-利用场景深度 RT 创建一个 Mask，以远离 light 的方向对该 Mask 进行多次 Blur 操作，将结果作为 fog 和大气的 mask。该方法和现实生活中的光束产生的原理类似 - 光束由雾气的阴影所生成。注意：这也意味着光束的强弱度只能和雾气和大气相同。原理同上面 <a href="#org6d39ff2">RayMarching LightShaft 1</a><br />
+利用场景深度 RT 创建一个 Mask，以远离 light 的方向对该 Mask 进行多次 Blur 操作，将结果作为 fog 和大气的 mask。该方法和现实生活中的光束产生的原理类似 - 光束由雾气的阴影所生成。注意：这也意味着光束的强弱度只能和雾气和大气相同。原理同上面 <a href="#org5084d9f">RayMarching LightShaft 1</a><br />
 </p>
 
 <p>
@@ -431,25 +431,25 @@ Bloom 方法<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-org145a6c0" class="outline-4">
-<h4 id="org145a6c0">Volumetric Light</h4>
-<div class="outline-text-4" id="text-org145a6c0">
+<div id="outline-container-org9df46e7" class="outline-4">
+<h4 id="org9df46e7">Volumetric Light</h4>
+<div class="outline-text-4" id="text-org9df46e7">
 <ul class="org-ul">
 <li><a href="https://developer.nvidia.com/gpugems/gpugems3/part-ii-light-and-shadows/chapter-13-volumetric-light-scattering-post-process">https://developer.nvidia.com/gpugems/gpugems3/part-ii-light-and-shadows/chapter-13-volumetric-light-scattering-post-process</a><br /></li>
 </ul>
 </div>
 </div>
-<div id="outline-container-org1ae0806" class="outline-4">
-<h4 id="org1ae0806">Volumetric Light Beam</h4>
-<div class="outline-text-4" id="text-org1ae0806">
+<div id="outline-container-orgbe7cf26" class="outline-4">
+<h4 id="orgbe7cf26">Volumetric Light Beam</h4>
+<div class="outline-text-4" id="text-orgbe7cf26">
 </div>
-<div id="outline-container-org4c6225a" class="outline-5">
-<h5 id="org4c6225a">源码分析</h5>
-<div class="outline-text-5" id="text-org4c6225a">
+<div id="outline-container-org31b1a89" class="outline-5">
+<h5 id="org31b1a89">源码分析</h5>
+<div class="outline-text-5" id="text-org31b1a89">
 </div>
-<div id="outline-container-org274e7ea" class="outline-6">
-<h6 id="org274e7ea">根据 CameraDepthRT 计算屏幕上某点到摄像机的距离</h6>
-<div class="outline-text-6" id="text-org274e7ea">
+<div id="outline-container-org29ab3e6" class="outline-6">
+<h6 id="org29ab3e6">根据 CameraDepthRT 计算屏幕上某点到摄像机的距离</h6>
+<div class="outline-text-6" id="text-org29ab3e6">
 <div class="org-src-container">
 <pre class="src src-shader"><span style="color: #4f97d7; font-weight: bold;">inline</span> <span style="color: #ce537a; font-weight: bold;">float</span> Depth_PS_GetSceneDepthFromEye(<span style="color: #ce537a; font-weight: bold;">float4</span> uv, <span style="color: #ce537a; font-weight: bold;">float3</span> posViewSpace)
 {
@@ -472,9 +472,9 @@ Bloom 方法<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org50c3597" class="outline-5">
-<h5 id="org50c3597">参考资料</h5>
-<div class="outline-text-5" id="text-org50c3597">
+<div id="outline-container-org02618bf" class="outline-5">
+<h5 id="org02618bf">参考资料</h5>
+<div class="outline-text-5" id="text-org02618bf">
 <ul class="org-ul">
 <li>VLB Asset Store <a href="https://assetstore.unity.com/packages/vfx/shaders/volumetric-light-beam-99888">https://assetstore.unity.com/packages/vfx/shaders/volumetric-light-beam-99888</a><br /></li>
 <li>VLB Doc <a href="http://saladgamer.com/vlb-doc/">http://saladgamer.com/vlb-doc/</a><br /></li>

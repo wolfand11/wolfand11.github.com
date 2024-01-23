@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-11-28 Tue 17:24 -->
+<!-- 2024-01-15 Mon 16:29 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Game104MordernGameEngine</title>
@@ -15,38 +15,27 @@
          <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.github.io/res/worg_theme/css/worg-classic.css" type="text/css" />
          <link rel="icon" href="https://wolfand11.github.io/res/favicon.ico" type="image/ico" />
          <script type="text/javascript" src="https://wolfand11.github.io/res/blog-tools.js"></script>
-<script>
-  window.MathJax = {
-    tex: {
-      ams: {
-        multlineWidth: '85%'
-      },
-      tags: 'ams',
-      tagSide: 'right',
-      tagIndent: '.8em'
-    },
-    chtml: {
-      scale: 1.0,
-      displayAlign: 'center',
-      displayIndent: '0em'
-    },
-    svg: {
-      scale: 1.0,
-      displayAlign: 'center',
-      displayIndent: '0em'
-    },
-    output: {
-      font: 'mathjax-modern',
-      displayOverflow: 'overflow'
-    }
-  };
-</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
 
-<script
-  id="MathJax-script"
-  async
-  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
 </head>
 <body>
 <div id="org-div-home-and-up">
@@ -59,62 +48,62 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org084df27">Game104MordernGameEngine</a>
+<li><a href="#orge1c439e">Game104MordernGameEngine</a>
 <ul>
-<li><a href="#org45b5088">Dynamic Global Illumination and Lumen</a>
+<li><a href="#orgf81fc24">Dynamic Global Illumination and Lumen</a>
 <ul>
-<li><a href="#org5b77c24">简介</a></li>
-<li><a href="#org646df16">总体流程</a></li>
-<li><a href="#orga1dd6ba">Phase 1: Fast Ray Trace in Any Hardware</a>
+<li><a href="#orgc5ce425">简介</a></li>
+<li><a href="#org799a9ce">总体流程</a></li>
+<li><a href="#org3e658e1">Phase 1: Fast Ray Trace in Any Hardware</a>
 <ul>
-<li><a href="#org37307d6">SDF 是空间上物体的对偶形式表达。</a></li>
-<li><a href="#org68c3dbc">Per-Mesh SDF</a></li>
-<li><a href="#orgcd8c0dd">Sparse Mesh SDF</a></li>
-<li><a href="#org517c0c7">Mesh SDF LOD</a></li>
-<li><a href="#org69ce173">Global SDF</a></li>
+<li><a href="#org940e263">SDF 是空间上物体的对偶形式表达。</a></li>
+<li><a href="#org5bc861a">Per-Mesh SDF</a></li>
+<li><a href="#org4e31c73">Sparse Mesh SDF</a></li>
+<li><a href="#org3a972e9">Mesh SDF LOD</a></li>
+<li><a href="#orgb6cf958">Global SDF</a></li>
 </ul>
 </li>
-<li><a href="#orgb36d68e">Phase 2: Radiance Injection and Caching</a>
+<li><a href="#org4ff85f2">Phase 2: Radiance Injection and Caching</a>
 <ul>
-<li><a href="#org4f033a8">Mesh card</a></li>
-<li><a href="#org9d101af">Generate Surface Cache</a>
+<li><a href="#org17fc1d6">Mesh card</a></li>
+<li><a href="#org5987502">Generate Surface Cache</a>
 <ul>
-<li><a href="#org1a95b22">DirectLighting</a></li>
-<li><a href="#orgc266960">构建 Voxel Lighting</a></li>
-<li><a href="#orgd15c3f0">Indirect Lighting</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#org780c902">Phase 3: Build a lot of Probes with Different Kinds</a>
-<ul>
-<li><a href="#orgb1cbfbf">Screen Space Probe</a>
-<ul>
-<li><a href="#org45e1c2e">Screen Probe Placement</a></li>
-<li><a href="#org6d36b3c">Screen Probe Atlas</a></li>
-<li><a href="#org361bd3d">Screen Probe Jitter</a></li>
-<li><a href="#org4d7a0cf">Importance Sampling</a></li>
-<li><a href="#orgc3652af">Denoising and Spatial Probe Filtering</a></li>
-</ul>
-</li>
-<li><a href="#org9458871">World Space Probes and Ray Connecting</a>
-<ul>
-<li><a href="#orgb9f0c0d">Screen Space Probes Problems</a></li>
-<li><a href="#org4b4d66b">World Space Radiance Cache</a></li>
+<li><a href="#orgdf6ba9d">DirectLighting</a></li>
+<li><a href="#orgb672642">构建 Voxel Lighting</a></li>
+<li><a href="#org7c621ef">Indirect Lighting</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#org13b3c1b">Phase 4: Shading Full Pixels with Screen Space Probes</a>
+<li><a href="#org3edfc77">Phase 3: Build a lot of Probes with Different Kinds</a>
 <ul>
-<li><a href="#org6a0165c">Convert Probe Radiance to 3rd order Spherical Harmonic</a></li>
-<li><a href="#org3c7d4a1">Final Integration with SH</a></li>
+<li><a href="#org6a52999">Screen Space Probe</a>
+<ul>
+<li><a href="#org8596e20">Screen Probe Placement</a></li>
+<li><a href="#org1ff05f3">Screen Probe Atlas</a></li>
+<li><a href="#org52cea11">Screen Probe Jitter</a></li>
+<li><a href="#orgbb39bec">Importance Sampling</a></li>
+<li><a href="#orgd475826">Denoising and Spatial Probe Filtering</a></li>
+</ul>
+</li>
+<li><a href="#org1a4d626">World Space Probes and Ray Connecting</a>
+<ul>
+<li><a href="#org1127f2a">Screen Space Probes Problems</a></li>
+<li><a href="#org2970689">World Space Radiance Cache</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#org0d0eabe">GPU Driven Geometry Pipeline and Nanite</a></li>
-<li><a href="#org466808c">参考资料</a></li>
+<li><a href="#org84b4bfe">Phase 4: Shading Full Pixels with Screen Space Probes</a>
+<ul>
+<li><a href="#orgde171f4">Convert Probe Radiance to 3rd order Spherical Harmonic</a></li>
+<li><a href="#orga9a96ca">Final Integration with SH</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org92b1179">GPU Driven Geometry Pipeline and Nanite</a></li>
+<li><a href="#org4fc6c48">参考资料</a></li>
 </ul>
 </li>
 </ul>
@@ -123,24 +112,24 @@
 <p>
 Game104MordernGameEngine note.<br />
 </p>
-<div class="HTML" id="org7c6169a">
+<div class="HTML" id="org6900f7c">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
 
 </div>
 
-<div id="outline-container-org084df27" class="outline-2">
-<h2 id="org084df27">Game104MordernGameEngine</h2>
-<div class="outline-text-2" id="text-org084df27">
+<div id="outline-container-orge1c439e" class="outline-2">
+<h2 id="orge1c439e">Game104MordernGameEngine</h2>
+<div class="outline-text-2" id="text-orge1c439e">
 </div>
-<div id="outline-container-org45b5088" class="outline-3">
-<h3 id="org45b5088">Dynamic Global Illumination and Lumen</h3>
-<div class="outline-text-3" id="text-org45b5088">
+<div id="outline-container-orgf81fc24" class="outline-3">
+<h3 id="orgf81fc24">Dynamic Global Illumination and Lumen</h3>
+<div class="outline-text-3" id="text-orgf81fc24">
 </div>
-<div id="outline-container-org5b77c24" class="outline-4">
-<h4 id="org5b77c24">简介</h4>
-<div class="outline-text-4" id="text-org5b77c24">
+<div id="outline-container-orgc5ce425" class="outline-4">
+<h4 id="orgc5ce425">简介</h4>
+<div class="outline-text-4" id="text-orgc5ce425">
 <p>
 当前硬件的 Ray Tracing 依然很慢<br />
 </p>
@@ -177,9 +166,9 @@ Game104MordernGameEngine note.<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-org646df16" class="outline-4">
-<h4 id="org646df16">总体流程</h4>
-<div class="outline-text-4" id="text-org646df16">
+<div id="outline-container-org799a9ce" class="outline-4">
+<h4 id="org799a9ce">总体流程</h4>
+<div class="outline-text-4" id="text-org799a9ce">
 <p>
 下面列出 Lumen 的 Indirect Diffuse 总体执行流程，注意不包括 Translucency Volume GI 和 Reflections：<br />
 </p>
@@ -216,13 +205,13 @@ Final Gather<br />
 </div>
 </div>
 
-<div id="outline-container-orga1dd6ba" class="outline-4">
-<h4 id="orga1dd6ba">Phase 1: Fast Ray Trace in Any Hardware</h4>
-<div class="outline-text-4" id="text-orga1dd6ba">
+<div id="outline-container-org3e658e1" class="outline-4">
+<h4 id="org3e658e1">Phase 1: Fast Ray Trace in Any Hardware</h4>
+<div class="outline-text-4" id="text-org3e658e1">
 </div>
-<div id="outline-container-org37307d6" class="outline-5">
-<h5 id="org37307d6">SDF 是空间上物体的对偶形式表达。</h5>
-<div class="outline-text-5" id="text-org37307d6">
+<div id="outline-container-org940e263" class="outline-5">
+<h5 id="org940e263">SDF 是空间上物体的对偶形式表达。</h5>
+<div class="outline-text-5" id="text-org940e263">
 <ul class="org-ul">
 <li>空间上均匀的<br /></li>
 <li>空间上连续的，所以可微<br /></li>
@@ -230,9 +219,9 @@ Final Gather<br />
 </div>
 </div>
 
-<div id="outline-container-org68c3dbc" class="outline-5">
-<h5 id="org68c3dbc">Per-Mesh SDF</h5>
-<div class="outline-text-5" id="text-org68c3dbc">
+<div id="outline-container-org5bc861a" class="outline-5">
+<h5 id="org5bc861a">Per-Mesh SDF</h5>
+<div class="outline-text-5" id="text-org5bc861a">
 <p>
 存储整个场景的 SDF 非常安贵，所以通常只会为每个物体生成 SDF<br />
 </p>
@@ -249,27 +238,27 @@ Tips: 当 Mesh 的厚度小于一个 Voxel 的尺寸时，可以对 Mesh 进行�
 </p>
 </div>
 </div>
-<div id="outline-container-orgcd8c0dd" class="outline-5">
-<h5 id="orgcd8c0dd">Sparse Mesh SDF</h5>
-<div class="outline-text-5" id="text-orgcd8c0dd">
+<div id="outline-container-org4e31c73" class="outline-5">
+<h5 id="org4e31c73">Sparse Mesh SDF</h5>
+<div class="outline-text-5" id="text-org4e31c73">
 <p>
 定义一个最大的距离 a，将所有大于 a 的 SDF 值都标记为 invalid。这样可以极大减少 SDF 的存储空间。<br />
 </p>
 </div>
 </div>
 
-<div id="outline-container-org517c0c7" class="outline-5">
-<h5 id="org517c0c7">Mesh SDF LOD</h5>
-<div class="outline-text-5" id="text-org517c0c7">
+<div id="outline-container-org3a972e9" class="outline-5">
+<h5 id="org3a972e9">Mesh SDF LOD</h5>
+<div class="outline-text-5" id="text-org3a972e9">
 <p>
 由于 SDF 是连续的，可以直接对 Mesh 的 SDF 进行 downsampling，生成高 level 的 LOD。<br />
 </p>
 </div>
 </div>
 
-<div id="outline-container-org69ce173" class="outline-5">
-<h5 id="org69ce173">Global SDF</h5>
-<div class="outline-text-5" id="text-org69ce173">
+<div id="outline-container-orgb6cf958" class="outline-5">
+<h5 id="orgb6cf958">Global SDF</h5>
+<div class="outline-text-5" id="text-orgb6cf958">
 <p>
 将所有的 Per-Mesh 的 SDF 合并为一个大的表示整个场景的 Global SDF。由于空间限制，Global SDF 的分辨率很低。<br />
 为了提高性能，会缓存摄像机周围的 Global SDF:<br />
@@ -282,21 +271,21 @@ Tips: 当 Mesh 的厚度小于一个 Voxel 的尺寸时，可以对 Mesh 进行�
 </div>
 </div>
 </div>
-<div id="outline-container-orgb36d68e" class="outline-4">
-<h4 id="orgb36d68e">Phase 2: Radiance Injection and Caching</h4>
-<div class="outline-text-4" id="text-orgb36d68e">
+<div id="outline-container-org4ff85f2" class="outline-4">
+<h4 id="org4ff85f2">Phase 2: Radiance Injection and Caching</h4>
+<div class="outline-text-4" id="text-org4ff85f2">
 </div>
-<div id="outline-container-org4f033a8" class="outline-5">
-<h5 id="org4f033a8">Mesh card</h5>
-<div class="outline-text-5" id="text-org4f033a8">
+<div id="outline-container-org17fc1d6" class="outline-5">
+<h5 id="org17fc1d6">Mesh card</h5>
+<div class="outline-text-5" id="text-org17fc1d6">
 <p>
 使用一个长方形包围盒来表示一个物体的材质信息。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org9d101af" class="outline-5">
-<h5 id="org9d101af">Generate Surface Cache</h5>
-<div class="outline-text-5" id="text-org9d101af">
+<div id="outline-container-org5987502" class="outline-5">
+<h5 id="org5987502">Generate Surface Cache</h5>
+<div class="outline-text-5" id="text-org5987502">
 <p>
 Card capture<br />
 </p>
@@ -323,15 +312,15 @@ Freeze Lighting on Surface Cache<br />
 <li>如何处理多次 bounce。使用下面流程来实现多次 bounce<br /></li>
 </ol>
 
-<div id="org1804306" class="figure">
+<div id="org67d4cdc" class="figure">
 <p><img src="./Games104MordenGameEngine/lighting-cache-pipeline.png" alt="lighting-cache-pipeline.png" width="512px" /><br />
 </p>
 </div>
 </div>
 
-<div id="outline-container-org1a95b22" class="outline-6">
-<h6 id="org1a95b22">DirectLighting</h6>
-<div class="outline-text-6" id="text-org1a95b22">
+<div id="outline-container-orgdf6ba9d" class="outline-6">
+<h6 id="orgdf6ba9d">DirectLighting</h6>
+<div class="outline-text-6" id="text-orgdf6ba9d">
 <ul class="org-ul">
 <li>将 128x128 page 划分为 8x8 的多个 tiles<br /></li>
 <li>按照 8x8 大小的 tile 来剔除光源<br /></li>
@@ -349,15 +338,15 @@ Global DF Tracing 通过 Voxel Lighting 来得到光照信息。与传统的 Vox
 </div>
 </div>
 
-<div id="outline-container-orgc266960" class="outline-6">
-<h6 id="orgc266960">构建 Voxel Lighting</h6>
-<div class="outline-text-6" id="text-orgc266960">
+<div id="outline-container-orgb672642" class="outline-6">
+<h6 id="orgb672642">构建 Voxel Lighting</h6>
+<div class="outline-text-6" id="text-orgb672642">
 <p>
 为了使光照更加准确，与 Surface Cache 一样，Lumen 的 Voxel 也记录了世界空间轴对齐的 6 个方向的 Lighting，也就是各向异性的 Voxel，这样可以在光照时采样三个轴方向的 Voxel Lighting，并用 Ray 方向计算权重进行混合得到最终的光照值。Voxel Lighting 的数据布局如下图所示：<br />
 </p>
 
 
-<div id="org49ebd0b" class="figure">
+<div id="orged34b93" class="figure">
 <p><img src="./Games104MordenGameEngine/voxel-lighting-data-layout.png" alt="voxel-lighting-data-layout.png" width="240px" /><br />
 </p>
 </div>
@@ -418,16 +407,16 @@ Clipmap 更新频率如下：<br />
 </div>
 
 <ul class="org-ul">
-<li><a id="org7fed1d5"></a>Voxel Visibility Buffer<br />
-<div class="outline-text-7" id="text-org7fed1d5">
+<li><a id="org3f23a4f"></a>Voxel Visibility Buffer<br />
+<div class="outline-text-7" id="text-org3f23a4f">
 <p>
 为了完成采样 Surface Cache 的 Final Lighting，需要知道每个 Voxel 在每个方向上 Trace 到的 Mesh DF 信息，这个信息存储在 Voxel Visibility Buffer 中。与我们熟知的 Visibility Buffer 不同的是，这里存储的内容是 Mesh DF ID 以及归一化的 Hit Distance，在 Injecting Lighting 时就根据这些数据对 Final Lighting 采样。Lumen 将所有 Clipmap 的 Voxel 的 Visibility 都存储在同一个 Buffer 中，并且 Visibility Buffer 是跨帧持久化的，因此为了性能每帧会按需更新内容。<br />
 </p>
 </div>
 </li>
 
-<li><a id="org6b87a62"></a>Voxel Lighting 构建优化<br />
-<div class="outline-text-7" id="text-org6b87a62">
+<li><a id="orgd9f78e8"></a>Voxel Lighting 构建优化<br />
+<div class="outline-text-7" id="text-orgd9f78e8">
 <p>
 每个 Clipmap 有 64x64x64 个 Voxel，由于各向异性光照，每个 Voxel 又有 6 个方向，因此每个 Clipmap 生成全部的 Visibility Buffer 则需要执行约 64x64x64x6 ~=157 万次计算，这个开销很大，难以达到 Lumen 的性能目标，Lumen 采用了下列优化方法：<br />
 </p>
@@ -442,8 +431,8 @@ Clipmap 更新频率如下：<br />
 </div>
 </li>
 
-<li><a id="org10a3192"></a>更新 Voxel Visibility Buffer<br />
-<div class="outline-text-7" id="text-org10a3192">
+<li><a id="orgbb3a7f1"></a>更新 Voxel Visibility Buffer<br />
+<div class="outline-text-7" id="text-orgbb3a7f1">
 <ul class="org-ul">
 <li>构建当前 Clipmap 所有待更新的 Tile 列表<br /></li>
 <li>清空所有待更新 Tile 包含的 Voxels 对应的 Visibility Buffer<br /></li>
@@ -458,8 +447,8 @@ Clipmap 更新频率如下：<br />
 </div>
 </li>
 
-<li><a id="orgb96accb"></a>Voxel Lighting<br />
-<div class="outline-text-7" id="text-orgb96accb">
+<li><a id="orgf0cab86"></a>Voxel Lighting<br />
+<div class="outline-text-7" id="text-orgf0cab86">
 <ul class="org-ul">
 <li>清空当前 Clipmap 的 Voxel Lighting<br /></li>
 <li>紧致化 Visibility Buffer<br />
@@ -473,9 +462,9 @@ Clipmap 更新频率如下：<br />
 </ul>
 </div>
 
-<div id="outline-container-orgd15c3f0" class="outline-6">
-<h6 id="orgd15c3f0">Indirect Lighting</h6>
-<div class="outline-text-6" id="text-orgd15c3f0">
+<div id="outline-container-org7c621ef" class="outline-6">
+<h6 id="org7c621ef">Indirect Lighting</h6>
+<div class="outline-text-6" id="text-org7c621ef">
 <ul class="org-ul">
 <li>将 surface cache 上每 8x8 个 texels 划分为一个 tile<br /></li>
 <li>每个 tile 内放置 2x2 个 probes<br /></li>
@@ -487,16 +476,16 @@ Clipmap 更新频率如下：<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org780c902" class="outline-4">
-<h4 id="org780c902">Phase 3: Build a lot of Probes with Different Kinds</h4>
-<div class="outline-text-4" id="text-org780c902">
+<div id="outline-container-org3edfc77" class="outline-4">
+<h4 id="org3edfc77">Phase 3: Build a lot of Probes with Different Kinds</h4>
+<div class="outline-text-4" id="text-org3edfc77">
 <p>
 渲染最终画面时，我们需要得到被看到的像素点表面的光照分布。这一步我们可以将前面得到的 Surface Cache 数据转化为各种不同类型的 Probe，从而得到被看到的像素点表面的光照分布。<br />
 </p>
 </div>
-<div id="outline-container-orgb1cbfbf" class="outline-5">
-<h5 id="orgb1cbfbf">Screen Space Probe</h5>
-<div class="outline-text-5" id="text-orgb1cbfbf">
+<div id="outline-container-org6a52999" class="outline-5">
+<h5 id="org6a52999">Screen Space Probe</h5>
+<div class="outline-text-5" id="text-org6a52999">
 <p>
 传统的方法是按照一定分辨率在场景中放置 Probe，例如：每隔 1 米一个 Probe。这使得多个像素使用相同的几个 Probes 来插值，从而导致光照效果很平。Lumen 则直接在屏幕空间放置 Probe，每 16 个像素放置一个 Probe。<br />
 </p>
@@ -520,9 +509,9 @@ Octahedron Mapping 有以下两个优点：<br />
 </ol>
 </div>
 
-<div id="outline-container-org45e1c2e" class="outline-6">
-<h6 id="org45e1c2e">Screen Probe Placement</h6>
-<div class="outline-text-6" id="text-org45e1c2e">
+<div id="outline-container-org8596e20" class="outline-6">
+<h6 id="org8596e20">Screen Probe Placement</h6>
+<div class="outline-text-6" id="text-org8596e20">
 <p>
 对于插值错误的地方，迭代地放置 Probe，实现了一种 Adptive Sampling。<br />
 </p>
@@ -537,9 +526,9 @@ Octahedron Mapping 有以下两个优点：<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org6d36b3c" class="outline-6">
-<h6 id="org6d36b3c">Screen Probe Atlas</h6>
-<div class="outline-text-6" id="text-org6d36b3c">
+<div id="outline-container-org1ff05f3" class="outline-6">
+<h6 id="org1ff05f3">Screen Probe Atlas</h6>
+<div class="outline-text-6" id="text-org1ff05f3">
 <ul class="org-ul">
 <li>Atlas 是一个正方形贴图，屏幕长宽比不是 1:1，所以贴图的一部分空间是闲置的<br /></li>
 <li>将自适应放置的 probes 放到闲置的部位<br /></li>
@@ -547,9 +536,9 @@ Octahedron Mapping 有以下两个优点：<br />
 </div>
 </div>
 
-<div id="outline-container-org361bd3d" class="outline-6">
-<h6 id="org361bd3d">Screen Probe Jitter</h6>
-<div class="outline-text-6" id="text-org361bd3d">
+<div id="outline-container-org52cea11" class="outline-6">
+<h6 id="org52cea11">Screen Probe Jitter</h6>
+<div class="outline-text-6" id="text-org52cea11">
 <ul class="org-ul">
 <li>直接将 probe 放置到像素上<br /></li>
 <li>按照时序来对 Probe 放置位置和采样 Probe 的方向进行 Jittering<br /></li>
@@ -557,29 +546,29 @@ Octahedron Mapping 有以下两个优点：<br />
 </ul>
 
 
-<div id="orgc710317" class="figure">
+<div id="orgf9f902a" class="figure">
 <p><img src="./Games104MordenGameEngine/hammersley-points.png" alt="hammersley-points.png" /><br />
 </p>
 </div>
 
 
-<div id="org51c8bed" class="figure">
+<div id="org4970ee9" class="figure">
 <p><img src="./Games104MordenGameEngine/temporal-accumulation-probes.png" alt="temporal-accumulation-probes.png" /><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-org4d7a0cf" class="outline-6">
-<h6 id="org4d7a0cf">Importance Sampling</h6>
-<div class="outline-text-6" id="text-org4d7a0cf">
+<div id="outline-container-orgbb39bec" class="outline-6">
+<h6 id="orgbb39bec">Importance Sampling</h6>
+<div class="outline-text-6" id="text-orgbb39bec">
 <p>
 尽可能的向亮的方向采样，尽可能的向法线朝向方向采样。<br />
 </p>
 </div>
 
 <ul class="org-ul">
-<li><a id="org6c4f1f7"></a>Incoming Radiance<br />
-<div class="outline-text-7" id="text-org6c4f1f7">
+<li><a id="org17b0606"></a>Incoming Radiance<br />
+<div class="outline-text-7" id="text-org17b0606">
 <ul class="org-ul">
 <li>将当前像素投影回上一帧位置，找到对应的上一帧的相邻的 4 个 Probs，得到当前像素点 Radiance 的估计值<br /></li>
 <li>不需要很昂贵的搜索，因为可以使用射线直接对 octahedral atlas 进行查询<br /></li>
@@ -588,8 +577,8 @@ Octahedron Mapping 有以下两个优点：<br />
 </div>
 </li>
 
-<li><a id="orgdd160f2"></a>BRDF<br />
-<div class="outline-text-7" id="text-orgdd160f2">
+<li><a id="org505cb63"></a>BRDF<br />
+<div class="outline-text-7" id="text-org505cb63">
 <ul class="org-ul">
 <li>对于放置在一面平整的墙上的 probe，整个球的一半对应的 BRDF 都是 0<br /></li>
 <li>像素点的 normal 是高频的法线，不能直接用来采样 Probe，应该考虑像素对应位置处一小片区域内法线的整体朝向<br />
@@ -602,8 +591,8 @@ Octahedron Mapping 有以下两个优点：<br />
 </div>
 </li>
 
-<li><a id="org68c2142"></a>Fix Budget Importance Sampling Based on Lighting and BRDF<br />
-<div class="outline-text-7" id="text-org68c2142">
+<li><a id="org50827e7"></a>Fix Budget Importance Sampling Based on Lighting and BRDF<br />
+<div class="outline-text-7" id="text-org50827e7">
 <ul class="org-ul">
 <li>每个 Probe 追踪固定数量的 Ray（64 条 Ray）<br /></li>
 <li>为每个 Octahedral Texel 计算 BRDF_PDF * Lighting_PDF，对乘积结果进行排序<br /></li>
@@ -614,9 +603,9 @@ Octahedron Mapping 有以下两个优点：<br />
 </ul>
 </div>
 
-<div id="outline-container-orgc3652af" class="outline-6">
-<h6 id="orgc3652af">Denoising and Spatial Probe Filtering</h6>
-<div class="outline-text-6" id="text-orgc3652af">
+<div id="outline-container-orgd475826" class="outline-6">
+<h6 id="orgd475826">Denoising and Spatial Probe Filtering</h6>
+<div class="outline-text-6" id="text-orgd475826">
 <ul class="org-ul">
 <li>以 3x3 大小的 Filtering Kernel 对 Probe 进行过滤<br />
 <ul class="org-ul">
@@ -635,13 +624,13 @@ Octahedron Mapping 有以下两个优点：<br />
 </div>
 </div>
 
-<div id="outline-container-org9458871" class="outline-5">
-<h5 id="org9458871">World Space Probes and Ray Connecting</h5>
-<div class="outline-text-5" id="text-org9458871">
+<div id="outline-container-org1a4d626" class="outline-5">
+<h5 id="org1a4d626">World Space Probes and Ray Connecting</h5>
+<div class="outline-text-5" id="text-org1a4d626">
 </div>
-<div id="outline-container-orgb9f0c0d" class="outline-6">
-<h6 id="orgb9f0c0d">Screen Space Probes Problems</h6>
-<div class="outline-text-6" id="text-orgb9f0c0d">
+<div id="outline-container-org1127f2a" class="outline-6">
+<h6 id="org1127f2a">Screen Space Probes Problems</h6>
+<div class="outline-text-6" id="text-org1127f2a">
 <p>
 构建 Screen Space Probes 时，对于远距离的光照效率不高<br />
 </p>
@@ -661,13 +650,13 @@ Octahedron Mapping 有以下两个优点：<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-org4b4d66b" class="outline-6">
-<h6 id="org4b4d66b">World Space Radiance Cache</h6>
-<div class="outline-text-6" id="text-org4b4d66b">
+<div id="outline-container-org2970689" class="outline-6">
+<h6 id="org2970689">World Space Radiance Cache</h6>
+<div class="outline-text-6" id="text-org2970689">
 </div>
 <ul class="org-ul">
-<li><a id="orgb028dcb"></a>Probe 放置<br />
-<div class="outline-text-7" id="text-orgb028dcb">
+<li><a id="org3349959"></a>Probe 放置<br />
+<div class="outline-text-7" id="text-org3349959">
 <ul class="org-ul">
 <li>围绕摄像机的 4 级 clipmaps<br /></li>
 <li>默认的分辨率为 48*48*48<br /></li>
@@ -676,13 +665,13 @@ Octahedron Mapping 有以下两个优点：<br />
 </ul>
 </div>
 </li>
-<li><a id="org4f9ea2f"></a>Connecting rays<br />
-<div class="outline-text-7" id="text-org4f9ea2f">
+<li><a id="orgd954309"></a>Connecting rays<br />
+<div class="outline-text-7" id="text-orgd954309">
 <p>
 World Space Probe 发射的射线必须跳过 4 个 World Space Probes 组成的立方体的对角线长度，立方体内部的信息由 Screen Space Probe 发射的 Ray 来考虑<br />
 </p>
 
-<div id="org610f6af" class="figure">
+<div id="org33de863" class="figure">
 <p><img src="./Games104MordenGameEngine/worldspace-probe-skip-footprint.png" alt="worldspace-probe-skip-footprint.png" width="520px" /><br />
 </p>
 </div>
@@ -691,7 +680,7 @@ World Space Probe 发射的射线必须跳过 4 个 World Space Probes 组成的
 Screen Probe 射线必须覆盖 interpolation footprint + skipped distance<br />
 </p>
 
-<div id="org51ac64a" class="figure">
+<div id="org7262bb9" class="figure">
 <p><img src="./Games104MordenGameEngine/screenspace-probe-skip.png" alt="screenspace-probe-skip.png" width="520px" /><br />
 </p>
 </div>
@@ -705,15 +694,15 @@ Light leaking Problem<br />
 将 Screen Space Probe 发射射线 a，前进最大距离后，直接将射线 a 和 World Space Probe 发射的同交点射线 b 连接起来，如此处理漏光，如下图所示：<br />
 </p>
 
-<div id="org66804f7" class="figure">
+<div id="org82905e5" class="figure">
 <p><img src="./Games104MordenGameEngine/screenspace-light-leak.png" alt="screenspace-light-leak.png" width="320px" /><br />
 </p>
 </div>
 </div>
 </li>
 
-<li><a id="org66fb7a2"></a>World Space Probe 更新<br />
-<div class="outline-text-7" id="text-org66fb7a2">
+<li><a id="orgf74036e"></a>World Space Probe 更新<br />
+<div class="outline-text-7" id="text-orgf74036e">
 <ul class="org-ul">
 <li>标记出来 Screen Probe 会用到的 World Space Probes<br /></li>
 <li>对于每个被标记的 World Space Probe<br />
@@ -729,24 +718,24 @@ Light leaking Problem<br />
 </div>
 </div>
 
-<div id="outline-container-org13b3c1b" class="outline-4">
-<h4 id="org13b3c1b">Phase 4: Shading Full Pixels with Screen Space Probes</h4>
-<div class="outline-text-4" id="text-org13b3c1b">
+<div id="outline-container-org84b4bfe" class="outline-4">
+<h4 id="org84b4bfe">Phase 4: Shading Full Pixels with Screen Space Probes</h4>
+<div class="outline-text-4" id="text-org84b4bfe">
 </div>
-<div id="outline-container-org6a0165c" class="outline-5">
-<h5 id="org6a0165c">Convert Probe Radiance to 3rd order Spherical Harmonic</h5>
-<div class="outline-text-5" id="text-org6a0165c">
+<div id="outline-container-orgde171f4" class="outline-5">
+<h5 id="orgde171f4">Convert Probe Radiance to 3rd order Spherical Harmonic</h5>
+<div class="outline-text-5" id="text-orgde171f4">
 <ul class="org-ul">
 <li>计算出每个 Screen Probe 的 SH （SH 相当于一个低通滤波器，将间接光照中的噪声去除）<br /></li>
 <li>SH Diffuse 积分消耗低而且质量比较高<br /></li>
 </ul>
 </div>
 </div>
-<div id="outline-container-org3c7d4a1" class="outline-5">
-<h5 id="org3c7d4a1">Final Integration with SH</h5>
-<div class="outline-text-5" id="text-org3c7d4a1">
+<div id="outline-container-orga9a96ca" class="outline-5">
+<h5 id="orga9a96ca">Final Integration with SH</h5>
+<div class="outline-text-5" id="text-orga9a96ca">
 
-<div id="org7de975e" class="figure">
+<div id="orga9feb30" class="figure">
 <p><img src="./Games104MordenGameEngine/lumen-final-sh-lighting.png" alt="lumen-final-sh-lighting.png" width="420px" /><br />
 </p>
 </div>
@@ -754,13 +743,13 @@ Light leaking Problem<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org0d0eabe" class="outline-3">
-<h3 id="org0d0eabe">GPU Driven Geometry Pipeline and Nanite</h3>
+<div id="outline-container-org92b1179" class="outline-3">
+<h3 id="org92b1179">GPU Driven Geometry Pipeline and Nanite</h3>
 </div>
 
-<div id="outline-container-org466808c" class="outline-3">
-<h3 id="org466808c">参考资料</h3>
-<div class="outline-text-3" id="text-org466808c">
+<div id="outline-container-org4fc6c48" class="outline-3">
+<h3 id="org4fc6c48">参考资料</h3>
+<div class="outline-text-3" id="text-org4fc6c48">
 <ul class="org-ul">
 <li>Games 104 课程主页 <a href="https://games104.boomingtech.com/sc/">https://games104.boomingtech.com/sc/</a><br /></li>
 <li>Piccolo github <a href="https://github.com/BoomingTech/Piccolo">https://github.com/BoomingTech/Piccolo</a><br /></li>

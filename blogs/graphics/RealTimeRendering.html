@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-06-27 Tue 22:36 -->
+<!-- 2024-01-15 Mon 16:32 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Real Time Rendering</title>
@@ -27,32 +27,32 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org04ab41c">Real Time Rendering</a>
+<li><a href="#org8ebca76">Real Time Rendering</a>
 <ul>
-<li><a href="#orgd6fd073">02 The Graphics Rendering Pipeline</a>
+<li><a href="#org0b1e83b">02 The Graphics Rendering Pipeline</a>
 <ul>
-<li><a href="#orgbca515f">Architecture</a></li>
-<li><a href="#orgbf115ad">The Application Stage</a></li>
-<li><a href="#org22c3b63">Geometry Processing</a></li>
-<li><a href="#org077a70c">Rasterization</a></li>
-<li><a href="#org775f6a8">Pixel Processing</a></li>
+<li><a href="#org629fe0d">Architecture</a></li>
+<li><a href="#org35846a2">The Application Stage</a></li>
+<li><a href="#org1aee1bb">Geometry Processing</a></li>
+<li><a href="#orgdc68d66">Rasterization</a></li>
+<li><a href="#org3897926">Pixel Processing</a></li>
 </ul>
 </li>
-<li><a href="#org175d070">03 The Graphics Processing Unit</a>
+<li><a href="#orga11eeb0">03 The Graphics Processing Unit</a>
 <ul>
-<li><a href="#orgd5be88b">Data-Parallel Architectures</a></li>
-<li><a href="#org0a7599b">GPU Pipeline Overview</a></li>
+<li><a href="#org99fea6b">Data-Parallel Architectures</a></li>
+<li><a href="#org819802c">GPU Pipeline Overview</a></li>
 </ul>
 </li>
-<li><a href="#org8e7c3ce">09 Physically Based Shading</a>
+<li><a href="#org8828f3c">09 Physically Based Shading</a>
 <ul>
-<li><a href="#orge230a91">The BRDF</a></li>
+<li><a href="#org7c5a734">The BRDF</a></li>
 </ul>
 </li>
-<li><a href="#org3a1e409">23 Graphics Hardware</a>
+<li><a href="#org3843cda">23 Graphics Hardware</a>
 <ul>
-<li><a href="#orgaab305e">Rasterization</a></li>
-<li><a href="#orga79b4f4">Depth Culling, Testing, and Buffering</a></li>
+<li><a href="#orgff090f3">Rasterization</a></li>
+<li><a href="#org5a84dec">Depth Culling, Testing, and Buffering</a></li>
 </ul>
 </li>
 </ul>
@@ -63,27 +63,27 @@
 <p>
 Real Time Rendering 第 4 版翻译.<br />
 </p>
-<div class="HTML" id="org98f12a1">
+<div class="HTML" id="org417a19e">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
 
 </div>
 
-<div id="outline-container-org04ab41c" class="outline-2">
-<h2 id="org04ab41c">Real Time Rendering</h2>
-<div class="outline-text-2" id="text-org04ab41c">
+<div id="outline-container-org8ebca76" class="outline-2">
+<h2 id="org8ebca76">Real Time Rendering</h2>
+<div class="outline-text-2" id="text-org8ebca76">
 </div>
-<div id="outline-container-orgd6fd073" class="outline-3">
-<h3 id="orgd6fd073">02 The Graphics Rendering Pipeline</h3>
-<div class="outline-text-3" id="text-orgd6fd073">
+<div id="outline-container-org0b1e83b" class="outline-3">
+<h3 id="org0b1e83b">02 The Graphics Rendering Pipeline</h3>
+<div class="outline-text-3" id="text-org0b1e83b">
 <p>
 本章主要专注于 rendering pipeline 各个不同阶段的功能，而不是实现。<br />
 </p>
 </div>
-<div id="outline-container-orgbca515f" class="outline-4">
-<h4 id="orgbca515f">Architecture</h4>
-<div class="outline-text-4" id="text-orgbca515f">
+<div id="outline-container-org629fe0d" class="outline-4">
+<h4 id="org629fe0d">Architecture</h4>
+<div class="outline-text-4" id="text-org629fe0d">
 <p>
 pipeline 的各个阶段是并行执行的，每个阶段只依赖前一阶段的结果。理想情况下，一个非管线系统被分为 n 个管线阶段后，会得到 n 倍的加速。这是使用管线的主要原因。例如，制作三明治可以被划分为三个阶段，准备面包、添加肉、添加佐料。每个人负责一个阶段，每个阶段的结果会传递给下一个阶段。如果每个人都需要花费 20 秒完成自己阶段的任务，则制作出一个三明治需要的最短时间为 20 秒(使用管线之前，制作出一个三明治需要 60 秒)。<br />
 </p>
@@ -97,7 +97,7 @@ pipeline 的各个阶段是并行执行的，每个阶段只依赖前一阶段�
 </p>
 
 
-<div id="org6672573" class="figure">
+<div id="org34f14e5" class="figure">
 <p><img src="./RealTimeRendering/02_01_architecture.jpg" alt="02_01_architecture.jpg" width="800px" /><br />
 </p>
 </div>
@@ -106,7 +106,7 @@ pipeline 的各个阶段是并行执行的，每个阶段只依赖前一阶段�
 下图为实时渲染管线各个阶段的进一步划分：<br />
 </p>
 
-<div id="orgc14457e" class="figure">
+<div id="orgb0a6209" class="figure">
 <p><img src="./RealTimeRendering/02_01_architecture01.jpg" alt="02_01_architecture01.jpg" width="800px" /><br />
 </p>
 </div>
@@ -117,9 +117,9 @@ pipeline 的各个阶段是并行执行的，每个阶段只依赖前一阶段�
 </div>
 </div>
 
-<div id="outline-container-orgbf115ad" class="outline-4">
-<h4 id="orgbf115ad">The Application Stage</h4>
-<div class="outline-text-4" id="text-orgbf115ad">
+<div id="outline-container-org35846a2" class="outline-4">
+<h4 id="org35846a2">The Application Stage</h4>
+<div class="outline-text-4" id="text-org35846a2">
 <p>
 Application Stage 由应用程序驱动，由开发者完全控制在该阶段执行哪些任务，通常在软件上实现，并在通用的 CPUs 上执行。依赖于应用程序的类型，Applicaton Stage 需要完成的任务可能有 collision detection, global acceleration algorithms, animation, physics simulation 等等。<br />
 使用 computer shader，一些 Application Stage 的工作也可以由 GPU 来执行，此时将 GPU 视为高度并行的通用处理器，忽略其专门用于渲染图形的特殊功能。<br />
@@ -134,22 +134,22 @@ Application Stage 通常还会处理其他输入，如键盘、鼠标等等。�
 </p>
 </div>
 </div>
-<div id="outline-container-org22c3b63" class="outline-4">
-<h4 id="org22c3b63">Geometry Processing</h4>
-<div class="outline-text-4" id="text-org22c3b63">
+<div id="outline-container-org1aee1bb" class="outline-4">
+<h4 id="org1aee1bb">Geometry Processing</h4>
+<div class="outline-text-4" id="text-org1aee1bb">
 <p>
 vertex shader 的输出为执行了 MVP 变换后得到的齐次空间的坐标。<br />
 </p>
 
-<div id="org5753806" class="figure">
+<div id="orgf175f12" class="figure">
 <p><img src="./RealTimeRendering/02_01_architecture02.jpg" alt="02_01_architecture02.jpg" width="500px" /><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-org077a70c" class="outline-4">
-<h4 id="org077a70c">Rasterization</h4>
-<div class="outline-text-4" id="text-org077a70c">
+<div id="outline-container-orgdc68d66" class="outline-4">
+<h4 id="orgdc68d66">Rasterization</h4>
+<div class="outline-text-4" id="text-orgdc68d66">
 <p>
 Rasterization 阶段的目标是找到所有被图元覆盖的像素，其被分为两个子阶段：triangle setup(primitive assembly)和 triangle traversal。Rasterization 也被称为 Scan Conversion(扫描转化)，因为其将屏幕空间上多个二维的顶点转换为了屏幕上的像素。<br />
 </p>
@@ -160,24 +160,24 @@ Triangle Traversal 阶段：判断哪些像素或样本被三角形覆盖，对�
 </p>
 </div>
 </div>
-<div id="outline-container-org775f6a8" class="outline-4">
-<h4 id="org775f6a8">Pixel Processing</h4>
-<div class="outline-text-4" id="text-org775f6a8">
+<div id="outline-container-org3897926" class="outline-4">
+<h4 id="org3897926">Pixel Processing</h4>
+<div class="outline-text-4" id="text-org3897926">
 
-<div id="orgea2d767" class="figure">
+<div id="orge924f5b" class="figure">
 <p><img src="./RealTimeRendering/02_01_architecture03.jpg" alt="02_01_architecture03.jpg" width="500px" /><br />
 </p>
 </div>
 </div>
 </div>
 </div>
-<div id="outline-container-org175d070" class="outline-3">
-<h3 id="org175d070">03 The Graphics Processing Unit</h3>
-<div class="outline-text-3" id="text-org175d070">
+<div id="outline-container-orga11eeb0" class="outline-3">
+<h3 id="orga11eeb0">03 The Graphics Processing Unit</h3>
+<div class="outline-text-3" id="text-orga11eeb0">
 </div>
-<div id="outline-container-orgd5be88b" class="outline-4">
-<h4 id="orgd5be88b">Data-Parallel Architectures</h4>
-<div class="outline-text-4" id="text-orgd5be88b">
+<div id="outline-container-org99fea6b" class="outline-4">
+<h4 id="org99fea6b">Data-Parallel Architectures</h4>
+<div class="outline-text-4" id="text-org99fea6b">
 <p>
 GPU 中的一些专用术语：<br />
 </p>
@@ -190,7 +190,7 @@ GPU 中的一些专用术语：<br />
 假如我们有一个 Mesh 被光栅化，然后该 Mesh 覆盖了 2000 个像素，生成了 2000 个片段。NVIDIA GPUs 一个 warp 包含 32 个 threads。2000/32=62.5，因此需要分配 63 个 warps，其中有一个 warp 的一半是空的。一个 warp 对应的 shader 程序会在 32 个 processors 上以 lock-step 的方式执行。执行中若需要获取内存，该 warp 中的所有的 threads 会同时需要获取内存（因为，warp 内所有的 threads 执行相同的指令），内存获取通知该 warp 阻塞，warp 内的所有 threads 都各自等待各自所需内存数据返回。被阻塞的 warp 会被置换出去，另一个不同的 warp 会被置换进来，继续在这 32 个 processors 上执行。因为，置换操作不会碰 thread 的任何数据（每个 thread 都有其自己的寄存器，每个 warp 记录其当前正在执行的指令），置换到新的 warp 只是将一组 cores 指向一组不同的 threads 来执行，所以，这种置换操作非常的快。如下图所示：<br />
 </p>
 
-<div id="orge6cd621" class="figure">
+<div id="orgddeff3b" class="figure">
 <p><img src="./RealTimeRendering/03_01_gpu_warp_schedule.jpg" alt="03_01_gpu_warp_schedule.jpg" width="500px" /><br />
 </p>
 </div>
@@ -213,20 +213,20 @@ dynamic branching 也会影响整体效率。如果所有的 threads 都走相�
 </p>
 </div>
 </div>
-<div id="outline-container-org0a7599b" class="outline-4">
-<h4 id="org0a7599b">GPU Pipeline Overview</h4>
+<div id="outline-container-org819802c" class="outline-4">
+<h4 id="org819802c">GPU Pipeline Overview</h4>
 </div>
 </div>
 
-<div id="outline-container-org8e7c3ce" class="outline-3">
-<h3 id="org8e7c3ce">09 Physically Based Shading</h3>
-<div class="outline-text-3" id="text-org8e7c3ce">
+<div id="outline-container-org8828f3c" class="outline-3">
+<h3 id="org8828f3c">09 Physically Based Shading</h3>
+<div class="outline-text-3" id="text-org8828f3c">
 </div>
-<div id="outline-container-orge230a91" class="outline-4">
-<h4 id="orge230a91">The BRDF</h4>
-<div class="outline-text-4" id="text-orge230a91">
+<div id="outline-container-org7c5a734" class="outline-4">
+<h4 id="org7c5a734">The BRDF</h4>
+<div class="outline-text-4" id="text-org7c5a734">
 
-<div id="org6520f9d" class="figure">
+<div id="org3625f86" class="figure">
 <p><img src="./RealTimeRendering/09_03_brdf.jpg" alt="09_03_brdf.jpg" width="500px" /><br />
 </p>
 </div>
@@ -249,7 +249,7 @@ dynamic branching 也会影响整体效率。如果所有的 threads 都走相�
 directional-hemispherical reflectance R(l)是一个和 BRDF 相关的函数。其可用于测量 BRDF 遵守能量守恒的程度。其测量给定入射方向的光被反射到所有方向上的量：<br />
 </p>
 
-<div id="orga0bb624" class="figure">
+<div id="orgf2ea1e8" class="figure">
 <p><img src="./RealTimeRendering/09_03_dir-hemi-reflectance.jpg" alt="09_03_dir-hemi-reflectance.jpg" width="300px" /><br />
 </p>
 </div>
@@ -258,7 +258,7 @@ directional-hemispherical reflectance R(l)是一个和 BRDF 相关的函数。�
 hemispherical-directional reflectance R(v)是一个类似的函数。其测量所有方向入射的光被反射到给定方向上的量：<br />
 </p>
 
-<div id="orgd3f7332" class="figure">
+<div id="orgde757f1" class="figure">
 <p><img src="./RealTimeRendering/09_03_hemi-dir-reflectance.jpg" alt="09_03_hemi-dir-reflectance.jpg" width="300px" /><br />
 </p>
 </div>
@@ -275,7 +275,7 @@ hemispherical-directional reflectance R(v)是一个类似的函数。其测量�
 最简单的 BRDF 模型是 Lambertian。LambertianBRDF 为一个常数值，虽然其比较简单，但是实时渲染中通常使用其表示 local subsurface scattering。Lambertian 表面的 directional-hemispherical reflectance 也是一个常数 R(l) = πf(l, v)。Lambertian BRDF 对应的 R(l)通常被当作 diffuse color Cdiff 或 albedo ρ。此处，为了强调其与次表面散射的联系，我们将 R(l)称为 subsurface albedo ρss。<br />
 </p>
 
-<div id="org67cc580" class="figure">
+<div id="org73c4ae2" class="figure">
 <p><img src="./RealTimeRendering/09_03_albedo.jpg" alt="09_03_albedo.jpg" width="150px" /><br />
 </p>
 </div>
@@ -283,20 +283,20 @@ hemispherical-directional reflectance R(v)是一个类似的函数。其测量�
 </div>
 </div>
 
-<div id="outline-container-org3a1e409" class="outline-3">
-<h3 id="org3a1e409">23 Graphics Hardware</h3>
-<div class="outline-text-3" id="text-org3a1e409">
+<div id="outline-container-org3843cda" class="outline-3">
+<h3 id="org3843cda">23 Graphics Hardware</h3>
+<div class="outline-text-3" id="text-org3843cda">
 </div>
-<div id="outline-container-orgaab305e" class="outline-4">
-<h4 id="orgaab305e">Rasterization</h4>
-<div class="outline-text-4" id="text-orgaab305e">
+<div id="outline-container-orgff090f3" class="outline-4">
+<h4 id="orgff090f3">Rasterization</h4>
+<div class="outline-text-4" id="text-orgff090f3">
 <p>
 所有的像素被按照 2x2 的方式组合，这样就可以实现 ddx ddy 了。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-orga79b4f4" class="outline-4">
-<h4 id="orga79b4f4">Depth Culling, Testing, and Buffering</h4>
+<div id="outline-container-org5a84dec" class="outline-4">
+<h4 id="org5a84dec">Depth Culling, Testing, and Buffering</h4>
 </div>
 </div>
 </div>

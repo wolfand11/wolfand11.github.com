@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-06-27 Tue 22:36 -->
+<!-- 2024-01-15 Mon 16:33 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>UsingAsynchronousComputeOnArmMaliGPUs</title>
@@ -27,30 +27,30 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orge3763ae">Summary</a></li>
-<li><a href="#org74ba59c">UsingAsynchronousComputeOnArmMaliGPUs</a>
+<li><a href="#org7b73b7c">Summary</a></li>
+<li><a href="#orga6950fb">UsingAsynchronousComputeOnArmMaliGPUs</a>
 <ul>
-<li><a href="#orga337e1f">What is even the point of async compute?</a></li>
-<li><a href="#orgecdc4dd">The critical importance of keeping hardware queues fed</a></li>
-<li><a href="#org3db8d10">The case study: Compute for post effects</a></li>
-<li><a href="#org1b5dc0d">The problematic bubble</a></li>
-<li><a href="#org4f97cd9">Can we not just complete the entire frame in compute and present?</a></li>
-<li><a href="#org160f427">Starting point of sample</a></li>
-<li><a href="#orga27a019">How do you get those hardware stats?</a></li>
-<li><a href="#org10492db">Going async</a></li>
-<li><a href="#orgaea15da">The technique</a></li>
-<li><a href="#orge0113dd">Implementation specifics</a></li>
-<li><a href="#org26fcf2c">What if I reorder submissions across frames instead?</a></li>
-<li><a href="#org3af902f">Downsides with compute workloads</a></li>
-<li><a href="#orgf9e07d5">Further best practices</a></li>
-<li><a href="#org650924b">Conclusion</a></li>
+<li><a href="#org86e7eb0">What is even the point of async compute?</a></li>
+<li><a href="#orgca65d40">The critical importance of keeping hardware queues fed</a></li>
+<li><a href="#org6459b6b">The case study: Compute for post effects</a></li>
+<li><a href="#org2631329">The problematic bubble</a></li>
+<li><a href="#orgb781475">Can we not just complete the entire frame in compute and present?</a></li>
+<li><a href="#org32bcaad">Starting point of sample</a></li>
+<li><a href="#org0303eb4">How do you get those hardware stats?</a></li>
+<li><a href="#orga576d30">Going async</a></li>
+<li><a href="#orgfea40df">The technique</a></li>
+<li><a href="#orgb44f2a9">Implementation specifics</a></li>
+<li><a href="#org257d7a3">What if I reorder submissions across frames instead?</a></li>
+<li><a href="#org5685d2d">Downsides with compute workloads</a></li>
+<li><a href="#orgd7aa0af">Further best practices</a></li>
+<li><a href="#org22e1a61">Conclusion</a></li>
 </ul>
 </li>
-<li><a href="#org9752507">Q&amp;A</a>
+<li><a href="#org7f5f850">Q&amp;A</a>
 <ul>
 <li>
 <ul>
-<li><a href="#org76e3562">像 VERTEX / COMPUTE → FRAGMENT 这样的依赖关系是完全可以的。当我们开始引入 FRAGMENT → VERTEX / COMPUTE 的依赖关系时，问题就出现了。为什么？</a></li>
+<li><a href="#org5e0c8e9">像 VERTEX / COMPUTE → FRAGMENT 这样的依赖关系是完全可以的。当我们开始引入 FRAGMENT → VERTEX / COMPUTE 的依赖关系时，问题就出现了。为什么？</a></li>
 </ul>
 </li>
 </ul>
@@ -61,16 +61,16 @@
 <p>
 UsingAsynchronousComputeOnArmMaliGPUs note.<br />
 </p>
-<div class="HTML" id="org951e788">
+<div class="HTML" id="orgc2cfc36">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
 
 </div>
 
-<div id="outline-container-orge3763ae" class="outline-2">
-<h2 id="orge3763ae">Summary</h2>
-<div class="outline-text-2" id="text-orge3763ae">
+<div id="outline-container-org7b73b7c" class="outline-2">
+<h2 id="org7b73b7c">Summary</h2>
+<div class="outline-text-2" id="text-org7b73b7c">
 <ul class="org-ul">
 <li>桌面级硬件 通常是一个单独的 Graphics Queue，以及许多只能运行计算工作负载的 Compute Queue<br /></li>
 <li>Arm Mali 是 Tile-Based GPU，因此它的队列布局与 Tile Based 渲染方式相匹配。在这里，渲染管道被一分为二，其中 vertex shader/compute shader/tiling 是一个硬件队列(Compute Queue)，而片段着色是另一个硬件队列(Fragment Queue)<br /></li>
@@ -80,9 +80,9 @@ UsingAsynchronousComputeOnArmMaliGPUs note.<br />
 </div>
 </div>
 
-<div id="outline-container-org74ba59c" class="outline-2">
-<h2 id="org74ba59c">UsingAsynchronousComputeOnArmMaliGPUs</h2>
-<div class="outline-text-2" id="text-org74ba59c">
+<div id="outline-container-orga6950fb" class="outline-2">
+<h2 id="orga6950fb">UsingAsynchronousComputeOnArmMaliGPUs</h2>
+<div class="outline-text-2" id="text-orga6950fb">
 <p>
 异步计算是一种趋势，它已被证明是一种有效的优化技术，但要确定如何应用它却有些困难。Async Compute 开始于上一代 console 平台硬件，后来在现代图形 API（如 Vulkan 和 D3D12）上得到了应用。它现在是图形程序员工具箱的一部分。<br />
 </p>
@@ -100,9 +100,9 @@ UsingAsynchronousComputeOnArmMaliGPUs note.<br />
 </p>
 </div>
 
-<div id="outline-container-orga337e1f" class="outline-3">
-<h3 id="orga337e1f">What is even the point of async compute?</h3>
-<div class="outline-text-3" id="text-orga337e1f">
+<div id="outline-container-org86e7eb0" class="outline-3">
+<h3 id="org86e7eb0">What is even the point of async compute?</h3>
+<div class="outline-text-3" id="text-org86e7eb0">
 <p>
 异步计算的意义何在？<br />
 </p>
@@ -121,9 +121,9 @@ UsingAsynchronousComputeOnArmMaliGPUs note.<br />
 </div>
 </div>
 
-<div id="outline-container-orgecdc4dd" class="outline-3">
-<h3 id="orgecdc4dd">The critical importance of keeping hardware queues fed</h3>
-<div class="outline-text-3" id="text-orgecdc4dd">
+<div id="outline-container-orgca65d40" class="outline-3">
+<h3 id="orgca65d40">The critical importance of keeping hardware queues fed</h3>
+<div class="outline-text-3" id="text-orgca65d40">
 <p>
 保持硬件队列有数据非常重要<br />
 </p>
@@ -142,9 +142,9 @@ Tile-based rendering 本质上是一个两阶段的流水线，而在一个流�
 </div>
 </div>
 
-<div id="outline-container-org3db8d10" class="outline-3">
-<h3 id="org3db8d10">The case study: Compute for post effects</h3>
-<div class="outline-text-3" id="text-org3db8d10">
+<div id="outline-container-org6459b6b" class="outline-3">
+<h3 id="org6459b6b">The case study: Compute for post effects</h3>
+<div class="outline-text-3" id="text-org6459b6b">
 <p>
 案例研究: 后期效果的计算<br />
 </p>
@@ -159,9 +159,9 @@ Tile-based rendering 本质上是一个两阶段的流水线，而在一个流�
 </div>
 </div>
 
-<div id="outline-container-org1b5dc0d" class="outline-3">
-<h3 id="org1b5dc0d">The problematic bubble</h3>
-<div class="outline-text-3" id="text-org1b5dc0d">
+<div id="outline-container-org2631329" class="outline-3">
+<h3 id="org2631329">The problematic bubble</h3>
+<div class="outline-text-3" id="text-org2631329">
 <p>
 有问题的泡沫<br />
 </p>
@@ -179,9 +179,9 @@ VERTEX→FRAGMENT（场景渲染）→COMPUTE（后期特效）→我们如何�
 </p>
 </div>
 </div>
-<div id="outline-container-org4f97cd9" class="outline-3">
-<h3 id="org4f97cd9">Can we not just complete the entire frame in compute and present?</h3>
-<div class="outline-text-3" id="text-org4f97cd9">
+<div id="outline-container-orgb781475" class="outline-3">
+<h3 id="orgb781475">Can we not just complete the entire frame in compute and present?</h3>
+<div class="outline-text-3" id="text-orgb781475">
 <p>
 我们就不能在 compute 中完成整个画面然后再呈现吗？<br />
 </p>
@@ -192,11 +192,11 @@ VERTEX→FRAGMENT（场景渲染）→COMPUTE（后期特效）→我们如何�
 </div>
 </div>
 
-<div id="outline-container-org160f427" class="outline-3">
-<h3 id="org160f427">Starting point of sample</h3>
-<div class="outline-text-3" id="text-org160f427">
+<div id="outline-container-org32bcaad" class="outline-3">
+<h3 id="org32bcaad">Starting point of sample</h3>
+<div class="outline-text-3" id="text-org32bcaad">
 
-<div id="org41607da" class="figure">
+<div id="org3ba69b7" class="figure">
 <p><img src="./UsingAsynchronousComputeOnArmMaliGPUs/Async-compute-image2-_2800_final_2900_.jpg" alt="Async-compute-image2-_2800_final_2900_.jpg" width="1200px" /><br />
 </p>
 </div>
@@ -218,9 +218,9 @@ VERTEX→FRAGMENT（场景渲染）→COMPUTE（后期特效）→我们如何�
 </div>
 </div>
 
-<div id="outline-container-orga27a019" class="outline-3">
-<h3 id="orga27a019">How do you get those hardware stats?</h3>
-<div class="outline-text-3" id="text-orga27a019">
+<div id="outline-container-org0303eb4" class="outline-3">
+<h3 id="org0303eb4">How do you get those hardware stats?</h3>
+<div class="outline-text-3" id="text-org0303eb4">
 <p>
 如何得到这些硬件统计资料的？<br />
 </p>
@@ -231,15 +231,15 @@ VERTEX→FRAGMENT（场景渲染）→COMPUTE（后期特效）→我们如何�
 </div>
 </div>
 
-<div id="outline-container-org10492db" class="outline-3">
-<h3 id="org10492db">Going async</h3>
-<div class="outline-text-3" id="text-org10492db">
+<div id="outline-container-orga576d30" class="outline-3">
+<h3 id="orga576d30">Going async</h3>
+<div class="outline-text-3" id="text-orga576d30">
 <p>
 走向异步<br />
 </p>
 
 
-<div id="org1ebb4dc" class="figure">
+<div id="org101cda5" class="figure">
 <p><img src="./UsingAsynchronousComputeOnArmMaliGPUs/Async compute image3_final.jpg" alt="Async compute image3_final.jpg" width="1200px" /><br />
 </p>
 </div>
@@ -266,18 +266,18 @@ VERTEX→FRAGMENT（场景渲染）→COMPUTE（后期特效）→我们如何�
 </div>
 </div>
 
-<div id="outline-container-orgaea15da" class="outline-3">
-<h3 id="orgaea15da">The technique</h3>
-<div class="outline-text-3" id="text-orgaea15da">
+<div id="outline-container-orgfea40df" class="outline-3">
+<h3 id="orgfea40df">The technique</h3>
+<div class="outline-text-3" id="text-orgfea40df">
 <p>
 如果没有流水线，我们可以利用多个 VkQueues 变出一个流水线来。因此，我们不仅仅是在做异步计算（async compute），我们也在做异步图形（async graphics）。<br />
 </p>
 </div>
 </div>
 
-<div id="outline-container-orge0113dd" class="outline-3">
-<h3 id="orge0113dd">Implementation specifics</h3>
-<div class="outline-text-3" id="text-orge0113dd">
+<div id="outline-container-orgb44f2a9" class="outline-3">
+<h3 id="orgb44f2a9">Implementation specifics</h3>
+<div class="outline-text-3" id="text-orgb44f2a9">
 <p>
 实现的具体细节<br />
 </p>
@@ -332,9 +332,9 @@ vkGetDeviceQueue(device, 0, 1, &amp;normal_prio_queue);
 </div>
 </div>
 
-<div id="outline-container-org26fcf2c" class="outline-3">
-<h3 id="org26fcf2c">What if I reorder submissions across frames instead?</h3>
-<div class="outline-text-3" id="text-org26fcf2c">
+<div id="outline-container-org257d7a3" class="outline-3">
+<h3 id="org257d7a3">What if I reorder submissions across frames instead?</h3>
+<div class="outline-text-3" id="text-org257d7a3">
 <p>
 如果我在各帧之间排序提交呢？<br />
 </p>
@@ -345,9 +345,9 @@ vkGetDeviceQueue(device, 0, 1, &amp;normal_prio_queue);
 </div>
 </div>
 
-<div id="outline-container-org3af902f" class="outline-3">
-<h3 id="org3af902f">Downsides with compute workloads</h3>
-<div class="outline-text-3" id="text-org3af902f">
+<div id="outline-container-org5685d2d" class="outline-3">
+<h3 id="org5685d2d">Downsides with compute workloads</h3>
+<div class="outline-text-3" id="text-org5685d2d">
 <p>
 计算工作负载的弊端<br />
 </p>
@@ -364,9 +364,9 @@ vkGetDeviceQueue(device, 0, 1, &amp;normal_prio_queue);
 </div>
 </div>
 
-<div id="outline-container-orgf9e07d5" class="outline-3">
-<h3 id="orgf9e07d5">Further best practices</h3>
-<div class="outline-text-3" id="text-orgf9e07d5">
+<div id="outline-container-orgd7aa0af" class="outline-3">
+<h3 id="orgd7aa0af">Further best practices</h3>
+<div class="outline-text-3" id="text-orgd7aa0af">
 <p>
 下面的最佳实践文章中有一节关于图像处理的计算。<br />
 <a href="https://developer.arm.com/documentation/101897/v2-2/Compute/Image-processing">https://developer.arm.com/documentation/101897/v2-2/Compute/Image-processing</a><br />
@@ -386,9 +386,9 @@ vkGetDeviceQueue(device, 0, 1, &amp;normal_prio_queue);
 </div>
 </div>
 
-<div id="outline-container-org650924b" class="outline-3">
-<h3 id="org650924b">Conclusion</h3>
-<div class="outline-text-3" id="text-org650924b">
+<div id="outline-container-org22e1a61" class="outline-3">
+<h3 id="org22e1a61">Conclusion</h3>
+<div class="outline-text-3" id="text-org22e1a61">
 <p>
 正如 Sample 所示，有一些方法可以有效地利用 Arm Mali GPU 上的 compute shaders。它们确实需要相当多的考虑，而且测量结果是至关重要的。异步计算始终是一个不稳定的优化，如果操作正确，可以挤出最后几个百分点的性能。我希望这篇文章能激发一些优化想法。Vulkan 能够以老式 API 无法做到的方式利用硬件，不尝试利用它将是一种耻辱。<br />
 </p>
@@ -396,13 +396,13 @@ vkGetDeviceQueue(device, 0, 1, &amp;normal_prio_queue);
 </div>
 </div>
 
-<div id="outline-container-org9752507" class="outline-2">
-<h2 id="org9752507">Q&amp;A</h2>
-<div class="outline-text-2" id="text-org9752507">
+<div id="outline-container-org7f5f850" class="outline-2">
+<h2 id="org7f5f850">Q&amp;A</h2>
+<div class="outline-text-2" id="text-org7f5f850">
 </div>
-<div id="outline-container-org76e3562" class="outline-4">
-<h4 id="org76e3562">像 VERTEX / COMPUTE → FRAGMENT 这样的依赖关系是完全可以的。当我们开始引入 FRAGMENT → VERTEX / COMPUTE 的依赖关系时，问题就出现了。为什么？</h4>
-<div class="outline-text-4" id="text-org76e3562">
+<div id="outline-container-org5e0c8e9" class="outline-4">
+<h4 id="org5e0c8e9">像 VERTEX / COMPUTE → FRAGMENT 这样的依赖关系是完全可以的。当我们开始引入 FRAGMENT → VERTEX / COMPUTE 的依赖关系时，问题就出现了。为什么？</h4>
+<div class="outline-text-4" id="text-org5e0c8e9">
 <p>
 FRAGMENT → VERTEX / COMPUTE 本身没问题，问题出在 VERTEX / COMPUTE 之后的 FRAGMENT 需要前面阶段的执行结果。这就会导致，在 VERTEX / COMPUTE  阶段，FRAGMENT Queue 没有任务，从而可能会导致 shader cores 空闲。<br />
 </p>

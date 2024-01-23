@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-11-28 Tue 17:24 -->
+<!-- 2024-01-15 Mon 16:29 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>GPU Architecture</title>
@@ -27,181 +27,181 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org13d116d">GPU Architecture</a>
+<li><a href="#org800bb72">GPU Architecture</a>
 <ul>
-<li><a href="#org0c42572">Quick review of the graphics pipeline</a>
+<li><a href="#org6446d3f">Quick review of the graphics pipeline</a>
 <ul>
-<li><a href="#orga4a9ef9">graphics pipeline</a></li>
-<li><a href="#org71cd660">GPU to help</a></li>
+<li><a href="#org2258f8f">graphics pipeline</a></li>
+<li><a href="#orgd370b7d">GPU to help</a></li>
 </ul>
 </li>
-<li><a href="#orgeb977a8">Mapping the graphics pipeline into the gpu blocks</a>
+<li><a href="#orgd7fe824">Mapping the graphics pipeline into the gpu blocks</a>
 <ul>
-<li><a href="#org848af4a">Anatomy of a GPU</a>
+<li><a href="#orge1fb35e">Anatomy of a GPU</a>
 <ul>
-<li><a href="#org4ea1b73">参考资料</a></li>
+<li><a href="#org35a8256">参考资料</a></li>
 </ul>
 </li>
-<li><a href="#org96457b0">gpu graphics pipline</a>
+<li><a href="#org87039e9">gpu graphics pipline</a>
 <ul>
-<li><a href="#org00c0aae">application stage</a></li>
-<li><a href="#org0915e51">input assembly unit</a></li>
-<li><a href="#orgfd57fb7">vertex shading</a></li>
-<li><a href="#org7170d65">rasterization</a>
+<li><a href="#org9fa4f15">application stage</a></li>
+<li><a href="#org4266b97">input assembly unit</a></li>
+<li><a href="#orgb83fe00">vertex shading</a></li>
+<li><a href="#orgb86554d">rasterization</a>
 <ul>
-<li><a href="#org9ff3d61">primitive assembly unit</a></li>
-<li><a href="#org32d2d9e">triangle rasterization unit</a></li>
+<li><a href="#org10cfc29">primitive assembly unit</a></li>
+<li><a href="#org7417081">triangle rasterization unit</a></li>
 </ul>
 </li>
-<li><a href="#orgfca2c1d">pixel shading</a>
+<li><a href="#org5fe287e">pixel shading</a>
 <ul>
-<li><a href="#orga723c51">quads</a></li>
-<li><a href="#orgc3e7ab8">texture unit</a></li>
+<li><a href="#orgc93dece">quads</a></li>
+<li><a href="#orgeeb50c4">texture unit</a></li>
 </ul>
 </li>
-<li><a href="#org7e68f6d">output merger</a></li>
-<li><a href="#orgb239ac8">compute shaders</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#org1c336b2">How a shader core works</a>
-<ul>
-<li><a href="#org3c4d755">shader core</a></li>
-<li><a href="#org97c2100">VLIW(Very Long instruction word) architecture</a>
-<ul>
-<li><a href="#orga4b6045">Vliw 实例：Arm Cayman architecture</a></li>
-</ul>
-</li>
-<li><a href="#org600e488">Moving to Scalar architecture</a></li>
-<li><a href="#org1cdb4ee">Fictional Shader Core (虚构的 shader core)</a>
-<ul>
-<li><a href="#orged65f78">fictional shader core</a></li>
-<li><a href="#org4ccd866">latency hiding</a></li>
-<li><a href="#orgebffc60">occupancy</a></li>
+<li><a href="#orga560386">output merger</a></li>
+<li><a href="#org6b0819e">compute shaders</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#orgb02faa5">Some real gpu use cases</a>
+<li><a href="#orgea0d4e5">How a shader core works</a>
 <ul>
-<li><a href="#org855744d">fictional gpu</a></li>
-<li><a href="#org767ab1e">gpu memory</a></li>
-<li><a href="#org60e2be8">shader system use case : GCN (Graphics Core Next)</a>
+<li><a href="#org344d46c">shader core</a></li>
+<li><a href="#org2bd4d6f">VLIW(Very Long instruction word) architecture</a>
 <ul>
-<li><a href="#org616adc8">GCN</a></li>
-<li><a href="#org4251939">Wavefronts</a></li>
-<li><a href="#org54bceb1">VGPR / SGPR</a></li>
-<li><a href="#org663f8b7">CU (Compute Unit)</a>
-<ul>
-<li><a href="#orge634bb9">CU simd</a></li>
-<li><a href="#orgdd0d032">CU scalar unit</a></li>
-<li><a href="#org8ac0b0c">CU branch unit</a></li>
+<li><a href="#org8ed4fd8">Vliw 实例：Arm Cayman architecture</a></li>
 </ul>
 </li>
-<li><a href="#orgbc192f7">LDS (Local Data Share) GDS (Global Data Share)</a>
+<li><a href="#orgd8b6b9b">Moving to Scalar architecture</a></li>
+<li><a href="#orga0491c4">Fictional Shader Core (虚构的 shader core)</a>
 <ul>
-<li><a href="#orgdd84777">LDS</a></li>
-<li><a href="#orge565ddb">GDS</a></li>
-</ul>
-</li>
-<li><a href="#org5f9eed8">Export</a></li>
-<li><a href="#org3500e38">Vector Memory</a></li>
-</ul>
-</li>
-<li><a href="#org7b860cd">shader system use case : Nvidia Turing(TU102)</a>
-<ul>
-<li><a href="#orgff712be">Turing</a></li>
-<li><a href="#org3b06fc3">Streaming multiprocessor</a></li>
-<li><a href="#org59fa734">Warps</a></li>
-<li><a href="#org3737ccd">Graphics processing cluster (GPC)</a></li>
-</ul>
-</li>
-<li><a href="#org1f888d5">AMD vs Nvidia GPU architecture</a></li>
-</ul>
-</li>
-<li><a href="#org4452f96">Mobile gpus</a>
-<ul>
-<li><a href="#org85b1046">Problem on Mobile</a></li>
-<li><a href="#orge80b4e8">Tile Based architecture / Tile Based Deferred architecture</a></li>
-<li><a href="#orga453479">TBR pro and cons</a>
-<ul>
-<li><a href="#org94643ce">Pro</a></li>
-<li><a href="#org09fbab6">Cons</a></li>
+<li><a href="#org07adc5e">fictional shader core</a></li>
+<li><a href="#org7f58811">latency hiding</a></li>
+<li><a href="#org2b636a2">occupancy</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#orgd41875e">参考资料</a></li>
+<li><a href="#orgdb9d5ca">Some real gpu use cases</a>
+<ul>
+<li><a href="#orgf4f6770">fictional gpu</a></li>
+<li><a href="#org6dbf1fc">gpu memory</a></li>
+<li><a href="#orgd16dde1">shader system use case : GCN (Graphics Core Next)</a>
+<ul>
+<li><a href="#org5dd9c9e">GCN</a></li>
+<li><a href="#org00bb85c">Wavefronts</a></li>
+<li><a href="#orgda2f8be">VGPR / SGPR</a></li>
+<li><a href="#org21c9ead">CU (Compute Unit)</a>
+<ul>
+<li><a href="#org3527535">CU simd</a></li>
+<li><a href="#org9d20559">CU scalar unit</a></li>
+<li><a href="#org5f72243">CU branch unit</a></li>
 </ul>
 </li>
-<li><a href="#orgc76a658">Mobile GPU approaches to power efficiency</a>
+<li><a href="#org43b1c85">LDS (Local Data Share) GDS (Global Data Share)</a>
 <ul>
-<li><a href="#org3353d93">What is the typical mobile environment?</a>
-<ul>
-<li><a href="#org7652412">Mobile Memory Systems</a>
-<ul>
-<li><a href="#org8045afa">架构</a></li>
-<li><a href="#org040fb86">Performance/Power</a></li>
+<li><a href="#orgdb0814f">LDS</a></li>
+<li><a href="#orgedaa6a3">GDS</a></li>
 </ul>
 </li>
-<li><a href="#org3f7c365">Mobile GPU, APIs and other trends</a>
+<li><a href="#org7a1e2b6">Export</a></li>
+<li><a href="#org82a487c">Vector Memory</a></li>
+</ul>
+</li>
+<li><a href="#org09d2bfb">shader system use case : Nvidia Turing(TU102)</a>
 <ul>
-<li><a href="#org7f7fe77">What is Wave Math?</a></li>
-<li><a href="#org6f5a77b">Power Consumption within a Mobile GPU</a></li>
+<li><a href="#orga374b82">Turing</a></li>
+<li><a href="#orgb2f025d">Streaming multiprocessor</a></li>
+<li><a href="#org2f7dd28">Warps</a></li>
+<li><a href="#orgde878b2">Graphics processing cluster (GPC)</a></li>
 </ul>
 </li>
+<li><a href="#orgde5cffb">AMD vs Nvidia GPU architecture</a></li>
 </ul>
 </li>
-<li><a href="#org9c0d3cc">Rendering algorithm differences with desktop</a>
+<li><a href="#orga24e767">Mobile gpus</a>
 <ul>
-<li><a href="#org2411317">Tile-based Rendering</a>
+<li><a href="#org3147ba7">Problem on Mobile</a></li>
+<li><a href="#org92b7bc1">Tile Based architecture / Tile Based Deferred architecture</a></li>
+<li><a href="#org0a5314e">TBR pro and cons</a>
 <ul>
-<li><a href="#org4523e65">IMR（Immediately Rendering） vs TBR</a>
+<li><a href="#orgfa05635">Pro</a></li>
+<li><a href="#orgefddb25">Cons</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org371cb2f">参考资料</a></li>
+</ul>
+</li>
+<li><a href="#org1e7c255">Mobile GPU approaches to power efficiency</a>
 <ul>
-<li><a href="#org0556b6c">IMR</a></li>
-<li><a href="#orge7e174f">TBR</a></li>
-<li><a href="#org1ababab">TBDR</a></li>
-</ul>
-</li>
-<li><a href="#org44e2066">参考资料</a></li>
-</ul>
-</li>
-<li><a href="#org75ef9ec">Power advantages of tiled rendering</a></li>
-</ul>
-</li>
-<li><a href="#org23304dc">Performance and perf/watt comparison with desktop</a></li>
-<li><a href="#org59ef783">Physical design and power management</a></li>
-<li><a href="#org51c5b3b">Future Challenges</a>
+<li><a href="#org10beb68">What is the typical mobile environment?</a>
 <ul>
-<li><a href="#orgea5fe0a">Challenges</a></li>
-<li><a href="#orgc33ee69">可能的解决方案</a></li>
-</ul>
-</li>
-<li><a href="#org5dbbab2">参考资料</a></li>
-</ul>
-</li>
-<li><a href="#orge76a269">GPU Framebuffer Memory: Understanding Tiling</a>
+<li><a href="#org2e867bd">Mobile Memory Systems</a>
 <ul>
-<li><a href="#orgc6fe283">Immediate mode rasterizers</a></li>
-<li><a href="#orge18145c">Memory use in an Immediate-Mode Renderer</a></li>
-<li><a href="#orgf772ed6">Tiled memory</a></li>
-<li><a href="#org30fdd23">Rasterizing within tiles</a></li>
-<li><a href="#orgbce0b91">Binning</a></li>
-<li><a href="#orged489d3">Tile-based rasterization</a></li>
-<li><a href="#org197b940">Multisampling</a></li>
-<li><a href="#orgba8eead">Traditional deferred shading</a></li>
-<li><a href="#orgc23c325">Tiling and deferred shading</a></li>
-<li><a href="#orgacb7389">Advantages of tile-based rendering</a></li>
-<li><a href="#orgc73a790">Limitations of tile-based rendering</a></li>
-<li><a href="#org47460f3">Summary</a></li>
-<li><a href="#org669c5fc">参考资料</a></li>
+<li><a href="#org4422529">架构</a></li>
+<li><a href="#org42995f0">Performance/Power</a></li>
 </ul>
 </li>
-<li><a href="#orgff95dd2">GPU 常识</a>
+<li><a href="#orge0cd4d7">Mobile GPU, APIs and other trends</a>
 <ul>
-<li><a href="#orgfded6d9">术语表</a></li>
-<li><a href="#org2eec3ab">厂商</a></li>
+<li><a href="#org9ef958c">What is Wave Math?</a></li>
+<li><a href="#orgf6436b8">Power Consumption within a Mobile GPU</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgd6704cc">Rendering algorithm differences with desktop</a>
+<ul>
+<li><a href="#org24b1311">Tile-based Rendering</a>
+<ul>
+<li><a href="#org7c340d5">IMR（Immediately Rendering） vs TBR</a>
+<ul>
+<li><a href="#org0918402">IMR</a></li>
+<li><a href="#orgcf2baf4">TBR</a></li>
+<li><a href="#orgf983498">TBDR</a></li>
+</ul>
+</li>
+<li><a href="#org6501daf">参考资料</a></li>
+</ul>
+</li>
+<li><a href="#org45f8ddf">Power advantages of tiled rendering</a></li>
+</ul>
+</li>
+<li><a href="#org58f04a4">Performance and perf/watt comparison with desktop</a></li>
+<li><a href="#org81c8402">Physical design and power management</a></li>
+<li><a href="#orga2a19d9">Future Challenges</a>
+<ul>
+<li><a href="#orged873fb">Challenges</a></li>
+<li><a href="#org20e5010">可能的解决方案</a></li>
+</ul>
+</li>
+<li><a href="#org52fc434">参考资料</a></li>
+</ul>
+</li>
+<li><a href="#orge9548d1">GPU Framebuffer Memory: Understanding Tiling</a>
+<ul>
+<li><a href="#orga5ad995">Immediate mode rasterizers</a></li>
+<li><a href="#orgfce9142">Memory use in an Immediate-Mode Renderer</a></li>
+<li><a href="#orgb4c51e1">Tiled memory</a></li>
+<li><a href="#org2136ef3">Rasterizing within tiles</a></li>
+<li><a href="#orgf77de65">Binning</a></li>
+<li><a href="#orgd533cc7">Tile-based rasterization</a></li>
+<li><a href="#orgf364c3d">Multisampling</a></li>
+<li><a href="#orge3f8977">Traditional deferred shading</a></li>
+<li><a href="#org5e5bacc">Tiling and deferred shading</a></li>
+<li><a href="#orgb1786e8">Advantages of tile-based rendering</a></li>
+<li><a href="#orgd8e2c04">Limitations of tile-based rendering</a></li>
+<li><a href="#org35fe8cb">Summary</a></li>
+<li><a href="#orgfea70ae">参考资料</a></li>
+</ul>
+</li>
+<li><a href="#orgb87be07">GPU 常识</a>
+<ul>
+<li><a href="#org4fe2c50">术语表</a></li>
+<li><a href="#org193fc69">厂商</a></li>
 </ul>
 </li>
 </ul>
@@ -210,27 +210,27 @@
 <p>
 GPU Architecture note.<br />
 </p>
-<div class="HTML" id="org1ae5e90">
+<div class="HTML" id="orgec5a9f2">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
 
 </div>
 
-<div id="outline-container-org13d116d" class="outline-2">
-<h2 id="org13d116d">GPU Architecture</h2>
-<div class="outline-text-2" id="text-org13d116d">
+<div id="outline-container-org800bb72" class="outline-2">
+<h2 id="org800bb72">GPU Architecture</h2>
+<div class="outline-text-2" id="text-org800bb72">
 <ul class="org-ul">
 <li>GPU Architectures PPT <a href="https://drive.google.com/file/d/12ahbqGXNfY3V-1Gj5cvne2AH4BFWZHGD/view">https://drive.google.com/file/d/12ahbqGXNfY3V-1Gj5cvne2AH4BFWZHGD/view</a><br /></li>
 </ul>
 </div>
-<div id="outline-container-org0c42572" class="outline-3">
-<h3 id="org0c42572">Quick review of the graphics pipeline</h3>
-<div class="outline-text-3" id="text-org0c42572">
+<div id="outline-container-org6446d3f" class="outline-3">
+<h3 id="org6446d3f">Quick review of the graphics pipeline</h3>
+<div class="outline-text-3" id="text-org6446d3f">
 </div>
-<div id="outline-container-orga4a9ef9" class="outline-4">
-<h4 id="orga4a9ef9">graphics pipeline</h4>
-<div class="outline-text-4" id="text-orga4a9ef9">
+<div id="outline-container-org2258f8f" class="outline-4">
+<h4 id="org2258f8f">graphics pipeline</h4>
+<div class="outline-text-4" id="text-org2258f8f">
 <p>
 图形管线的主要任务是将三角形数据转化为像素。其中涉及到如下多个步骤：<br />
 </p>
@@ -259,28 +259,28 @@ GPU Architecture note.<br />
 </p>
 
 
-<div id="org9e073c8" class="figure">
+<div id="org4cd3574" class="figure">
 <p><img src="./GPUArchitecture/graphics-pipeline.jpg" alt="graphics-pipeline.jpg" width="768px" /><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-org71cd660" class="outline-4">
-<h4 id="org71cd660">GPU to help</h4>
-<div class="outline-text-4" id="text-org71cd660">
+<div id="outline-container-orgd370b7d" class="outline-4">
+<h4 id="orgd370b7d">GPU to help</h4>
+<div class="outline-text-4" id="text-orgd370b7d">
 <p>
 现代的 gpu 可以加速上面列出的图形管线的所有阶段。各个阶段的操作可以被映射到多个特定的硬件模块。其中一些功能是可编程的，由 shader cores 来执行(如：vertex shader, fragment shader)。其他一些则是固定的不可编程的，但是可以通过参数进行配置(如：primitive assembly, blending)。<br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgeb977a8" class="outline-3">
-<h3 id="orgeb977a8">Mapping the graphics pipeline into the gpu blocks</h3>
-<div class="outline-text-3" id="text-orgeb977a8">
+<div id="outline-container-orgd7fe824" class="outline-3">
+<h3 id="orgd7fe824">Mapping the graphics pipeline into the gpu blocks</h3>
+<div class="outline-text-3" id="text-orgd7fe824">
 </div>
-<div id="outline-container-org848af4a" class="outline-4">
-<h4 id="org848af4a">Anatomy of a GPU</h4>
-<div class="outline-text-4" id="text-org848af4a">
+<div id="outline-container-orge1fb35e" class="outline-4">
+<h4 id="orge1fb35e">Anatomy of a GPU</h4>
+<div class="outline-text-4" id="text-orge1fb35e">
 <p>
 GPU 有如下一些特征：<br />
 </p>
@@ -293,7 +293,7 @@ GPU 有如下一些特征：<br />
 </ul></li>
 <li>内存带宽非常大<br />
 <ul class="org-ul">
-<li>每秒上百 GB/s ( <a href="../theory/ComputerSystem.html#orgd47672c">带宽的计算</a> )<br /></li>
+<li>每秒上百 GB/s ( <a href="../theory/ComputerSystem.html#org121e91a">带宽的计算</a> )<br /></li>
 <li>但是 延迟非常高(上千个 cycles)<br /></li>
 <li>因此，延迟隐藏机制非常必要<br /></li>
 </ul></li>
@@ -303,9 +303,9 @@ GPU 通过对 Graphics pipeline 的组织来克服自身的一些限制。<br />
 </p>
 </div>
 
-<div id="outline-container-org4ea1b73" class="outline-5">
-<h5 id="org4ea1b73">参考资料</h5>
-<div class="outline-text-5" id="text-org4ea1b73">
+<div id="outline-container-org35a8256" class="outline-5">
+<h5 id="org35a8256">参考资料</h5>
+<div class="outline-text-5" id="text-org35a8256">
 <ul class="org-ul">
 <li>CPU 和 GPU 的区别是什么？ <a href="https://www.zhihu.com/question/19903344">https://www.zhihu.com/question/19903344</a><br /></li>
 <li>GPU 不能完全取代 CPU 的最大原因是什么？ <a href="https://www.zhihu.com/question/22219245">https://www.zhihu.com/question/22219245</a><br /></li>
@@ -313,13 +313,13 @@ GPU 通过对 Graphics pipeline 的组织来克服自身的一些限制。<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org96457b0" class="outline-4">
-<h4 id="org96457b0">gpu graphics pipline</h4>
-<div class="outline-text-4" id="text-org96457b0">
+<div id="outline-container-org87039e9" class="outline-4">
+<h4 id="org87039e9">gpu graphics pipline</h4>
+<div class="outline-text-4" id="text-org87039e9">
 </div>
-<div id="outline-container-org00c0aae" class="outline-5">
-<h5 id="org00c0aae">application stage</h5>
-<div class="outline-text-5" id="text-org00c0aae">
+<div id="outline-container-org9fa4f15" class="outline-5">
+<h5 id="org9fa4f15">application stage</h5>
+<div class="outline-text-5" id="text-org9fa4f15">
 <p>
 CPU 发布命令给 GPU。这些命令可能有：<br />
 </p>
@@ -341,15 +341,15 @@ CPU 发布命令给 GPU。这些命令可能有：<br />
 </ul>
 
 
-<div id="org6381705" class="figure">
+<div id="orgc5ccd97" class="figure">
 <p><img src="./GPUArchitecture/cmd-parse.jpg" alt="cmd-parse.jpg" width="300px" /><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-org0915e51" class="outline-5">
-<h5 id="org0915e51">input assembly unit</h5>
-<div class="outline-text-5" id="text-org0915e51">
+<div id="outline-container-org4266b97" class="outline-5">
+<h5 id="org4266b97">input assembly unit</h5>
+<div class="outline-text-5" id="text-org4266b97">
 <ul class="org-ul">
 <li>input assembly unit 会从主存中获取索引和顶点，将数据装配为图元。另外还会将图元和系统生成的值关联（例如：primitive id，instance id，vertex id）<br /></li>
 <li>通常会有一个顶点复用缓冲<br />
@@ -365,15 +365,15 @@ CPU 发布命令给 GPU。这些命令可能有：<br />
 </ul>
 
 
-<div id="org81f0efb" class="figure">
+<div id="orgfc9b2bc" class="figure">
 <p><img src="./GPUArchitecture/input-assembly-unit.jpg" alt="input-assembly-unit.jpg" width="300px" /><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgfd57fb7" class="outline-5">
-<h5 id="orgfd57fb7">vertex shading</h5>
-<div class="outline-text-5" id="text-orgfd57fb7">
+<div id="outline-container-orgb83fe00" class="outline-5">
+<h5 id="orgb83fe00">vertex shading</h5>
+<div class="outline-text-5" id="text-orgb83fe00">
 <ul class="org-ul">
 <li>该阶段由 shader core 来执行，完全可编程控制<br /></li>
 <li>最后会输出位置和顶点属性给 pixel shading 使用<br /></li>
@@ -382,19 +382,19 @@ CPU 发布命令给 GPU。这些命令可能有：<br />
 </ul>
 
 
-<div id="orgcc3d0b1" class="figure">
+<div id="org69dfd85" class="figure">
 <p><img src="./GPUArchitecture/vertex-shader-system.jpg" alt="vertex-shader-system.jpg" width="300px" /><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-org7170d65" class="outline-5">
-<h5 id="org7170d65">rasterization</h5>
-<div class="outline-text-5" id="text-org7170d65">
+<div id="outline-container-orgb86554d" class="outline-5">
+<h5 id="orgb86554d">rasterization</h5>
+<div class="outline-text-5" id="text-orgb86554d">
 </div>
-<div id="outline-container-org9ff3d61" class="outline-6">
-<h6 id="org9ff3d61">primitive assembly unit</h6>
-<div class="outline-text-6" id="text-org9ff3d61">
+<div id="outline-container-org10cfc29" class="outline-6">
+<h6 id="org10cfc29">primitive assembly unit</h6>
+<div class="outline-text-6" id="text-org10cfc29">
 <ul class="org-ul">
 <li>到目前为止，我们只有被变换后的顶点<br /></li>
 <li>primitive assembly unit 从 position cache 中获取位置<br /></li>
@@ -414,20 +414,20 @@ Tips: 在 CPU 端进行 bounding box culling 可以避免 primitive assembly uni
 </p>
 
 
-<div id="org7dc60d3" class="figure">
+<div id="orgf001fea" class="figure">
 <p><img src="./GPUArchitecture/primitive-assembly-unit.jpg" alt="primitive-assembly-unit.jpg" width="300px" /><br />
 </p>
 </div>
 </div>
 <ul class="org-ul">
-<li><a id="org54cc35c"></a>guard-band clippling<br />
-<div class="outline-text-7" id="text-org54cc35c">
+<li><a id="orge1dc0a9"></a>guard-band clippling<br />
+<div class="outline-text-7" id="text-orge1dc0a9">
 <p>
 guard-band clippling 可以减少三角形 clipping 操作。其定义了一个比视口范围更大的范围（guard-band clip planes），只有三角形部分在视口内，部分超出 guard-band clip planes（如下图中的紫色三角形）, 才需要对该三角形进行裁剪。三角形是否在视口内的检查是通过固定精度的整数运算进行的，如果三角形离视口很远，可能导致数据溢出和检测结果错误。因此，guard-band clip planes 的范围和光栅化器使用的精度相关，对于超过该精度值的位置必须进行裁剪。<br />
 </p>
 
 
-<div id="orgdd24842" class="figure">
+<div id="org0c11b10" class="figure">
 <p><img src="./GPUArchitecture/guard-band-clipping.jpg" alt="guard-band-clipping.jpg" width="256px" /><br />
 </p>
 </div>
@@ -435,9 +435,9 @@ guard-band clippling 可以减少三角形 clipping 操作。其定义了一个�
 </li>
 </ul>
 </div>
-<div id="outline-container-org32d2d9e" class="outline-6">
-<h6 id="org32d2d9e">triangle rasterization unit</h6>
-<div class="outline-text-6" id="text-org32d2d9e">
+<div id="outline-container-org7417081" class="outline-6">
+<h6 id="org7417081">triangle rasterization unit</h6>
+<div class="outline-text-6" id="text-org7417081">
 <ul class="org-ul">
 <li>确定一个三角形覆盖哪些像素<br />
 <ul class="org-ul">
@@ -450,15 +450,15 @@ guard-band clippling 可以减少三角形 clipping 操作。其定义了一个�
 </ul>
 
 
-<div id="org7877491" class="figure">
+<div id="orge9d3a17" class="figure">
 <p><img src="./GPUArchitecture/triangel-rasterization-unit.jpg" alt="triangel-rasterization-unit.jpg" width="300px" /><br />
 </p>
 </div>
 </div>
 
 <ul class="org-ul">
-<li><a id="org84f1379"></a>coarse rasterization<br />
-<div class="outline-text-7" id="text-org84f1379">
+<li><a id="org56859c3"></a>coarse rasterization<br />
+<div class="outline-text-7" id="text-org56859c3">
 <ul class="org-ul">
 <li>屏幕被划分为多个 tiles<br /></li>
 <li>测试三角形和这些 tile 是否有重叠<br />
@@ -481,14 +481,14 @@ Tips:<br />
 </ul>
 
 
-<div id="org930f62b" class="figure">
+<div id="org47b4e71" class="figure">
 <p><img src="./GPUArchitecture/silver-triangle.jpg" alt="silver-triangle.jpg" width="256px" /><br />
 </p>
 </div>
 </div>
 </li>
-<li><a id="orgf889741"></a>hierarchical z unit<br />
-<div class="outline-text-7" id="text-orgf889741">
+<li><a id="org8a52375"></a>hierarchical z unit<br />
+<div class="outline-text-7" id="text-org8a52375">
 <ul class="org-ul">
 <li>对 tile 进行 early rejection<br /></li>
 <li>对于每个 tile (使用 LessEqual 深度比较模式)<br />
@@ -518,13 +518,13 @@ HiZ buffer 存储的是低分辨率的深度值，far/near 比例越小，HiZ �
 </p>
 
 
-<div id="org922ff5f" class="figure">
+<div id="org92e4f0e" class="figure">
 <p><img src="./GPUArchitecture/hierarchical-z-unit.jpg" alt="hierarchical-z-unit.jpg" width="300px" /><br />
 </p>
 </div>
 
 
-<div id="orgdd367d9" class="figure">
+<div id="org61cdec1" class="figure">
 <p><img src="./GPUArchitecture/hierarchical-z-unit-detial.jpg" alt="hierarchical-z-unit-detial.jpg" width="768px" /><br />
 </p>
 </div>
@@ -538,16 +538,16 @@ HiZ buffer 存储的是低分辨率的深度值，far/near 比例越小，HiZ �
 </ul>
 </div>
 <ul class="org-ul">
-<li><a id="orgcb25980"></a>为什么 Hi-Z 开启的情况下，从前到后渲染物体会更高效（深度比较模式为 LessEqual）？<br />
-<div class="outline-text-8" id="text-orgcb25980">
+<li><a id="orgc399159"></a>为什么 Hi-Z 开启的情况下，从前到后渲染物体会更高效（深度比较模式为 LessEqual）？<br />
+<div class="outline-text-8" id="text-orgc399159">
 <p>
 深度比较模式为 LessEqual 时, Hi-Z Buffer 中存储的 tile 中深度最大的值, 若当前测试的三角形的最小深度值大于 tile 中深度，则不需要为当前三角形光栅化当前 tile。<br />
 Hi-Z Buffer 中的深度并不是实时的，其中的值是随着 depth buffer 中的更新而更新的，从前往后渲染物体，可以使得 Hi-ZBuffer 中一开始的值就是相对精确的值，这样 Hi-Z 可以为后续渲染的三角形剔除更多的 tile。<br />
 </p>
 </div>
 </li>
-<li><a id="orga61a6e4"></a>depth write on &amp; discard 情况下，为什么 Hi-Z 依然可以生效？<br />
-<div class="outline-text-8" id="text-orga61a6e4">
+<li><a id="org60a4644"></a>depth write on &amp; discard 情况下，为什么 Hi-Z 依然可以生效？<br />
+<div class="outline-text-8" id="text-org60a4644">
 <p>
 Hi-z 利用已有的深度值来进行剔除，Hi-Z 本身不会写入 depth buffer，因此，不会导致类似 EarlyZ 那样的逻辑冲突(EarlyZ 写入了深度，后续的 pixel shading 中剔除了像素又需要不写入深度)<br />
 </p>
@@ -557,9 +557,9 @@ Tips: depth write 不同于 shader depth output(fragment 修改 depth 值)<br />
 </p>
 </div>
 </li>
-<li><a id="orgc042ab6"></a>当深度比较模式从 LessEqual 切换为 GreaterEqual，Hi-Z 是否依然有效？<br />
-<div class="outline-text-8" id="text-orgc042ab6">
-<pre class="example" id="orgc3970b4">
+<li><a id="orge5bc0d0"></a>当深度比较模式从 LessEqual 切换为 GreaterEqual，Hi-Z 是否依然有效？<br />
+<div class="outline-text-8" id="text-orge5bc0d0">
+<pre class="example" id="org47c4868">
 Since it only stores one of the values changing the comparison direction in the middle of a frame makes the existing values in the buffer unusable. Thus HiZ will have to be disabled until the buffer is either cleared or the application changes the comparison direction back to the original. Typically the driver will configure the buffer depending on the first depth test function used after the depth buffer is cleared
 
 - From AMD depth in depth
@@ -569,15 +569,15 @@ Since it only stores one of the values changing the comparison direction in the 
 </p>
 </div>
 </li>
-<li><a id="orgc96f80c"></a>Hierachical Z 是使用低精度的 depth buffer 进行 tile 剔除 还是进行几何图元剔除？<br />
-<div class="outline-text-8" id="text-orgc96f80c">
+<li><a id="org532bcde"></a>Hierachical Z 是使用低精度的 depth buffer 进行 tile 剔除 还是进行几何图元剔除？<br />
+<div class="outline-text-8" id="text-org532bcde">
 <p>
 Hi-Z 使用 Hi-Z Buffer (tile 级别的深度)来对几何图元对应的 tile 进行剔除。<br />
 </p>
 </div>
 </li>
-<li><a id="org0de0ec1"></a>HiZ 如何同时支持 LessEqual 和 GreateEqual 比较模式？<br />
-<div class="outline-text-8" id="text-org0de0ec1">
+<li><a id="orgd05f6d1"></a>HiZ 如何同时支持 LessEqual 和 GreateEqual 比较模式？<br />
+<div class="outline-text-8" id="text-orgd05f6d1">
 <p>
 在 tile 中同时存储 zMin 和 zMax 可以同时支持 LessEqual 和 GreateEqual 比较模式。<br />
 另外，同时记录 zMin 和 zMax，还可以减少 z-buffer 的读取。例如，LessEqual 模式下，记录了 zMin，如果当前被渲染的三角形确定在之前渲染三角形的前面，则基于像素的 depth testing 是不必要的(被渲染三角形在最前面，tile 内的像素都通过了 depth testing，因此不需要基于像素的 depth testing，也就不需要读取 z-buffer)。<br />
@@ -586,8 +586,8 @@ Hi-Z 使用 Hi-Z Buffer (tile 级别的深度)来对几何图元对应的 tile �
 </li>
 </ul>
 </li>
-<li><a id="org61cf1b8"></a>early z<br />
-<div class="outline-text-7" id="text-org61cf1b8">
+<li><a id="org8a493dd"></a>early z<br />
+<div class="outline-text-7" id="text-org8a493dd">
 <ul class="org-ul">
 <li>和 Hiz 类似，但是是在片段级别执行<br /></li>
 <li>在计算像素颜色之前，计算像素的 depth<br /></li>
@@ -601,9 +601,9 @@ Tips:<br />
 </div>
 
 <ul class="org-ul">
-<li><a id="org5ff36d2"></a>early z 到底什么时候失效,什么时候可用?<br />
-<div class="outline-text-8" id="text-org5ff36d2">
-<pre class="example" id="orgfbcd674">
+<li><a id="org1fed378"></a>early z 到底什么时候失效,什么时候可用?<br />
+<div class="outline-text-8" id="text-org1fed378">
+<pre class="example" id="orgd43f25d">
  If Early Z would be left on and the alpha test kills a fragment, the depth- and/or stencil-buffer would have been incorrectly updated for the killed fragments. Therefore, Early Z is disabled for these cases. However, if depth and stencil writes are disabled there are no updates to the depth-stencil buffer anyway, so in this case Early Z will be enabled. On the Radeon HD 2000 series, Early Z works in all cases.
 </pre>
 <p>
@@ -617,8 +617,8 @@ Tips:<br />
 </li>
 </ul>
 </li>
-<li><a id="orgb95c7d3"></a>depth compression<br />
-<div class="outline-text-7" id="text-orgb95c7d3">
+<li><a id="org3cf87c5"></a>depth compression<br />
+<div class="outline-text-7" id="text-org3cf87c5">
 <ul class="org-ul">
 <li>当一个三角形覆盖了多个像素时，每个像素存储一个深度有些浪费。<br /></li>
 <li>可以使用基于 tile 的压缩方式，存储 3 个深度来定义整个三角形平面。<br />
@@ -640,8 +640,8 @@ Tips:<br />
 </ul>
 </div>
 <ul class="org-ul">
-<li><a id="org84dc8c7"></a>fast z clear<br />
-<div class="outline-text-8" id="text-org84dc8c7">
+<li><a id="org7394c0b"></a>fast z clear<br />
+<div class="outline-text-8" id="text-org7394c0b">
 <p>
 使用 depth compression 就可以开启 Fast z clear 特性。不需要直接将 depth clear value 写入到 depth buffer，只需要为所有 tile 设置 cleared 状态就可以了。这极大减小了 clearing depth buffer 的消耗，使其变为一个便宜的操作。<br />
 </p>
@@ -652,9 +652,9 @@ Tips:<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-orgfca2c1d" class="outline-5">
-<h5 id="orgfca2c1d">pixel shading</h5>
-<div class="outline-text-5" id="text-orgfca2c1d">
+<div id="outline-container-org5fe287e" class="outline-5">
+<h5 id="org5fe287e">pixel shading</h5>
+<div class="outline-text-5" id="text-org5fe287e">
 <ul class="org-ul">
 <li>rasterize 打包了足够的 quads 后，fragment shader 可以被分发出去<br />
 <ul class="org-ul">
@@ -663,9 +663,9 @@ Tips:<br />
 <li>依赖于 gpu 的架构，通常 16 个或 8 个 quads 会被一起发布，pixel shading 任务由 shader system 来执行<br /></li>
 </ul>
 </div>
-<div id="outline-container-orga723c51" class="outline-6">
-<h6 id="orga723c51">quads</h6>
-<div class="outline-text-6" id="text-orga723c51">
+<div id="outline-container-orgc93dece" class="outline-6">
+<h6 id="orgc93dece">quads</h6>
+<div class="outline-text-6" id="text-orgc93dece">
 <p>
 为了计算偏导数，需要将像素按照 quad 进行组织。利用偏导数可以选择合适的 mipmap，mipmap 可以提高性能(提高 cache 命中，降低带宽消耗)，同时 mipmap 减少了闪烁等 artifact。<br />
 </p>
@@ -676,15 +676,15 @@ Tips:<br />
 </p>
 
 
-<div id="org45346a1" class="figure">
+<div id="org22de386" class="figure">
 <p><img src="./GPUArchitecture/quads-ghost-pixels.jpg" alt="quads-ghost-pixels.jpg" width="400px" /><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgc3e7ab8" class="outline-6">
-<h6 id="orgc3e7ab8">texture unit</h6>
-<div class="outline-text-6" id="text-orgc3e7ab8">
+<div id="outline-container-orgeeb50c4" class="outline-6">
+<h6 id="orgeeb50c4">texture unit</h6>
+<div class="outline-text-6" id="text-orgeeb50c4">
 <ul class="org-ul">
 <li>shaders 通常会需要访问 texture，通常由一个 texture unit 来执行贴图访问<br /></li>
 <li>一个 texture unit 可能会为多个 shader core 提供服务<br />
@@ -699,7 +699,7 @@ Tips:<br />
 </ul>
 
 
-<div id="orgc95a285" class="figure">
+<div id="orge6c12e7" class="figure">
 <p><img src="./GPUArchitecture/texture-unit.jpg" alt="texture-unit.jpg" width="300px" /><br />
 </p>
 </div>
@@ -707,9 +707,9 @@ Tips:<br />
 </div>
 </div>
 
-<div id="outline-container-org7e68f6d" class="outline-5">
-<h5 id="org7e68f6d">output merger</h5>
-<div class="outline-text-5" id="text-org7e68f6d">
+<div id="outline-container-orga560386" class="outline-5">
+<h5 id="orga560386">output merger</h5>
+<div class="outline-text-5" id="text-orga560386">
 <p>
 进行 blend 和 lateZ 操作<br />
 </p>
@@ -726,15 +726,15 @@ render target 和 depth buffer 的压缩和解压缩是无损压缩。<br />
 </p>
 
 
-<div id="org753babd" class="figure">
+<div id="org3c60378" class="figure">
 <p><img src="./GPUArchitecture/rt-depth-buff-compress.jpg" alt="rt-depth-buff-compress.jpg" width="1200px" /><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgb239ac8" class="outline-5">
-<h5 id="orgb239ac8">compute shaders</h5>
-<div class="outline-text-5" id="text-orgb239ac8">
+<div id="outline-container-org6b0819e" class="outline-5">
+<h5 id="org6b0819e">compute shaders</h5>
+<div class="outline-text-5" id="text-org6b0819e">
 <ul class="org-ul">
 <li>compute shader 用于通用计算，因此没有绑定光栅化器, command processor 会直接将任务发送给 shader system<br /></li>
 <li>支持原子读写贴图和缓冲区<br /></li>
@@ -745,13 +745,13 @@ render target 和 depth buffer 的压缩和解压缩是无损压缩。<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org1c336b2" class="outline-3">
-<h3 id="org1c336b2">How a shader core works</h3>
-<div class="outline-text-3" id="text-org1c336b2">
+<div id="outline-container-orgea0d4e5" class="outline-3">
+<h3 id="orgea0d4e5">How a shader core works</h3>
+<div class="outline-text-3" id="text-orgea0d4e5">
 </div>
-<div id="outline-container-org3c4d755" class="outline-4">
-<h4 id="org3c4d755">shader core</h4>
-<div class="outline-text-4" id="text-org3c4d755">
+<div id="outline-container-org344d46c" class="outline-4">
+<h4 id="org344d46c">shader core</h4>
+<div class="outline-text-4" id="text-org344d46c">
 <ul class="org-ul">
 <li>gpu 可编程部分<br /></li>
 <li>一个 gpu 有很多个 shader core，因此很多个工作可以并行执行，例如：Geforce RTX2080 有 2944 个 cuda cores<br /></li>
@@ -767,9 +767,9 @@ render target 和 depth buffer 的压缩和解压缩是无损压缩。<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-org97c2100" class="outline-4">
-<h4 id="org97c2100">VLIW(Very Long instruction word) architecture</h4>
-<div class="outline-text-4" id="text-org97c2100">
+<div id="outline-container-org2bd4d6f" class="outline-4">
+<h4 id="org2bd4d6f">VLIW(Very Long instruction word) architecture</h4>
+<div class="outline-text-4" id="text-org2bd4d6f">
 <ul class="org-ul">
 <li>非常长的指令字。例如: vliw4 意味着每个 shader core 同时执行 4 个独立的指令<br /></li>
 <li>非常适用于每个像素的简单操作(如：dot)<br /></li>
@@ -782,17 +782,17 @@ render target 和 depth buffer 的压缩和解压缩是无损压缩。<br />
 下图展示了 Vliw alu<br />
 </p>
 
-<div id="org153bf98" class="figure">
+<div id="orgab5cb10" class="figure">
 <p><img src="./GPUArchitecture/gpu_architecture-vliw-eg0.jpg" alt="gpu_architecture-vliw-eg0.jpg" width="300px" /><br />
 </p>
 </div>
 </div>
 
-<div id="outline-container-orga4b6045" class="outline-5">
-<h5 id="orga4b6045">Vliw 实例：Arm Cayman architecture</h5>
-<div class="outline-text-5" id="text-orga4b6045">
+<div id="outline-container-org8ed4fd8" class="outline-5">
+<h5 id="org8ed4fd8">Vliw 实例：Arm Cayman architecture</h5>
+<div class="outline-text-5" id="text-org8ed4fd8">
 
-<div id="org4d15aee" class="figure">
+<div id="org7b75fdd" class="figure">
 <p><img src="./GPUArchitecture/gpu_architecture-vliw-slots.jpg" alt="gpu_architecture-vliw-slots.jpg" width="1000px" /><br />
 </p>
 </div>
@@ -800,9 +800,9 @@ render target 和 depth buffer 的压缩和解压缩是无损压缩。<br />
 </div>
 </div>
 
-<div id="outline-container-org600e488" class="outline-4">
-<h4 id="org600e488">Moving to Scalar architecture</h4>
-<div class="outline-text-4" id="text-org600e488">
+<div id="outline-container-orgd8b6b9b" class="outline-4">
+<h4 id="orgd8b6b9b">Moving to Scalar architecture</h4>
+<div class="outline-text-4" id="text-orgd8b6b9b">
 <ul class="org-ul">
 <li>单指令多数据 你不需要向量化你的代码，调度器会为执行的指令将数据组织为向量。例如：将 8 个 float 相加，等价于将两个 float4 相加<br /></li>
 <li>概念上类似于 CPU 中将循环展开<br /></li>
@@ -812,7 +812,7 @@ render target 和 depth buffer 的压缩和解压缩是无损压缩。<br />
 下图展示了 scalar alu<br />
 </p>
 
-<div id="org13c3a30" class="figure">
+<div id="org2387a69" class="figure">
 <p><img src="./GPUArchitecture/gpu_architecture-scalar-eg0.jpg" alt="gpu_architecture-scalar-eg0.jpg" width="300px" /><br />
 </p>
 </div>
@@ -824,13 +824,13 @@ PowerVR Rogue 架构 开始使用 (Unified Shader Cluster 简称 USE)，对应�
 </p>
 </div>
 </div>
-<div id="outline-container-org1cdb4ee" class="outline-4">
-<h4 id="org1cdb4ee">Fictional Shader Core (虚构的 shader core)</h4>
-<div class="outline-text-4" id="text-org1cdb4ee">
+<div id="outline-container-orga0491c4" class="outline-4">
+<h4 id="orga0491c4">Fictional Shader Core (虚构的 shader core)</h4>
+<div class="outline-text-4" id="text-orga0491c4">
 </div>
-<div id="outline-container-orged65f78" class="outline-5">
-<h5 id="orged65f78">fictional shader core</h5>
-<div class="outline-text-5" id="text-orged65f78">
+<div id="outline-container-org07adc5e" class="outline-5">
+<h5 id="org07adc5e">fictional shader core</h5>
+<div class="outline-text-5" id="text-org07adc5e">
 <ul class="org-ul">
 <li>16 个标量 alu(算术逻辑单元), 16 个指令并行执行<br /></li>
 <li>每个 alu 可以在一个 cycle 中执行一个 32 位浮点数指令<br /></li>
@@ -839,17 +839,17 @@ PowerVR Rogue 架构 开始使用 (Unified Shader Cluster 简称 USE)，对应�
 <li>每个寄存器有 16 个 slots，每个 slot 对应一个 thread<br /></li>
 </ul>
 
-<div id="org8e4c0b4" class="figure">
+<div id="orga2bf755" class="figure">
 <p><img src="./GPUArchitecture/gpu_architecture-fictinal-shader-core.jpg" alt="gpu_architecture-fictinal-shader-core.jpg" width="200px" /><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-org4ccd866" class="outline-5">
-<h5 id="org4ccd866">latency hiding</h5>
-<div class="outline-text-5" id="text-org4ccd866">
+<div id="outline-container-org7f58811" class="outline-5">
+<h5 id="org7f58811">latency hiding</h5>
+<div class="outline-text-5" id="text-org7f58811">
 
-<div id="orga6649c2" class="figure">
+<div id="orgf5bc974" class="figure">
 <p><img src="./GPUArchitecture/gpu_architecture-fictinal-shader-core-latency-hiding.jpg" alt="gpu_architecture-fictinal-shader-core-latency-hiding.jpg" width="700px" /><br />
 </p>
 </div>
@@ -862,9 +862,9 @@ PowerVR Rogue 架构 开始使用 (Unified Shader Cluster 简称 USE)，对应�
 </ul>
 </div>
 </div>
-<div id="outline-container-orgebffc60" class="outline-5">
-<h5 id="orgebffc60">occupancy</h5>
-<div class="outline-text-5" id="text-orgebffc60">
+<div id="outline-container-org2b636a2" class="outline-5">
+<h5 id="org2b636a2">occupancy</h5>
+<div class="outline-text-5" id="text-org2b636a2">
 <ul class="org-ul">
 <li>寄存器文件是动态分割的<br /></li>
 <li>shader 越大需要的寄存器也越多，shader 的大小会影响并发的上下文数量，若寄存器空间只够一个上下文，则没有延迟隐藏(latency hiding)<br /></li>
@@ -882,13 +882,13 @@ PowerVR Rogue 架构 开始使用 (Unified Shader Cluster 简称 USE)，对应�
 </div>
 </div>
 </div>
-<div id="outline-container-orgb02faa5" class="outline-3">
-<h3 id="orgb02faa5">Some real gpu use cases</h3>
-<div class="outline-text-3" id="text-orgb02faa5">
+<div id="outline-container-orgdb9d5ca" class="outline-3">
+<h3 id="orgdb9d5ca">Some real gpu use cases</h3>
+<div class="outline-text-3" id="text-orgdb9d5ca">
 </div>
-<div id="outline-container-org855744d" class="outline-4">
-<h4 id="org855744d">fictional gpu</h4>
-<div class="outline-text-4" id="text-org855744d">
+<div id="outline-container-orgf4f6770" class="outline-4">
+<h4 id="orgf4f6770">fictional gpu</h4>
+<div class="outline-text-4" id="text-orgf4f6770">
 <ul class="org-ul">
 <li>16 cores<br /></li>
 <li>每个 core 16 个 alu<br /></li>
@@ -902,17 +902,17 @@ PowerVR Rogue 架构 开始使用 (Unified Shader Cluster 简称 USE)，对应�
 </ul>
 </div>
 </div>
-<div id="outline-container-org767ab1e" class="outline-4">
-<h4 id="org767ab1e">gpu memory</h4>
-<div class="outline-text-4" id="text-org767ab1e">
+<div id="outline-container-org6dbf1fc" class="outline-4">
+<h4 id="org6dbf1fc">gpu memory</h4>
+<div class="outline-text-4" id="text-org6dbf1fc">
 
-<div id="orgfc5612e" class="figure">
+<div id="org2c4aa47" class="figure">
 <p><img src="./GPUArchitecture/gpu_architecture-gpu-mem-00.jpg" alt="gpu_architecture-gpu-mem-00.jpg" width="800px" /><br />
 </p>
 </div>
 
 
-<div id="org934e70b" class="figure">
+<div id="orgcd030d6" class="figure">
 <p><img src="./GPUArchitecture/gpu_architecture-gpu-mem-01.jpg" alt="gpu_architecture-gpu-mem-01.jpg" width="1800px" /><br />
 </p>
 </div>
@@ -923,18 +923,18 @@ PowerVR Rogue 架构 开始使用 (Unified Shader Cluster 简称 USE)，对应�
 </ul>
 </div>
 </div>
-<div id="outline-container-org60e2be8" class="outline-4">
-<h4 id="org60e2be8">shader system use case : GCN (Graphics Core Next)</h4>
-<div class="outline-text-4" id="text-org60e2be8">
+<div id="outline-container-orgd16dde1" class="outline-4">
+<h4 id="orgd16dde1">shader system use case : GCN (Graphics Core Next)</h4>
+<div class="outline-text-4" id="text-orgd16dde1">
 </div>
-<div id="outline-container-org616adc8" class="outline-5">
-<h5 id="org616adc8">GCN</h5>
-<div class="outline-text-5" id="text-org616adc8">
+<div id="outline-container-org5dd9c9e" class="outline-5">
+<h5 id="org5dd9c9e">GCN</h5>
+<div class="outline-text-5" id="text-org5dd9c9e">
 <p>
 下图为 AMD Vega 10 GPU 结构图：<br />
 </p>
 
-<div id="org63681e6" class="figure">
+<div id="orgb0bb457" class="figure">
 <p><img src="./GPUArchitecture/gpu_architecture-gcn-vega10.jpg" alt="gpu_architecture-gcn-vega10.jpg" width="1400px" /><br />
 </p>
 </div>
@@ -950,7 +950,7 @@ PowerVR Rogue 架构 开始使用 (Unified Shader Cluster 简称 USE)，对应�
 </ul>
 
 
-<div id="org7677817" class="figure">
+<div id="orgbb76ef1" class="figure">
 <p><img src="./GPUArchitecture/gpu_architecture-gcn-01.jpg" alt="gpu_architecture-gcn-01.jpg" width="1400px" /><br />
 </p>
 </div>
@@ -959,19 +959,19 @@ PowerVR Rogue 架构 开始使用 (Unified Shader Cluster 简称 USE)，对应�
 下图为 CU(Compute Unit)结构图：<br />
 </p>
 
-<div id="org06b0094" class="figure">
+<div id="orgfe2665a" class="figure">
 <p><img src="./GPUArchitecture/gpu_architecture-gcn-vega10-cu.jpg" alt="gpu_architecture-gcn-vega10-cu.jpg" width="1200px" /><br />
 </p>
 </div>
 
 
-<div id="org40dae88" class="figure">
+<div id="org0af0c87" class="figure">
 <p><img src="./GPUArchitecture/gpu_architecture-gcn-vega10-cu1.jpg" alt="gpu_architecture-gcn-vega10-cu1.jpg" width="1200px" /><br />
 </p>
 </div>
 
 
-<div id="org889d390" class="figure">
+<div id="orgdc7ba68" class="figure">
 <p><img src="./GPUArchitecture/gpu_architecture-gcn-vega-cache-hierarchy.jpg" alt="gpu_architecture-gcn-vega-cache-hierarchy.jpg" width="1200px" /><br />
 </p>
 </div>
@@ -985,9 +985,9 @@ AMD 最新的 GPU 架构为 RDNA，Navi 是使用该架构的 GPU 的代号。�
 </p>
 </div>
 </div>
-<div id="outline-container-org4251939" class="outline-5">
-<h5 id="org4251939">Wavefronts</h5>
-<div class="outline-text-5" id="text-org4251939">
+<div id="outline-container-org00bb85c" class="outline-5">
+<h5 id="org00bb85c">Wavefronts</h5>
+<div class="outline-text-5" id="text-org00bb85c">
 <ul class="org-ul">
 <li>wavefront 是 gcn 中最小的任务单位<br /></li>
 <li>一个 wavefront 由 64 个 threads 组成一组（一个 wavefront 对应 64 个像素的工作量）<br /></li>
@@ -995,9 +995,9 @@ AMD 最新的 GPU 架构为 RDNA，Navi 是使用该架构的 GPU 的代号。�
 </ul>
 </div>
 </div>
-<div id="outline-container-org54bceb1" class="outline-5">
-<h5 id="org54bceb1">VGPR / SGPR</h5>
-<div class="outline-text-5" id="text-org54bceb1">
+<div id="outline-container-orgda2f8be" class="outline-5">
+<h5 id="orgda2f8be">VGPR / SGPR</h5>
+<div class="outline-text-5" id="text-orgda2f8be">
 <p>
 VGPR: Vector General-Purpose Register<br />
 SGPR: Scalar General-Purpose Register<br />
@@ -1047,9 +1047,9 @@ StructuredBuffer aStructuredBuffer;
 </div>
 </div>
 </div>
-<div id="outline-container-org663f8b7" class="outline-5">
-<h5 id="org663f8b7">CU (Compute Unit)</h5>
-<div class="outline-text-5" id="text-org663f8b7">
+<div id="outline-container-org21c9ead" class="outline-5">
+<h5 id="org21c9ead">CU (Compute Unit)</h5>
+<div class="outline-text-5" id="text-org21c9ead">
 <ul class="org-ul">
 <li>最小的计算单元<br /></li>
 <li>一个 gpu 包含多个 CUs<br /></li>
@@ -1077,9 +1077,9 @@ StructuredBuffer aStructuredBuffer;
 </ul></li>
 </ul>
 </div>
-<div id="outline-container-orge634bb9" class="outline-6">
-<h6 id="orge634bb9">CU simd</h6>
-<div class="outline-text-6" id="text-orge634bb9">
+<div id="outline-container-org3527535" class="outline-6">
+<h6 id="org3527535">CU simd</h6>
+<div class="outline-text-6" id="text-org3527535">
 <ul class="org-ul">
 <li>每个 simd 有自己的程序计数器<br /></li>
 <li>每个 simd 在一个 cycle 内可以处理 16 个 32 位值。一个 simd 需要 4 个 cycle 就可以处理完一个 wavefront。<br /></li>
@@ -1091,9 +1091,9 @@ StructuredBuffer aStructuredBuffer;
 </ul>
 </div>
 </div>
-<div id="outline-container-orgdd0d032" class="outline-6">
-<h6 id="orgdd0d032">CU scalar unit</h6>
-<div class="outline-text-6" id="text-orgdd0d032">
+<div id="outline-container-org9d20559" class="outline-6">
+<h6 id="org9d20559">CU scalar unit</h6>
+<div class="outline-text-6" id="text-org9d20559">
 <ul class="org-ul">
 <li>主要用于处理跨 wavefront 的流程控制。例如 if(constant_flag)then else<br />
 <ul class="org-ul">
@@ -1104,9 +1104,9 @@ StructuredBuffer aStructuredBuffer;
 </ul>
 </div>
 </div>
-<div id="outline-container-org8ac0b0c" class="outline-6">
-<h6 id="org8ac0b0c">CU branch unit</h6>
-<div class="outline-text-6" id="text-org8ac0b0c">
+<div id="outline-container-org5f72243" class="outline-6">
+<h6 id="org5f72243">CU branch unit</h6>
+<div class="outline-text-6" id="text-org5f72243">
 <ul class="org-ul">
 <li>处理向量分支。例如：if vgpr&gt;0 then else<br /></li>
 <li>处理浮点异常<br /></li>
@@ -1115,13 +1115,13 @@ StructuredBuffer aStructuredBuffer;
 </div>
 </div>
 </div>
-<div id="outline-container-orgbc192f7" class="outline-5">
-<h5 id="orgbc192f7">LDS (Local Data Share) GDS (Global Data Share)</h5>
-<div class="outline-text-5" id="text-orgbc192f7">
+<div id="outline-container-org43b1c85" class="outline-5">
+<h5 id="org43b1c85">LDS (Local Data Share) GDS (Global Data Share)</h5>
+<div class="outline-text-5" id="text-org43b1c85">
 </div>
-<div id="outline-container-orgdd84777" class="outline-6">
-<h6 id="orgdd84777">LDS</h6>
-<div class="outline-text-6" id="text-orgdd84777">
+<div id="outline-container-orgdb0814f" class="outline-6">
+<h6 id="orgdb0814f">LDS</h6>
+<div class="outline-text-6" id="text-orgdb0814f">
 <ul class="org-ul">
 <li>一个 CU 有一个 64kb 的共享可读写内存 （Local Data Share）<br /></li>
 <li>LDS 被 pixel shader 用于存储插值(interpolant)<br /></li>
@@ -1129,27 +1129,27 @@ StructuredBuffer aStructuredBuffer;
 </ul>
 </div>
 </div>
-<div id="outline-container-orge565ddb" class="outline-6">
-<h6 id="orge565ddb">GDS</h6>
-<div class="outline-text-6" id="text-orge565ddb">
+<div id="outline-container-orgedaa6a3" class="outline-6">
+<h6 id="orgedaa6a3">GDS</h6>
+<div class="outline-text-6" id="text-orgedaa6a3">
 <ul class="org-ul">
 <li>GDS 是有所有 CU 共享的，可用于处理顺序条件的操作<br /></li>
 </ul>
 </div>
 </div>
 </div>
-<div id="outline-container-org5f9eed8" class="outline-5">
-<h5 id="org5f9eed8">Export</h5>
-<div class="outline-text-5" id="text-org5f9eed8">
+<div id="outline-container-org7a1e2b6" class="outline-5">
+<h5 id="org7a1e2b6">Export</h5>
+<div class="outline-text-5" id="text-org7a1e2b6">
 <ul class="org-ul">
 <li>当程序执行完成后，通常会发布一个 export。对于 pixel shader 程序来说，一定会发布 export<br /></li>
 <li>export 会标记可编程部分的结果数据，并将数据传递给固定管线模块。例如：pixel shader 的 export 会将控制权传递给颜色模块<br /></li>
 </ul>
 </div>
 </div>
-<div id="outline-container-org3500e38" class="outline-5">
-<h5 id="org3500e38">Vector Memory</h5>
-<div class="outline-text-5" id="text-org3500e38">
+<div id="outline-container-org82a487c" class="outline-5">
+<h5 id="org82a487c">Vector Memory</h5>
+<div class="outline-text-5" id="text-org82a487c">
 <ul class="org-ul">
 <li>CU 有一个 16kb 的内部 L1 cache，用于向量内存操作。通常会存储贴图数据。<br /></li>
 <li>L2 cache 在 CU 外面<br /></li>
@@ -1157,13 +1157,13 @@ StructuredBuffer aStructuredBuffer;
 </div>
 </div>
 </div>
-<div id="outline-container-org7b860cd" class="outline-4">
-<h4 id="org7b860cd">shader system use case : Nvidia Turing(TU102)</h4>
-<div class="outline-text-4" id="text-org7b860cd">
+<div id="outline-container-org09d2bfb" class="outline-4">
+<h4 id="org09d2bfb">shader system use case : Nvidia Turing(TU102)</h4>
+<div class="outline-text-4" id="text-org09d2bfb">
 </div>
-<div id="outline-container-orgff712be" class="outline-5">
-<h5 id="orgff712be">Turing</h5>
-<div class="outline-text-5" id="text-orgff712be">
+<div id="outline-container-orga374b82" class="outline-5">
+<h5 id="orga374b82">Turing</h5>
+<div class="outline-text-5" id="text-orga374b82">
 <p>
 下图为 Nvidia Turing GPU 结构图：<br />
 <img src="./GPUArchitecture/gpu_architecture-turing-01.jpg" alt="gpu_architecture-turing-01.jpg" /><br />
@@ -1181,9 +1181,9 @@ StructuredBuffer aStructuredBuffer;
 </div>
 </div>
 
-<div id="outline-container-org3b06fc3" class="outline-5">
-<h5 id="org3b06fc3">Streaming multiprocessor</h5>
-<div class="outline-text-5" id="text-org3b06fc3">
+<div id="outline-container-orgb2f025d" class="outline-5">
+<h5 id="orgb2f025d">Streaming multiprocessor</h5>
+<div class="outline-text-5" id="text-orgb2f025d">
 <ul class="org-ul">
 <li>每个 SM 包含 4 个组<br />
 <ul class="org-ul">
@@ -1199,9 +1199,9 @@ StructuredBuffer aStructuredBuffer;
 </ul>
 </div>
 </div>
-<div id="outline-container-org59fa734" class="outline-5">
-<h5 id="org59fa734">Warps</h5>
-<div class="outline-text-5" id="text-org59fa734">
+<div id="outline-container-org2f7dd28" class="outline-5">
+<h5 id="org2f7dd28">Warps</h5>
+<div class="outline-text-5" id="text-org2f7dd28">
 <ul class="org-ul">
 <li>一个 warp 包含 32 个 threads，是最小的工作单元<br /></li>
 <li>每个 SM 可以有 64 个 warps 被处理(in flight)<br /></li>
@@ -1209,9 +1209,9 @@ StructuredBuffer aStructuredBuffer;
 </ul>
 </div>
 </div>
-<div id="outline-container-org3737ccd" class="outline-5">
-<h5 id="org3737ccd">Graphics processing cluster (GPC)</h5>
-<div class="outline-text-5" id="text-org3737ccd">
+<div id="outline-container-orgde878b2" class="outline-5">
+<h5 id="orgde878b2">Graphics processing cluster (GPC)</h5>
+<div class="outline-text-5" id="text-orgde878b2">
 <ul class="org-ul">
 <li>每个 GPC 有 1 个 Rasterizer<br />
 <ul class="org-ul">
@@ -1226,9 +1226,9 @@ StructuredBuffer aStructuredBuffer;
 </div>
 </div>
 
-<div id="outline-container-org1f888d5" class="outline-4">
-<h4 id="org1f888d5">AMD vs Nvidia GPU architecture</h4>
-<div class="outline-text-4" id="text-org1f888d5">
+<div id="outline-container-orgde5cffb" class="outline-4">
+<h4 id="orgde5cffb">AMD vs Nvidia GPU architecture</h4>
+<div class="outline-text-4" id="text-orgde5cffb">
 <p>
 AMD:<br />
 </p>
@@ -1372,13 +1372,13 @@ Nvidia<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org4452f96" class="outline-3">
-<h3 id="org4452f96">Mobile gpus</h3>
-<div class="outline-text-3" id="text-org4452f96">
+<div id="outline-container-orga24e767" class="outline-3">
+<h3 id="orga24e767">Mobile gpus</h3>
+<div class="outline-text-3" id="text-orga24e767">
 </div>
-<div id="outline-container-org85b1046" class="outline-4">
-<h4 id="org85b1046">Problem on Mobile</h4>
-<div class="outline-text-4" id="text-org85b1046">
+<div id="outline-container-org3147ba7" class="outline-4">
+<h4 id="org3147ba7">Problem on Mobile</h4>
+<div class="outline-text-4" id="text-org3147ba7">
 <ul class="org-ul">
 <li>电池消耗是最主要的问题<br /></li>
 <li>很高的带宽会非常消耗能量，低带宽速度又会很慢<br /></li>
@@ -1386,9 +1386,9 @@ Nvidia<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-orge80b4e8" class="outline-4">
-<h4 id="orge80b4e8">Tile Based architecture / Tile Based Deferred architecture</h4>
-<div class="outline-text-4" id="text-orge80b4e8">
+<div id="outline-container-org92b7bc1" class="outline-4">
+<h4 id="org92b7bc1">Tile Based architecture / Tile Based Deferred architecture</h4>
+<div class="outline-text-4" id="text-org92b7bc1">
 <ul class="org-ul">
 <li>为了最大化 cache 的使用，将屏幕划分为多个块，一次渲染其中的一块<br /></li>
 <li>tile cache 被用于存放 framebuffer，当渲染完 tile 的内容后，再将其写回内存<br /></li>
@@ -1406,13 +1406,13 @@ Nvidia<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-orga453479" class="outline-4">
-<h4 id="orga453479">TBR pro and cons</h4>
-<div class="outline-text-4" id="text-orga453479">
+<div id="outline-container-org0a5314e" class="outline-4">
+<h4 id="org0a5314e">TBR pro and cons</h4>
+<div class="outline-text-4" id="text-org0a5314e">
 </div>
-<div id="outline-container-org94643ce" class="outline-5">
-<h5 id="org94643ce">Pro</h5>
-<div class="outline-text-5" id="text-org94643ce">
+<div id="outline-container-orgfa05635" class="outline-5">
+<h5 id="orgfa05635">Pro</h5>
+<div class="outline-text-5" id="text-orgfa05635">
 <ul class="org-ul">
 <li>frame buffer 带宽减少了<br /></li>
 <li>提供免费的 Z prepass<br /></li>
@@ -1421,9 +1421,9 @@ Nvidia<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-org09fbab6" class="outline-5">
-<h5 id="org09fbab6">Cons</h5>
-<div class="outline-text-5" id="text-org09fbab6">
+<div id="outline-container-orgefddb25" class="outline-5">
+<h5 id="orgefddb25">Cons</h5>
+<div class="outline-text-5" id="text-orgefddb25">
 <ul class="org-ul">
 <li>将渲染分为了两个阶段，减低了并行度<br /></li>
 <li>Tile cache 限制了可用的 frame buffer 格式，以及 MRT（multiple render target）<br /></li>
@@ -1434,9 +1434,9 @@ Nvidia<br />
 </div>
 </div>
 </div>
-<div id="outline-container-orgd41875e" class="outline-3">
-<h3 id="orgd41875e">参考资料</h3>
-<div class="outline-text-3" id="text-orgd41875e">
+<div id="outline-container-org371cb2f" class="outline-3">
+<h3 id="org371cb2f">参考资料</h3>
+<div class="outline-text-3" id="text-org371cb2f">
 <ul class="org-ul">
 <li>GPU Architectures PPT <a href="https://drive.google.com/file/d/12ahbqGXNfY3V-1Gj5cvne2AH4BFWZHGD/view">https://drive.google.com/file/d/12ahbqGXNfY3V-1Gj5cvne2AH4BFWZHGD/view</a><br /></li>
 <li>A trip through the Graphics Pipeline 2011 en <a href="https://fgiesen.wordpress.com/2011/07/09/a-trip-through-the-graphics-pipeline-2011-index/">https://fgiesen.wordpress.com/2011/07/09/a-trip-through-the-graphics-pipeline-2011-index/</a><br /></li>
@@ -1453,30 +1453,30 @@ Nvidia<br />
 </div>
 </div>
 </div>
-<div id="outline-container-orgc76a658" class="outline-2">
-<h2 id="orgc76a658">Mobile GPU approaches to power efficiency</h2>
-<div class="outline-text-2" id="text-orgc76a658">
+<div id="outline-container-org1e7c255" class="outline-2">
+<h2 id="org1e7c255">Mobile GPU approaches to power efficiency</h2>
+<div class="outline-text-2" id="text-org1e7c255">
 </div>
-<div id="outline-container-org3353d93" class="outline-3">
-<h3 id="org3353d93">What is the typical mobile environment?</h3>
-<div class="outline-text-3" id="text-org3353d93">
+<div id="outline-container-org10beb68" class="outline-3">
+<h3 id="org10beb68">What is the typical mobile environment?</h3>
+<div class="outline-text-3" id="text-org10beb68">
 </div>
-<div id="outline-container-org7652412" class="outline-4">
-<h4 id="org7652412">Mobile Memory Systems</h4>
-<div class="outline-text-4" id="text-org7652412">
+<div id="outline-container-org2e867bd" class="outline-4">
+<h4 id="org2e867bd">Mobile Memory Systems</h4>
+<div class="outline-text-4" id="text-org2e867bd">
 </div>
-<div id="outline-container-org8045afa" class="outline-5">
-<h5 id="org8045afa">架构</h5>
-<div class="outline-text-5" id="text-org8045afa">
+<div id="outline-container-org4422529" class="outline-5">
+<h5 id="org4422529">架构</h5>
+<div class="outline-text-5" id="text-org4422529">
 <p>
 桌面 GPUs 有专用的 DDR（Double Data Rate SDRAM），高端 GPU 通常会使用 GDDR （Graphic DDR）<br />
 Mobile GPUs 和其他 IP 核共享 DDR，Mobile SOCs 使用的 DDR 为 LPDDR（Low Power Double Data Rate SDRAM）。通常 Mobile GPU 和 SOC 上的其他实时 IP 核(如：摄像机、调制解调器)相比，对内存的访问优先级要低，延迟要高。<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org040fb86" class="outline-5">
-<h5 id="org040fb86">Performance/Power</h5>
-<div class="outline-text-5" id="text-org040fb86">
+<div id="outline-container-org42995f0" class="outline-5">
+<h5 id="org42995f0">Performance/Power</h5>
+<div class="outline-text-5" id="text-org42995f0">
 <p>
 LPDDR 的带宽要比 GDDR 的一半还少。<br />
 </p>
@@ -1516,7 +1516,7 @@ DDR4 3200 的带宽为 25.6 GB/s<br />
 在最高频率下，LPDDR 的能量利用效率要比 GDDR 高 10% 都多。低频率情况下，LPDDR 可以获得更大的好处。<br />
 </p>
 
-<div id="org066c292" class="figure">
+<div id="org4a1c770" class="figure">
 <p><img src="./GPUArchitecture/mobile_gpu_02_gpu_power-efficient.jpg" alt="mobile_gpu_02_gpu_power-efficient.jpg" width="512px" /><br />
 </p>
 </div>
@@ -1527,9 +1527,9 @@ DDR4 3200 的带宽为 25.6 GB/s<br />
 </div>
 </div>
 </div>
-<div id="outline-container-org3f7c365" class="outline-4">
-<h4 id="org3f7c365">Mobile GPU, APIs and other trends</h4>
-<div class="outline-text-4" id="text-org3f7c365">
+<div id="outline-container-orge0cd4d7" class="outline-4">
+<h4 id="orge0cd4d7">Mobile GPU, APIs and other trends</h4>
+<div class="outline-text-4" id="text-orge0cd4d7">
 <ul class="org-ul">
 <li>在 API 方面，最近的 Mobile GPU 和 桌面 GPU 是平等的。DX12 和 Vulkan 被广泛支持，包括用于 Tesselation 的 shaders。<br /></li>
 <li>新的特性(例如：Variable Rate Shading 和 WaveMath)将快速地迁移到移动平台<br /></li>
@@ -1541,15 +1541,15 @@ DDR4 3200 的带宽为 25.6 GB/s<br />
 </ul>
 
 
-<div id="orgc611bcb" class="figure">
+<div id="orgf001f68" class="figure">
 <p><img src="./GPUArchitecture/mobile_gpu_02_gpu_vs_alu.jpg" alt="mobile_gpu_02_gpu_vs_alu.jpg" width="400px" /><br />
 </p>
 </div>
 </div>
 
-<div id="outline-container-org7f7fe77" class="outline-5">
-<h5 id="org7f7fe77">What is Wave Math?</h5>
-<div class="outline-text-5" id="text-org7f7fe77">
+<div id="outline-container-org9ef958c" class="outline-5">
+<h5 id="org9ef958c">What is Wave Math?</h5>
+<div class="outline-text-5" id="text-org9ef958c">
 <p>
 一组在 HLSL 中可用的新的内置函数，可在 SIMD 处理器内核中跨 lanes 进行操作。可以用于提升某些算法的性能，例如剔除和打包稀疏数据集。<br />
 </p>
@@ -1560,15 +1560,15 @@ DDR4 3200 的带宽为 25.6 GB/s<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-org6f5a77b" class="outline-5">
-<h5 id="org6f5a77b">Power Consumption within a Mobile GPU</h5>
-<div class="outline-text-5" id="text-org6f5a77b">
+<div id="outline-container-orgf6436b8" class="outline-5">
+<h5 id="orgf6436b8">Power Consumption within a Mobile GPU</h5>
+<div class="outline-text-5" id="text-orgf6436b8">
 <ol class="org-ol">
 <li><p>
 GPU 和内存是主要的功率消耗者。CPU 功率消耗更少一些，但是依然很显著。PMIC(Power Management IC)的功率消耗也很显著。<br />
 </p>
 
-<div id="orgc14c45c" class="figure">
+<div id="orgc6fa575" class="figure">
 <p><img src="./GPUArchitecture/mobile_gpu_01_gpu_power-consumption.jpg" alt="mobile_gpu_01_gpu_power-consumption.jpg" width="300px" /><br />
 </p>
 </div></li>
@@ -1584,13 +1584,13 @@ Vulkan 应用程序的 CPU 功耗比 OpenGLES 应用程序要低<br /></li>
 </div>
 </div>
 </div>
-<div id="outline-container-org9c0d3cc" class="outline-3">
-<h3 id="org9c0d3cc">Rendering algorithm differences with desktop</h3>
-<div class="outline-text-3" id="text-org9c0d3cc">
+<div id="outline-container-orgd6704cc" class="outline-3">
+<h3 id="orgd6704cc">Rendering algorithm differences with desktop</h3>
+<div class="outline-text-3" id="text-orgd6704cc">
 </div>
-<div id="outline-container-org2411317" class="outline-4">
-<h4 id="org2411317">Tile-based Rendering</h4>
-<div class="outline-text-4" id="text-org2411317">
+<div id="outline-container-org24b1311" class="outline-4">
+<h4 id="org24b1311">Tile-based Rendering</h4>
+<div class="outline-text-4" id="text-org24b1311">
 <ol class="org-ol">
 <li>移动芯片通常使用某种形式的 Binned Rendering<br />
 <ul class="org-ul">
@@ -1605,19 +1605,19 @@ Vulkan 应用程序的 CPU 功耗比 OpenGLES 应用程序要低<br /></li>
 AdrenoTM GPU 也支持直接渲染（我们称之为“Qualcomm FlexRender Technology”），适用于深度复杂度较低且不值得 binning 和 resolve 开销的情况。 在这些情况下，一些 tile buffer 被用作系统内存的 cache。<br />
 </p>
 
-<div id="org571dc5e" class="figure">
+<div id="org5e27101" class="figure">
 <p><img src="./GPUArchitecture/mobile_gpu_01_gpu_algorithm.jpg" alt="mobile_gpu_01_gpu_algorithm.jpg" width="600px" /><br />
 </p>
 </div></li>
 </ol>
 </div>
-<div id="outline-container-org4523e65" class="outline-5">
-<h5 id="org4523e65">IMR（Immediately Rendering） vs TBR</h5>
-<div class="outline-text-5" id="text-org4523e65">
+<div id="outline-container-org7c340d5" class="outline-5">
+<h5 id="org7c340d5">IMR（Immediately Rendering） vs TBR</h5>
+<div class="outline-text-5" id="text-org7c340d5">
 </div>
-<div id="outline-container-org0556b6c" class="outline-6">
-<h6 id="org0556b6c">IMR</h6>
-<div class="outline-text-6" id="text-org0556b6c">
+<div id="outline-container-org0918402" class="outline-6">
+<h6 id="org0918402">IMR</h6>
+<div class="outline-text-6" id="text-org0918402">
 <p>
 传统的桌面 GPU 架构通常称为即时模式架构。 即时模式 GPU 将渲染处理为严格的命令流，在每次绘制调用中按顺序在每个图元上执行顶点和片段着色器。<br />
 </p>
@@ -1641,7 +1641,7 @@ AdrenoTM GPU 也支持直接渲染（我们称之为“Qualcomm FlexRender Techn
 下图展示了硬件的数据流和内存交互：<br />
 </p>
 
-<div id="org509a6b9" class="figure">
+<div id="org9729cf0" class="figure">
 <p><img src="./GPUArchitecture/mobile_gpu_01_imr-dataflow.jpg" alt="mobile_gpu_01_imr-dataflow.jpg" width="500px" /><br />
 </p>
 </div>
@@ -1659,9 +1659,9 @@ GPU 必须从这个工作集中为当前片段的每个混合、深度测试和�
 </p>
 </div>
 </div>
-<div id="outline-container-orge7e174f" class="outline-6">
-<h6 id="orge7e174f">TBR</h6>
-<div class="outline-text-6" id="text-orge7e174f">
+<div id="outline-container-orgcf2baf4" class="outline-6">
+<h6 id="orgcf2baf4">TBR</h6>
+<div class="outline-text-6" id="text-orgcf2baf4">
 <p>
 Tile Based Rendering 的设计宗旨是最大限度地减少 GPU 在片段着色期间需要的外部存储器访问量。TBR 将每个渲染 pass 分成两个 processing passes：<br />
 </p>
@@ -1696,7 +1696,7 @@ Tile Based Rendering 的设计宗旨是最大限度地减少 GPU 在片段着色
 下图展示 tiling unit 的细节：<br />
 </p>
 
-<div id="org4cf6abe" class="figure">
+<div id="orgd9df6e9" class="figure">
 <p><img src="./GPUArchitecture/mobile_gpu_02_tiling.jpg" alt="mobile_gpu_02_tiling.jpg" width="500px" /><br />
 </p>
 </div>
@@ -1705,15 +1705,15 @@ Tile Based Rendering 的设计宗旨是最大限度地减少 GPU 在片段着色
 下图展示了硬件的数据流和内存交互：<br />
 </p>
 
-<div id="org4fa9ef1" class="figure">
+<div id="org8e7d0d9" class="figure">
 <p><img src="./GPUArchitecture/mobile_gpu_01_tbr-dataflow.jpg" alt="mobile_gpu_01_tbr-dataflow.jpg" width="500px" /><br />
 </p>
 </div>
 </div>
 
 <ul class="org-ul">
-<li><a id="orgea7b6d7"></a>TBR 的带宽优势<br />
-<div class="outline-text-7" id="text-orgea7b6d7">
+<li><a id="orgacaef93"></a>TBR 的带宽优势<br />
+<div class="outline-text-7" id="text-orgacaef93">
 <p>
 Tile 只占整个 framebuffer 的一小部分。 因此，可以将整个颜色、深度和模板的工作集存储在快速的 on-chip RAM 上，与 GPU 着色器核心紧密耦合。GPU 用于深度测试和混合透明像素所需的 framebuffer 数据无需访问外部内存即可获得，通过减少 GPU 对通用 framebuffer 操作所需的外部内存访问数量，可以显著提高像素密集型内容的能源效率。此外，多数情况下会存在一个深度和模板缓冲，它们是瞬态的，只需要在着色过程中存在。如果明确告诉 GPU 驱动程序不需要保存 Attachment，那么驱动程序就不会将它们写回主存。<br />
 </p>
@@ -1737,8 +1737,8 @@ Mali GPU 还可以使用称为“Arm 帧缓冲区压缩”(AFBC) 的无损压缩
 </div>
 </li>
 
-<li><a id="org6394d26"></a>TBR 的算法优势<br />
-<div class="outline-text-7" id="text-org6394d26">
+<li><a id="org2b48521"></a>TBR 的算法优势<br />
+<div class="outline-text-7" id="text-org2b48521">
 <p>
 TBR 使得一些算法变得可行。在 IMR 架构下，这些算法要么是计算量太大要么是带宽消耗太多。<br />
 </p>
@@ -1773,8 +1773,8 @@ TBR 可以启用较低带宽模式，可以直接从 tile 内存共享每个像�
 </div>
 </li>
 
-<li><a id="org4645d84"></a>TBR 缺点<br />
-<div class="outline-text-7" id="text-org4645d84">
+<li><a id="org95b8ecd"></a>TBR 缺点<br />
+<div class="outline-text-7" id="text-org95b8ecd">
 <p>
 TBR 机制的主要额外开销在 geometry pass 到 fragment pass 切换的地方。GPU 必须将 geometry pass 的输出（每个顶点的 varing data 以及 tiler 中间状态）存储到主存储器，fragment pass 随后会读取这些数据。因此，需要在与几何相关的额外带宽成本和帧缓冲区数据的带宽节省之间取得平衡。<br />
 同样重要的是要考虑到某些渲染操作，例如曲面细分，对于 TBR 架构来说这些操作是不成比例的昂贵。曲面细分等操作的设计利用了 IMR 模式架构的优势，爆炸的几何数据可以在 on-chip FIFO 缓冲区内，而不是被写回主存储器。<br />
@@ -1783,9 +1783,9 @@ TBR 机制的主要额外开销在 geometry pass 到 fragment pass 切换的地�
 </li>
 </ul>
 </div>
-<div id="outline-container-org1ababab" class="outline-6">
-<h6 id="org1ababab">TBDR</h6>
-<div class="outline-text-6" id="text-org1ababab">
+<div id="outline-container-orgf983498" class="outline-6">
+<h6 id="orgf983498">TBDR</h6>
+<div class="outline-text-6" id="text-orgf983498">
 <p>
 iOS 设备全部支持 HSR 技术。<br />
 Mali GPU 从 Mali-T620 （2012 年发布）开始，支持 FPK 技术。<br />
@@ -1793,7 +1793,7 @@ Adreno GPU 从 A5X 开始（Adreno 530 2015 年发布），支持 LRZ 技术。<
 </p>
 
 
-<div id="orgebc1d68" class="figure">
+<div id="orgddfa128" class="figure">
 <p><img src="./GPUArchitecture/mobile_gpu_02_fpk.jpg" alt="mobile_gpu_02_fpk.jpg" width="500px" /><br />
 </p>
 </div>
@@ -1808,9 +1808,9 @@ Adreno GPU 从 A5X 开始（Adreno 530 2015 年发布），支持 LRZ 技术。<
 </div>
 </div>
 </div>
-<div id="outline-container-org44e2066" class="outline-5">
-<h5 id="org44e2066">参考资料</h5>
-<div class="outline-text-5" id="text-org44e2066">
+<div id="outline-container-org6501daf" class="outline-5">
+<h5 id="org6501daf">参考资料</h5>
+<div class="outline-text-5" id="text-org6501daf">
 <ul class="org-ul">
 <li>EGLSurface 和 OpenGL ES <a href="https://source.android.com/docs/core/graphics/arch-egl-opengl">https://source.android.com/docs/core/graphics/arch-egl-opengl</a><br /></li>
 <li>d3d surface <a href="https://docs.microsoft.com/en-us/windows/win32/direct3d9/direct3d-surfaces">https://docs.microsoft.com/en-us/windows/win32/direct3d9/direct3d-surfaces</a><br /></li>
@@ -1821,9 +1821,9 @@ Adreno GPU 从 A5X 开始（Adreno 530 2015 年发布），支持 LRZ 技术。<
 </div>
 </div>
 </div>
-<div id="outline-container-org75ef9ec" class="outline-4">
-<h4 id="org75ef9ec">Power advantages of tiled rendering</h4>
-<div class="outline-text-4" id="text-org75ef9ec">
+<div id="outline-container-org45f8ddf" class="outline-4">
+<h4 id="org45f8ddf">Power advantages of tiled rendering</h4>
+<div class="outline-text-4" id="text-org45f8ddf">
 <ul class="org-ul">
 <li>binning pass 可以生成低分辨率的 Z buffer，其可以被用于后续的 passes。类似于 pre depth pass，其为后续的遮挡剔除额外提供了一级隐藏表面去除。该低分辨率的 Z buffer 通常被存储在系统内存上，因为其所需带宽非常低。<br /></li>
 <li>极大节省了片段着色期间的内存带宽消耗，因为每个像素只完成一次写入(读取发生在 On-Chip 内存上)。对于 MSAA，任何样本过滤都是在芯片上完成的。<br /></li>
@@ -1837,16 +1837,16 @@ Adreno GPU 从 A5X 开始（Adreno 530 2015 年发布），支持 LRZ 技术。<
 </ul>
 
 
-<div id="orgfb6ef6a" class="figure">
+<div id="org67a5449" class="figure">
 <p><img src="./GPUArchitecture/mobile_gpu_02_tbr-power-consumption-vs.jpg" alt="mobile_gpu_02_tbr-power-consumption-vs.jpg" width="400px" /><br />
 </p>
 </div>
 </div>
 </div>
 </div>
-<div id="outline-container-org23304dc" class="outline-3">
-<h3 id="org23304dc">Performance and perf/watt comparison with desktop</h3>
-<div class="outline-text-3" id="text-org23304dc">
+<div id="outline-container-org58f04a4" class="outline-3">
+<h3 id="org58f04a4">Performance and perf/watt comparison with desktop</h3>
+<div class="outline-text-3" id="text-org58f04a4">
 <ul class="org-ul">
 <li>性能<br />
 <ul class="org-ul">
@@ -1860,15 +1860,15 @@ Adreno GPU 从 A5X 开始（Adreno 530 2015 年发布），支持 LRZ 技术。<
 </ul>
 
 
-<div id="org9d0d24e" class="figure">
+<div id="org1806e99" class="figure">
 <p><img src="./GPUArchitecture/mobile_gpu_02_perf-efficency-vs.jpg" alt="mobile_gpu_02_perf-efficency-vs.jpg" width="400px" /><br />
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-org59ef783" class="outline-3">
-<h3 id="org59ef783">Physical design and power management</h3>
-<div class="outline-text-3" id="text-org59ef783">
+<div id="outline-container-org81c8402" class="outline-3">
+<h3 id="org81c8402">Physical design and power management</h3>
+<div class="outline-text-3" id="text-org81c8402">
 <ul class="org-ul">
 <li>由本地电源管理处理器管理的积极的动态调频（DCVS: Dynamic Clock and Voltage Scaling）<br /></li>
 <li>广泛的时钟树门控带有分析工具，用于指出非门控时钟树<br /></li>
@@ -1888,13 +1888,13 @@ Adreno GPU 从 A5X 开始（Adreno 530 2015 年发布），支持 LRZ 技术。<
 </ul>
 </div>
 </div>
-<div id="outline-container-org51c5b3b" class="outline-3">
-<h3 id="org51c5b3b">Future Challenges</h3>
-<div class="outline-text-3" id="text-org51c5b3b">
+<div id="outline-container-orga2a19d9" class="outline-3">
+<h3 id="orga2a19d9">Future Challenges</h3>
+<div class="outline-text-3" id="text-orga2a19d9">
 </div>
-<div id="outline-container-orgea5fe0a" class="outline-4">
-<h4 id="orgea5fe0a">Challenges</h4>
-<div class="outline-text-4" id="text-orgea5fe0a">
+<div id="outline-container-orged873fb" class="outline-4">
+<h4 id="orged873fb">Challenges</h4>
+<div class="outline-text-4" id="text-orged873fb">
 <ul class="org-ul">
 <li>虽然积极的冷却技术可能会有所帮助，但手持设备所需的整体散热外壳不太可能改变。因此 6W 到 8W 仍然是移动的绝对限制。<br /></li>
 <li>随着我们达到最低电压水平，移动 GPU 正在接近“宽而慢”方法的极限。<br /></li>
@@ -1902,9 +1902,9 @@ Adreno GPU 从 A5X 开始（Adreno 530 2015 年发布），支持 LRZ 技术。<
 </ul>
 </div>
 </div>
-<div id="outline-container-orgc33ee69" class="outline-4">
-<h4 id="orgc33ee69">可能的解决方案</h4>
-<div class="outline-text-4" id="text-orgc33ee69">
+<div id="outline-container-org20e5010" class="outline-4">
+<h4 id="org20e5010">可能的解决方案</h4>
+<div class="outline-text-4" id="text-org20e5010">
 <ul class="org-ul">
 <li>更节能的内存系统。HBM（High Bandwidth Memory）中内存和 GPU 通过 TSV 技术互相链接<br />
 <ul class="org-ul">
@@ -1921,7 +1921,7 @@ Adreno GPU 从 A5X 开始（Adreno 530 2015 年发布），支持 LRZ 技术。<
 下图是 VRS 说明：<br />
 </p>
 
-<div id="orgb1d853f" class="figure">
+<div id="org42b5368" class="figure">
 <p><img src="./GPUArchitecture/mobile_gpu_02_vrs-detail.jpg" alt="mobile_gpu_02_vrs-detail.jpg" width="800px" /><br />
 </p>
 </div>
@@ -1940,9 +1940,9 @@ Adreno GPU 从 A5X 开始（Adreno 530 2015 年发布），支持 LRZ 技术。<
 </div>
 </div>
 </div>
-<div id="outline-container-org5dbbab2" class="outline-3">
-<h3 id="org5dbbab2">参考资料</h3>
-<div class="outline-text-3" id="text-org5dbbab2">
+<div id="outline-container-org52fc434" class="outline-3">
+<h3 id="org52fc434">参考资料</h3>
+<div class="outline-text-3" id="text-org52fc434">
 <ul class="org-ul">
 <li>Mobile GPU approaches to power efficiency (Mobile GPU 做到能耗高效的方法) <a href="https://www.highperformancegraphics.org/wp-content/uploads/2019/hot3d/mobile_gpu_power_and_performance.pdf">https://www.highperformancegraphics.org/wp-content/uploads/2019/hot3d/mobile_gpu_power_and_performance.pdf</a><br /></li>
 <li>Qualcomm Game Developer Guides <a href="https://developer.qualcomm.com/sites/default/files/docs/adreno-gpu/snapdragon-game-toolkit/gdg/index.html">https://developer.qualcomm.com/sites/default/files/docs/adreno-gpu/snapdragon-game-toolkit/gdg/index.html</a><br /></li>
@@ -1952,62 +1952,62 @@ Adreno GPU 从 A5X 开始（Adreno 530 2015 年发布），支持 LRZ 技术。<
 </div>
 </div>
 </div>
-<div id="outline-container-orge76a269" class="outline-2">
-<h2 id="orge76a269">GPU Framebuffer Memory: Understanding Tiling</h2>
-<div class="outline-text-2" id="text-orge76a269">
+<div id="outline-container-orge9548d1" class="outline-2">
+<h2 id="orge9548d1">GPU Framebuffer Memory: Understanding Tiling</h2>
+<div class="outline-text-2" id="text-orge9548d1">
 </div>
-<div id="outline-container-orgc6fe283" class="outline-3">
-<h3 id="orgc6fe283">Immediate mode rasterizers</h3>
+<div id="outline-container-orga5ad995" class="outline-3">
+<h3 id="orga5ad995">Immediate mode rasterizers</h3>
 </div>
-<div id="outline-container-orge18145c" class="outline-3">
-<h3 id="orge18145c">Memory use in an Immediate-Mode Renderer</h3>
+<div id="outline-container-orgfce9142" class="outline-3">
+<h3 id="orgfce9142">Memory use in an Immediate-Mode Renderer</h3>
 </div>
-<div id="outline-container-orgf772ed6" class="outline-3">
-<h3 id="orgf772ed6">Tiled memory</h3>
+<div id="outline-container-orgb4c51e1" class="outline-3">
+<h3 id="orgb4c51e1">Tiled memory</h3>
 </div>
-<div id="outline-container-org30fdd23" class="outline-3">
-<h3 id="org30fdd23">Rasterizing within tiles</h3>
+<div id="outline-container-org2136ef3" class="outline-3">
+<h3 id="org2136ef3">Rasterizing within tiles</h3>
 </div>
-<div id="outline-container-orgbce0b91" class="outline-3">
-<h3 id="orgbce0b91">Binning</h3>
+<div id="outline-container-orgf77de65" class="outline-3">
+<h3 id="orgf77de65">Binning</h3>
 </div>
-<div id="outline-container-orged489d3" class="outline-3">
-<h3 id="orged489d3">Tile-based rasterization</h3>
+<div id="outline-container-orgd533cc7" class="outline-3">
+<h3 id="orgd533cc7">Tile-based rasterization</h3>
 </div>
-<div id="outline-container-org197b940" class="outline-3">
-<h3 id="org197b940">Multisampling</h3>
+<div id="outline-container-orgf364c3d" class="outline-3">
+<h3 id="orgf364c3d">Multisampling</h3>
 </div>
-<div id="outline-container-orgba8eead" class="outline-3">
-<h3 id="orgba8eead">Traditional deferred shading</h3>
+<div id="outline-container-orge3f8977" class="outline-3">
+<h3 id="orge3f8977">Traditional deferred shading</h3>
 </div>
-<div id="outline-container-orgc23c325" class="outline-3">
-<h3 id="orgc23c325">Tiling and deferred shading</h3>
+<div id="outline-container-org5e5bacc" class="outline-3">
+<h3 id="org5e5bacc">Tiling and deferred shading</h3>
 </div>
-<div id="outline-container-orgacb7389" class="outline-3">
-<h3 id="orgacb7389">Advantages of tile-based rendering</h3>
+<div id="outline-container-orgb1786e8" class="outline-3">
+<h3 id="orgb1786e8">Advantages of tile-based rendering</h3>
 </div>
-<div id="outline-container-orgc73a790" class="outline-3">
-<h3 id="orgc73a790">Limitations of tile-based rendering</h3>
+<div id="outline-container-orgd8e2c04" class="outline-3">
+<h3 id="orgd8e2c04">Limitations of tile-based rendering</h3>
 </div>
-<div id="outline-container-org47460f3" class="outline-3">
-<h3 id="org47460f3">Summary</h3>
+<div id="outline-container-org35fe8cb" class="outline-3">
+<h3 id="org35fe8cb">Summary</h3>
 </div>
-<div id="outline-container-org669c5fc" class="outline-3">
-<h3 id="org669c5fc">参考资料</h3>
-<div class="outline-text-3" id="text-org669c5fc">
+<div id="outline-container-orgfea70ae" class="outline-3">
+<h3 id="orgfea70ae">参考资料</h3>
+<div class="outline-text-3" id="text-orgfea70ae">
 <ul class="org-ul">
 <li>GPU Framebuffer Memory: Understanding Tiling <a href="https://developer.samsung.com/galaxy-gamedev/resources/articles/gpu-framebuffer.html">https://developer.samsung.com/galaxy-gamedev/resources/articles/gpu-framebuffer.html</a><br /></li>
 </ul>
 </div>
 </div>
 </div>
-<div id="outline-container-orgff95dd2" class="outline-2">
-<h2 id="orgff95dd2">GPU 常识</h2>
-<div class="outline-text-2" id="text-orgff95dd2">
+<div id="outline-container-orgb87be07" class="outline-2">
+<h2 id="orgb87be07">GPU 常识</h2>
+<div class="outline-text-2" id="text-orgb87be07">
 </div>
-<div id="outline-container-orgfded6d9" class="outline-3">
-<h3 id="orgfded6d9">术语表</h3>
-<div class="outline-text-3" id="text-orgfded6d9">
+<div id="outline-container-org4fe2c50" class="outline-3">
+<h3 id="org4fe2c50">术语表</h3>
+<div class="outline-text-3" id="text-org4fe2c50">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -2204,9 +2204,9 @@ Adreno GPU 从 A5X 开始（Adreno 530 2015 年发布），支持 LRZ 技术。<
 </ul>
 </div>
 </div>
-<div id="outline-container-org2eec3ab" class="outline-3">
-<h3 id="org2eec3ab">厂商</h3>
-<div class="outline-text-3" id="text-org2eec3ab">
+<div id="outline-container-org193fc69" class="outline-3">
+<h3 id="org193fc69">厂商</h3>
+<div class="outline-text-3" id="text-org193fc69">
 <p>
 移动 GPU 目前主要有 Qualcomm、Arm、Imagination Tech 等制作厂商，他们的代表作分别是 Adreno、Mali、PowerVR。<br />
 </p>

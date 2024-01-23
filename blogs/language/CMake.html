@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-06-27 Tue 22:36 -->
+<!-- 2024-01-15 Mon 16:33 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>CMake</title>
@@ -15,38 +15,27 @@
          <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.github.io/res/worg_theme/css/worg-classic.css" type="text/css" />
          <link rel="icon" href="https://wolfand11.github.io/res/favicon.ico" type="image/ico" />
          <script type="text/javascript" src="https://wolfand11.github.io/res/blog-tools.js"></script>
-<script>
-  window.MathJax = {
-    tex: {
-      ams: {
-        multlineWidth: '85%'
-      },
-      tags: 'ams',
-      tagSide: 'right',
-      tagIndent: '.8em'
-    },
-    chtml: {
-      scale: 1.0,
-      displayAlign: 'center',
-      displayIndent: '0em'
-    },
-    svg: {
-      scale: 1.0,
-      displayAlign: 'center',
-      displayIndent: '0em'
-    },
-    output: {
-      font: 'mathjax-modern',
-      displayOverflow: 'overflow'
-    }
-  };
-</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
 
-<script
-  id="MathJax-script"
-  async
-  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
 </head>
 <body>
 <div id="org-div-home-and-up">
@@ -59,69 +48,69 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org2fc5cfb">CMake</a>
+<li><a href="#org17fcb79">CMake</a>
 <ul>
-<li><a href="#org7feb9c1">simple example</a>
+<li><a href="#org49bcc5f">simple example</a>
 <ul>
-<li><a href="#org47c1020">writing a cmakelists.txt</a></li>
-<li><a href="#org5189d71">building with cmake</a></li>
+<li><a href="#org89121bb">writing a cmakelists.txt</a></li>
+<li><a href="#orgb75f9f5">building with cmake</a></li>
 </ul>
 </li>
-<li><a href="#orgdfe7375">usage</a>
+<li><a href="#org77a16cc">usage</a>
 <ul>
-<li><a href="#org39d4e62">指定 c++版本</a></li>
-<li><a href="#orge0f2e1a">指定 Visual Studio 版本</a></li>
-<li><a href="#org87e80fd">指定 CPU 架构</a></li>
-<li><a href="#orgb10a1fa">指定编译生成的 app 目录</a></li>
-<li><a href="#org818f6e1">利用 add_subdirectory 组织多个工程</a></li>
-<li><a href="#org09e63e7">打印 CMake 变量</a></li>
-<li><a href="#org5d8b9c4">构建错误定位</a></li>
+<li><a href="#org0fcae72">指定 c++版本</a></li>
+<li><a href="#org7881896">指定 Visual Studio 版本</a></li>
+<li><a href="#orgd09e1da">指定 CPU 架构</a></li>
+<li><a href="#org64b42be">指定编译生成的 app 目录</a></li>
+<li><a href="#orgd112f5c">利用 add_subdirectory 组织多个工程</a></li>
+<li><a href="#orgbbe4330">打印 CMake 变量</a></li>
+<li><a href="#org669686a">构建错误定位</a></li>
 </ul>
 </li>
-<li><a href="#org7d5a5f0">Error</a>
+<li><a href="#orgcae46d5">Error</a>
 <ul>
-<li><a href="#org0d081f5">windows</a>
+<li><a href="#orgd302b90">windows</a>
 <ul>
-<li><a href="#orgbcd4cc4">could not find any instance of Visual Studio</a></li>
-<li><a href="#orgae0caf9">The CXX compiler identification is unknown</a></li>
-<li><a href="#org31b87dc">project_source_dir 为空</a></li>
-<li><a href="#org913eac4">LINK : fatal error LNK1104: 无法打开文件“ucrtd.lib”</a></li>
-<li><a href="#orgecf90f9">error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2'</a>
+<li><a href="#org1396011">could not find any instance of Visual Studio</a></li>
+<li><a href="#orgd0a5597">The CXX compiler identification is unknown</a></li>
+<li><a href="#org84ac07b">project_source_dir 为空</a></li>
+<li><a href="#org952b77d">LINK : fatal error LNK1104: 无法打开文件“ucrtd.lib”</a></li>
+<li><a href="#org8c54f4d">error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2'</a>
 <ul>
-<li><a href="#orgaeb31a6">case 1</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li><a href="#org4f60a02">case 1</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#org2a1623a">参考资料</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgc0d43b0">参考资料</a></li>
 </ul>
 </div>
 </div>
 <p>
 CMake note.<br />
 </p>
-<div class="HTML" id="orgfbc68fe">
+<div class="HTML" id="orgb365bc0">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
 
 </div>
 
-<div id="outline-container-org2fc5cfb" class="outline-2">
-<h2 id="org2fc5cfb">CMake</h2>
-<div class="outline-text-2" id="text-org2fc5cfb">
+<div id="outline-container-org17fcb79" class="outline-2">
+<h2 id="org17fcb79">CMake</h2>
+<div class="outline-text-2" id="text-org17fcb79">
 </div>
-<div id="outline-container-org7feb9c1" class="outline-3">
-<h3 id="org7feb9c1">simple example</h3>
-<div class="outline-text-3" id="text-org7feb9c1">
+<div id="outline-container-org49bcc5f" class="outline-3">
+<h3 id="org49bcc5f">simple example</h3>
+<div class="outline-text-3" id="text-org49bcc5f">
 </div>
-<div id="outline-container-org47c1020" class="outline-4">
-<h4 id="org47c1020">writing a cmakelists.txt</h4>
-<div class="outline-text-4" id="text-org47c1020">
+<div id="outline-container-org89121bb" class="outline-4">
+<h4 id="org89121bb">writing a cmakelists.txt</h4>
+<div class="outline-text-4" id="text-org89121bb">
 <ul class="org-ul">
 <li><p>
 创建一个 CMakeLists.txt 文件，填入下面内容<br />
@@ -158,9 +147,9 @@ CMake note.<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-org5189d71" class="outline-4">
-<h4 id="org5189d71">building with cmake</h4>
-<div class="outline-text-4" id="text-org5189d71">
+<div id="outline-container-orgb75f9f5" class="outline-4">
+<h4 id="orgb75f9f5">building with cmake</h4>
+<div class="outline-text-4" id="text-orgb75f9f5">
 <div class="org-src-container">
 <pre class="src src-cmake">  cd CPPConcurrencyInAction
   <span style="color: #2aa1ae; background-color: #292e34;"># -S &#25351;&#23450;&#28304;&#20195;&#30721;&#30446;&#24405;&#20026;  ./CPPConcurrencyInAction</span>
@@ -179,22 +168,22 @@ CMake note.<br />
 </div>
 </div>
 </div>
-<div id="outline-container-orgdfe7375" class="outline-3">
-<h3 id="orgdfe7375">usage</h3>
-<div class="outline-text-3" id="text-orgdfe7375">
+<div id="outline-container-org77a16cc" class="outline-3">
+<h3 id="org77a16cc">usage</h3>
+<div class="outline-text-3" id="text-org77a16cc">
 </div>
-<div id="outline-container-org39d4e62" class="outline-4">
-<h4 id="org39d4e62">指定 c++版本</h4>
-<div class="outline-text-4" id="text-org39d4e62">
+<div id="outline-container-org0fcae72" class="outline-4">
+<h4 id="org0fcae72">指定 c++版本</h4>
+<div class="outline-text-4" id="text-org0fcae72">
 <div class="org-src-container">
 <pre class="src src-cmake"><span style="color: #bc6ec5; font-weight: bold;">set</span>(CMAKE_CXX_STANDARD 14)
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-orge0f2e1a" class="outline-4">
-<h4 id="orge0f2e1a">指定 Visual Studio 版本</h4>
-<div class="outline-text-4" id="text-orge0f2e1a">
+<div id="outline-container-org7881896" class="outline-4">
+<h4 id="org7881896">指定 Visual Studio 版本</h4>
+<div class="outline-text-4" id="text-org7881896">
 <div class="org-src-container">
 <pre class="src src-shell">cmake -G <span style="color: #2d9574;">"Visual Studio 17 2022"</span>
 </pre>
@@ -204,9 +193,9 @@ CMake note.<br />
 </ul>
 </div>
 </div>
-<div id="outline-container-org87e80fd" class="outline-4">
-<h4 id="org87e80fd">指定 CPU 架构</h4>
-<div class="outline-text-4" id="text-org87e80fd">
+<div id="outline-container-orgd09e1da" class="outline-4">
+<h4 id="orgd09e1da">指定 CPU 架构</h4>
+<div class="outline-text-4" id="text-orgd09e1da">
 <div class="org-src-container">
 <pre class="src src-shell">cmake -G <span style="color: #2d9574;">"Visual Studio 17 2022"</span> -A Win32 -S \path_to_source<span style="color: #2d9574;">\ </span>-B <span style="color: #2d9574;">"build32"</span>
 cmake -G <span style="color: #2d9574;">"Visual Studio 17 2022"</span> -A x64 -S \path_to_source<span style="color: #2d9574;">\ </span>-B <span style="color: #2d9574;">"build64"</span>
@@ -220,9 +209,9 @@ cmake --build build64 --config Release
 </ul>
 </div>
 </div>
-<div id="outline-container-orgb10a1fa" class="outline-4">
-<h4 id="orgb10a1fa">指定编译生成的 app 目录</h4>
-<div class="outline-text-4" id="text-orgb10a1fa">
+<div id="outline-container-org64b42be" class="outline-4">
+<h4 id="org64b42be">指定编译生成的 app 目录</h4>
+<div class="outline-text-4" id="text-org64b42be">
 <div class="org-src-container">
 <pre class="src src-cmake"><span style="color: #2aa1ae; background-color: #292e34;"># &#39033;&#30446;&#30446;&#24405;&#32467;&#26500;&#22914;&#19979;</span>
 <span style="color: #2aa1ae; background-color: #292e34;"># Test</span>
@@ -241,13 +230,13 @@ cmake --build build64 --config Release
 </div>
 </div>
 </div>
-<div id="outline-container-org818f6e1" class="outline-4">
-<h4 id="org818f6e1">利用 add_subdirectory 组织多个工程</h4>
-<div class="outline-text-4" id="text-org818f6e1">
+<div id="outline-container-orgd112f5c" class="outline-4">
+<h4 id="orgd112f5c">利用 add_subdirectory 组织多个工程</h4>
+<div class="outline-text-4" id="text-orgd112f5c">
 <p>
 目录结构如下：<br />
 </p>
-<pre class="example" id="org912fbb3">
+<pre class="example" id="org305ae6a">
 LLVM-Kaleidoscope
    CMakeLists.txt
    chapter-0
@@ -284,9 +273,9 @@ cmake --build build
 </div>
 </div>
 </div>
-<div id="outline-container-org09e63e7" class="outline-4">
-<h4 id="org09e63e7">打印 CMake 变量</h4>
-<div class="outline-text-4" id="text-org09e63e7">
+<div id="outline-container-orgbbe4330" class="outline-4">
+<h4 id="orgbbe4330">打印 CMake 变量</h4>
+<div class="outline-text-4" id="text-orgbbe4330">
 <div class="org-src-container">
 <pre class="src src-cmake"><span style="color: #bc6ec5; font-weight: bold;">message</span>(PROJECT_SOURCE_DIR=<span style="color: #2d9574;">"${</span><span style="color: #7590db;">PROJECT_SOURCE_DIR</span><span style="color: #2d9574;">}"</span>)
 </pre>
@@ -297,30 +286,30 @@ cmake --build build
 </ul>
 </div>
 </div>
-<div id="outline-container-org5d8b9c4" class="outline-4">
-<h4 id="org5d8b9c4">构建错误定位</h4>
-<div class="outline-text-4" id="text-org5d8b9c4">
+<div id="outline-container-org669686a" class="outline-4">
+<h4 id="org669686a">构建错误定位</h4>
+<div class="outline-text-4" id="text-org669686a">
 <p>
 下面文件中会列出具体的错误信息。可以已经具体错误信息再进一步定位错误。<br />
 </p>
-<pre class="example" id="org4940a26">
+<pre class="example" id="org2b2281d">
 xxx/build/CMakeFiles/CMakeConfigureLog.yaml
 xxx/build/CMakeFiles/CMakeError.log
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-org7d5a5f0" class="outline-3">
-<h3 id="org7d5a5f0">Error</h3>
-<div class="outline-text-3" id="text-org7d5a5f0">
+<div id="outline-container-orgcae46d5" class="outline-3">
+<h3 id="orgcae46d5">Error</h3>
+<div class="outline-text-3" id="text-orgcae46d5">
 </div>
-<div id="outline-container-org0d081f5" class="outline-4">
-<h4 id="org0d081f5">windows</h4>
-<div class="outline-text-4" id="text-org0d081f5">
+<div id="outline-container-orgd302b90" class="outline-4">
+<h4 id="orgd302b90">windows</h4>
+<div class="outline-text-4" id="text-orgd302b90">
 </div>
-<div id="outline-container-orgbcd4cc4" class="outline-5">
-<h5 id="orgbcd4cc4">could not find any instance of Visual Studio</h5>
-<div class="outline-text-5" id="text-orgbcd4cc4">
+<div id="outline-container-org1396011" class="outline-5">
+<h5 id="org1396011">could not find any instance of Visual Studio</h5>
+<div class="outline-text-5" id="text-org1396011">
 <p>
 没有安装 VS CMake 组件 和 Visual Studio 扩展开发<br />
 </p>
@@ -330,9 +319,9 @@ xxx/build/CMakeFiles/CMakeError.log
 </ul>
 </div>
 </div>
-<div id="outline-container-orgae0caf9" class="outline-5">
-<h5 id="orgae0caf9">The CXX compiler identification is unknown</h5>
-<div class="outline-text-5" id="text-orgae0caf9">
+<div id="outline-container-orgd0a5597" class="outline-5">
+<h5 id="orgd0a5597">The CXX compiler identification is unknown</h5>
+<div class="outline-text-5" id="text-orgd0a5597">
 <p>
 安装 VS C++ 开发环境<br />
 <img src="./CMake/windows-cmake-env.jpg" alt="windows-cmake-env.jpg" /><br />
@@ -343,9 +332,9 @@ xxx/build/CMakeFiles/CMakeError.log
 </ul>
 </div>
 </div>
-<div id="outline-container-org31b87dc" class="outline-5">
-<h5 id="org31b87dc">project_source_dir 为空</h5>
-<div class="outline-text-5" id="text-org31b87dc">
+<div id="outline-container-org84ac07b" class="outline-5">
+<h5 id="org84ac07b">project_source_dir 为空</h5>
+<div class="outline-text-5" id="text-org84ac07b">
 <p>
 调用 project() 之后 PROJECT_SOURCE_DIR 变量才生效<br />
 </p>
@@ -369,9 +358,9 @@ xxx/build/CMakeFiles/CMakeError.log
 </div>
 </div>
 </div>
-<div id="outline-container-org913eac4" class="outline-5">
-<h5 id="org913eac4">LINK : fatal error LNK1104: 无法打开文件“ucrtd.lib”</h5>
-<div class="outline-text-5" id="text-org913eac4">
+<div id="outline-container-org952b77d" class="outline-5">
+<h5 id="org952b77d">LINK : fatal error LNK1104: 无法打开文件“ucrtd.lib”</h5>
+<div class="outline-text-5" id="text-org952b77d">
 <p>
 微软安装 windows sdk 导致的 bug。<br />
 修改注册表 \HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Kits\Installed Roots@KitsRoot10 的值为 C:\Program Files (x86)\Windows Kits\10\<br />
@@ -382,13 +371,13 @@ xxx/build/CMakeFiles/CMakeError.log
 </ul>
 </div>
 </div>
-<div id="outline-container-orgecf90f9" class="outline-5">
-<h5 id="orgecf90f9">error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2'</h5>
-<div class="outline-text-5" id="text-orgecf90f9">
+<div id="outline-container-org8c54f4d" class="outline-5">
+<h5 id="org8c54f4d">error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2'</h5>
+<div class="outline-text-5" id="text-org8c54f4d">
 </div>
-<div id="outline-container-orgaeb31a6" class="outline-6">
-<h6 id="orgaeb31a6">case 1</h6>
-<div class="outline-text-6" id="text-orgaeb31a6">
+<div id="outline-container-org4f60a02" class="outline-6">
+<h6 id="org4f60a02">case 1</h6>
+<div class="outline-text-6" id="text-org4f60a02">
 <p>
 编译使用的 Debug，引用的 lib 使用的 release。修改 VS 工程如下设置选项:<br />
 Properties/Configuration Properties / C C++ / Code Generation/Runtime Library/Multi-threaded DLL<br />
@@ -411,9 +400,9 @@ Properties/Configuration Properties / C C++ / Code Generation/Runtime Library/Mu
 </div>
 </div>
 </div>
-<div id="outline-container-org2a1623a" class="outline-2">
-<h2 id="org2a1623a">参考资料</h2>
-<div class="outline-text-2" id="text-org2a1623a">
+<div id="outline-container-orgc0d43b0" class="outline-2">
+<h2 id="orgc0d43b0">参考资料</h2>
+<div class="outline-text-2" id="text-orgc0d43b0">
 <ul class="org-ul">
 <li>More Modern CMake <a href="https://hsf-training.github.io/hsf-training-cmake-webpage/">https://hsf-training.github.io/hsf-training-cmake-webpage/</a><br /></li>
 <li>It's Time To Do CMake Right <a href="https://pabloariasal.github.io/2018/02/19/its-time-to-do-cmake-right/">https://pabloariasal.github.io/2018/02/19/its-time-to-do-cmake-right/</a><br /></li>

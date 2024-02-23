@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-01-15 Mon 16:30 -->
+<!-- 2024-02-22 Thu 18:21 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>IBL</title>
@@ -54,7 +54,7 @@
 <li><a href="#org84e43ac">Anisotropy</a></li>
 <li><a href="#org7e8fa73">Subsurface</a></li>
 <li><a href="#org19364f4">Cloth</a></li>
-<li><a href="#org12c407d">参考资料</a></li>
+<li><a href="#org37b0edb">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#org4394a19">Frostbite IBL</a>
@@ -69,7 +69,7 @@
 <li><a href="#orgfd555ae">source code</a></li>
 </ul>
 </li>
-<li><a href="#org37b0edb">参考资料</a></li>
+<li><a href="#orgf45ac7d">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#org0e107f4">Unity URP EnvironmentBRDF</a></li>
@@ -81,7 +81,7 @@
 <p>
 IBL note.<br />
 </p>
-<div class="HTML" id="org564d647">
+<div class="HTML" id="org8bf0d96">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -96,11 +96,11 @@ IBL note.<br />
 <h3 id="orgc26815a">Filament IBL</h3>
 <div class="outline-text-3" id="text-orgc26815a">
 <p>
-在现实生活中，物体接受的光线，或者直接来自光源，或者来自环境中的其他物体反射的光线，这个过程中部分被吸收。从某种意义上说，物体周围的整个环境可以被视为一个光源。图像，特别是立方体图，是编码这样的“环境光”的好方法。这被称为基于图像的照明（IBL）或有时称为间接照明(Indirect Lighting)。<br />
+在现实生活中，物体接受的光线，或者直接来自光源，或者来自环境中的其他物体反射的光线，这个过程中部分被吸收。从某种意义上说，物体周围的整个环境可以被视为一个光源。图像，特别是 cubemap，是编码这样的“环境光”的好方法。这被称为基于图像的照明（IBL）或有时称为间接照明(Indirect Lighting)。<br />
 </p>
 
 <p>
-基于图像的照明有一些限制。显然，环境图像必须以某种方式获取，并且如下所示，在其用于照明之前需要进行预处理。通常，环境图像是在真实世界中离线获取的，或者由引擎在离线或运行时生成；无论哪种方式，都会使用 local 或 distant probes。<br />
+基于图像的照明有一些限制。显然，EnvironmentMap 必须以某种方式获取，并且如下所示，在其用于照明之前需要进行预处理。通常，EnvironmentMap 是在真实世界中离线获取的，或者由引擎在离线或运行时生成；无论哪种方式，都会使用 local 或 distant probes。<br />
 </p>
 
 <p>
@@ -112,7 +112,7 @@ IBL note.<br />
 </p>
 
 <p>
-由图像照明（IBL）的辐照度和材质模型(BRDF) f(Θ) 之间的相互作用产生的辐射率 (radiance Lout) 计算如下：<br />
+由图像照明（IBL）的 irradiance 和材质模型(BRDF) f(Θ) 之间的相互作用产生的辐射率 (radiance Lout) 计算如下：<br />
 <img src="./IBL/rendering-equation.jpg" alt="rendering-equation.jpg" /><br />
 请注意，这里我们正在研究表面的宏观行为（不要与微观方程混淆），这就是为什么它只取决于 n 和 v。基本上，我们将 BRDF 应用于来自所有方向的“点光源”，并编码为 IBL。<br />
 </p>
@@ -162,7 +162,7 @@ Screen space reflection: 通过在深度缓冲区中进行射线跟踪，基于�
 <h4 id="org68927f3">Processing light probes</h4>
 <div class="outline-text-4" id="text-org68927f3">
 <p>
-我们之前看到，IBL 的 radiance 是通过对表面半球进行积分来计算的。由于这显然在实时操作中太昂贵了，我们首先必须预处理我们的光探头，将它们转换为更适合实时交互的格式。<br />
+我们之前看到，IBL 的 radiance 是通过对表面半球进行积分来计算的。由于这显然在实时操作中太昂贵了，我们首先必须预处理我们的 light probes，将它们转换为更适合实时交互的格式。<br />
 </p>
 
 <p>
@@ -256,19 +256,19 @@ Tips: 白色炉是一种常数环境，指的是一个没有颜色变化的环�
 </p>
 
 
-<div id="orga0979f8" class="figure">
+<div id="org8931e73" class="figure">
 <p><img src="./IBL/ibl-specular02.jpg" alt="ibl-specular02.jpg" /><br />
 </p>
 </div>
 
 
-<div id="org9881d44" class="figure">
+<div id="org74f5182" class="figure">
 <p><img src="./IBL/ibl-specular03.jpg" alt="ibl-specular03.jpg" /><br />
 </p>
 </div>
 
 
-<div id="org8f649c2" class="figure">
+<div id="org4ad5dec" class="figure">
 <p><img src="./IBL/ibl-specular04.jpg" alt="ibl-specular04.jpg" /><br />
 </p>
 </div>
@@ -454,7 +454,7 @@ DFG1 和 DFG2 很方便地落在[0,1]范围内，但是 8 位纹理没有足够�
 <h4 id="org6c99745">Clear coat</h4>
 <div class="outline-text-4" id="text-org6c99745">
 <p>
-在采样 IBL 时，清漆层被计算为第二个镜面反射。因为我们无法合理地在半球上进行积分，这个镜面反射沿着视线方向定向。下面代码中演示了这个近似。它还显示了能量守恒的步骤。重要的是要注意，这个第二个镜面反射与主镜面反射完全相同，使用相同的 DFG 近似计算。<br />
+在采样 IBL 时，清漆层被计算为第二个镜面反射。由于我们无法合理地在半球上进行积分，这个镜面反射沿着视线方向定向。下面代码中演示了这个近似。它还显示了能量守恒的步骤。重要的是要注意，这个第二个镜面反射与主镜面反射完全相同，使用相同的 DFG 近似计算。<br />
 <img src="./IBL/clear-coat-model.jpg" alt="clear-coat-model.jpg" /><br />
 </p>
 <div class="org-src-container">
@@ -524,7 +524,7 @@ DG 项使用均匀采样生成，如[Estevez17]建议的那样。使用均匀采
 </p>
 
 
-<div id="org1a8859e" class="figure">
+<div id="org91be1af" class="figure">
 <p><img src="./IBL/ibl-cloth.jpg" alt="ibl-cloth.jpg" /><br />
 </p>
 </div>
@@ -554,9 +554,9 @@ IBL 的其余实现遵循与常规灯光实现相同的步骤，包括可选的�
 </p>
 </div>
 </div>
-<div id="outline-container-org12c407d" class="outline-4">
-<h4 id="org12c407d">参考资料</h4>
-<div class="outline-text-4" id="text-org12c407d">
+<div id="outline-container-org37b0edb" class="outline-4">
+<h4 id="org37b0edb">参考资料</h4>
+<div class="outline-text-4" id="text-org37b0edb">
 <ul class="org-ul">
 <li><a href="https://github.com/google/filament/">https://github.com/google/filament/</a><br /></li>
 <li><a href="https://github.com/google/filament/blob/main/tools/cmgen/src/cmgen.cpp">https://github.com/google/filament/blob/main/tools/cmgen/src/cmgen.cpp</a><br /></li>
@@ -573,7 +573,7 @@ IBL 的其余实现遵循与常规灯光实现相同的步骤，包括可选的�
 <h4 id="org2562591">Base</h4>
 <div class="outline-text-4" id="text-org2562591">
 
-<div id="org1930ce4" class="figure">
+<div id="org9ff6212" class="figure">
 <p><img src="./PhysicallyBasedRendering/2020_11_24_image_based_lighting_01.jpg" alt="2020_11_24_image_based_lighting_01.jpg" /><br />
 </p>
 </div>
@@ -741,9 +741,9 @@ L 的样本分布和微表面法线分布相同。着色点 roughness 越大，�
 </div>
 </div>
 </div>
-<div id="outline-container-org37b0edb" class="outline-4">
-<h4 id="org37b0edb">参考资料</h4>
-<div class="outline-text-4" id="text-org37b0edb">
+<div id="outline-container-orgf45ac7d" class="outline-4">
+<h4 id="orgf45ac7d">参考资料</h4>
+<div class="outline-text-4" id="text-orgf45ac7d">
 <ul class="org-ul">
 <li>GAMES202-高质量实时渲染 Realtime Environment Mapping0 <a href="https://www.bilibili.com/video/BV1YK4y1T7yY?p=5&amp;vd_source=36597ac15683c2bddfe189d605ca1fa4">https://www.bilibili.com/video/BV1YK4y1T7yY?p=5&amp;vd_source=36597ac15683c2bddfe189d605ca1fa4</a><br /></li>
 <li>2014-Siggraph-Moving Frostbite to Physically Based Rendering 3.0<br /></li>

@@ -1,0 +1,2261 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2024-02-23 Fri 12:41 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MagicaCloth2</title>
+<meta name="generator" content="Org Mode" />
+<link rel="stylesheet" type="text/css" href="https://wolfand11.github.io/res/worg_theme/css/worg.css"/>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href=""> UP </a>
+ |
+ <a accesskey="H" href="https://wolfand11.github.io"> HOME </a>
+</div><div id="content" class="content">
+<h1 class="title">MagicaCloth2</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#orgc63a2b9">MagicaCloth2</a>
+<ul>
+<li><a href="#orga3aa127">Base</a>
+<ul>
+<li><a href="#org9689b44">BoneCloth</a>
+<ul>
+<li><a href="#org0feb55c">简介</a></li>
+<li><a href="#org3c4670d">使用</a></li>
+</ul>
+</li>
+<li><a href="#org2a69764">MeshCloth</a>
+<ul>
+<li><a href="#org3b4c3a9">简介</a></li>
+<li><a href="#org7bbb03f">原理</a>
+<ul>
+<li><a href="#org9754027">Render mesh and Proxy mesh</a></li>
+<li><a href="#org1c5e886">How Simple should it be? 应该将 proxy mesh 简化到何种程度</a></li>
+</ul>
+</li>
+<li><a href="#org345dbf2">使用</a></li>
+</ul>
+</li>
+<li><a href="#orgcf5d60d">Collision</a>
+<ul>
+<li><a href="#orgc99bba0">简介</a></li>
+<li><a href="#org58dbb63">原理</a>
+<ul>
+<li><a href="#orgef5238f">collision mode</a></li>
+<li><a href="#org5c41113">friction</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org582203f">Parameter Setting</a>
+<ul>
+<li><a href="#org0d0ae82">简介</a></li>
+<li><a href="#orgdc44401">Understand the baseline</a>
+<ul>
+<li><a href="#org3ce6c6c">Baseline with BoneCloth</a></li>
+<li><a href="#orgfe0c4bd">Baseline with MeshCloth</a></li>
+<li><a href="#org3855a3f">Relationship between depth and parameters</a></li>
+</ul>
+</li>
+<li><a href="#org8bb0fb0">Parameter type</a>
+<ul>
+<li><a href="#org3345bdb">Force</a></li>
+<li><a href="#orgdbec5a4">Angle Restoration</a></li>
+<li><a href="#orgc827a71">Angle Limit</a></li>
+<li><a href="#org7163d29">Shape Restoration</a></li>
+<li><a href="#orga94beb9">Inertia</a></li>
+<li><a href="#orgc08382b">Movement Limit</a></li>
+<li><a href="#org7e67b5d">Collider Collision</a></li>
+<li><a href="#org23cfbed">Self Collision</a></li>
+</ul>
+</li>
+<li><a href="#org783d7b1">Tuning tips (参数调节秘诀)</a>
+<ul>
+<li><a href="#orgae58711">先调节重要参数</a></li>
+<li><a href="#org62fdcc5">运行起来进行调节</a></li>
+<li><a href="#orgca41e55">利用好预制参数</a></li>
+<li><a href="#org0ccec04">保存预制参数</a></li>
+<li><a href="#org8b1e73e">利用好组件 Copy 功能</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgea37811">Backstop</a>
+<ul>
+<li><a href="#org03854bf">简介</a></li>
+<li><a href="#orgcfa71c5">原理</a></li>
+<li><a href="#orgdf5cf20">使用</a>
+<ul>
+<li><a href="#org4ed2c5d">Importance of animation posture</a></li>
+<li><a href="#orgfc969da">Animation Posture Adjustment</a></li>
+<li><a href="#org4b7ebec">Check Animation Posture</a></li>
+<li><a href="#org76b79c3">Using Custom Skinning</a></li>
+<li><a href="#org6d74a6b">Paint Valid Vertices</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org75f97e6">Animation Posture Rotio</a>
+<ul>
+<li><a href="#org5270000">Affected Constraints</a></li>
+<li><a href="#orgff43501">Setting Guidelines</a></li>
+</ul>
+</li>
+<li><a href="#org3c2e2a3">BoneCloth advanced settings</a>
+<ul>
+<li><a href="#org49726f1">BoneCloth mesh connection</a>
+<ul>
+<li><a href="#orgd65a527">未开启创建 Mesh （line mode）</a></li>
+<li><a href="#org3ef96a7">automatic mesh</a></li>
+<li><a href="#org8e4c043">sequential loop mesh</a></li>
+<li><a href="#org03a61d8">sequential non loop mesh</a></li>
+</ul>
+</li>
+<li><a href="#orgbfb5f20">Transform interpolation rate</a>
+<ul>
+<li><a href="#orgb170b60">Root Rotation</a></li>
+<li><a href="#orga81cea1">Rotational Interpolation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgb8b0dea">Performance</a>
+<ul>
+<li><a href="#org8ebc5c5">MagicaCloth performance dependent</a></li>
+<li><a href="#orgeaa5053">Creation and execution of cloth data</a></li>
+<li><a href="#org62c45cd">Notes on Editor Execution</a>
+<ul>
+<li><a href="#org1d95d5d">Burst JIT Compiler</a></li>
+<li><a href="#org4e79947">JobsDebugger processing load</a></li>
+<li><a href="#org214a107">SafeCheck processing load</a></li>
+<li><a href="#orgf66b949">Errors will no langer be reported</a></li>
+</ul>
+</li>
+<li><a href="#org1bd7cf4">List of processing loads</a>
+<ul>
+<li><a href="#orgb901e36">Cloth type</a></li>
+<li><a href="#orgb1755b2">Collision processing</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org3283f86">UseCase</a>
+<ul>
+<li><a href="#org1861239">Runtime Construction</a>
+<ul>
+<li><a href="#orga91172d">Construction procedure</a>
+<ul>
+<li><a href="#org1571fc0">Vertex paint settings</a></li>
+<li><a href="#org837cd82">Runtime delay</a></li>
+</ul>
+</li>
+<li><a href="#orgf77af2d">Example</a></li>
+</ul>
+</li>
+<li><a href="#orgb4f771a">Runtime Changes</a>
+<ul>
+<li><a href="#orgd62b842">Change procedure</a></li>
+<li><a href="#org95abab0">Example</a></li>
+</ul>
+</li>
+<li><a href="#org152f436">Dress-up process</a></li>
+</ul>
+</li>
+<li><a href="#orgdee597c">Source Code</a>
+<ul>
+<li><a href="#org9b44dcc">MagicaCloth 的物理模拟是如何驱动的？</a></li>
+<li><a href="#org06b53f8">MagicaCloth 运动模拟算法是什么？</a>
+<ul>
+<li><a href="#org486e337">如何指定每帧迭代次数?</a>
+<ul>
+<li><a href="#orgd3e1472">Update Mode</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgcd0109d">MagicaCloth 碰撞处理算法是什么？</a></li>
+<li><a href="#org26035f3">MagicaCloth 网格简化算法, 以及简化后执行的操作？</a>
+<ul>
+<li><a href="#orgc448bb0">简化算法</a>
+<ul>
+<li><a href="#org28d976b">SameDistanceReduction</a></li>
+<li><a href="#org74c018f">SimpleDistanceReduction</a></li>
+<li><a href="#org6edad0a">ShapeDistanceReduction</a></li>
+</ul>
+</li>
+<li><a href="#org29fab28">简化后执行的操作</a>
+<ul>
+<li><a href="#org022dd03">Organization(settings, workData)</a></li>
+<li><a href="#orga475116">OrganizeStoreVirtualMesh(workData)</a></li>
+<li><a href="#orgc433af7">CalcAverageAndMaxVertexDistanceRun()</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org439b9e7">MagicaCloth RenderingMesh 如何映射到 ProxyMesh ?</a>
+<ul>
+<li><a href="#org039b715">直接映射</a>
+<ul>
+<li><a href="#orga569927">Mapping_DirectConnectionVertexDataJob</a></li>
+<li><a href="#org174179c">Mapping_CalcDirectWeightJob</a></li>
+</ul>
+</li>
+<li><a href="#orgddbdf19">搜索映射</a></li>
+</ul>
+</li>
+<li><a href="#org73116f8">Q&amp;A</a>
+<ul>
+<li><a href="#org01a2856">VirtualMesh 的几种 MeshType 分别表示什么？</a></li>
+<li><a href="#orgcb4d402">物理模拟的顶点是 proxy mesh 的顶点还是 baseline 的顶点？</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org7493489">参考资料</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<p>
+MagicaCloth2 note.<br />
+</p>
+<div class="HTML" id="org4975f68">
+<p>
+&lt;!&#x2013; more &#x2013;&gt;<br />
+</p>
+
+</div>
+
+<div id="outline-container-orgc63a2b9" class="outline-2">
+<h2 id="orgc63a2b9">MagicaCloth2</h2>
+<div class="outline-text-2" id="text-orgc63a2b9">
+</div>
+<div id="outline-container-orga3aa127" class="outline-3">
+<h3 id="orga3aa127">Base</h3>
+<div class="outline-text-3" id="text-orga3aa127">
+</div>
+<div id="outline-container-org9689b44" class="outline-4">
+<h4 id="org9689b44">BoneCloth</h4>
+<div class="outline-text-4" id="text-org9689b44">
+</div>
+<div id="outline-container-org0feb55c" class="outline-5">
+<h5 id="org0feb55c">简介</h5>
+<div class="outline-text-5" id="text-org0feb55c">
+<p>
+BoneCloth 基于 Unity 的 Transform 层级结构来进行布料模拟。非常适用于摆动的头发和挂件。<br />
+</p>
+
+<ul class="org-ul">
+<li>通过操纵 Transform 来表现摇动<br /></li>
+<li>运算处理消耗比较低，可被大量使用<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org3c4670d" class="outline-5">
+<h5 id="org3c4670d">使用</h5>
+<div class="outline-text-5" id="text-org3c4670d">
+<p>
+Cloth Type 选择 Bone Cloth<br />
+Root Bones 列表中只需要放置 Transform 层级结构的根节点就可以了<br />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org2a69764" class="outline-4">
+<h4 id="org2a69764">MeshCloth</h4>
+<div class="outline-text-4" id="text-org2a69764">
+</div>
+<div id="outline-container-org3b4c3a9" class="outline-5">
+<h5 id="org3b4c3a9">简介</h5>
+<div class="outline-text-5" id="text-org3b4c3a9">
+<p>
+Mesh Cloth 基于 Mesh 顶点来进行布料模拟，和 BoneCloth 相比，Mesh Cloth 可以表现更加真实的晃动，但是，其运算处理消耗会更高。<br />
+</p>
+
+<ul class="org-ul">
+<li>通过操作 Mesh 顶点来表现晃动<br /></li>
+<li>即使 Mesh 没有骨骼，也可以使用该技术<br /></li>
+<li>运算处理消耗比较高，需要注意性能问题<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org7bbb03f" class="outline-5">
+<h5 id="org7bbb03f">原理</h5>
+<div class="outline-text-5" id="text-org7bbb03f">
+</div>
+<div id="outline-container-org9754027" class="outline-6">
+<h6 id="org9754027">Render mesh and Proxy mesh</h6>
+<div class="outline-text-6" id="text-org9754027">
+<p>
+Proxy mesh 是 MeshCloth 中一个重要的概念。MeshCloth 不会使用 Render mesh 来进行模拟，原因主要有下面 3 点：<br />
+</p>
+<ul class="org-ul">
+<li>如果直接使用 render mesh 进行模拟，顶点数量可能会很多，导致模拟运算的消耗非常巨大<br /></li>
+<li>三角连接结构非常不适用于物理模拟<br /></li>
+<li>为了表现，很多情况下会将一个 mesh 分为多个 mesh（如，为了让裙子内外使用不同材质，将裙子分为两个 mesh），直接使用 Render mesh，就需要分开模拟裙子的内部和外部了。<br /></li>
+</ul>
+
+<p>
+基于 render mesh 进行顶点缩减可以得到对应的 proxy mesh，proxy mesh 是一个 virtual mesh，其只在运行时存在于内存中。MeshCloth 会在 proxy mesh 上执行所有的模拟运算，然后再将结果反应用于原始的 render mesh。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org1c5e886" class="outline-6">
+<h6 id="org1c5e886">How Simple should it be? 应该将 proxy mesh 简化到何种程度</h6>
+<div class="outline-text-6" id="text-org1c5e886">
+<ul class="org-ul">
+<li>proxy mesh 越简单，性能会越好<br /></li>
+<li>应该简化到 render mesh 没有细小突起的程度<br /></li>
+<li>简化的太多，会导致碰撞检测变弱。render mesh 和 proxy mesh 差异过大会导致显示变得不稳定<br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org345dbf2" class="outline-5">
+<h5 id="org345dbf2">使用</h5>
+<div class="outline-text-5" id="text-org345dbf2">
+<p>
+模型导入需要开启 Read/Write<br />
+对于 SkiningMesh，顶点对应的最大骨骼数量最大为 4<br />
+</p>
+
+<p>
+通过下面所示 Reduction Setting 选项设置 Proxy Mesh 的简化程度：<br />
+<img src="./MagicaCloth2/proxy-mesh01.jpg" alt="proxy-mesh01.jpg" /><br />
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">&#xa0;</th>
+<th scope="col" class="org-left">&#xa0;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">Simple Distance</td>
+<td class="org-left">不考虑 mesh 的整体结构，简单将邻近的顶点合并</td>
+</tr>
+
+<tr>
+<td class="org-left">Shape Distance</td>
+<td class="org-left">基于 mesh 的形状将邻近的顶点进行合并，若多个顶点没有链接为一个面，即使他们邻近也不会被合并</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+根据网格的形状连接附近的顶点。<br />
+未作为曲面连接的顶点即使在附近也不会合并<br />
+</p>
+
+<p>
+Tips： 运行时无法修改上面参数。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgcf5d60d" class="outline-4">
+<h4 id="orgcf5d60d">Collision</h4>
+<div class="outline-text-4" id="text-orgcf5d60d">
+</div>
+<div id="outline-container-orgc99bba0" class="outline-5">
+<h5 id="orgc99bba0">简介</h5>
+<div class="outline-text-5" id="text-orgc99bba0">
+<p>
+对于角色衣服模拟来说，衣服和人体的碰撞检测是必不可少的。碰撞检测的设置对于 BoneCloth 和 MeshCloth 是相同的。<br />
+MagicaCloth 有如下 4 种碰撞控制机制：<br />
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">&#xa0;</th>
+<th scope="col" class="org-left">&#xa0;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">Collider collision detection</td>
+<td class="org-left">使用 Colliders 来进行碰撞检测。目前实现了 3 种 SphereCollider PlaneCollider CapsuleCollider</td>
+</tr>
+
+<tr>
+<td class="org-left">Backstop</td>
+<td class="org-left">通过设置顶点法线方向可以进入的距离和半径来防止布料进入人体的方法</td>
+</tr>
+
+<tr>
+<td class="org-left">Self-collision</td>
+<td class="org-left">自碰撞。防止衣服陷入自身</td>
+</tr>
+
+<tr>
+<td class="org-left">mutual collision</td>
+<td class="org-left">互相碰撞。防止衣服陷入其他衣服</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+本结只讨论 Collider collision。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org58dbb63" class="outline-5">
+<h5 id="org58dbb63">原理</h5>
+<div class="outline-text-5" id="text-org58dbb63">
+<p>
+Collider 的碰撞检测原理很简单，如下图所示：其会将顶点挤出从而避免顶点进入 collider 内部。通过按照角色身体形状来放置 collider，就可以避免布料进入人体<br />
+</p>
+
+
+<div id="org521d59d" class="figure">
+<p><img src="./MagicaCloth2/collider.jpg" alt="collider.jpg" /><br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgef5238f" class="outline-6">
+<h6 id="orgef5238f">collision mode</h6>
+<div class="outline-text-6" id="text-orgef5238f">
+<p>
+通过 collision mode 你可以选择 proxy mesh 和碰撞体如何进行碰撞检测。<br />
+</p>
+</div>
+
+<ul class="org-ul">
+<li><a id="org69438b0"></a>vertex sphere mode (Point Mode)<br />
+<div class="outline-text-7" id="text-org69438b0">
+<p>
+<img src="./MagicaCloth2/param-colliderCollision.jpg" alt="param-colliderCollision.jpg" /><br />
+将 proxy mesh 的顶点当作球，顶点对应的球的大小可以通过 Radius 来设置。对顶点对应的球和 collider 进行碰撞检测。<br />
+<img src="./MagicaCloth2/mc2_collisionsetup_G3.gif" alt="mc2_collisionsetup_G3.gif" /><br />
+Point Mode 运算处理消耗比较小，但是，当 collider 尺寸太小时，会导致碰撞检测失效，如下图：<br />
+</p>
+
+
+<div id="orged9767c" class="figure">
+<p><img src="./MagicaCloth2/mc2_collisionsetup_G2.gif" alt="mc2_collisionsetup_G2.gif" /><br />
+</p>
+</div>
+</div>
+</li>
+<li><a id="orga4ab6ef"></a>edge mode (Line Mode)<br />
+<div class="outline-text-7" id="text-orga4ab6ef">
+
+<div id="orgd73a15d" class="figure">
+<p><img src="./MagicaCloth2/param-colliderCollision2.jpg" alt="param-colliderCollision2.jpg" /><br />
+</p>
+</div>
+
+<p>
+对 proxy mesh 的边和 collider 进行碰撞检测。边的粗细程度可以通过 Radius 来设置。<br />
+Edge Mode 的好处是，当 collider 比较小时，碰撞检测依然有效。如下图所示：<br />
+<img src="./MagicaCloth2/mc2_collisionsetup_G1.gif" alt="mc2_collisionsetup_G1.gif" /><br />
+</p>
+
+<p>
+但是，Edge Mode 运算处理消耗比 Point Mode 要高，需要注意性能问题。<br />
+</p>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-org5c41113" class="outline-6">
+<h6 id="org5c41113">friction</h6>
+<div class="outline-text-6" id="text-org5c41113">
+<p>
+<img src="./MagicaCloth2/param-colliderCollision2.jpg" alt="param-colliderCollision2.jpg" /><br />
+摩擦力控制着当 collider 和顶点接触后，滑动的难易程度。<br />
+</p>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org582203f" class="outline-4">
+<h4 id="org582203f">Parameter Setting</h4>
+<div class="outline-text-4" id="text-org582203f">
+</div>
+<div id="outline-container-org0d0ae82" class="outline-5">
+<h5 id="org0d0ae82">简介</h5>
+<div class="outline-text-5" id="text-org0d0ae82">
+<p>
+为了达到理想的运动效果，参数设置是必不可少的。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgdc44401" class="outline-5">
+<h5 id="orgdc44401">Understand the baseline</h5>
+<div class="outline-text-5" id="text-orgdc44401">
+<p>
+进行参数设置时，理解 baseline 的概念非常必要。baseline 是从 proxy mesh 的固定顶点开始并沿着 mesh 表面连接到末端移动顶点的路径。<br />
+</p>
+
+<p>
+一个 baseline 包含起始点和结束点，还有深度信息（在 BoneCloth 的 Gizmos 参数中，可以开启 BaseLine 和 Depth 的显示）。baseline 的起始点的深度为 0，结束点的深度为 1，每个顶点都会有对应的深度值。<br />
+</p>
+
+<p>
+如下图所示，我们将 Root GameObject 作为 BoneCloth 的 Root，得到的 baseline 如图中红线所示：<br />
+<img src="./MagicaCloth2/baseline.jpg" alt="baseline.jpg" /><br />
+</p>
+
+<p>
+Tips: <b>Runtime 下，baseline 是不变的</b> 。<br />
+</p>
+</div>
+
+<div id="outline-container-org3ce6c6c" class="outline-6">
+<h6 id="org3ce6c6c">Baseline with BoneCloth</h6>
+<div class="outline-text-6" id="text-org3ce6c6c">
+<p>
+对于 BoneCloth，baselines 是从 Transforms 树形层次结构构建的，所以其和 Transform 的层级结构一样。<br />
+</p>
+
+<p>
+Tips: <b>Runtime 下，baseline 是不变的</b> 。<br />
+</p>
+
+<p>
+层级结构不同，baseline 也会不同，导致模拟的结果也不同，如下图所示：<br />
+<img src="./MagicaCloth2/baseline1.jpg" alt="baseline1.jpg" /><br />
+</p>
+
+<p>
+在层级结构中，放置位置重叠的节点会导致模拟错误，如下面视频所示：<br />
+#+begin_export html<br />
+&lt;video class="wp-video-shortcode" width="1024" height="768" preload="metadata" controls="controls"&gt;<br />
+&lt;source type="video/mp4" src="./MagicaCloth2/baseline-error.mp4"/&gt;<br />
+&lt;/video&gt;<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgfe0c4bd" class="outline-6">
+<h6 id="orgfe0c4bd">Baseline with MeshCloth</h6>
+<div class="outline-text-6" id="text-orgfe0c4bd">
+<p>
+MeshCloth 相对复杂一些，其 baselines 是依据表面的连接自动计算得到的。MeshCloth 的 baseline 会根据表面的连接状态和固定顶点的分布而发生变化。<br />
+</p>
+
+<p>
+Tips: <b>Runtime 下，baseline 是不变的</b> 。<br />
+</p>
+
+<p>
+下图为，MagicaCloth2 Demo 中，UnityChanKAGURA 的裙子对应的 baseline。<br />
+<img src="./MagicaCloth2/baseline2.jpg" alt="baseline2.jpg" /><br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org3855a3f" class="outline-6">
+<h6 id="org3855a3f">Relationship between depth and parameters</h6>
+<div class="outline-text-6" id="text-org3855a3f">
+<p>
+baseline 上每个顶点都有一个深度值，MagicaCloth 有很多参数的值都依赖于该深度值。下图所示 Limit Angle 参数的相关说明：<br />
+</p>
+
+
+<div id="orgeef4436" class="figure">
+<p><img src="./MagicaCloth2/param-depth.jpg" alt="param-depth.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org8bb0fb0" class="outline-5">
+<h5 id="org8bb0fb0">Parameter type</h5>
+<div class="outline-text-5" id="text-org8bb0fb0">
+</div>
+<div id="outline-container-org3345bdb" class="outline-6">
+<h6 id="org3345bdb">Force</h6>
+<div class="outline-text-6" id="text-org3345bdb">
+
+<div id="org9c19f58" class="figure">
+<p><img src="./MagicaCloth2/param-force.jpg" alt="param-force.jpg" /><br />
+</p>
+</div>
+
+<p>
+Gravity 控制重力大小<br />
+Gravity Direction 控制重力方向<br />
+Gravity Falloff 会根据 cloth 的朝向来减少重力的效果。例如，如果 Falloff 为 1.0，若衣服的朝向和起始朝向相同，则不会对衣服应用重力。<br />
+Damping 用于控制空气阻力。减低空气阻力(Damping)，顶点将不容易复位。相反，若增加空气阻力(Damping)，则顶点移动会减慢。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgdbec5a4" class="outline-6">
+<h6 id="orgdbec5a4">Angle Restoration</h6>
+<div class="outline-text-6" id="text-orgdbec5a4">
+<p>
+运动模拟会将 baseline 的每条边旋转回原来的位置。Angle Restoration(角度复原)参数是控制运动的最重要参数，毫不夸张地说，该参数决定了运动的主要表现。<br />
+</p>
+
+
+<div id="orga500bdc" class="figure">
+<p><img src="./MagicaCloth2/param-angleRestoration.jpg" alt="param-angleRestoration.jpg" /><br />
+</p>
+</div>
+
+<p>
+Stiffness (刚度)是在一个 pass 中校正的旋转角度量（Tips：一次物理模拟有时候由多次 pass 组成）。增加 Stiffness（刚度）可加快恢复速度。<br />
+Velocity Attenuation 是恢复期间应用于顶点的速度衰减量。如果你降低它，加速度会更强，它会像弹簧一样反弹。<br />
+</p>
+
+<p>
+调整这两个属性需要一定的熟悉度和经验。一个好的开始是加载一个预制参数并尝试模仿它。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgc827a71" class="outline-6">
+<h6 id="orgc827a71">Angle Limit</h6>
+<div class="outline-text-6" id="text-orgc827a71">
+<p>
+限制 baseline 的每条边从其原始 pose 弯曲的角度<br />
+<img src="./MagicaCloth2/param-angleLimit.jpg" alt="param-angleLimit.jpg" /><br />
+</p>
+
+<p>
+将裙子的角度限制在一定范围内以保持其形状也是一个好主意。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org7163d29" class="outline-6">
+<h6 id="org7163d29">Shape Restoration</h6>
+<div class="outline-text-6" id="text-org7163d29">
+
+<div id="org4070ba9" class="figure">
+<p><img src="./MagicaCloth2/param-shapeRestoration.jpg" alt="param-shapeRestoration.jpg" /><br />
+</p>
+</div>
+
+<p>
+通过下列三种方式来维持 proxy mesh 的形状:<br />
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">&#xa0;</th>
+<th scope="col" class="org-left">&#xa0;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">Distance</td>
+<td class="org-left">网格的可拉伸性。</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">移动以保持每个顶点和连接的顶点之间的距离不变</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">通常 1.0 就可以了。</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">不过，如果外面像旋转的裙子那样稍微拉长一点更好看的话，在终点附近用曲线削弱回复力效果也不错。</td>
+</tr>
+
+<tr>
+<td class="org-left">Tether</td>
+<td class="org-left">限制顶点与其 baseline 起点的接近程度。</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">只能设置收缩范围。</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">如果减低 Compression，顶点将无法靠近它们的起点。</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">反之，如果提高 Compression，顶点就可以自由移动</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">降低该值会使网格形状更难变形, 从而可以避免布料过渡收缩。然而，在某些情况下，由于运动的自由度降低，运动可能会很笨拙。</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">一般建议设置为 0.8 以上，不要减低太多</td>
+</tr>
+
+<tr>
+<td class="org-left">Triangle Bending</td>
+<td class="org-left">mesh 弯曲抗性</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">控制相邻的三角形恢复到原来的角度。</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">该参数对保持网格形状方面起着重要作用。</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">1.0 通常没问题。</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">若 proxy mesh 中不存在三角形，则不执行任何操作</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-orga94beb9" class="outline-6">
+<h6 id="orga94beb9">Inertia</h6>
+<div class="outline-text-6" id="text-orga94beb9">
+<p>
+该参数决定了衣服运动如何影响顶点。这是决定运动的第二重要的参数(第一重要的参数为 Angle Restoration)。<br />
+</p>
+
+<p>
+一件衣服总会有一个中心点。该中心点通常由所有不动点的分布决定，在 SceneView 中，中心点会被显示为一个粉色的球，如下图：<br />
+<img src="./MagicaCloth2/centerPoint.jpg" alt="centerPoint.jpg" /><br />
+</p>
+
+<p>
+当这个中心移动时，它的平移力和旋转力会传递到顶点。inertia 参数就是用来限制传递给顶点的力的。<br />
+</p>
+
+<p>
+例如，如果晃动对于角色的移动来说过大，则可以添加 restrictions（限制）以抑制整体晃动。<br />
+</p>
+
+
+<div id="org1d89c92" class="figure">
+<p><img src="./MagicaCloth2/param-inertia.jpg" alt="param-inertia.jpg" /><br />
+</p>
+</div>
+
+<p>
+有四种类型的 restrictions（限制），每种都有自己的特点：<br />
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">&#xa0;</th>
+<th scope="col" class="org-left">&#xa0;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">Movement Inertia</td>
+<td class="org-left">减少运动力或旋转力本身。</td>
+</tr>
+
+<tr>
+<td class="org-left">Rotation Inertia</td>
+<td class="org-left">例如，如果该属性为 0.1，则只有 1/10 的布料运动会添加到顶点。</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">这使得即使布料高速移动也可以抑制晃动。</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">但是，即使布料缓慢移动，移动力也会降低，因此也有晃动变得极小的不良影响。</td>
+</tr>
+
+<tr>
+<td class="org-left">Depth Inertia</td>
+<td class="org-left">使用顶点深度减少惯性。</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">简单地说，如果你增加这个属性，深度越接近起点，移动就越困难。</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">终点不受减少。</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">当不希望起点周围的区域移动太多时（例如裙子或头发），这很有效。</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">但请注意，如果减少起点附近的惯性，则整体运动会变弱。</td>
+</tr>
+
+<tr>
+<td class="org-left">Movement Speed Limit</td>
+<td class="org-left">以设定的速度截断移动力或旋转力</td>
+</tr>
+
+<tr>
+<td class="org-left">Rotation Speed Limit</td>
+<td class="org-left">例如 Movement Speed Limit=2.0，如果角色的移动速度在 2m/s 以内，力将原样传递，如果超过 2m/s，</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">无论移动的多快，也不会再对顶点施加更多的力。</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">有了这个限制，无论是慢速移动还是高速移动，都可以将晃动限制在一定范围内。</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">基本上，我们建议在 Movement Inertia/Rotation Inertia 上使用它。</td>
+</tr>
+
+<tr>
+<td class="org-left">Particle Speed Limit</td>
+<td class="org-left">限制每个顶点的最大速度。</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">这可以缓解长带状物体的末端因离心力而过度向外凸起的现象。</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">但是，如果将值降低到 1.0（1m/s）以下，碰撞检测的精度将会降低，因此降低值时要小心。</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-orgc08382b" class="outline-6">
+<h6 id="orgc08382b">Movement Limit</h6>
+<div class="outline-text-6" id="text-orgc08382b">
+
+<div id="orgb6492c8" class="figure">
+<p><img src="./MagicaCloth2/param-movementLimit.jpg" alt="param-movementLimit.jpg" /><br />
+</p>
+</div>
+
+<p>
+参考 <a href="#orgea37811">Backstop</a> 部分介绍。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org7e67b5d" class="outline-6">
+<h6 id="org7e67b5d">Collider Collision</h6>
+<div class="outline-text-6" id="text-org7e67b5d">
+
+<div id="orgd57ac25" class="figure">
+<p><img src="./MagicaCloth2/param-colliderCollision.jpg" alt="param-colliderCollision.jpg" /><br />
+</p>
+</div>
+
+<p>
+参考 <a href="#orgcf5d60d">Collision</a> 部分介绍。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org23cfbed" class="outline-6">
+<h6 id="org23cfbed">Self Collision</h6>
+<div class="outline-text-6" id="text-org23cfbed">
+<p>
+该参数同时控制 Self Collision() 和 Mutual Collision。该功能目前处于实验阶段。<br />
+self collision 和 Mutual Collision 需要大量的碰撞计算，其运算处理消耗非常高。建议只在 PC 上使用。<br />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org783d7b1" class="outline-5">
+<h5 id="org783d7b1">Tuning tips (参数调节秘诀)</h5>
+<div class="outline-text-5" id="text-org783d7b1">
+</div>
+<div id="outline-container-orgae58711" class="outline-6">
+<h6 id="orgae58711">先调节重要参数</h6>
+<div class="outline-text-6" id="text-orgae58711">
+<p>
+尽管参数数量很多，但是真正决定运动效果的参数只有下面这些，可以优先调节这些重要的参数<br />
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">&#xa0;</th>
+<th scope="col" class="org-left">&#xa0;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">Force</td>
+<td class="org-left">重力和空气阻力。 这和顶点运动有很大关系</td>
+</tr>
+
+<tr>
+<td class="org-left">Angle Restoration</td>
+<td class="org-left">旋转复原。它是决定整体运动的最重要参数。最好先从这里调整。</td>
+</tr>
+
+<tr>
+<td class="org-left">Inertia</td>
+<td class="org-left">如果角色奔跑或跳跃时布料移动过多，请调整该参数。</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-org62fdcc5" class="outline-6">
+<h6 id="org62fdcc5">运行起来进行调节</h6>
+<div class="outline-text-6" id="text-org62fdcc5">
+<p>
+在运行时进行参数调节可以获得直观反馈<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgca41e55" class="outline-6">
+<h6 id="orgca41e55">利用好预制参数</h6>
+<div class="outline-text-6" id="text-orgca41e55">
+<p>
+可以先选择一个预制参数，看是否接近我们想要的运动效果。然后，再在次基础上进行调节。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org0ccec04" class="outline-6">
+<h6 id="org0ccec04">保存预制参数</h6>
+<div class="outline-text-6" id="text-org0ccec04">
+<p>
+将精心调整的参数保存为预制参数。在运行时，也可以保存预制参数。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org8b1e73e" class="outline-6">
+<h6 id="org8b1e73e">利用好组件 Copy 功能</h6>
+<div class="outline-text-6" id="text-org8b1e73e">
+<p>
+运行时调整的参数无法被保存，可以通过组件 Copy 功能，来解决该问题。<br />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgea37811" class="outline-4">
+<h4 id="orgea37811">Backstop</h4>
+<div class="outline-text-4" id="text-orgea37811">
+</div>
+<div id="outline-container-org03854bf" class="outline-5">
+<h5 id="org03854bf">简介</h5>
+<div class="outline-text-5" id="text-org03854bf">
+<p>
+backstop 是一种碰撞处理方法，其会限制进入碰撞体的距离，该距离基于物体顶点的 normal 方向。使用该技术，可以很容易避免头发的刘海部分陷入角色头模型内，避免 T 恤陷入角色身体模型内。<br />
+这种技术机制简单，运算处理消耗也比较低。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgcfa71c5" class="outline-5">
+<h5 id="orgcfa71c5">原理</h5>
+<div class="outline-text-5" id="text-orgcfa71c5">
+<p>
+Backstop 原理很简单，其限制 proxy mesh 的每个顶点相对于 normal 方向运动的范围。如下图所示：<br />
+<img src="./MagicaCloth2/backstop.jpg" alt="backstop.jpg" /><br />
+</p>
+
+<p>
+上图显示的 proxy mesh 的 vertices(白点)和 normals(绿色箭头)是模型原始 pose 或动画 pose 对应的位置，而不是当前经过模拟运算后移动的位置。<br />
+首先，顶点只能在蓝色的球内移动，该球的半径为 Max Distance. 这是第一个限制。<br />
+其次，顶点只能在红色的 Backstop Collision 球外移动，该球的半径为 Backstop Radius。将顶点原始位置沿原始 normal 反方向移动 BackstopDistance+BackstopRadius 距离就是 Backstop Collision 球心的位置。这是第二个限制。<br />
+</p>
+
+<p>
+可以同时开启上面两个限制，也可以只启用其中一个限制。<br />
+</p>
+
+<p>
+Tips:<br />
+Backstop 是基于原始 pose 或 动画 pose 来限制 proxy mesh 各个顶点的移动范围的，为了让 backstop 工作，Transform 或 Mesh 跟随动画非常重要。<br />
+Backstop 对模型顶点的 normal 有依赖，所以只能模拟单侧的碰撞，当碰撞发生在另一侧时，会导致不稳定的问题，如下面视频所示。<br />
+</p>
+
+<video class="wp-video-shortcode" width="1024" height="768" preload="metadata" controls="controls">
+<source type="video/mp4" src="./MagicaCloth2/backstop_error01.mp4"/>
+</video>
+</div>
+</div>
+<div id="outline-container-orgdf5cf20" class="outline-5">
+<h5 id="orgdf5cf20">使用</h5>
+<div class="outline-text-5" id="text-orgdf5cf20">
+<p>
+这里使用一个裙子作为示例，来说明 backstop 的高级设置。backstop 主要用来避免裙子顶点进入人体，但是，人体一直在做动画，其姿势会不停变化。<br />
+</p>
+</div>
+<div id="outline-container-org4ed2c5d" class="outline-6">
+<h6 id="org4ed2c5d">Importance of animation posture</h6>
+<div class="outline-text-6" id="text-org4ed2c5d">
+<p>
+在这里，动画的姿势非常重要。这里的姿势是指未进行物理模拟时，Transform 或 Mesh 在动画作用下的形变。例如，下面角色的裙子被蒙皮到了左腿和右腿上。所以，裙子会跟随腿做动画。这是理想的情况，这种情况下你可以设置一个 backstop，来防止穿模。<br />
+<img src="./MagicaCloth2/pene_anime1.gif" alt="pene_anime1.gif" /><br />
+但是，下面的角色没有将裙子蒙皮到腿部。当角色播放跑步动画时，腿会穿过裙子，这种情况下，将无法使用 backstop。<br />
+<img src="./MagicaCloth2/pene_anime2.gif" alt="pene_anime2.gif" /><br />
+backstop 是在动画 pose 基础上施加限制。为了让 backstop 工作，Transform 或 Mesh 跟随动画非常重要。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgfc969da" class="outline-6">
+<h6 id="orgfc969da">Animation Posture Adjustment</h6>
+<div class="outline-text-6" id="text-orgfc969da">
+<p>
+解决上面问题的最好方式是，为裙子分配腿部骨骼权重，从而让裙子跟随腿运动。<br />
+或者，为裙子添加骨骼，并且调整每个动画(如，跑，跳，攻击等等)，使得裙子跟随腿部运动。<br />
+</p>
+
+<p>
+在美术人员创作的动画姿势上叠加布料模拟是解决穿模问题的最健壮的方法，推荐使用这种方案。<br />
+</p>
+
+<p>
+若由于某种原因无法进行美术人员修正，则可以使用自定义蒙皮功能作为替代方案。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org4b7ebec" class="outline-6">
+<h6 id="org4b7ebec">Check Animation Posture</h6>
+<div class="outline-text-6" id="text-org4b7ebec">
+<p>
+在 MagicaCloth 的 Gizmos 设置面板，可以开启动画姿势(Animation Posture)显示，如下：<br />
+<img src="./MagicaCloth2/anim-posture.jpg" alt="anim-posture.jpg" /><br />
+</p>
+
+<p>
+下面是 SceneView 中所展示的动画姿势：<br />
+<img src="./MagicaCloth2/mc2_backstop_G2.gif" alt="mc2_backstop_G2.gif" /><br />
+</p>
+</div>
+</div>
+<div id="outline-container-org76b79c3" class="outline-6">
+<h6 id="org76b79c3">Using Custom Skinning</h6>
+<div class="outline-text-6" id="text-org76b79c3">
+<p>
+如果由于某种原因无法进行美术人员修正，则可以使用自定义蒙皮功能作为替代方案。<br />
+</p>
+
+<p>
+该功能会将 proxy mesh 蒙皮到指定的骨骼上。如果动画姿势已经正确设置，则不需要使用该功能。<br />
+</p>
+
+<p>
+开启 Custom Skinning，并且添加蒙皮骨骼，对于 KAGURA 裙子，可以安装如下设置骨骼：<br />
+<img src="./MagicaCloth2/custom-skinning.jpg" alt="custom-skinning.jpg" /><br />
+</p>
+
+<p>
+添加的骨骼使用 gizmo 显示为黄色的线，如下图所示：<br />
+<img src="./MagicaCloth2/custom-skinning1.jpg" alt="custom-skinning1.jpg" /><br />
+</p>
+
+<p>
+custom skinning 会让 proxy mesh 跟随腿运动。如下图所示，从而让 backstop 可以工作。<br />
+<img src="./MagicaCloth2/mc2_backstop_G3.gif" alt="mc2_backstop_G3.gif" /><br />
+</p>
+
+<p>
+Tips:<br />
+custom skinning 也支持 BoneCloth。但是，请注意 custom skinning 只是一个替代方案，其效果并不是很精确。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org6d74a6b" class="outline-6">
+<h6 id="org6d74a6b">Paint Valid Vertices</h6>
+<div class="outline-text-6" id="text-org6d74a6b">
+<p>
+可以使用 vertex paint 来精确控制哪些顶点开启 backstop，哪些顶点关闭 backstop。<br />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org75f97e6" class="outline-4">
+<h4 id="org75f97e6">Animation Posture Rotio</h4>
+<div class="outline-text-4" id="text-org75f97e6">
+<p>
+MagicaCloth 内部会保存初始的姿势和动画姿势。Backstop 总是会在动画姿势基础上进行计算。<br />
+</p>
+
+<p>
+但是，一些约束可以指定是基于初始姿势进行恢复，还是基于动画姿势进行恢复。这就是通过 animation posture ratio 来实现的，可以在基础面板来设置 Animation Posture Ratio。<br />
+<img src="./MagicaCloth2/anim-posture-ratio.jpg" alt="anim-posture-ratio.jpg" /><br />
+</p>
+
+<p>
+Animation Pose Ratio 的值越接近 1.0，表示恢复计算越多基于动画姿势；Animation Pose Ratio 的值越接近 0.0 表示恢复计算越多基于初始姿势进行计算。<br />
+</p>
+
+<p>
+Animation Pose Ratio=0.0，会生成一个恢复力以恢复回初始姿势<br />
+Animation Pose Ratio=1.0，会生成一个恢复力以恢复回当前动画姿势<br />
+Animation Pose Ratio 为其他值，初始姿势和前动画姿势按照 Animation Pose Ratio 比例进行混合得到新姿势，会生成一个恢复力以恢复回该新姿势。<br />
+</p>
+</div>
+<div id="outline-container-org5270000" class="outline-5">
+<h5 id="org5270000">Affected Constraints</h5>
+<div class="outline-text-5" id="text-org5270000">
+<p>
+Animation Pose Ratio 会影响如下 3 个约束:<br />
+</p>
+<ul class="org-ul">
+<li>Angle Restoration<br /></li>
+<li>Angle Limit<br /></li>
+<li>Shape Restoration<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgff43501" class="outline-5">
+<h5 id="orgff43501">Setting Guidelines</h5>
+<div class="outline-text-5" id="text-orgff43501">
+<p>
+基本上，将其保留为 0.0 就可以了。在大多数情况下，这样设置，布料的运动更加稳定。<br />
+</p>
+
+<p>
+但是如果动画姿势变形比较大，可能增加比例会更稳定。此外，如果动画姿势完全由艺术家控制，则值越高越稳定。在这种情况下，请尝试在观察运动的同时从大约 0.5 的设置进行调整。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org3c2e2a3" class="outline-4">
+<h4 id="org3c2e2a3">BoneCloth advanced settings</h4>
+<div class="outline-text-4" id="text-org3c2e2a3">
+</div>
+<div id="outline-container-org49726f1" class="outline-5">
+<h5 id="org49726f1">BoneCloth mesh connection</h5>
+<div class="outline-text-5" id="text-org49726f1">
+<p>
+BoneCloth 有一个功能可用于自动从注册的 Transforms 创建一个 mesh。使用该功能，Transforms 之间的连接会变得更强，形状保持和碰撞检测也会变得更强。因为，边是横向连接的，所以你可以通过使用 edge collision 来进一步增强碰撞检测。<br />
+</p>
+
+<p>
+可以通过下图中的选项来开启该功能，Line 为不开启，另外 3 个选项(Automatic Mesh, Sequential Loop Mesh, Sequential Non Loop Mesh)为开启：<br />
+<img src="./MagicaCloth2/param-connection.jpg" alt="param-connection.jpg" /><br />
+</p>
+
+<p>
+开启创建 Mesh 时，3种不同选项有不同的特点。<br />
+</p>
+</div>
+<div id="outline-container-orgd65a527" class="outline-6">
+<h6 id="orgd65a527">未开启创建 Mesh （line mode）</h6>
+<div class="outline-text-6" id="text-orgd65a527">
+<p>
+以下图所示的裙子为未开启创建 Mesh 的情况（即 Connection Mode 为 Line 时）：<br />
+<img src="./MagicaCloth2/param-connLine.jpg" alt="param-connLine.jpg" /><br />
+</p>
+</div>
+</div>
+<div id="outline-container-org3ef96a7" class="outline-6">
+<h6 id="org3ef96a7">automatic mesh</h6>
+<div class="outline-text-6" id="text-org3ef96a7">
+<p>
+自动连接附近的 Transforms。依赖于 Transform 的位置，该模式下生成的 mesh 形状可能并不自然。<br />
+</p>
+
+
+<div id="org4a22712" class="figure">
+<p><img src="./MagicaCloth2/param-connAutoMesh.jpg" alt="param-connAutoMesh.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org8e4c043" class="outline-6">
+<h6 id="org8e4c043">sequential loop mesh</h6>
+<div class="outline-text-6" id="text-org8e4c043">
+<p>
+按照 Root Bones 的顺序横向连接 Transforms。所以，Root Bones 的注册顺序非常重要，最后一个 Root Bone 会和第一个 Root Bone 相连形成一个循环。<br />
+</p>
+
+
+<div id="orgef5d142" class="figure">
+<p><img src="./MagicaCloth2/param-connSeqLoopMesh.jpg" alt="param-connSeqLoopMesh.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org03a61d8" class="outline-6">
+<h6 id="org03a61d8">sequential non loop mesh</h6>
+<div class="outline-text-6" id="text-org03a61d8">
+<p>
+按照 Root Bones 的顺序横向连接 Transforms。所以，Root Bones 的注册顺序非常重要，最后一个 Root Bone 不会和第一个 Root Bone 相连。<br />
+</p>
+
+
+<div id="org9aa2e67" class="figure">
+<p><img src="./MagicaCloth2/param-connSeqNonLoopMesh.jpg" alt="param-connSeqNonLoopMesh.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgbfb5f20" class="outline-5">
+<h5 id="orgbfb5f20">Transform interpolation rate</h5>
+<div class="outline-text-5" id="text-orgbfb5f20">
+<p>
+Bone Cloth 可以调整每个 Transform 的旋转姿势(rotation posture)。通过下面的选项来进行调整：<br />
+<img src="./MagicaCloth2/param-transInterpRate.jpg" alt="param-transInterpRate.jpg" /><br />
+</p>
+</div>
+<div id="outline-container-orgb170b60" class="outline-6">
+<h6 id="orgb170b60">Root Rotation</h6>
+<div class="outline-text-6" id="text-orgb170b60">
+<p>
+root rotation 用于调节固定顶点（Fixed Transform）的旋转。<br />
+0 表示保持原始姿势不进行旋转。<br />
+1 表示向子节点方向旋转，多个子节点时(Tips: 只考虑直接相连的子节点)，旋转方向会进行平均。<br />
+0.5 表示中间。<br />
+</p>
+
+
+<div id="org078a292" class="figure">
+<p><img src="./MagicaCloth2/param-transInterpRate1.jpg" alt="param-transInterpRate1.jpg" /><br />
+</p>
+</div>
+
+
+<div id="org587ec24" class="figure">
+<p><img src="./MagicaCloth2/mc2_bone_advance_G1.gif" alt="mc2_bone_advance_G1.gif" /><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orga81cea1" class="outline-6">
+<h6 id="orga81cea1">Rotational Interpolation</h6>
+<div class="outline-text-6" id="text-orga81cea1">
+<p>
+rotational interpolation 用于调节可动顶点（Movement Transform）的旋转。<br />
+0 表示向父节点方向旋转<br />
+1 表示向子节点方向旋转，多个子节点时(Tips: 只考虑直接相连的子节点)，旋转方向会进行平均。<br />
+0.5 表示中间。<br />
+</p>
+
+<p>
+末端节点没有子节点，所以末端节点永远向父节点旋转。<br />
+</p>
+
+
+<div id="org8dcd623" class="figure">
+<p><img src="./MagicaCloth2/mc2_bone_advance_G2.gif" alt="mc2_bone_advance_G2.gif" /><br />
+</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgb8b0dea" class="outline-3">
+<h3 id="orgb8b0dea">Performance</h3>
+<div class="outline-text-3" id="text-orgb8b0dea">
+</div>
+<div id="outline-container-org8ebc5c5" class="outline-4">
+<h4 id="org8ebc5c5">MagicaCloth performance dependent</h4>
+<div class="outline-text-4" id="text-org8ebc5c5">
+<p>
+MagicaCloth 使用了 Unity DOTS 技术(Data-Oriented Technology Stack 面向数据的技术栈)。因此，其完全依赖于 CPU，也就是说对 GPU 不会造成性能开销。<br />
+</p>
+
+<p>
+DOTS 支持多线程，因此，CPU 核数越多，并行执行的可能性越高，性能也就会越好。但是，在 Android 和 iPhone 设备上使用时需要倍加小心。移动平台的 CPU 通常有大核和低功耗的小核，即通常所说的大小核。例如，一个终端有 8 个核，大多数情况下，其会被分为 4 个大核和 4 个小核。Unity 只会在大核上运行 DOTS。所以，8核中只有 4 个核会被 DOTS 利用。在 PC 平台上则不会出现该问题。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgeaa5053" class="outline-4">
+<h4 id="orgeaa5053">Creation and execution of cloth data</h4>
+<div class="outline-text-4" id="text-orgeaa5053">
+<p>
+MagicaCloth 需要各种数据来执行模拟，这些数据被称为 cloth data。在运行时，会实时生成需要的 cloth data。cloth data 的创建会消耗一笔可观的计算时间，通常大概需要 20ms 到 100ms。创建 cloth data 的处理过程会在后台线程执行，所以，对主线程不会有很大影响。另外，当有多个衣服时，多个 cloth data 的创建会在多个后台线程并行执行。<br />
+</p>
+
+<p>
+衣服模拟需要等待对应的衣服数据创建完成后才能开始。所以，在角色创建到模拟开始会有几帧的延迟。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org62c45cd" class="outline-4">
+<h4 id="org62c45cd">Notes on Editor Execution</h4>
+<div class="outline-text-4" id="text-org62c45cd">
+<p>
+Magica Cloth 所使用的 Burst 和 JobSystem 在 Editor 下的执行效率比 App 版本要低。所以，editor 下 profiler 的情况和 app 下 profiler 的情况会不同。<br />
+</p>
+</div>
+
+<div id="outline-container-org1d95d5d" class="outline-5">
+<h5 id="org1d95d5d">Burst JIT Compiler</h5>
+<div class="outline-text-5" id="text-org1d95d5d">
+<p>
+在 Editor 下时，Burst 的编译是在运行时进行的(Just-In-Time Compiler)。在 Editor 环境下，第一次使用 MagicaCloth 时，编译时间会花费几百毫秒或更长时间。所以，从开始运行到开始第一次模拟会有明显的延迟。该问题只在 Editor 环境下存在，编译好的 App 版本没有该问题。<br />
+</p>
+
+<p>
+为了缓解该问题，在 PlayerSettings/Editor/EnterPlayModeSettings 处选择使用 Enter Play Mode Options，使用该选项，在 Editor 下当重复运行时，Burst 不会多次执行 JIT 编译。<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org4e79947" class="outline-5">
+<h5 id="org4e79947">JobsDebugger processing load</h5>
+<div class="outline-text-5" id="text-org4e79947">
+<p>
+在 Editor 下，JobsDebugger 会持续监听 job 的操作。这会导致 job 的执行时间比原本要长，并且在 job 之间会有空隙。如果 Editor 下性能比较差，你可以考虑在如下位置关闭 JobsDebugger:<br />
+</p>
+
+<p>
+老版本<br />
+<img src="./MagicaCloth2/job-debugger2.jpg" alt="job-debugger2.jpg" /><br />
+</p>
+
+<p>
+unity 2022.2.19f1 版本<br />
+<img src="./MagicaCloth2/job-debugger.jpg" alt="job-debugger.jpg" /><br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org214a107" class="outline-5">
+<h5 id="org214a107">SafeCheck processing load</h5>
+<div class="outline-text-5" id="text-org214a107">
+<p>
+类似地，editor 环境下，会执行 Burst 安全检测和内存泄漏检测。这也会导致 Editor 下性能较差，可以在如下位置关闭：<br />
+</p>
+
+<p>
+安全检测：<br />
+<img src="./MagicaCloth2/safe-leak-detection0.jpg" alt="safe-leak-detection0.jpg" /><br />
+内存泄漏检测：<br />
+<img src="./MagicaCloth2/safe-leak-detection1.jpg" alt="safe-leak-detection1.jpg" /><br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgf66b949" class="outline-5">
+<h5 id="orgf66b949">Errors will no langer be reported</h5>
+<div class="outline-text-5" id="text-orgf66b949">
+<p>
+关闭上面提到的检查后，会导致错误不再被提示。所以，程序开发人员应该在开发阶段在自己设备上打开这些检查，以发现和修正错误。其他角色可以关闭这些检查，以提升开发效率。测试性能时，应该以编译的 app 版本为准。<br />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org1bd7cf4" class="outline-4">
+<h4 id="org1bd7cf4">List of processing loads</h4>
+<div class="outline-text-4" id="text-org1bd7cf4">
+<p>
+下面列出 MagicaCloth 不同功能的性能消耗指数，星级越高性能消耗越大：<br />
+</p>
+</div>
+
+<div id="outline-container-orgb901e36" class="outline-5">
+<h5 id="orgb901e36">Cloth type</h5>
+<div class="outline-text-5" id="text-orgb901e36">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">&#xa0;</th>
+<th scope="col" class="org-left">&#xa0;</th>
+<th scope="col" class="org-left">&#xa0;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">MeshCloth</td>
+<td class="org-left">4 星</td>
+<td class="org-left">MeshCloth 比 BoneCloth 消耗要高很多，因为除了模拟之外，它还涉及 proxy mesh 蒙皮和写回渲染网格。</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">因此，移动设备使用该功能时，需要注意性能问题</td>
+</tr>
+
+<tr>
+<td class="org-left">BoneCloth</td>
+<td class="org-left">1 星</td>
+<td class="org-left">BoneCloht 性能消耗比较低。</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">该功能通常不会导致性能问题</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div id="outline-container-orgb1755b2" class="outline-5">
+<h5 id="orgb1755b2">Collision processing</h5>
+<div class="outline-text-5" id="text-orgb1755b2">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">&#xa0;</th>
+<th scope="col" class="org-left">&#xa0;</th>
+<th scope="col" class="org-left">&#xa0;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">Self Collision</td>
+<td class="org-left">10 星</td>
+<td class="org-left">自碰撞是所有功能中性能消耗最高的功能。</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">该功能基本上是为具有大量 CPU 内核的桌面 PC 所设计的。</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">如果在移动设备上使用，请尽可能减少代理网格中的顶点数量并密切关注性能</td>
+</tr>
+
+<tr>
+<td class="org-left">Mutual Collision</td>
+<td class="org-left">8 星</td>
+<td class="org-left">相互碰撞比自碰撞性能消耗稍微低一些，因为它只确定与对方碰撞</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">但是，整个处理过程和自碰撞并没有什么不同，所以仍然需要密切注意性能问题</td>
+</tr>
+
+<tr>
+<td class="org-left">Edge Collision</td>
+<td class="org-left">4 星</td>
+<td class="org-left">边缘碰撞比点碰撞性能消耗要高几倍</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">你应该只有在点碰撞出现问题时再尝试使用边缘碰撞</td>
+</tr>
+
+<tr>
+<td class="org-left">Point Collision</td>
+<td class="org-left">2 星</td>
+<td class="org-left">和上面几种碰撞相比，该技术性能消耗低很多</td>
+</tr>
+
+<tr>
+<td class="org-left">Backstop</td>
+<td class="org-left">1 星</td>
+<td class="org-left">Backstop 的处理负载最低，因为它只需要很少的计算。可以放心使用。</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org3283f86" class="outline-3">
+<h3 id="org3283f86">UseCase</h3>
+<div class="outline-text-3" id="text-org3283f86">
+</div>
+<div id="outline-container-org1861239" class="outline-4">
+<h4 id="org1861239">Runtime Construction</h4>
+<div class="outline-text-4" id="text-org1861239">
+<p>
+MagicaCloth2 支持运行时构建。具体实现可以参考 RuntimeBuild Demo 场景。<br />
+</p>
+</div>
+<div id="outline-container-orga91172d" class="outline-5">
+<h5 id="orga91172d">Construction procedure</h5>
+<div class="outline-text-5" id="text-orga91172d">
+<p>
+构建过程分为如下 3 步：<br />
+</p>
+<ol class="org-ol">
+<li>生成 MagicaCloth 组件<br /></li>
+<li>设置参数<br /></li>
+<li>开始创建和运行 cloth data<br /></li>
+</ol>
+</div>
+<div id="outline-container-org1571fc0" class="outline-6">
+<h6 id="org1571fc0">Vertex paint settings</h6>
+<div class="outline-text-6" id="text-org1571fc0">
+<p>
+在 Editor 下，可以使用 vertex paint 特性来手动为每个顶点设置属性。但是，在运行时，不可以使用该方法。因此，在运行时，MeshCloth 会需要使用预先准备的 paint map 来设置顶点属性。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org837cd82" class="outline-6">
+<h6 id="org837cd82">Runtime delay</h6>
+<div class="outline-text-6" id="text-org837cd82">
+<p>
+MagicaCloth2 在运行时，构建 cloth data。会在后台线程执行构建，所以对主线程影响不大。但是，构建操作会花费几帧时间，所以从开始构建到真正开始模拟有几帧延迟。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf77af2d" class="outline-5">
+<h5 id="orgf77af2d">Example</h5>
+<div class="outline-text-5" id="text-orgf77af2d">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #9f8766;">/// </span><span style="color: #a45bad;">&lt;summary&gt;</span>
+<span style="color: #9f8766;">/// BoneCloth construction example (1).</span>
+<span style="color: #9f8766;">/// Set all parameters from a script.</span>
+<span style="color: #9f8766;">/// </span><span style="color: #a45bad;">&lt;/summary&gt;</span>
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">SetupHairTail_BoneCloth</span>()
+{
+    <span style="color: #4f97d7; font-weight: bold;">if</span> (character == <span style="color: #a45bad;">null</span>)
+        <span style="color: #4f97d7; font-weight: bold;">return</span>;
+
+    <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">obj</span> = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">GameObject</span>(<span style="color: #2d9574;">"HairTail_BoneCloth"</span>);
+    obj.transform.<span style="color: #bc6ec5; font-weight: bold;">SetParent</span>(character.transform, <span style="color: #a45bad;">false</span>);
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">add Magica Cloth</span>
+    <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">cloth</span> = obj.<span style="color: #bc6ec5; font-weight: bold;">AddComponent</span>&lt;<span style="color: #ce537a; font-weight: bold;">MagicaCloth</span>&gt;();
+    <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">sdata</span> = cloth.SerializeData;
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">bone cloth</span>
+    sdata.clothType = ClothProcess.ClothType.BoneCloth;
+    sdata.rootBones.<span style="color: #bc6ec5; font-weight: bold;">Add</span>(gameObjectContainer.<span style="color: #bc6ec5; font-weight: bold;">GetGameObject</span>(<span style="color: #2d9574;">"J_L_HairTail_00_B"</span>).transform);
+    sdata.rootBones.<span style="color: #bc6ec5; font-weight: bold;">Add</span>(gameObjectContainer.<span style="color: #bc6ec5; font-weight: bold;">GetGameObject</span>(<span style="color: #2d9574;">"J_R_HairTail_00_B"</span>).transform);
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">setup parameters</span>
+    sdata.gravity = 3.0f;
+    sdata.damping.<span style="color: #bc6ec5; font-weight: bold;">SetValue</span>(0.05f);
+    sdata.angleRestorationConstraint.stiffness.<span style="color: #bc6ec5; font-weight: bold;">SetValue</span>(0.15f, 1.0f, 0.15f, <span style="color: #a45bad;">true</span>);
+    sdata.angleRestorationConstraint.velocityAttenuation = 0.6f;
+    sdata.tetherConstraint.distanceCompression = 0.5f;
+    sdata.inertiaConstraint.particleSpeedLimit.<span style="color: #bc6ec5; font-weight: bold;">SetValue</span>(<span style="color: #a45bad;">true</span>, 3.0f);
+    sdata.colliderCollisionConstraint.mode = ColliderCollisionConstraint.Mode.None;
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">start build</span>
+    cloth.<span style="color: #bc6ec5; font-weight: bold;">BuildAndRun</span>();
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgb4f771a" class="outline-4">
+<h4 id="orgb4f771a">Runtime Changes</h4>
+<div class="outline-text-4" id="text-orgb4f771a">
+<p>
+MagicCloth2 支持在运行时修改参数。<br />
+</p>
+</div>
+<div id="outline-container-orgd62b842" class="outline-5">
+<h5 id="orgd62b842">Change procedure</h5>
+<div class="outline-text-5" id="text-orgd62b842">
+<p>
+修改过程分为如下 3 步：<br />
+</p>
+<ol class="org-ol">
+<li>从 MagicaCloth 组件获取 SerializeData<br /></li>
+<li>修改 SerializeData<br /></li>
+<li>调用 MagicaCloth 组件的 SetParameterChange 方法，通知系统参数发生变更<br /></li>
+</ol>
+
+<p>
+Tips:<br />
+并非所有参数都可以被修改，源代码中使用注释标记了哪些参数可以被修改，哪些参数支持通过 Presets 来导入导出<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #9f8766;">/// [</span><span style="color: #7590db;">OK</span><span style="color: #9f8766;">] Runtime changes.</span>
+<span style="color: #9f8766;">/// [</span><span style="color: #7590db;">NG</span><span style="color: #9f8766;">] Export/Import with Presets</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org95abab0" class="outline-5">
+<h5 id="org95abab0">Example</h5>
+<div class="outline-text-5" id="text-org95abab0">
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">MagicaCloth2</span>;
+<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">UnityEngine</span>;
+
+<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">RuntimeParameterTest</span> : <span style="color: #ce537a; font-weight: bold;">MonoBehaviour</span>
+{
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">MagicaCloth</span> <span style="color: #7590db;">cloth</span>;
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">ColliderComponent</span> <span style="color: #7590db;">col</span>;
+
+    <span style="color: #ce537a; font-weight: bold;">bool</span> <span style="color: #7590db;">sw</span> = <span style="color: #a45bad;">false</span>;
+
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Start</span>()
+    {
+
+    }
+
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Update</span>()
+    {
+        <span style="color: #4f97d7; font-weight: bold;">if</span> (cloth == <span style="color: #a45bad;">null</span> || col == <span style="color: #a45bad;">null</span>)
+            <span style="color: #4f97d7; font-weight: bold;">return</span>;
+
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Check if MagicaCloth is running</span>
+        <span style="color: #4f97d7; font-weight: bold;">if</span> (cloth.<span style="color: #bc6ec5; font-weight: bold;">IsValid</span>() == <span style="color: #a45bad;">false</span>)
+            <span style="color: #4f97d7; font-weight: bold;">return</span>;
+
+        <span style="color: #4f97d7; font-weight: bold;">if</span> (Time.frameCount % 100 == 0)
+        {
+            sw = <span style="color: #a45bad;">!</span>sw;
+            <span style="color: #bc6ec5; font-weight: bold;">UpdateParameter</span>();
+        }
+    }
+
+    <span style="color: #9f8766;">/// </span><span style="color: #a45bad;">&lt;summary&gt;</span>
+    <span style="color: #9f8766;">/// Parameter change.</span>
+    <span style="color: #9f8766;">/// </span><span style="color: #a45bad;">&lt;/summary&gt;</span>
+    <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">UpdateParameter</span>()
+    {
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">It manages all parameters that cloth.SerializeData can change at runtime.</span>
+        <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">sdata</span> = cloth.SerializeData;
+        <span style="color: #4f97d7; font-weight: bold;">if</span> (sw)
+        {
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">add collider.</span>
+            sdata.colliderCollisionConstraint.colliderList.<span style="color: #bc6ec5; font-weight: bold;">Add</span>(col);
+
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">gravity on</span>
+            sdata.gravity = 5.0f;
+        }
+        <span style="color: #4f97d7; font-weight: bold;">else</span>
+        {
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">remove collider</span>
+            sdata.colliderCollisionConstraint.colliderList.<span style="color: #bc6ec5; font-weight: bold;">Remove</span>(col);
+
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">gravity off</span>
+            sdata.gravity = 0.0f;
+        }
+
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">change notification</span>
+        cloth.<span style="color: #bc6ec5; font-weight: bold;">SetParameterChange</span>();
+    }
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org152f436" class="outline-4">
+<h4 id="org152f436">Dress-up process</h4>
+<div class="outline-text-4" id="text-org152f436">
+<p>
+MagicaCloth 换装支持。具体实现可以参考 RuntimeDressUp Demo 场景。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgdee597c" class="outline-3">
+<h3 id="orgdee597c">Source Code</h3>
+<div class="outline-text-3" id="text-orgdee597c">
+</div>
+<div id="outline-container-org9b44dcc" class="outline-4">
+<h4 id="org9b44dcc">MagicaCloth 的物理模拟是如何驱动的？</h4>
+<div class="outline-text-4" id="text-org9b44dcc">
+<p>
+MagicaManager 通过 PlayerLoopSystem 和 PlayerLoop 来触发自身的 UpdateMethod。<br />
+在 MagicaManger.cs SetCustomGameLoop 函数中向 PlayerLoopSystem 注入自身的 UpdateMethod。<br />
+在 ClothManager.cs Initialize 函数中注册具体的更新函数。<br />
+</p>
+
+<ul class="org-ul">
+<li><a href="https://docs.unity3d.com/ScriptReference/LowLevel.PlayerLoop.html">https://docs.unity3d.com/ScriptReference/LowLevel.PlayerLoop.html</a><br /></li>
+<li><a href="https://docs.unity3d.com/ScriptReference/LowLevel.PlayerLoopSystem.html">https://docs.unity3d.com/ScriptReference/LowLevel.PlayerLoopSystem.html</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org06b53f8" class="outline-4">
+<h4 id="org06b53f8">MagicaCloth 运动模拟算法是什么？</h4>
+<div class="outline-text-4" id="text-org06b53f8">
+<p>
+magica cloth 采用了半隐式积分法(Leapfrog 方法)来进行质点运动模拟。<br />
+具体实现在 SimulationManager.cs StartSimulationStepJob。<br />
+</p>
+
+<ul class="org-ul">
+<li><a href="https://en.wikipedia.org/wiki/Leapfrog_integration">https://en.wikipedia.org/wiki/Leapfrog_integration</a><br /></li>
+</ul>
+</div>
+<div id="outline-container-org486e337" class="outline-5">
+<h5 id="org486e337">如何指定每帧迭代次数?</h5>
+<div class="outline-text-5" id="text-org486e337">
+<p>
+总结：<br />
+1 指定每秒迭代次数 90 次（即 simulationDeltaTime = 0.01111）<br />
+2 指定单次更新的最大迭代次数为 3 次 (refDeltaTime = simulationDeltaTime *3=0.03333)<br />
+3 当渲染频率为 30FPS 时，(deltaTime = min(deltaTime, refDeltaTime)) = refDeltaTime = deltaTime<br />
+   迭代次数为 deltaTime / simulationDeltaTime = 3,  一个渲染帧内迭代次数 = 3，迭代频率 = 90FPS<br />
+3 当渲染帧率小于 30FPS 时 (deltaTime = min(deltaTime, refDeltaTime)) = refDeltaTime<br />
+   迭代次数为 deltaTime / simulationDeltaTime = 3，一个渲染帧内迭代次数 = 3,  迭代频率 &lt; 90FPS<br />
+4 当渲染帧率大于 30FPS 时 (deltaTime = min(deltaTime, refDeltaTime)) = deltaTime)<br />
+   迭代次数为 deltaTime / simulationDeltaTime &lt; 3，一个渲染帧内迭代次数 &lt; 3，迭代频率 &gt; 45FPS<br />
+</p>
+</div>
+
+<div id="outline-container-orgd3e1472" class="outline-6">
+<h6 id="orgd3e1472">Update Mode</h6>
+<div class="outline-text-6" id="text-orgd3e1472">
+<p>
+MagicaCloth 支持三种更新模式，不同模式只是影响 deltaTime 的计算<br />
+</p>
+<ol class="org-ol">
+<li>Normal          deltaTime = Time.deltaTime，更新频率 = MonoBehavior.Update 更新频率 * Time.timeScale<br /></li>
+<li>UnityPhysics    deltaTime = Time.fixedDeltaTime，更新频率 = MonoBehavior.FixedUpdate 更新频率 * Time.timeScale<br /></li>
+<li>Unscaled        deltaTime = Time.unscaledDeltaTime，和 MonoBehavior 的 Update 方法更新频率相同<br /></li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgcd0109d" class="outline-4">
+<h4 id="orgcd0109d">MagicaCloth 碰撞处理算法是什么？</h4>
+<div class="outline-text-4" id="text-orgcd0109d">
+<p>
+具体实现在 ColliderManager.cs StartSimulationStepJob。<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org26035f3" class="outline-4">
+<h4 id="org26035f3">MagicaCloth 网格简化算法, 以及简化后执行的操作？</h4>
+<div class="outline-text-4" id="text-org26035f3">
+<p>
+没有使用很复杂的简化算法。<br />
+</p>
+</div>
+<div id="outline-container-orgc448bb0" class="outline-5">
+<h5 id="orgc448bb0">简化算法</h5>
+<div class="outline-text-5" id="text-orgc448bb0">
+</div>
+<div id="outline-container-org28d976b" class="outline-6">
+<h6 id="org28d976b">SameDistanceReduction</h6>
+<div class="outline-text-6" id="text-org28d976b">
+<p>
+该网格简化算法修改了 VirtualMesh 的如下数据：<br />
+</p>
+<ul class="org-ul">
+<li>vmesh.boneWeights<br /></li>
+<li>vmesh.attributes<br /></li>
+<li>vmesh.localNormals<br /></li>
+</ul>
+
+<pre class="example" id="org4c337f0">
+- 首先，确定算法输入参数
+  - maxSideLength = boundingBox.Value.MaxSideLength
+  - arg: sameDistance = maxSideLength * saturate(Define.System.ReductionSameDistance=0.001)
+- 其次，利用 proxy mesh 的顶点建立 GridMap 结构。（可指定 Box 区域和 Sphere 区域来返回区域内的顶点）
+  - src: InitGridJob()
+  - gride size 按照如下方法计算
+    - GridSize = mergeLength * 2.0f;
+    - mergeLength = sameDistance
+    - maxSideLength = boundingBox.Value.MaxSideLength
+- 然后，遍历 proxy mesh 的每个顶点，对于单个顶点，遍历它所属的所有 grid，遍历该 grid 内的所有顶点，判断顶点和当前处理顶点的距离。
+  - src: SearchJoinJob()
+  - 若距离小于 mergeLength，则将顶点对&lt;curV, tmpV&gt;记录到 joinPairSet 中
+- 然后，遍历joinPairSet。用 curV 代替 tmpV，从而实现顶点的合并。并更新 vertexToVertexMap、boneWeights、attributes 存储的数据
+  - src: JoinJob()
+  - joinIndices[tmpV]=curV 表示tmpV 融合到curV。
+  - vertexToVertexMap 记录了顶点到顶点列表的映射，顶点列表中包含与该顶点相连的所有顶点。
+  	- Tips: 双向连接，若1号顶点连接了2好顶点，则2号顶点也会连接1好顶点
+  - 被消除顶点的 weight 会叠加到合并的顶点上(只会叠加骨骼相同的权重)。还会按照新的权重重新降序排列
+  - 消除后的顶点对应的 attributes 被标记为 VertexAttribute.Invalid
+- 然后，更新顶点融合信息和 Link 信息。被删除的顶点其 joinIndex 指向最终生存下来的顶点。生存下来的顶点和生存下来的顶点相连
+  - src: UpdateJoinAndLink() -&gt; UpdateJoinIndexJob(), UpdateLinkIndexJob()
+  - joinIndices 记录了顶点的融合信息
+  - vertexToVertexMap 记录的就是顶点之间的 Link 信息
+- 最后，执行法线单位化，并调整骨骼权重，使得权重和为 1
+  - src: UpdateReductionResultJob() -&gt; FinalMergeVertexJob()
+</pre>
+</div>
+</div>
+<div id="outline-container-org74c018f" class="outline-6">
+<h6 id="org74c018f">SimpleDistanceReduction</h6>
+<div class="outline-text-6" id="text-org74c018f">
+<p>
+该方法是一个迭代方法，会多次迭代执行简化操作。SimpleDistanceReduction 派生自 StepReductionBase。<br />
+该网格简化算法修改了 VirtualMesh 的如下数据：<br />
+</p>
+<ul class="org-ul">
+<li>vmesh.boneWeights<br /></li>
+<li>vmesh.attributes<br /></li>
+<li>vmesh.localPositions<br /></li>
+<li>vmesh.localNormals<br /></li>
+</ul>
+<pre class="example" id="org0f452f8">
+- 首先，确定算法输入参数
+  - maxSideLength = boundingBox.Value.MaxSideLength
+  - sameDistance = maxSideLength * saturate(Define.System.ReductionSameDistance)
+  - simpleDistance = maxSideLength * saturate(settings.simpleDistance)
+  - shapeDistance = maxSideLength * saturate(settings.shapeDistance)
+  - arg: startMergeLength = min(sameDistance*2.0, simpleDistance)
+  - arg: endMergeLength = simpleDistance
+  - arg: maxStep = Define.System.ReductionMaxStep = 100
+  - arg: dontMakeLine = Define.System.ReductionDontMakeLine = True
+  - arg: joinPositionAdjustment = Define.System.ReductionJoinPositionAdjustment = 1
+- 其次，循环执行迭代处理。这里只描述单次迭代涉及的操作。
+  - 首先，利用 proxy mesh 的顶点建立 GridMap 结构
+    - src: InitGridJob()
+    - gride size 按照如下方法计算
+      - GridSize = nowMergeLength * 2.0f;
+      - init: nowMergeLength = startMergeLength
+      - next: nowMergeLength = min(nowMergeLength * noewStepScale, endMergeLength)
+  - 其次，遍历 proxy mesh 的每个顶点，对于单个顶点，遍历它所属的所有 grid，遍历该 grid 内的所有顶点，判断顶点和当前处理顶点的距离。
+    - src: SearchJoinEdgeJob()
+    - 若距离小于等于 nowMergeLength, 计算 curV 顶点所连顶点的个数 linkCount, 计算 tmpV 顶点所连顶点的个数 tlinkCount，使用 linkCount 和 tlinkCount 计算 cost。
+      - cost = dist * (1.0f + (linkCount + tlinkCount) / 2.0f);
+    - 将顶点对&lt;curV, tmpV&gt; 和 cost 记录到 joinEdgeList
+  - 然后，对 joinEdgeList 按照 cost 升序进行排序
+    - src: SortJoinEdge()
+  - 然后，遍历 joinEdgeList, 将顶点对添加到 removePairList
+    - src: DeterminJoinEdgeJob()
+  - 然后，遍历 removePairList, 将 curV 合并到 tmpV，并更新 vertexToVertexMap、boneWeights、attributes 存储的数据
+    - src: JoinPairJob()
+    - 根据 curV 和 tmpV 的位置和法线计算合并后顶点的位置、法线
+      - 根据每个顶点的连接数计算合并顶点位置使用的插值系数（连接数越多，移动越少）
+	  - 被消除顶点的 weight 会叠加到合并的顶点上(只会叠加骨骼相同的权重)
+  - 然后，更新顶点信息和 Link 信息。被删除的顶点其 joinIndex 指向最终生存下来的顶点。生存下来的顶点和生存下来的顶点相连
+    - src: UpdateJoinAndLink() -&gt; UpdateJoinIndexJob(), UpdateLinkIndexJob()
+- 最后，执行法线单位化，并调整骨骼权重，使得权重和为 1
+  - src: UpdateReductionResultJob() -&gt; FinalMergeVertexJob()
+</pre>
+</div>
+</div>
+<div id="outline-container-org6edad0a" class="outline-6">
+<h6 id="org6edad0a">ShapeDistanceReduction</h6>
+<div class="outline-text-6" id="text-org6edad0a">
+<p>
+该方法是一个迭代方法，会多次迭代执行简化操作。SimpleDistanceReduction 派生自 StepReductionBase。其处理逻辑和 SimpleDistanceReduction 整体上都一样，只是自定义了 SearchJoinEdgeJob 的实现。<br />
+</p>
+
+<p>
+该网格简化算法修改了 VirtualMesh 的如下数据：<br />
+</p>
+<ul class="org-ul">
+<li>vmesh.boneWeights<br /></li>
+<li>vmesh.attributes<br /></li>
+<li>vmesh.localPositions<br /></li>
+<li>vmesh.localNormals<br /></li>
+</ul>
+<pre class="example" id="org4c7f09f">
+- 首先，确定算法输入参数
+  - maxSideLength = boundingBox.Value.MaxSideLength
+  - shapeDistance = maxSideLength * saturate(settings.shapeDistance)
+  - arg: startMergeLength = min(max(sameDistance*2.0, simpleDistance), shapeDistance)
+  - arg: endMergeLength = simpleDistance
+  - arg: maxStep = Define.System.ReductionMaxStep = 100
+  - arg: dontMakeLine = Define.System.ReductionDontMakeLine = True
+  - arg: joinPositionAdjustment = Define.System.ReductionJoinPositionAdjustment = 1
+- 其次，循环执行迭代处理。这里只详细描述 SearchJoinEdgeJob。
+  - 首先，遍历 proxy mesh 的每个顶点，对于单个顶点，遍历它连接的所有顶点，判断顶点和当前处理顶点的距离。
+    - src: ShapeDistanceReduction::SearchJoinEdgeJob()
+    - 判断是否可以将 curV 和 tmpV 合并
+      - 将 curV 和 tmpV 所连接的顶点放入 joinVlink 列表中
+      - 若 joinVlink 为空，说明 curV 和 tmpV 是孤立于 mesh 的一条线，不能合并
+      - 从 joinVlink 取出 0 号元素放入 stack 中，循环处理 stack 中元素，直到 stack 为空
+        - 执行 stack pop, 若 joinVlink 不包含出栈元素，则继续下一次循环
+        - joinVlink 删除出栈元素
+        - 遍历出栈元素连接的所有顶点，joinVlink 包含该顶点，则将顶点入栈
+      - 若 joinVlink 长度大于 0，则不能合并
+    - 若距离小于等于 nowMergeLength, 计算 curV 顶点所连顶点的个数 linkCount, 计算 tmpV 顶点所连顶点的个数 tlinkCount，使用 linkCount 和 tlinkCount 计算 cost。记录 minCost（最小的 cost）及其对应的顶点
+      - cost = dist * (1.0f + (linkCount + tlinkCount) / 2.0f)
+    - 将顶点对&lt;curV, tmpMinCostV&gt; 和 minCost 记录到 joinEdgeList
+  - 然后，对 joinEdgeList 按照 cost 升序进行排序
+    - src: SortJoinEdge()
+  - 然后，遍历 joinEdgeList, 将顶点对添加到 removePairList
+    - src: DeterminJoinEdgeJob()
+  - 然后，遍历 removePairList, 将 curV 合并到 tmpV，并更新 vertexToVertexMap、boneWeights、attributes 存储的数据
+    - src: JoinPairJob()
+  - 然后，更新顶点信息和 Link 信息。被删除的顶点其 joinIndex 指向最终生存下来的顶点。生存下来的顶点和生存下来的顶点相连
+    - src: UpdateJoinAndLink() -&gt; UpdateJoinIndexJob(), UpdateLinkIndexJob()
+- 最后，执行法线单位化，并调整骨骼权重，使得权重和为 1
+  - src: UpdateReductionResultJob() -&gt; FinalMergeVertexJob()
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org29fab28" class="outline-5">
+<h5 id="org29fab28">简化后执行的操作</h5>
+<div class="outline-text-5" id="text-org29fab28">
+</div>
+<div id="outline-container-org022dd03" class="outline-6">
+<h6 id="org022dd03">Organization(settings, workData)</h6>
+<div class="outline-text-6" id="text-org022dd03">
+<p>
+对简化后的 mesh 数据进行重新的组织<br />
+</p>
+<ul class="org-ul">
+<li>1. 创建一些数据结构用于对简化后 Mesh 数据进行从新组织<br /></li>
+<li>2. 创建重映射数据<br />
+<ul class="org-ul">
+<li>a. 创建原始顶点到存活顶点的重映射（remap）<br />
+<ul class="org-ul">
+<li>vertexRemapIndices 记录了该重映射，数组索引为原始顶点索引，数组值为存活顶点索引<br /></li>
+<li>存活的顶点按照从 0 开始编号，逐一映射<br /></li>
+<li>删除的顶点先通过 joinIndices（融合信息）找到，其对应的存活节点，再找到该存活节点对应的新索引，然后删除节点映射为该新索引<br /></li>
+</ul></li>
+<li>b. 创建蒙皮骨骼重映射数据<br />
+<ul class="org-ul">
+<li>收集存活顶点使用的旧骨骼索引<br /></li>
+<li>创建新的蒙皮骨骼列表和 bindpose 列表<br /></li>
+</ul></li>
+</ul></li>
+<li>3. 组织新的基础顶点数据<br />
+<ul class="org-ul">
+<li>a. 创建新的 attributes localPositions localNormals localTangents<br /></li>
+<li>b. 计算新的 uv（请注意，这些 uv 用于切线计算，而不是纹理！）<br /></li>
+<li>c. 创建新的 boneWeights<br /></li>
+<li>d. 为新顶点创建连接的顶点列表<br /></li>
+</ul></li>
+<li>4. 组织新的边、三角形数据<br />
+<ul class="org-ul">
+<li>a. 从新的顶点连接信息创建边集<br /></li>
+<li>b. 从边集创建线列表和三角形集<br /></li>
+<li>c. 从三角形集创建三角形列表<br /></li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orga475116" class="outline-6">
+<h6 id="orga475116">OrganizeStoreVirtualMesh(workData)</h6>
+<div class="outline-text-6" id="text-orga475116">
+<p>
+将组织后的 mesh 数据存储回 VirtualMesh<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#32034;&#24341;&#25968;&#25454;</span>
+referenceIndices.<span style="color: #bc6ec5; font-weight: bold;">Dispose</span>();
+referenceIndices = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">ExSimpleNativeArray</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt;(vcnt);
+JobUtility.<span style="color: #bc6ec5; font-weight: bold;">SerialNumberRun</span>(referenceIndices.<span style="color: #bc6ec5; font-weight: bold;">GetNativeArray</span>(), vcnt);
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">attribute</span>
+attributes.<span style="color: #bc6ec5; font-weight: bold;">Dispose</span>();
+attributes = workData.newAttributes;
+workData.newAttributes = <span style="color: #a45bad;">null</span>;
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">positin</span>
+localPositions.<span style="color: #bc6ec5; font-weight: bold;">Dispose</span>();
+localPositions = workData.newLocalPositions;
+workData.newLocalPositions = <span style="color: #a45bad;">null</span>;
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">normal</span>
+localNormals.<span style="color: #bc6ec5; font-weight: bold;">Dispose</span>();
+localNormals = workData.newLocalNormals;
+workData.newLocalNormals = <span style="color: #a45bad;">null</span>;
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">tangent</span>
+localTangents.<span style="color: #bc6ec5; font-weight: bold;">Dispose</span>();
+localTangents = workData.newLocalTangents;
+workData.newLocalTangents = <span style="color: #a45bad;">null</span>;
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">uv</span>
+uv.<span style="color: #bc6ec5; font-weight: bold;">Dispose</span>();
+uv = workData.newUv;
+workData.newUv = <span style="color: #a45bad;">null</span>;
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">bone weight</span>
+boneWeights.<span style="color: #bc6ec5; font-weight: bold;">Dispose</span>();
+boneWeights = workData.newBoneWeights;
+workData.newBoneWeights = <span style="color: #a45bad;">null</span>;
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">line</span>
+lines.<span style="color: #bc6ec5; font-weight: bold;">Dispose</span>();
+lines = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">ExSimpleNativeArray</span>&lt;int2&gt;(workData.newLineList);
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">triangle</span>
+triangles.<span style="color: #bc6ec5; font-weight: bold;">Dispose</span>();
+triangles = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">ExSimpleNativeArray</span>&lt;int3&gt;(workData.newTriangleList);
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">transform</span>
+transformData.<span style="color: #bc6ec5; font-weight: bold;">OrganizeReductionTransform</span>(<span style="color: #4f97d7; font-weight: bold;">this</span>, workData);
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">skin bone index</span>
+skinBoneTransformIndices.<span style="color: #bc6ec5; font-weight: bold;">Dispose</span>();
+skinBoneTransformIndices = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">ExSimpleNativeArray</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt;(workData.newSkinBoneTransformIndices);
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">skin bone bind pose</span>
+skinBoneBindPoses.<span style="color: #bc6ec5; font-weight: bold;">Dispose</span>();
+skinBoneBindPoses = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">ExSimpleNativeArray</span>&lt;float4x4&gt;(workData.newSkinBoneBindPoseList);
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#39030;&#28857;&#37325;&#26144;&#23556;&#25968;&#25454;</span>
+joinIndices = <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">NativeArray</span>&lt;<span style="color: #ce537a; font-weight: bold;">int</span>&gt;(workData.vertexRemapIndices, Allocator.Persistent);
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc433af7" class="outline-6">
+<h6 id="orgc433af7">CalcAverageAndMaxVertexDistanceRun()</h6>
+<div class="outline-text-6" id="text-orgc433af7">
+<p>
+重新计算顶点平均距离和最大距离<br />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org439b9e7" class="outline-4">
+<h4 id="org439b9e7">MagicaCloth RenderingMesh 如何映射到 ProxyMesh ?</h4>
+<div class="outline-text-4" id="text-org439b9e7">
+</div>
+<div id="outline-container-org039b715" class="outline-5">
+<h5 id="org039b715">直接映射</h5>
+<div class="outline-text-5" id="text-org039b715">
+<p>
+简单来说，MagicaCloth 将 ProxyMesh 的顶点作为骨骼，通过 ProxyMesh 顶点到 RenderingMesh 顶点的距离来计算 ProxyMesh 顶点的权重。利用类似于骨骼动画的方式来实现 ProxyMesh 和 RenderingMesh 的映射。<br />
+</p>
+
+<p>
+直接映射分下面两步进行。<br />
+</p>
+</div>
+<div id="outline-container-orga569927" class="outline-6">
+<h6 id="orga569927">Mapping_DirectConnectionVertexDataJob</h6>
+<div class="outline-text-6" id="text-orga569927">
+<p>
+该步骤修改了 VirtualMesh (rendering mesh) 的如下数据：<br />
+</p>
+<ul class="org-ul">
+<li>vmesh.attributes<br /></li>
+</ul>
+
+<pre class="example" id="org9165bf9">
+- 遍历 rendering mesh 的每个顶点
+  - 获取 rendering 顶点对应的 proxy 顶点索引
+  - 根据 proxy 顶点 attributes 更新 rendering 顶点 attributes
+    - Invalid Move Fixed
+  - 为每个 rendering 顶点创建一个 MappingWorkData
+  	- MappingWorkData.position 		    记录rendering mesh顶点的位置（ProxyMesh空间下）
+      - MappingWorkData.vertexIndex 	    记录 rendering mesh 顶点的索引
+      - MappingWorkData.proxyVertexIndex  记录 proxy mesh 顶点索引
+      - proxyVertexDistance               记录rendering mesh 顶点和proxy mesh顶点的距离
+</pre>
+</div>
+</div>
+<div id="outline-container-org174179c" class="outline-6">
+<h6 id="org174179c">Mapping_CalcDirectWeightJob</h6>
+<div class="outline-text-6" id="text-org174179c">
+<p>
+该步骤修改了 VirtualMesh (rendering mesh) 的如下数据：<br />
+</p>
+<ul class="org-ul">
+<li>vmesh.boneWeights<br /></li>
+
+<li>首先，确定输入参数<br />
+<ul class="org-ul">
+<li>arg:weightLength = avgDist * 1.5f   // weightLength 为 proxy mesh 平均顶点距离的 1.5 倍<br /></li>
+</ul></li>
+<li>遍历 rendering mesh 的每个顶点，利用栈来循环处理 rendering mesh 顶点对应的 proxy mesh 顶点<br />
+<ul class="org-ul">
+<li>先将 rVertex 对应的 pVertex 放入 stack 中<br /></li>
+<li>计算 rVertex 和 pVertex 之间的距离 dist<br />
+<ul class="org-ul">
+<li>若距离大于 weightLength 则开始下一次循环<br /></li>
+<li>根据 dist 计算 pVertex 对 rVertex 的权重 w=Pow(Clamp01((1.0f - dist / weightLength) + 0.001f), 3.0)<br /></li>
+<li>将 w 记录到 weights 中<br /></li>
+</ul></li>
+<li>根据 proxyVertexToVertexIndexArray 数据得到 pVertex 相连的其他 pVertices，遍历相连的其他 pVertex<br />
+<ul class="org-ul">
+<li>计算 rVertex 和 curPVertex 之间的距离 dist<br /></li>
+<li>若距离大于 weightLength 则开始处理下一个 pVertex<br /></li>
+<li>将 curPVertex 放入 stack 中<br /></li>
+</ul></li>
+<li>若 weights 中没有记录权重，则为默认连接的 pVertex 分配 100% 的权重。否则，执行 weights 归一化<br /></li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgddbdf19" class="outline-5">
+<h5 id="orgddbdf19">搜索映射</h5>
+<div class="outline-text-5" id="text-orgddbdf19">
+<p>
+搜索映射中，不考虑 RenderingMesh 顶点和 ProxyMesh 顶点之间的连接关系。直接搜索 RenderingMesh 顶点一定范围内的所有 ProxyMesh 顶点。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org73116f8" class="outline-4">
+<h4 id="org73116f8">Q&amp;A</h4>
+<div class="outline-text-4" id="text-org73116f8">
+</div>
+<div id="outline-container-org01a2856" class="outline-5">
+<h5 id="org01a2856">VirtualMesh 的几种 MeshType 分别表示什么？</h5>
+<div class="outline-text-5" id="text-org01a2856">
+<p>
+VirtualMesh 的 Mesh Type 有如下几种：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">enum</span> <span style="color: #ce537a; font-weight: bold;">MeshType</span>
+{
+    <span style="color: #7590db;">NormalMesh</span> = 0,
+    <span style="color: #7590db;">NormalBoneMesh</span> = 1,
+    <span style="color: #7590db;">ProxyMesh</span> = 2,
+    <span style="color: #7590db;">ProxyBoneMesh</span> = 3,
+    <span style="color: #7590db;">Mapping</span> = 4,
+}
+</pre>
+</div>
+
+<p>
+MagicaCloth 使用 VirtualMesh 表示 proxy mesh 和 rendering mesh。MeshType 会根据不同用途和不同执行阶段不断变化。具体变化过程如下：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#21019;&#24314; proxyMesh</span>
+proxyMesh=<span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">VirtualMesh</span>(<span style="color: #2d9574;">"Proxy"</span>); <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#40664;&#35748;meshType=NormalMesh</span>
+
+<span style="color: #4f97d7; font-weight: bold;">if</span>(MeshCloth) <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">MeshCloth</span>
+{
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#20351;&#29992; VirtualMesh &#35760;&#24405;Rendering Mesh&#20449;&#24687;</span>
+    renderMesh=<span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">VirtualMesh</span>(<span style="color: #2d9574;">"renderData.Name"</span>); <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#40664;&#35748;meshType=NormalMesh</span>
+    renderMesh.<span style="color: #bc6ec5; font-weight: bold;">ImportFrom</span>(<span style="color: #ce537a; font-weight: bold;">RenderData</span> <span style="color: #7590db;">renderData</span>);  <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">meshType=NormalMesh</span>
+}
+
+<span style="color: #4f97d7; font-weight: bold;">if</span>(BoneCloth) <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">BoneCloth</span>
+{
+    proxyMesh.<span style="color: #bc6ec5; font-weight: bold;">ImportFrom</span>(<span style="color: #ce537a; font-weight: bold;">RenderSetupData</span> <span style="color: #7590db;">boneClothSetupData</span>) <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">meshType=NormalBoneMesh</span>
+}
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#36716;&#21270;&#20026; proxyMesh</span>
+<span style="color: #9f8766;">//// BoneCloth meshType=ProxyBoneMesh</span>
+<span style="color: #9f8766;">//// MeshCloth meshType=ProxyMesh</span>
+proxyMesh.<span style="color: #bc6ec5; font-weight: bold;">ConvertProxyMesh</span>(sdata, clothTransformRecord, customSkinningBoneRecords, normalAdjustmentTransformRecord)
+
+<span style="color: #4f97d7; font-weight: bold;">if</span>(MeshCloth) <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">MeshCloth</span>
+{
+    renderMesh.<span style="color: #bc6ec5; font-weight: bold;">Mapping</span>(proxyMesh) <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">meshType=Mapping</span>
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgcb4d402" class="outline-5">
+<h5 id="orgcb4d402">物理模拟的顶点是 proxy mesh 的顶点还是 baseline 的顶点？</h5>
+<div class="outline-text-5" id="text-orgcb4d402">
+<p>
+物理模拟的顶点是 proxy mesh 的顶点，proxy mesh 对应的类是 VirtualMesh。baseline 用于计算惯性。<br />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org7493489" class="outline-3">
+<h3 id="org7493489">参考资料</h3>
+<div class="outline-text-3" id="text-org7493489">
+<ul class="org-ul">
+<li>官网 <a href="https://magicasoft.jp/en/">https://magicasoft.jp/en/</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<div id="vssue"></div>
+        <link rel="stylesheet" href="https://unpkg.com/vssue/dist/vssue.min.css">
+        <script src="https://unpkg.com/vue@2.7.10/dist/vue.runtime.min.js"></script>
+        <script src="https://unpkg.com/vssue/dist/vssue.github.min.js"></script>
+        <script>
+          new Vue({
+            el: '#vssue',
+            render: h => h('Vssue', {
+              props: {
+                // 在这里设置当前页面对应的 Issue 标题
+                title: 'MagicaCloth2',
+
+                // 在这里设置你使用的平台的 OAuth App 配置
+                options: {
+                    owner: 'wolfand11',
+                    repo: 'blog_comments',
+                    clientId: 'a02b49185d85859cb92c',
+                    clientSecret: '6f123085c6f1ce339e2517d24e5b099fa1dc9c85', // 只有在使用某些平台时需要
+                },
+              }
+            })
+          })
+        </script>
+</div>
+</body>
+</html>

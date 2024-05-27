@@ -1,0 +1,792 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2024-05-27 Mon 14:37 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HypeHypeMobileRenderingArchitecture</title>
+<meta name="generator" content="Org Mode" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+         <meta name="viewport" content="width=device-width, initial-scale=1" />
+         <link rel="stylesheet" title="Standard" href="https://wolfand11.github.io/res/worg_theme/css/worg.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.github.io/res/worg_theme/css/worg-zenburn.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.github.io/res/worg_theme/css/worg-classic.css" type="text/css" />
+         <link rel="icon" href="https://wolfand11.github.io/res/favicon.ico" type="image/ico" />
+         <script type="text/javascript" src="https://wolfand11.github.io/res/blog-tools.js"></script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href=""> UP </a>
+ |
+ <a accesskey="H" href="https://wolfand11.github.io"> HOME </a>
+</div><div id="content" class="content">
+<h1 class="title">HypeHypeMobileRenderingArchitecture</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#org07732ef">HypeHypeMobileRenderingArchitecture</a>
+<ul>
+<li><a href="#org6be22f9">API Design</a>
+<ul>
+<li><a href="#org429f4d0">What is HypeHype</a></li>
+<li><a href="#org6da8d5b">Target Hardware</a></li>
+<li><a href="#org4beee14">Visual Target</a></li>
+<li><a href="#org74bdece">Mainstream Phones vs XBox 360(and XBox One)</a></li>
+<li><a href="#orgd58fe77">GPU-driven renderering on Mainstream Phones</a></li>
+<li><a href="#orge45151d">Roadmap for Renderer Rewrite</a></li>
+<li><a href="#org61c5d2e">The correct platform abstraction level</a></li>
+<li><a href="#orgf69580d">Out Solution:Minimal Platform Abstraction</a></li>
+<li><a href="#org7712d8a">Platform API Design Goals</a></li>
+<li><a href="#orgb2872be">Best Process for Hight-Performance API Design</a></li>
+<li><a href="#orgb848648">Our Solution:Iterative API Design Process</a></li>
+<li><a href="#org8fcda7b">Process Things at the Right Frequency</a></li>
+<li><a href="#orgdea05e5">Our Solution: Seperate Data Modification from Drawing</a></li>
+</ul>
+</li>
+<li><a href="#org7009481">API Implementation</a>
+<ul>
+<li><a href="#org2d54f3b">Fast &amp; Safe Object Storage &amp; Lifetime Tracing</a></li>
+<li><a href="#org6f1d677">Generational Pools and Handles</a></li>
+<li><a href="#org59dbaec">Hot vs Cold Data</a></li>
+<li><a href="#org46f7f9d">Fast &amp; Clean C++20 API For Resource Construction</a></li>
+<li><a href="#orgc347e32">Resource Constructon Examples</a></li>
+<li><a href="#orgbf67944">Efficient GPU Memory Allocation</a>
+<ul>
+<li><a href="#org24e33b2">Two Level Segregated Fit</a></li>
+</ul>
+</li>
+<li><a href="#org9e633ba">Bind Groups: Exposed to User Land</a></li>
+<li><a href="#org1174e85">Software Command Buffer, But 10x+ faster</a></li>
+<li><a href="#org2b79030">Draw Streams:Data Interface for Draw Calls</a></li>
+<li><a href="#orgcf43153">Draw Call Performance</a>
+<ul>
+<li><a href="#org9addcd9">Baseline(Worst Case)</a></li>
+<li><a href="#orgb6fbebe">Bump Alloc + Offset Bind</a></li>
+<li><a href="#org391a6f1">Pack Meshes</a></li>
+<li><a href="#org1730c9d">BaseInstance(FAILED)</a></li>
+<li><a href="#org7ad45df">Performance Number</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org1920a40">References</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<p>
+HypeHypeMobileRenderingArchitecture note.<br />
+</p>
+<div class="HTML" id="orgc0c696c">
+<p>
+&lt;!&#x2013; more &#x2013;&gt;<br />
+</p>
+
+</div>
+
+<div id="outline-container-org07732ef" class="outline-2">
+<h2 id="org07732ef">HypeHypeMobileRenderingArchitecture</h2>
+<div class="outline-text-2" id="text-org07732ef">
+</div>
+<div id="outline-container-org6be22f9" class="outline-3">
+<h3 id="org6be22f9">API Design</h3>
+<div class="outline-text-3" id="text-org6be22f9">
+</div>
+<div id="outline-container-org429f4d0" class="outline-4">
+<h4 id="org429f4d0">What is HypeHype</h4>
+<div class="outline-text-4" id="text-org429f4d0">
+<p>
+Hype Hype 是一个移动游戏开发平台。直接在移动平台上制作，并将游戏发布到我们的云服务器上。<br />
+</p>
+
+<p>
+玩家使用类似 TikTok 风格的方式来浏览游戏。这些游戏都是即时加载的，这是一个重大的技术挑战。为了减小初始二进制文件的大小，我们以高度压缩的形式存储数据，并依赖于流式加载。<br />
+</p>
+
+<p>
+HypeHype 支持多达 8 人同时进行多人游戏。一旦我们的云游戏服务器基础设施部署完成，多人游戏功能和参与玩家数量将在未来增加。<br />
+</p>
+
+<p>
+我们的移动应用内集成了一个功能全面的游戏编辑器。使用可视化脚本系统编写游戏逻辑。玩家可以观看创作者制作游戏的过程，而且多个创作者能够实时协作共同创作游戏。这有点像游戏创作领域的 Google Docs。测试游玩即刻进行，所有观众都能作为玩家加入多人测试环节，这极大地加快了迭代速度。<br />
+</p>
+
+<p>
+我们当然也配备了一整套社交功能，包括聊天、排行榜、回放等功能。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org6da8d5b" class="outline-4">
+<h4 id="org6da8d5b">Target Hardware</h4>
+<div class="outline-text-4" id="text-org6da8d5b">
+<p>
+HypeHype 主要面向手机和平板设备，但我们也提供了网页客户端以及适用于 PC 和 Mac 的原生应用程序。<br />
+</p>
+
+<p>
+我在育碧有主机开发的背景，因此我喜欢将移动设备与过去的主机世代进行比较，以便更好地理解它们。<br />
+如今，Xbox 360 和 PS3 在 GPU 性能上相当于中低端移动设备。这是个极好的消息，因为这些主机迄今为止在各主机世代间提供了我们所见过的最显著的视觉飞跃：我们首次获得了高清输出分辨率(HD output resolution)，并且能够实现真正的 HDR 光照管线、基于物理的材质模型及图像后期处理。如今，所有这些都在主流移动设备上成为可能。并且我们可以通过升级技术将其缩减至低端设备上每秒 30 帧的表现水平。<br />
+</p>
+
+<p>
+当你观察高端市场时，会发现最新的价值 1000 美元以上的手机已经达到了 Xbox One 和 PS4 的性能水平。然而，这些手机运行在更高的原始分辨率下，并受到散热限制(thermally constrained)，因此实际上，在真实的游戏中，我们在移动设备上还无法完全达到那一世代的视觉保真度。而且我们也不希望这样去做，因为那会让设备发热并在几个小时内迅速耗尽电池。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org4beee14" class="outline-4">
+<h4 id="org4beee14">Visual Target</h4>
+<div class="outline-text-4" id="text-org4beee14">
+<p>
+HypeHype 游戏此前一直局限于较为简单的视觉效果：采用风格化且无纹理的物体、基本的伽马空间照明以及视野距离较短的小型场景。这对于简单的超休闲游戏而言已经足够。<br />
+然而，这对平台而言是一个较大的限制，因此一年前我们开始从头构建一个新的渲染器。新渲染器的视觉保真度目标是对标最佳的 Xbox 360 和 PS3 游戏。我们将引入完整的 PBR（基于物理的渲染）流程，搭配现代光照、阴影处理及后期处理技术。我们的目标是支持更大的游戏世界和更远的绘制距离，以便在平台上更好地构建更多类型的游戏。<br />
+</p>
+
+<p>
+当然，所有这些改进都很吸引人，但我们必须非常注意这些新改进带来的性能成本。我们仍然希望 HypeHype 游戏能够在中端移动设备上以稳定的 60 帧每秒运行，同时不使设备过热降频(without throttling the devices)。这是我们高度关注的问题，也是我们在新渲染架构中着重强调性能优化的主要原因。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org74bdece" class="outline-4">
+<h4 id="org74bdece">Mainstream Phones vs XBox 360(and XBox One)</h4>
+<div class="outline-text-4" id="text-org74bdece">
+<p>
+如果你将当前主流手机与 Xbox 360 进行对比，你会发现它们之间存在许多相似之处。<br />
+</p>
+
+<p>
+两种设计都采用了较慢的共享主内存，带宽成为了主要的限制因素。同时，两者也都采取了减少内存带宽使用的技术。其中最重要的一项技术是在芯片上存储渲染目标。Xbox 360 拥有 10MB 的 EDRAM 缓冲区用于整个渲染目标，而手机则配备了较小的 on-chip tile memory。这两种技术解决了类似的问题：overdraw 不需要额外的内存带宽，并且 Z 缓冲和混合操作完全在芯片上完成。在手机上，你还拥有帧缓冲取回功能，能够无需通过内存往返即可从同一渲染目标位置加载前一像素。更新的 Xbox One 主机也配备了读写 ESRAM，允许进行类似的优化。<br />
+</p>
+
+<p>
+由于主内存速度较慢，应尽可能避免解析渲染目标(resoloving render targets)，尽量减少渲染通道的数量。同时进行多项操作是实现良好性能的关键。现代手机还具备帧缓冲压缩功能，以减少渲染目标解析和采样的带宽成本。这是一个有益的补充，但并未完全解决问题。ASTC 纹理压缩技术也很有帮助，相比当年的 DXT5，它提供了更好的质量和更小的占用空间。<br />
+</p>
+
+<p>
+移动设备还具备双速率的半浮点(fp16)数学运算能力。这一点很有帮助，因为在带宽受限的设备上，我们不希望依赖于内存查找。现在，还有了更好的低精度高动态范围(HDR)帧缓冲格式可用。<br />
+</p>
+
+<p>
+但一些旧有的限制仍然存在：移动设备的图形处理器仍然围绕统一缓冲区(uniform buffers)设计，从动态地址加载 Shader Storage Buffer Objects (SSBOs)仍然缓慢。如果你能将内存访问模式标量化（即避免复杂的向量操作），就会达到性能的最佳状态。这限制了我们能够高效实现的算法种类。此外，许多移动设备将顶点变化量(vertex varyings)写入主内存，这会消耗大量的宝贵带宽。因此，优化 varyings 的大小是这些设备上实现良好性能的关键。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgd58fe77" class="outline-4">
+<h4 id="orgd58fe77">GPU-driven renderering on Mainstream Phones</h4>
+<div class="outline-text-4" id="text-orgd58fe77">
+<p>
+早在 8 年前的 SIGGRAPH 会议上，我就已经开始讨论 GPU 驱动的渲染器了，当时我们介绍的核心理念如聚类渲染(clustered rendering)和两遍遮挡剔除(two-pass occlusion culling)，如今已成为实质上的标准。<br />
+</p>
+
+<p>
+最近，Epic 的 Nanite 将 GPU 驱动的渲染技术带给了主流用户。他们结合 V-Buffer、材质分类、分析导数和软件光栅化技术，使得 GPU 驱动的渲染足以适应通用引擎的需求。<br />
+</p>
+
+<p>
+然而，在主流移动 GPU 上，GPU 驱动渲染仍存在许多未解决的性能问题。<br />
+</p>
+
+<p>
+移动 GPU 尚未针对 SSBO 加载进行优化。AMD 和 Nvidia 在几代产品之前添加光线追踪功能时优化了他们的数据路径。光线追踪的访问模式是动态的，不能再依赖于用于顶点属性的微小片上缓冲。我们仍需等待具有类似优化的移动 GPU 成为主流。<br />
+V-Buffer 要求每个像素运行三次顶点着色器，并且这包括获取这三个顶点的所有顶点属性。还需要从动态位置获取所有实例数据和材质数据。这意味着像素着色器中有多达 20 次非统一内存加载。移动芯片并不是为这类内存密集型工作负载设计的。<br />
+</p>
+
+<p>
+目前没有移动 GPU 支持针对计算着色器写入的帧缓冲压缩。计算着色器是实现延迟 V-缓冲着色中全屏材质 Passes 最有效的方式。如果在移动平台上这样做，会浪费大量带宽。<br />
+软件光栅化器中常使用 64 位原子操作。您将 Z 值打包到高位，而将有效载荷(payload)放在低位，然后由原子操作解决最近的表面。移动 GPU 不支持 64 位原子操作。SampleGrad 指令同样运行缓慢，大约是 1/8 速率甚至更慢。这使得使用分析导数(analytic gradients)的延迟纹理映射成本相当高。而且，它们对 wave 内置函数的支持参差不齐，在某些低端设备上甚至有模拟的组共享内存。<br />
+</p>
+
+<p>
+因此，传统的基于 CPU 的渲染至今仍是当今主流手机的最佳选择。在过去，我们能够在 Xbox 360 上以每秒 60 帧的速度处理 10,000 次绘图调用。为了在今天的移动设备上达到这一目标，我们需要编写高度优化的渲染代码。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orge45151d" class="outline-4">
+<h4 id="orge45151d">Roadmap for Renderer Rewrite</h4>
+<div class="outline-text-4" id="text-orge45151d">
+<p>
+让我们来讨论一下我们的路线图。<br />
+</p>
+
+<p>
+我们将渲染器重写分为两个阶段。首先，我们重写了底层图形 API 及所有特定于平台的后端代码。为了并行运行旧后端和新后端，我们引入了一个带有条件编译指令的最小化封装层(wrapper)，这样我们就可以继续发布旧的渲染代码，并在新旧之间切换以比较它们。我们已经删除了 200 个旧渲染代码文件，并且最近开始拆除封装层，代之以直接调用新的平台 API。<br />
+</p>
+
+<p>
+本次演示将重点介绍底层平台 API 及后端部分。稍后，我将谈论我们新的高层渲染代码。我们的设计允许我们完全独立地重构这些部分。在演示的后续部分，我将回到这个话题。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org61c5d2e" class="outline-4">
+<h4 id="org61c5d2e">The correct platform abstraction level</h4>
+<div class="outline-text-4" id="text-org61c5d2e">
+<p>
+我们首先需要决定的是平台抽象层次。哪些代码是特定于平台的，哪些代码是平台无关的。<br />
+</p>
+
+<p>
+游戏引擎通常将特定于平台的代码限制在堆栈的最低层，以此来最小化特定于平台的代码量，并降低实施和维护成本。然而，某些引擎和渲染器特有的内容往往会渗透到最低级别的平台代码中。<br />
+</p>
+
+<p>
+如果观察移动应用，特定于平台的代码往往会在堆栈的较高层级出现。例如，广受欢迎的 Google Flutter 应用框架就是由多个特定于平台的团队开发的。他们通常先在移动设备上发布新功能，之后再推广至桌面平台。Android 和 iOS 之间也没有完全的功能对等。他们在桌面和移动平台上（包括 Mac 和 iOS，尽管两者都使用相同的 Metal API）的高层渲染代码也是不同的。<br />
+</p>
+
+<p>
+许多移动应用甚至将代码分离得更高。通常会有专门负责 iOS 和 Android 的团队，各自拥有独立的代码库。这些应用中的大部分业务逻辑倾向于在云端服务器上运行，当然，这部分是由第三方团队共享和维护的。<br />
+</p>
+
+<p>
+HypeHype 是一个实时游戏引擎，所以我们当然需要将所有世界状态都保留在本地。游戏必须在所有设备上运行一致，跨设备游玩也必须在所有设备上实现。旧版 HypeHype 图形代码库中有为 Metal 重复编写的着色器，以及一些较高层级的重复代码。这导致测试矩阵膨胀，增加了维护成本，并使添加新功能变得缓慢。这是我首先想要解决的问题。目标是将平台 API 设置得比现有游戏引擎级别更低。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgf69580d" class="outline-4">
+<h4 id="orgf69580d">Out Solution:Minimal Platform Abstraction</h4>
+<div class="outline-text-4" id="text-orgf69580d">
+<p>
+我们希望尽可能减少特定于平台的代码量。这导致我们设计出一种紧密包装现有底层图形 API 的方式。<br />
+</p>
+
+<p>
+设计工作开始于对照 Vulkan、Metal 和 WebGPU 的文档进行交叉参考。我已经熟悉所有这些 API，这使得工作更加轻松且不易出错。<br />
+</p>
+
+<p>
+编写包装器时，你首先需要找到一套通用的功能集。这些通常很容易进行包装。困难出现在 API 设计差异之处。必须谨慎处理这些差异，以性能最优的方式进行抽象。我们选择使用 Metal 2.0，因为它更接近 Vulkan 和 WebGPU，并提供了放置堆、参数缓冲区和手动栅栏，这也能让我们从 Apple 设备中提取更多的性能。我们同时也支持 MoltenVK 以简化跨平台开发，但由于我们的 Metal 2.0 后端在 CPU 性能上大约快 40%，因此我们并未实际部署它。<br />
+</p>
+
+<p>
+为了使 API 更加紧凑，我们去除了所有已不再使用的过时内容。这些尝试在性能上并未达到我们的预期，因此被废弃。顶点缓冲区是一个有趣的话题。在育碧，我们在 8 年前的 GPU 驱动渲染器中就已经废弃了顶点缓冲区。但在 HypeHype 中，我们仍然支持顶点缓冲区，因为某些移动 GPU 的着色器编译器能为它们生成更优的代码。另外，由于 WebGPU 的普及程度尚不够，我们的网页客户端仍在使用 WebGL2。我可能会在未来几年内从 API 中移除顶点缓冲区。<br />
+</p>
+
+<p>
+对于技术美术的生产力而言，单一的着色器集至关重要。我们使用现代开源工具，如 SPIRV-Cross，将着色器交叉编译到所有目标平台上。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org7712d8a" class="outline-4">
+<h4 id="org7712d8a">Platform API Design Goals</h4>
+<div class="outline-text-4" id="text-org7712d8a">
+<p>
+让我们谈谈这个新平台 API 的设计目标。<br />
+</p>
+
+<p>
+首先，我们希望它成为一个独立的库。该库的设计和维护要独立于 HypeHype 引擎之外，并且需要有一个稳定、不经常变动的 API。<br />
+</p>
+
+<p>
+在我的职业生涯中，我见过很多图形平台抽象，其中大多数抽象的问题在于用户层面的概念渗透到了硬件 API 中。在平台代码中包含网格（mesh）和材质（material）是最常见的问题。这是有问题的，因为网格和材质都存在变化的压力。网格体（meshlets）和无绑定纹理（bindless textures）代表未来趋势，我们不希望承诺某种特定的呈现方式。网格可以简单地表示为一个索引缓冲绑定加上 N 个顶点缓冲绑定，而材质可以表示为一个包含多个纹理描述符和一个用于存储值数据的缓冲区的绑定组。<br />
+</p>
+
+<p>
+一开始自动处理 uniform（统一变量）可能感觉是个好主意，但最终当你想添加像几何实例化（geometry instancing）这样的功能时，就需要重构后端代码来改变数据布局。或者更糟糕的是，为了提高效率添加新的快速路径，从而复杂化了 API。最终，你还会为 GPU 驱动的渲染添加一个新的快速路径，进一步膨胀了 API。在我们的设计中，用户层面的代码负责设置所有数据！<br />
+</p>
+
+<p>
+零额外的 API 开销是我们另一个至关重要的设计核心原则。平台接口不应增加显著的成本，使用起来应该像 DX11 一样简单，但效率始终等同于手写优化的 DX12。错误的解决方案是原样复制 DX11 API。这样会导致你在代码库中模拟 DX11 驱动程序，而且请放心，Nvidia 和 AMD 在这方面做得比你的团队更好。因此，你的现代后端实际上比 DX11 更慢。造成这种情况的原因在于输入粒度过细、渲染状态粒度过细、存在大量阴影状态和数据复制。管道状态对象（PSO Pipeline State Object）和渲染状态（render state）的跟踪及缓存是性能的一大损耗，而缓慢的软件命令缓冲设计通常会进一步增加成本。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgb2872be" class="outline-4">
+<h4 id="orgb2872be">Best Process for Hight-Performance API Design</h4>
+<div class="outline-text-4" id="text-orgb2872be">
+<p>
+因此，我们的 API 有着非常严格的性能标准，但同时我们又希望它像 DX11 一样易于使用。我们如何实现这一目标呢？<br />
+</p>
+
+<p>
+我们需要一个良好的 API 设计流程。<br />
+</p>
+
+<p>
+传统的方法是花费数月时间研究 API 文档，撰写一份详尽的技术设计文档，详细描述新 API，并将其拆分成任务，为每个后端估计每个任务的实施时间。<br />
+</p>
+
+<p>
+这种方法的问题在于，你过早地锁定了设计，之后很难进行更改。在特定于平台的图形代码中，小而具体的细节非常重要。如果不编写任何代码，你实际上无法真正理解所有边缘情况的性能影响。而现在，当有很多生产就绪代码编写完成时，你才会注意到这些问题。在这个阶段，很难证明对计划和代码进行全面重写是合理的。<br />
+</p>
+
+<p>
+敏捷测试驱动开发则有相反的问题。你专注于接下来冲刺所需的内容。你实现小块独立的代码，这些代码具有完整的测试覆盖。假设一旦将这些部分组合在一起，你就有了良好的架构。但实际上，你甚至没有做任何架构设计。更多的部分意味着更多的接口，意味着更多的通信开销。采用这种编程实践很难达到最佳性能。而且，一旦你意识到架构需要大修才能满足性能目标，要丢弃大量具有完整测试覆盖、消耗了大量故事点的生产就绪代码就更加困难了。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgb848648" class="outline-4">
+<h4 id="orgb848648">Our Solution:Iterative API Design Process</h4>
+<div class="outline-text-4" id="text-orgb848648">
+<p>
+为解决这个问题，我们采取的高度迭代的设计流程如下：<br />
+</p>
+
+<p>
+首先，我开始编写模拟的用户层面代码。利用我的先前专业知识，我开始编写理想的图形代码，假设我拥有完美的 API。这个 API 还不存在，但我持续编写模拟代码，直到我对它满意为止。我编写创建渲染所需的所有资源的代码，包括纹理、着色器、缓冲区等，然后使用这些资源编写一个小型的绘制循环。绘制循环会被多次调用，并对某些资源进行修改以实现动画效果。早期设计动态和静态数据路径是很重要的。<br />
+</p>
+
+<p>
+一旦我对第一版用户层面的代码感到满意，我会为其编写一个模拟的平台 API。这时，它只是一个空壳 API，没有后端实现。但它让我能够开始利用编译器进行语法检查和自动补全。现在我可以真正开始试验 API，感受其使用的便捷性。当我发现哪怕是最细微的改进需求时，我也会不断重构代码。我会添加遗漏的模拟用例，并查阅 Vulkan、Metal 和 WebGPU 的 API 文档，确保我没有遗漏任何重要事项。<br />
+</p>
+
+<p>
+随后，我会对所有用户层面的代码进行性能检查。由于我对所有平台 API 的工作原理有很好的了解，我能预估在 Vulkan、Metal 和 WebGPU 后端中，每个 API 调用可能需要什么样的实现。如果实现很简单，那没问题；但如果实现需要额外的数据复制、哈希映射查找、内存分配或其他昂贵操作，那么我会废弃那个设计，并重写这部分 API 以提高效率。记住，我们的目标是在每一种情况下都能达到手工优化的 DX12 那样的速度。如果我们的 API 不能完美映射到底层硬件 API 上，我们就无法实现这一目标。<br />
+</p>
+
+<p>
+一旦我们对模拟代码的性能感到满意，就开始实现后端。在此过程中，我们会注意到之前遗漏的一些具体细节，并立即对模拟代码和模拟 API 进行重构。此时我们还不编写大型的测试套件，因为那样会减慢我们的迭代速度。相反，我们依赖 Vulkan 和 Metal 的验证层来免费为我们提供数千个测试案例。我们将验证层的错误回调挂钩到自动化测试中，确保我们在重构代码时其功能保持正常。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org8fcda7b" class="outline-4">
+<h4 id="org8fcda7b">Process Things at the Right Frequency</h4>
+<div class="outline-text-4" id="text-org8fcda7b">
+<p>
+今天我想讨论的关于 API 设计的最后一个主题是，在正确的频率和粒度上执行操作。<br />
+</p>
+
+<p>
+渲染代码中一个常见的大问题是，昂贵的操作往往以过高的频率执行，这也会给热绘制循环增加跟踪成本。游戏中存在大量的时间连贯性——你加载游戏世界，并在每一帧中缓慢地改变它。大多数数据都保持不变，同时，相机大部分时间也在缓慢移动。人类的大脑需要帧间的时间连贯性来感知平滑的运动。这对我们来说是个好消息！我们要利用这一点！<br />
+</p>
+
+<p>
+让我们看看所有发生的事务：游戏世界的加载及所有着色器 PSOs（Pipeline State Objects，管线状态对象）的设置在一开始完成。如果你的游戏关卡较大，当你四处移动时，还会加载纹理、网格和材质。大多数对象在一开始就生成了，但关卡的部分区域可能在流式加载过程中生成，敌人、战利品、弹丸等的生成一般伴随了整个游戏过程，但并不是每一帧都有很多。唯一真正的高频操作是对所有对象进行剔除并绘制可见对象。剔除和绘制循环是你整个代码库中时间敏感度最高的循环。<br />
+</p>
+
+<p>
+我已经用红色标出了问题情况。人们倾向于在他们的热绘制循环内部处理与这些相关的内容。<br />
+</p>
+
+<p>
+修改材质绑定并不常见。你多久更换一次已加载材质的法线贴图？你多久更改一次用于渲染对象的着色器？你多久更改一次用于渲染对象的渲染状态？除了某些特殊效果外，几乎从不。而对象颜色和对象变换的动画则是更常见的操作。只有一小部分对象每一帧都会进行动画。我们只想在这些事情发生时支付计算成本，而不是为每一次绘制调用都支付。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgdea05e5" class="outline-4">
+<h4 id="orgdea05e5">Our Solution: Seperate Data Modification from Drawing</h4>
+<div class="outline-text-4" id="text-orgdea05e5">
+<p>
+为了解决这个问题，我们的方案是完全将所有数据修改与绘制分离。所有数据在绘制循环开始前就已准备就绪。<br />
+</p>
+
+<p>
+管线状态对象（PSO）应该在应用程序启动或关卡加载时构建。在运行时构建 PSO 会导致卡顿。根据我们的理念，着色器变体由程序员和技术美术师编写并手动优化，它们的数量是有限的。这类似于 id-Software 的做法，能提供非常好的性能表现。<br />
+</p>
+
+<p>
+我们将 PSO 句柄直接存储在每个对象的视觉组件中，这样就不需要每帧都通过哈希映射查找来获取它。<br />
+</p>
+
+<p>
+我们预先创建所有的绑定组（描述集 descriptor sets）。材质描述集包含了它们的所有纹理和用于存储值数据的缓冲区。我们将材质绑定组句柄同样存储在对象的视觉组件中，这样就避免了哈希映射查找，并使得仅通过一条 Vulkan、Metal 或 WebGPU 命令就能高效地更改材质绑定成为可能。<br />
+</p>
+
+<p>
+区分持久数据和动态数据很重要。持久数据在启动时上传，并在变更时进行增量更新。两年前在 REAC 2021 会议上，我曾就此话题做过演讲。如果你想了解更多相关信息，可以参考那份演讲资料。<br />
+</p>
+
+<p>
+动态数据应当每个 pass 批量上传一次，而非每次绘制调用，使用映射/取消映射操作来上传数据。全局数据应与每绘制数据分开，以最小化浪费的带宽成本。<br />
+</p>
+
+<p>
+资源同步是许多引擎中的一个重大 CPU 开销。我们当前的解决方案很简单：当渲染遍历开始时，我们将渲染目标过渡到可写布局；在渲染遍历结束时，再将其过渡回采样纹理布局。这样一来，所有纹理（静态和动态的）始终处于采样器可读取的布局中。我们完全不需要针对每条绘制调用进行资源跟踪，这节省了大量的 CPU 周期。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org7009481" class="outline-3">
+<h3 id="org7009481">API Implementation</h3>
+<div class="outline-text-3" id="text-org7009481">
+</div>
+<div id="outline-container-org2d54f3b" class="outline-4">
+<h4 id="org2d54f3b">Fast &amp; Safe Object Storage &amp; Lifetime Tracing</h4>
+<div class="outline-text-4" id="text-org2d54f3b">
+<p>
+现在我们准备讨论实现的具体细节。<br />
+</p>
+
+<p>
+渲染器需要纹理、缓冲区、着色器以及其它多种资源对象。我们需要一种良好的方式来存储这些对象，并确保它们的安全使用。<br />
+</p>
+
+<p>
+现代 C++实践建议使用智能指针、引用计数及 RAII（资源获取即初始化）原则。<br />
+</p>
+
+<p>
+坦率地说，对于我们的需求而言，这些方法过于低效。引用计数的智能指针将引用的生命周期与底层内存绑定在一起，导致了大量的小规模内存分配。在当前高度多线程系统中，内存分配成本高昂。分配的内存也随机分布在系统内存中，这恶化了数据访问模式，增加了缓存未命中。在多线程系统中，复制引用计数的智能指针需要两个原子操作（加、减）。所有权可能在多个线程间共享。<br />
+</p>
+
+<p>
+此外，还存在安全性问题。引用计数使对象的生命周期变得模糊，难以推理。它可能在任何线程中被销毁。RAII 类型的对象如监听器会导致析构函数产生副作用。例如：对象的引用计数在另一个线程中运行，而监听器的析构函数将其从数组中注销。同时，另一个线程正在遍历该数组，可能导致崩溃！为了避免这种崩溃，你需要用互斥锁保护部分析构函数。这意味着每次删除对象时都需要锁定互斥锁，这是非常昂贵的操作。HypeHype 在动态加载和卸载游戏时速度很快，我们无法承受缓慢的加载和清理代码！<br />
+</p>
+
+<p>
+我们解决这个问题（以及大多数其他问题）的方法是使用数组！<br />
+</p>
+
+<p>
+有一个大的分配块，包含同一类型的所有对象。数组索引出乎意料地成为一个很好的数据句柄。如果我有一个纹理数组，我可以简单地请求索引为 4 的纹理。索引是 POD（Plain Old Data，普通旧数据）类型的数据，易于复制和传递。我也可以安全地将其传递给工作线程。只要那个线程没有访问数组的权限，它们就不能用索引来做什么危险的事情。这使我们能够在没有安全顾虑的情况下编写剔除和绘制流生成任务。这些线程简单地从一个地方获取数组索引并将它们组合成绘制调用，完全不需要访问数据数组。<br />
+</p>
+
+<p>
+但这里有一个关键缺陷：数组索引并不能保证对象的生命周期。我们当然会在数据数组中重用槽位。数据可能已经销毁且槽位被重新使用&#x2026;<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org6f1d677" class="outline-4">
+<h4 id="org6f1d677">Generational Pools and Handles</h4>
+<div class="outline-text-4" id="text-org6f1d677">
+<p>
+为了解决这一问题，我们需要用带有代际标记的句柄来替换数组索引。下面我们就来探讨这意味着什么。<br />
+</p>
+
+<p>
+池类似于我们的数据数组，它是一个含有特定类型对象的数组，但现在还附加了一个代际计数器数组。代际计数器表示该槽位已被重用了多少次。当该槽位中的当前数据被释放时，计数器就会增加。<br />
+</p>
+
+<p>
+池中还有一个空闲列表。空闲列表实质上是一个线性数组，包含了每个空闲槽位的索引，它遵循栈的语义。当你分配新对象时，就从顶部弹出一个空闲索引；当你删除对象时，就将释放的槽位索引推送到空闲列表的顶部。这些都是快速的 O(1)操作。当空闲列表耗尽时，我们会将池的大小翻倍。这样做是安全的，因为不允许任何人直接持有指向数组中数据的指针引用。所有引用都通过句柄完成。<br />
+</p>
+
+<p>
+句柄只是一个 POD（Plain Old Data）结构体。它像之前幻灯片中那样包含数组索引，但现在旁边还附加了代际计数器。总长度为 32 位（比如 16+16 位分割）或 64 位（32+32 位），具体取决于你需要同时激活的资源数量以及对象生命周期的长短。在 HypeHype 中，我们对所有图形资源使用 32 位（16+16）的句柄，这对于每种特定类型有 65536 个资源来说已经足够。<br />
+</p>
+
+<p>
+池提供了一个获取 API，该 API 将句柄作为参数。它读取池中代际计数器数组中句柄索引处的值，并将其与句柄本身的代际计数器进行比较。如果两者匹配，你就能够获得数据；如果不匹配，则返回空指针。<br />
+</p>
+
+<p>
+这样就实现了弱引用语义。使用过期的句柄是完全安全的，你只会得到一个空指针。空指针检查在现代 CPU 上几乎不消耗成本，因为它是可预测的分支操作。分支预测仅在句柄被删除时失败一次，在那一刻你也会自行清理。弱引用导致的编码实践不再需要回调。在多线程系统中为了避免竞态条件，回调通常需要缓冲(buffering)或互斥锁(mutexes)。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org59dbaec" class="outline-4">
+<h4 id="org59dbaec">Hot vs Cold Data</h4>
+<div class="outline-text-4" id="text-org59dbaec">
+<p>
+我们的主要目标之一是让 API 使用起来尽可能像 DX11 那样简单。这就要求我们在池中的数据结构中捆绑辅助数据。在 Vulkan 中，VkTexture 句柄本身并不知道任何关于自身的信息，如果你尝试用纯 Vulkan 编写渲染代码，这会很烦人。我们希望纹理结构体能知道自己的尺寸、格式、用于写入的数据指针、用于删除它的分配器等信息。<br />
+</p>
+
+<p>
+这些辅助数据对于低频任务如修改资源和删除资源是必需的。由于我们的设计原则是将资源修改与绘图操作分开，所以我们只在资源被修改或删除时访问这些数据。这意味着将辅助数据放在与热绘图循环所需数据相同的结构体中，在缓存效率上是不理想的。绘图循环会将 L1 缓存中未使用的数据加载进来。我讨厌在性能和易用性之间做权衡。<br />
+</p>
+
+<p>
+为解决这个问题，我们在池内采用了 SoA（Structures of Arrays，数组的结构）布局。我们识别出在每一帧的热绘图循环中都需要哪些数据，并将这些数据放在一个结构体中，而将剩余的低频辅助数据放在另一个结构体中。这样一来，池现在有两个数据数组，而不是一个。我们可以通过句柄中的相同数组索引来访问这两个数据数组（或者同时访问）。这样，我们只需在性能关键的绘图循环中将热数据加载到缓存中。辅助数据结构体仅在低频时加载，解决了 L1 缓存利用率的性能问题。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org46f7f9d" class="outline-4">
+<h4 id="org46f7f9d">Fast &amp; Clean C++20 API For Resource Construction</h4>
+<div class="outline-text-4" id="text-org46f7f9d">
+<p>
+现在我们有了存储和引用图形资源的好方法。下一个主题是创建资源。<br />
+在 Vulkan 和 DX12 中创建图形资源相当繁琐。你需要填充包含其他大结构体的大结构体。其中一些结构体还包含指向结构体数组的指针。这使得在临时对象生命周期管理上容易出错。<br />
+</p>
+
+<p>
+针对此问题，最常见的现有解决方案是为资源描述符使用构建者模式：构建者对象包含了描述符的良好默认状态。它提供了一个 API 来自行修改，设置所有你想要改变的字段。一旦准备就绪，你可以调用 build 函数来获取最终的描述符结构体。这种方法易于使用，但在调试模式下的代码生成远非完美。在 HypeHype，我们在开发过程中大量使用调试模式，因此我们也希望其运行速度快。<br />
+</p>
+
+<p>
+我们对此问题的解决方案是结合使用 C++20 的指定初始化器特性和 C++11 的结构体聚合初始化。这两种特性结合让我们能够以一种简单的方式为每个结构体设置默认值。请看下面的代码示例框。如果你想覆盖这些默认值之一，可以使用指定初始化器语法来覆盖命名字段的值。这种语法超级简洁，代码生成也是完美的。<br />
+为了干净利落地解决数组数据问题，我们必须编写自己的 span 类。C++20 内置的 span 类不支持初始化列表，因为初始化列表的生命周期非常短，它们在语句执行后立即消失。在通用情况下允许将初始化列表放入 span 中太过危险。然而，我们只在一个特殊情况下使用它，并且我们有一个解决方案：C++的 const &amp;&amp;函数参数只接受未命名的临时对象。C++保证了函数参数列表中的临时对象存活时间足够长，以完成函数调用。这给我们提供了足够的保证，使我们能够在资源描述符结构体中安全地将初始化列表存储在 span 内部。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgc347e32" class="outline-4">
+<h4 id="orgc347e32">Resource Constructon Examples</h4>
+<div class="outline-text-4" id="text-orgc347e32">
+<p>
+这就是它在实际操作中的样子。<br />
+</p>
+
+<p>
+我们从左边开始：首先，我们创建一个顶点缓冲和一个纹理。这里的语法很简洁，我们只声明与结构体默认值不同的字段。<br />
+</p>
+
+<p>
+如果你看左下角，会看到我们声明了一个材质。这是一个绑定组（bind group）。该绑定组包含一个纹理数组：反照率（albedo）、法线（normal）和属性（properties）。在这里，我们使用初始化列表来提供这个数组。这让语法变得非常干净。并且值得注意的是，这个数组不需要任何堆分配。初始化列表和整个描述符结构都存于栈上，永远不会被复制。我们只是在资源创建函数调用时传递对它的引用。这与原始的 DX12 或 Vulkan 一样快速。<br />
+</p>
+
+<p>
+在右边，你可以看到我们正在初始化一个更复杂的资源。这看起来有点像 JSON。我们有名字段、数组，以及彼此内部带有适当缩进的字段和数组。与原始的 DX12 和 Vulkan 相比，这样写和读要容易得多。然而，我们仍然没有运行时开销。仍然没有内存分配或数据复制。一切都是纯栈数据。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgbf67944" class="outline-4">
+<h4 id="orgbf67944">Efficient GPU Memory Allocation</h4>
+<div class="outline-text-4" id="text-orgbf67944">
+<p>
+现在我们有了创建和存储资源的好方法，接下来需要为它们分配 GPU 内存。<br />
+</p>
+
+<p>
+我倾向于尽可能使用临时内存。临时内存不会使你的内存池产生碎片，并且分配它就像给计数器加一个数字那么简单。<br />
+</p>
+
+<p>
+我们在 bump 分配器中使用了 128MB 的内存堆。这些堆以环形方式存储。如果 bump 分配器到达尾部，我们就分配一个新的堆块。一旦达到稳定状态，实际上就不会再有堆分配发生了。我们为创建的每个 GPU 堆创建一个平台特定的缓冲区句柄。这个缓冲区句柄映射了整个堆。这样，我们就不需要在运行时创建特定于平台的缓冲区对象了。我们的缓冲区结构简单地包含一个堆索引和一个偏移量。在运行时构造它们并传递给用户是非常高效的。<br />
+</p>
+
+<p>
+作为额外的优化，我们为用户空间提供了一个具体的 bump 分配器对象。它有一个用于分配 N 字节的函数。这个函数完美内联到调用者。它简单地增加一个计数器，然后检查计数器是否超过了堆块边界。这个检查是一个可预测的分支。当块耗尽时，我们调用 gfx API 中的虚函数来获取新的临时分配器块。这种情况每处理 128MB 的数据只会发生一次，因此效率非常高。<br />
+</p>
+
+<p>
+由于 WebGPU 尚未实现 100%的覆盖范围，项目中我们必须添加 WebGL2 的支持。我们对 WebGL2 也使用了相同的临时分配器抽象。用户代码不需要知道返回的指针是 CPU 指针还是 GPU 指针。在 WebGL2 中，我们使用 8MB 的 CPU 侧临时缓冲区，并在每次渲染 Pass 开始时使用单个 glBufferSubData 命令来复制这些缓冲区。这摊薄了数据更新的成本，与每个绘制调用都调用 map/unmap 相比，这是一个巨大的性能提升。<br />
+</p>
+
+<p>
+我们仅在必要时才进行持久化分配，因为持久化分配总是比临时分配慢得多。<br />
+</p>
+
+<p>
+我实现了一个 TLSF 算法。这是一个 O(1)硬实时分配器，它使用两层位域和两个 lzcnt 指令来寻找 bin（大小类别）。bin 的大小遵循浮点分布，这确保了无论大小类别如何，开销百分比始终保持较小。删除操作类似于分配，但除此之外，你还要检查两侧的邻居指针并合并空闲的内存区域，这也同样是 O(1)复杂度。<br />
+</p>
+
+<p>
+我们为 Vulkan 和 Metal 2.0（放置堆）使用了相同的分配器。我已经开源了 offset allocator，它可以用于子分配 GPU 堆或缓冲区，以及通常需要元素连续范围的任何事物（并且不需要为嵌入元数据而占用 CPU 内存资源）。<br />
+</p>
+</div>
+<div id="outline-container-org24e33b2" class="outline-5">
+<h5 id="org24e33b2">Two Level Segregated Fit</h5>
+<div class="outline-text-5" id="text-org24e33b2">
+<p>
+Two LevelSegregated Fit (TLSF): 使用两层链表来管理空闲内存，将空闲分区大小进行分类，每一类用一个空闲链表表示，其中的空闲内存大小都在某个特定值或者某个范围内。这样存在多个空闲链表，所以又用一个索引链表来管理这些空闲链表，该表的每一项都对应一种空闲链表，并记录该类空闲链表的表头指针。<br />
+</p>
+
+<ul class="org-ul">
+<li>TLSF——一种简单高效的内存池实现 <a href="https://zhuanlan.zhihu.com/p/658922989">https://zhuanlan.zhihu.com/p/658922989</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org9e633ba" class="outline-4">
+<h4 id="org9e633ba">Bind Groups: Exposed to User Land</h4>
+<div class="outline-text-4" id="text-org9e633ba">
+<p>
+我们的设计与其他渲染器之间的一个重大区别在于用户层面的绑定组（在 Vulkan 术语中称为描述集）。<br />
+</p>
+
+<p>
+传统的方式是对每个纹理和缓冲区都有独立的绑定。在绘制之前，你需要单独设置所有绑定。图形后端必须将这些绑定组合成着色器特定的布局，并创建相应的绑定组（WebGPU）、描述集（Vulkan）、参数缓冲区（Metal）或描述符表（DX12）。这些绑定组对象是 GPU 对象，创建成本较高。硬件供应商建议预先创建所有 GPU 对象，以避免延迟和内存碎片问题。<br />
+</p>
+
+<p>
+常见的解决办法是在后端使用哈希映射缓存绑定组。所有绑定都被哈希化，然后进行查找。如果绑定组已存在，则重用它而不是重新创建。这种方法的问题在于哈希计算成本高，且哈希映射查找会随机化内存访问模式。如果你从多个线程进行渲染，甚至可能需要使用互斥锁来保护绑定组哈希，这使得成本更高。<br />
+</p>
+
+<p>
+我们的解决方案是直接将绑定组带到用户层面：用户提前创建不可变的绑定组。例如，一个材质绑定组包含 5 个纹理和一个 uniform 缓冲区（填充有值数据）。你会获得一个句柄，用它来绑定材质。<br />
+</p>
+
+<p>
+我们的绘图调用 API 向用户层面公开了三个绑定组槽位。Android 上的 Vulkan 和 WebGPU 要求至少有四个绑定组槽位。前三个组直接暴露给用户层面代码，对应于 GLSL 中的 set=X 语义。这对于图形程序员和技术美术人员来说很容易理解。<br />
+</p>
+
+<p>
+HypeHype 的高级渲染代码采用了一种惯例，按绑定频率将数据分割到绑定组中。第一组包含渲染 Pass 全局绑定（如太阳光、相机矩阵、阴影贴图等），第二槽位有材质绑定，第三槽位有着色器特定的绑定，最后一个槽位比较特殊。<br />
+</p>
+
+<p>
+在 Vulkan 和 WebGPU 中，我们利用最后一个槽位用于动态偏移量绑定的缓冲区。这对 bump 分配的临时数据尤为重要，如 uniform 缓冲区。Metal API 没有为参数缓冲区绑定提供类似的偏移更新 API。相反，我们使用 Metal 的 setBuffer API 单独设置这些动态缓冲区，并使用 setOffset API 更改它们的偏移量。这提供了一个在所有平台 API 上使用最高效代码路径的抽象。<br />
+</p>
+
+<p>
+在某些移动 GPU 上，推送常量是被模拟的。相比之下，通过 bump 分配你的 uniform 并仅仅改变偏移量会更快。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org1174e85" class="outline-4">
+<h4 id="org1174e85">Software Command Buffer, But 10x+ faster</h4>
+<div class="outline-text-4" id="text-org1174e85">
+<p>
+我已经说过软件命令缓冲区很慢，但我们确实有一个:)<br />
+</p>
+
+<p>
+这个软件命令缓冲区与大多数人熟悉的那些完全不同。我们的软件命令缓冲区中没有任何数据。只有指向已上传数据的元数据。这些元数据也是分组的，这使得它比单个绑定和单独的状态要小得多。这使我们能够仅使用 64 字节的数据来表示一个绘制调用，这只是一条 CPU 缓存行的大小。<br />
+</p>
+
+<p>
+我们最初的设计是使用一个绘制结构体数组。绘制结构体包含了着色器的句柄（这是一个包括所有渲染状态的已解析 PSO 变体）、3个用户层面的绑定组、动态缓冲区（用于临时分配的偏移绑定数据）、索引和顶点缓冲区以及一些偏移量。需要偏移量是因为子分配资源通常是性能提升的一个重要因素。<br />
+</p>
+
+<p>
+这个 64 字节的结构体已经相当不错了，但我还想进一步优化它。我分析了数据，注意到所有字段都是 32 位的。优化的渲染使用排序来尽量减少昂贵的 PSO 和渲染状态切换。在渲染分块内容(binned content)时，我们注意到大多数字段在连续的绘制调用之间并没有变化。平均而言，每次绘制之间只有 18 字节的数据会发生变化。我们想利用这一点优势。<br />
+</p>
+
+<p>
+为了利用这一观察结果，我提出了一种方法，通过仅更新发生变化的部分来复用这 64 字节的基础结构。这意味着，对于连续的绘制调用，如果我们能确保变化的信息尽可能少，我们就可以显著减少需要传输和处理的数据量。这可以通过维护一个基础的命令缓冲结构，并在每个绘制调用开始时，仅用一个较小的差异“补丁”来更新那些实际发生改变的字段，从而实现极高的效率。这样做可以进一步减少 CPU 和 GPU 之间的通信开销，提高整体渲染性能。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org2b79030" class="outline-4">
+<h4 id="org2b79030">Draw Streams:Data Interface for Draw Calls</h4>
+<div class="outline-text-4" id="text-org2b79030">
+<p>
+理念是仅存储发生变化的字段，这催生了绘制流设计。<br />
+</p>
+
+<p>
+我们在每次绘制调用前存储一个 32 位的位掩码。这个位掩码指示绘制结构体中的哪些字段发生了变化。<br />
+根据流数据 API 协议写入数据是用户层代码的责任。为此，我们有一个用户层的绘制流写入器类。它包含一个描述当前状态的单一绘制结构体和一个脏标志位掩码。绘制流写入器为设置结构体中的每个字段提供了函数。这些函数会检查数据值是否被更改。如果更改了，则设置相应的脏位，并将该字段写入流中。在写入所有字段后，用户调用`draw`函数，该函数简单地在数据值前写入脏位掩码。<br />
+</p>
+
+<p>
+后端处理很简单：对于每次绘制调用，它先读取脏位掩码。然后，针对掩码中的每一位，从流中读取一个 uint32，并调用相应的平台 API 函数来设置那个绑定/状态/值。这种设计的优势在于后端无需进行任何状态过滤操作，因为我们在用户层代码中已经完成了这项工作。这对于不支持二级命令缓冲区或者二级命令缓冲区较慢的平台（比如某些高通 GPU 在使用二级命令缓冲区时禁用了优化）尤为有用。我们仍然可以使用多个工作线程生成绘制流，并在那里承担状态过滤的成本。这样，渲染线程就能尽可能快地执行，这是很大的优势，因为在移动设备上，平台 API 调用通常较慢。此外，与完整 64 字节的结构体相比，我们大约节省了 3 倍的带宽。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgcf43153" class="outline-4">
+<h4 id="orgcf43153">Draw Call Performance</h4>
+<div class="outline-text-4" id="text-orgcf43153">
+</div>
+<div id="outline-container-org9addcd9" class="outline-5">
+<h5 id="org9addcd9">Baseline(Worst Case)</h5>
+<div class="outline-text-5" id="text-org9addcd9">
+<p>
+让我们讨论一下绘制调用的性能问题。<br />
+</p>
+
+<p>
+这张幻灯片展示了一个相当传统的 DX11 和 OpenGL 风格的绘制循环。对于每次绘制调用，我们都会分别调用映射/取消映射并单独写入 uniform 变量。同时，我们还会绑定顶点缓冲和索引缓冲，并绑定我们的纹理和缓冲区。这里我按照我们约定的惯例，简单地绑定了 set 2(材质)和 set 3。<br />
+</p>
+
+<p>
+总的来说，每次绘制调用需要 6 到 7 个 API 调用。当材质不变时是 6 次调用，否则是 7 次。如果我们按材质进行分组(同材质的物体排序在一起为一个 bin)，则可以认为这个数字更接近于 6 而不是 7。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgb6fbebe" class="outline-5">
+<h5 id="orgb6fbebe">Bump Alloc + Offset Bind</h5>
+<div class="outline-text-5" id="text-orgb6fbebe">
+<p>
+这是使用临时分配器来进行统一变量（以及其他动态数据）的 Bump 分配。现在，我们无需在每次绘制调用时都调用映射/取消映射了。这将 API 调用次数减少到了每次绘制调用 4 到 5 次。<br />
+</p>
+
+<p>
+映射/取消映射调用的开销出乎意料地大。我们旧的 GLES 后端是在每次绘制调用时上传统一变量。在新的 GLES3 后端（WebGL2）中，最大的不同在于每次绘制时不再进行映射/取消映射，仅这一项改变就为我们带来了大约 3 倍的 CPU 性能提升。<br />
+</p>
+
+<p>
+我们在新的 Vulkan 后端并没有实现每次绘制的映射/取消映射（Vulkan 支持持久映射），所以很遗憾，我无法在这里向您展示 Vulkan 的相关数据。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org391a6f1" class="outline-5">
+<h5 id="org391a6f1">Pack Meshes</h5>
+<div class="outline-text-5" id="text-org391a6f1">
+<p>
+接下来带来重大影响的优化是网格打包。我们分配大的 128MB 堆块，并为每个块分配一个平台缓冲句柄。这使我们能够轻松地对网格进行子分配，并且只需在每次绘制调用中更改基础顶点和基础索引即可切换网格。<br />
+</p>
+
+<p>
+通过这种方式，我们省去了两个 API 调用：设置顶点缓冲和设置索引缓冲。我们将每次绘制的 API 调用减少到了 2 到 3 次，这是一个非常不错的进步！<br />
+</p>
+
+<p>
+这项优化提高了所有设备上的 CPU 吞吐量。我们在桌面 GPU 上看到了最大的收益（接近 2 倍的提升），但移动 GPU 也显示出了显著的提升（30%到 40%）。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org1730c9d" class="outline-5">
+<h5 id="org1730c9d">BaseInstance(FAILED)</h5>
+<div class="outline-text-5" id="text-org1730c9d">
+<p>
+最后我想讨论的优化是基础实例（Base Instance）绘制。<br />
+</p>
+
+<p>
+基础实例绘制使用的数据布局与实例化绘制相同。你需要使用紧密打包的绘制数据数组。在移动平台上，统一缓冲区(UBO)有 16KB 的绑定尺寸限制。我们的想法是每 16KB 改变一次绑定偏移量，以此来摊销因使用不同偏移量重绑临时分配器缓冲区的成本。这样一来，我们的 API 调用次数减少了 1 次，现在达到了最理想的 API 调用量：仅仅是绘制本身以及可能的材质绑定组变更。绘制调用有一个基础实例参数，我们改变这个参数以指向统一缓冲区数据数组中的不同槽位。<br />
+</p>
+
+<p>
+那么为什么不直接使用实例化（Instancing）呢？基础实例在许多平台上能产生更优的着色器代码生成。原因是实例 ID 是一个动态偏移量。GPU 会在同一个顶点 wave 中打包多个实例，这意味着所有由实例 ID 索引的数据必须使用向量寄存器和向量加载。这对于加载 4x4 矩阵等操作来说，会增加很多额外的寄存器开销。而基础实例则是一个针对每次绘制的静态偏移量。每个 lane 都从相同位置加载数据。这意味着编译器可以优化代码路径为标量形式，或者使用快速的常量缓冲硬件。<br />
+</p>
+
+<p>
+然而，在实践中，我们遇到了各种问题。虽然基础实例的代码生成在 PC 上是完美的，但在移动 GPU 上却表现不一。有些驱动程序就是没有正确优化这一点。此外，该特性支持度也不高。DX12 完全不支持基础实例，WebGL 和 WebGPU 也同样不支持。因此，除非你的应用只面向桌面平台发布，否则我不推荐这个优化。对于移动端来说，这并不值得。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org7ad45df" class="outline-5">
+<h5 id="org7ad45df">Performance Number</h5>
+<div class="outline-text-5" id="text-org7ad45df">
+<p>
+让我们看一下性能数据。<br />
+</p>
+
+<p>
+这里使用的是单一渲染线程。实现了无任何实例化技巧的一万次实际绘制调用。每个绘制调用都使用唯一的网格和唯一的材质。通过绑定组和打包的网格，改变材质和网格变得非常迅速。<br />
+</p>
+
+<p>
+在 HypeHype 中，我还没来得及实现 GPU 持久化场景数据。这些数据是基于之前幻灯片中描述的，每次绘制时动态分配的 uniforms。<br />
+</p>
+
+<p>
+我们将目标设定为一万次绘制调用，因为这是 15 年前我们在 Xbox 360 上以 60 帧/秒实现的性能。而结果令人印象深刻。即便是低端的 99 美元安卓手机，在这项压力测试中也接近达到 60 帧/秒。在一个真实的、组合构建的用户生成内容游戏场景中，我们会有很多重复的网格和材质，这允许我们进行批处理并减少图形 API 调用次数。同时，我们也计划对渲染进行多线程处理。<br />
+</p>
+
+<p>
+在 AMD 现代集成显卡上（同样应用于 Steam Deck 和 ROG Ally 手持设备），我们的渲染器能在不到一毫秒的时间内完成一万次绘制。当采用多线程后，我们的渲染器能够在现代 AMD 和 Nvidia GPU 上以 60 帧/秒的速度处理多达一百万次绘制调用。<br />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org1920a40" class="outline-3">
+<h3 id="org1920a40">References</h3>
+<div class="outline-text-3" id="text-org1920a40">
+<ul class="org-ul">
+<li>HypeHype Mobile Rendering Architecture <a href="https://advances.realtimerendering.com/s2023/index.html#HypeHype">https://advances.realtimerendering.com/s2023/index.html#HypeHype</a><br /></li>
+<li>Various hardware performance numbers (Wikipedia):<br /></li>
+</ul>
+<p>
+ARM Mali: <a href="https://en.wikipedia.org/wiki/Mali_(processor)">https://en.wikipedia.org/wiki/Mali_(processor)</a><br />
+Qualcomm Adreno: <a href="https://en.wikipedia.org/wiki/Adreno">https://en.wikipedia.org/wiki/Adreno</a><br />
+PowerVR:<a href="https://en.wikipedia.org/wiki/PowerVR">https://en.wikipedia.org/wiki/PowerVR</a><br />
+Nintendo Switch: <a href="https://en.wikipedia.org/wiki/Nintendo_Switch">https://en.wikipedia.org/wiki/Nintendo_Switch</a><br />
+Microsoft Xbox 360: <a href="https://en.wikipedia.org/wiki/Xbox_360">https://en.wikipedia.org/wiki/Xbox_360</a><br />
+Microsoft Xbox One: <a href="https://en.wikipedia.org/wiki/Xbox_One">https://en.wikipedia.org/wiki/Xbox_One</a><br />
+Sony PS3: <a href="https://en.wikipedia.org/wiki/PlayStation_3">https://en.wikipedia.org/wiki/PlayStation_3</a><br />
+Sony PS4: <a href="https://en.wikipedia.org/wiki/PlayStation_4">https://en.wikipedia.org/wiki/PlayStation_4</a><br />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<div id="vssue"></div>
+        <link rel="stylesheet" href="https://unpkg.com/vssue/dist/vssue.min.css">
+        <script src="https://unpkg.com/vue@2.7.10/dist/vue.runtime.min.js"></script>
+        <script src="https://unpkg.com/vssue/dist/vssue.github.min.js"></script>
+        <script>
+          new Vue({
+            el: '#vssue',
+            render: h => h('Vssue', {
+              props: {
+                // 在这里设置当前页面对应的 Issue 标题
+                title: 'HypeHypeMobileRenderingArchitecture',
+
+                // 在这里设置你使用的平台的 OAuth App 配置
+                options: {
+                    owner: 'wolfand11',
+                    repo: 'blog_comments',
+                    clientId: 'a02b49185d85859cb92c',
+                    clientSecret: '6f123085c6f1ce339e2517d24e5b099fa1dc9c85', // 只有在使用某些平台时需要
+                },
+              }
+            })
+          })
+        </script>
+</div>
+</body>
+</html>

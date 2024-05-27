@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-02-22 Thu 18:21 -->
+<!-- 2024-05-27 Mon 14:37 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Vulkan</title>
@@ -48,7 +48,7 @@
 <li><a href="#org7d824e0">Step 6 - Graphics pipeline</a></li>
 <li><a href="#orga876e43">Step 7 - Command pools and command buffers</a></li>
 <li><a href="#org039029e">Step 8 - Main loop</a></li>
-<li><a href="#orgcbf3f38">Summary</a></li>
+<li><a href="#orgaa7fffe">Summary</a></li>
 </ul>
 </li>
 <li><a href="#org3ab6bea">API concepts</a>
@@ -61,6 +61,7 @@
 </li>
 <li><a href="#orgccf67b6">Development environment (18)</a>
 <ul>
+<li><a href="#org555ee3c">xmake</a></li>
 <li><a href="#org45332a0">Windows (18)</a></li>
 <li><a href="#org25b8920">Linux (28)</a></li>
 <li><a href="#orgb077ab6">MacOS (34)</a></li>
@@ -277,7 +278,7 @@
 <li><a href="#org1363eb8">Quality improvements (279)</a></li>
 </ul>
 </li>
-<li><a href="#orgaa7fffe">Summary</a></li>
+<li><a href="#org679a34d">Summary</a></li>
 <li><a href="#org8010c88">Q&amp;A</a>
 <ul>
 <li><a href="#orgba87637">VkAllocationCallbacks 的使用示例</a></li>
@@ -288,12 +289,12 @@
 <ul>
 <li><a href="#org8ba2df5">Gamma workflow</a></li>
 <li><a href="#org42ef7e9">Linear workflow</a></li>
-<li><a href="#org2baf7f0">参考资料</a></li>
+<li><a href="#org2851018">参考资料</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#orgb74b463">参考资料</a></li>
+<li><a href="#org91a8643">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#org28bd00e">Vulkan Guide</a>
@@ -328,7 +329,7 @@
 <li><a href="#org5bce67b">GPU Driven Rendering Overview</a>
 <ul>
 <li><a href="#orge0985be">Introduction</a></li>
-<li><a href="#org86d09e3">Draw Indirect</a></li>
+<li><a href="#org832b379">Draw Indirect</a></li>
 <li><a href="#orge468364">Bindless Design</a></li>
 <li><a href="#org00dcb23">Overview of Vkguide engine architecture for compute rendering.</a></li>
 </ul>
@@ -357,14 +358,14 @@
 <li><a href="#org42ac41a">Render Flow</a></li>
 </ul>
 </li>
-<li><a href="#org832b379">Draw Indirect</a></li>
+<li><a href="#org3e6b12c">Draw Indirect</a></li>
 <li><a href="#org30629d8">Compute Shaders</a></li>
 <li><a href="#orga40856b">Material System</a></li>
 <li><a href="#orgdfc32aa">Mesh Rendering</a></li>
 <li><a href="#org768406a">Compute based Culling</a></li>
 </ul>
 </li>
-<li><a href="#orgc92415c">参考资料</a></li>
+<li><a href="#org493a884">参考资料</a></li>
 </ul>
 </li>
 <li><a href="#orgdff272b">Vulkan vs OpenGL vs OpenGLES vs D3D</a>
@@ -405,10 +406,10 @@
 <li><a href="#orgbbb4187">Texture access</a></li>
 <li><a href="#org7d87a65">General math</a></li>
 <li><a href="#org96ae21d">Various functions</a></li>
-<li><a href="#orged55016">参考资料</a></li>
+<li><a href="#orgf3afdfa">参考资料</a></li>
 </ul>
 </li>
-<li><a href="#org2851018">参考资料</a></li>
+<li><a href="#orgb6372a2">参考资料</a></li>
 </ul>
 </li>
 </ul>
@@ -419,7 +420,7 @@
 <p>
 Vulkan note.<br />
 </p>
-<div class="HTML" id="org01fd81c">
+<div class="HTML" id="org56721bd">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -483,7 +484,7 @@ Vulkan 针对现代图形架构从头开始设计，解决了这些问题。 它
 下面是在 Vulkan 程序中画一个三角形的所有步骤的总览。这里引入的所有概念在后面章节会详细讲述，这里只是为了给你一个大图，让你可以将所有单独的组件关联起来。下图展示了 Vulkan 中各种对象之间的关系：<br />
 </p>
 
-<div id="orgdad0656" class="figure">
+<div id="orgcc557cb" class="figure">
 <p><img src="./Vulkan/vulkan_objects.jpg" alt="vulkan_objects.jpg" width="600px" /><br />
 </p>
 </div>
@@ -593,9 +594,9 @@ Vulkan 与现有的其它 API 之间最明显的区别就是，几乎所有 grap
 </p>
 </div>
 </div>
-<div id="outline-container-orgcbf3f38" class="outline-5">
-<h5 id="orgcbf3f38">Summary</h5>
-<div class="outline-text-5" id="text-orgcbf3f38">
+<div id="outline-container-orgaa7fffe" class="outline-5">
+<h5 id="orgaa7fffe">Summary</h5>
+<div class="outline-text-5" id="text-orgaa7fffe">
 <p>
 请注意，我们采用了作弊的方式，将顶点坐标嵌入顶点着色器，而没有使用 vertex buffer。这是因为管理 vertex buffer 需要先熟悉 command buffers。<br />
 简单来说，绘制我们的第一个三角形需要以下步骤：<br />
@@ -676,6 +677,15 @@ Vulkan 允许你通过使用一个被称为 validation layers 的特性来开启
 <div id="outline-container-orgccf67b6" class="outline-3">
 <h3 id="orgccf67b6">Development environment (18)</h3>
 <div class="outline-text-3" id="text-orgccf67b6">
+</div>
+<div id="outline-container-org555ee3c" class="outline-4">
+<h4 id="org555ee3c">xmake</h4>
+<div class="outline-text-4" id="text-org555ee3c">
+<p>
+可以使用 xmake 来构建开发环境，省心一些。具体参考下面文章：<br />
+<a href="../language/xmake.html#orgfccdadd">xmake 配置 Vulkan Tutorial 开发环境</a><br />
+</p>
+</div>
 </div>
 <div id="outline-container-org45332a0" class="outline-4">
 <h4 id="org45332a0">Windows (18)</h4>
@@ -2132,7 +2142,7 @@ Concurrent 模式需要你事先指定哪些 queue families 会共享 images 的
 在接下来的几章中，我们将设置一个 graphics pipeline，来绘制我们的第一个三角形。graphics pipeline 是一个操作序列，其以网格的顶点和纹理为输入经过一系列操作序列后得到 render targets 中的像素。下面展示了一个简化的概述：<br />
 </p>
 
-<div id="orga6cc1fb" class="figure">
+<div id="org60b55a9" class="figure">
 <p><img src="./Vulkan/graphics-pipeline-simple.jpg" alt="graphics-pipeline-simple.jpg" width="300px" /><br />
 </p>
 </div>
@@ -2197,7 +2207,7 @@ Concurrent 模式需要你事先指定哪些 queue families 会共享 images 的
 </p>
 
 
-<div id="orgc29441e" class="figure">
+<div id="orgf997e99" class="figure">
 <p><img src="./Vulkan/framebuffer-device-coordinate-system.jpg" alt="framebuffer-device-coordinate-system.jpg" /><br />
 </p>
 </div>
@@ -2439,7 +2449,7 @@ viewport 定义了从 image 到 framebuffer 的变换。scissor 矩形定义了�
 </p>
 
 
-<div id="org12dac97" class="figure">
+<div id="org133df83" class="figure">
 <p><img src="./Vulkan/viewports_scissors.png" alt="viewports_scissors.png" width="500px" /><br />
 </p>
 </div>
@@ -5805,9 +5815,9 @@ MSAA 只会平滑几何边缘，几何内部的填充不受影响。开启样本
 </div>
 </div>
 </div>
-<div id="outline-container-orgaa7fffe" class="outline-3">
-<h3 id="orgaa7fffe">Summary</h3>
-<div class="outline-text-3" id="text-orgaa7fffe">
+<div id="outline-container-org679a34d" class="outline-3">
+<h3 id="org679a34d">Summary</h3>
+<div class="outline-text-3" id="text-org679a34d">
 <p>
 下面是对整个流程的梳理：<br />
 </p>
@@ -6093,9 +6103,9 @@ Gamma workflow 要求 swapchain 的格式为 VK_FORMAT_B8G8R8A8_SRGB，允许为
 </p>
 </div>
 </div>
-<div id="outline-container-org2baf7f0" class="outline-5">
-<h5 id="org2baf7f0">参考资料</h5>
-<div class="outline-text-5" id="text-org2baf7f0">
+<div id="outline-container-org2851018" class="outline-5">
+<h5 id="org2851018">参考资料</h5>
+<div class="outline-text-5" id="text-org2851018">
 <ul class="org-ul">
 <li><a href="https://stackoverflow.com/questions/65241749/what-is-vulkan-color-space">https://stackoverflow.com/questions/65241749/what-is-vulkan-color-space</a><br /></li>
 <li><a href="https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkColorSpaceKHR.html">https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkColorSpaceKHR.html</a><br /></li>
@@ -6104,9 +6114,9 @@ Gamma workflow 要求 swapchain 的格式为 VK_FORMAT_B8G8R8A8_SRGB，允许为
 </div>
 </div>
 </div>
-<div id="outline-container-orgb74b463" class="outline-3">
-<h3 id="orgb74b463">参考资料</h3>
-<div class="outline-text-3" id="text-orgb74b463">
+<div id="outline-container-org91a8643" class="outline-3">
+<h3 id="org91a8643">参考资料</h3>
+<div class="outline-text-3" id="text-org91a8643">
 <ul class="org-ul">
 <li>如何正确的入门 Vulkan？ <a href="https://www.zhihu.com/question/424430509">https://www.zhihu.com/question/424430509</a><br /></li>
 <li>Vulkan tutorial code <a href="https://github.com/jjYBdx4IL/VulkanTutorial-VisualStudioProjectFiles">https://github.com/jjYBdx4IL/VulkanTutorial-VisualStudioProjectFiles</a><br /></li>
@@ -6143,7 +6153,7 @@ Gamma workflow 要求 swapchain 的格式为 VK_FORMAT_B8G8R8A8_SRGB，允许为
 按照下图方式配置 CMake<br />
 </p>
 
-<div id="org9e66660" class="figure">
+<div id="org673a367" class="figure">
 <p><img src="./Vulkan/vulkan-guide-init.jpg" alt="vulkan-guide-init.jpg" width="900px" /><br />
 </p>
 </div></li>
@@ -6568,7 +6578,7 @@ glsl es version、OpenGL ES version、WebGL version<br />
 </p>
 
 
-<div id="orgb587e0a" class="figure">
+<div id="orge7a1fe7" class="figure">
 <p><img src="./Vulkan/vg_indirectperf.png" alt="vg_indirectperf.png" width="900px" /><br />
 </p>
 </div>
@@ -6578,9 +6588,9 @@ glsl es version、OpenGL ES version、WebGL version<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org86d09e3" class="outline-5">
-<h5 id="org86d09e3">Draw Indirect</h5>
-<div class="outline-text-5" id="text-org86d09e3">
+<div id="outline-container-org832b379" class="outline-5">
+<h5 id="org832b379">Draw Indirect</h5>
+<div class="outline-text-5" id="text-org832b379">
 <p>
 这个想法的核心围绕着在图形 API 中使用 Draw Indirect 支持。 这些技术适用于所有图形 API，但它们在 Vulkan 或 DX12 上效果最佳，因为它们可以更好地控制低级内存管理和 compute barriers。它们在 PS4 和 Xbox One 游戏机上也能很好地工作，并且下一代游戏机所具备的特性对这种技术的依赖更大，例如 mesh shaders 和 raytracing。<br />
 </p>
@@ -6706,7 +6716,7 @@ Push Constants 和 Dynamic Descriptors 可以被使用，但是他们必须是�
 </p>
 
 
-<div id="org2662aee" class="figure">
+<div id="orgc41b310" class="figure">
 <p><img src="./Vulkan/vg-gpu-driven-rendering-overview.jpg" alt="vg-gpu-driven-rendering-overview.jpg" width="500px" /><br />
 </p>
 </div>
@@ -6726,7 +6736,7 @@ Push Constants 和 Dynamic Descriptors 可以被使用，但是他们必须是�
 </p>
 
 
-<div id="orgc5923ed" class="figure">
+<div id="org71d04f4" class="figure">
 <p><img src="./Vulkan/vg-assetsystem01.jpg" alt="vg-assetsystem01.jpg" width="500px" /><br />
 </p>
 </div>
@@ -6967,7 +6977,7 @@ CVAR_TestInt.Set(7);
 一开始游戏引擎都是单线程的。最早期最经典的多线程游戏引擎会直接创建多个线程，每个线程执行他们自己的任务。例如，你可以有一个 Game Thread，来执行所有的 gameplay 逻辑和 AI；一个 Render Thread 处理渲染，准备需要绘制的物体，并执行图形命令。其架构如下图所示：<br />
 </p>
 
-<div id="org5805ae5" class="figure">
+<div id="org52d5407" class="figure">
 <p><img src="./Vulkan/vg-multi-thread-gameEngine.jpg" alt="vg-multi-thread-gameEngine.jpg" width="500px" /><br />
 </p>
 </div>
@@ -6984,7 +6994,7 @@ UE4 有一个 Game Thread 和一个 Render Thread 作为主要的线程，还有
 增强这种架构的一种通用方式是将更多内容改为 fork/join 方式，你有一个主要的执行线程，在某些点上，工作的多个部分被分配到多个线程上。UE4 就是这样处理动画和物理的。Game Thread 负责整个游戏逻辑，当其到达需要播放动画的点时，将动画分割成小任务进行计算，并将这些任务分配给其他核心的辅助线程。虽然仍然有一个主要的执行时间线，但在某些点其可以从未使用的内核中获得额外的帮助。这提高了可伸缩性，但仍然不够好，因为框架的其余部分仍然是单线程的。这种增强后的架构图如下：<br />
 </p>
 
-<div id="org525f74a" class="figure">
+<div id="org5d686b1" class="figure">
 <p><img src="./Vulkan/vg-multi-thread-gameEngine01.jpg" alt="vg-multi-thread-gameEngine01.jpg" width="500px" /><br />
 </p>
 </div>
@@ -7282,8 +7292,8 @@ vkEndCommandBuffer(primaryBuffer);
 </div>
 </div>
 
-<div id="outline-container-org832b379" class="outline-4">
-<h4 id="org832b379">Draw Indirect</h4>
+<div id="outline-container-org3e6b12c" class="outline-4">
+<h4 id="org3e6b12c">Draw Indirect</h4>
 </div>
 <div id="outline-container-org30629d8" class="outline-4">
 <h4 id="org30629d8">Compute Shaders</h4>
@@ -7298,9 +7308,9 @@ vkEndCommandBuffer(primaryBuffer);
 <h4 id="org768406a">Compute based Culling</h4>
 </div>
 </div>
-<div id="outline-container-orgc92415c" class="outline-3">
-<h3 id="orgc92415c">参考资料</h3>
-<div class="outline-text-3" id="text-orgc92415c">
+<div id="outline-container-org493a884" class="outline-3">
+<h3 id="org493a884">参考资料</h3>
+<div class="outline-text-3" id="text-org493a884">
 <ul class="org-ul">
 <li>vkguide <a href="https://vkguide.dev/">https://vkguide.dev/</a><br /></li>
 <li>vkguide github <a href="https://github.com/vblanco20-1/vulkan-guide">https://github.com/vblanco20-1/vulkan-guide</a><br /></li>
@@ -8937,18 +8947,18 @@ HLSL 矩阵为行主序， 矩阵和向量相乘为 v*M<br />
 </table>
 </div>
 </div>
-<div id="outline-container-orged55016" class="outline-5">
-<h5 id="orged55016">参考资料</h5>
-<div class="outline-text-5" id="text-orged55016">
+<div id="outline-container-orgf3afdfa" class="outline-5">
+<h5 id="orgf3afdfa">参考资料</h5>
+<div class="outline-text-5" id="text-orgf3afdfa">
 <ul class="org-ul">
 <li><a href="https://anteru.net/blog/2016/mapping-between-HLSL-and-GLSL/">https://anteru.net/blog/2016/mapping-between-HLSL-and-GLSL/</a><br /></li>
 </ul>
 </div>
 </div>
 </div>
-<div id="outline-container-org2851018" class="outline-4">
-<h4 id="org2851018">参考资料</h4>
-<div class="outline-text-4" id="text-org2851018">
+<div id="outline-container-orgb6372a2" class="outline-4">
+<h4 id="orgb6372a2">参考资料</h4>
+<div class="outline-text-4" id="text-orgb6372a2">
 <ul class="org-ul">
 <li>ShaderModel 与 ES 版本和 GPU 特性的关系 (有道云有备份) <a href="https://liangz0707.github.io/whoimi/blogs/Shader/ShaderModel%E4%B8%8EES%E7%89%88%E6%9C%AC%E5%92%8CGPU%E7%89%B9%E6%80%A7%E7%9A%84%E5%85%B3%E7%B3%BB.html">https://liangz0707.github.io/whoimi/blogs/Shader/ShaderModel%E4%B8%8EES%E7%89%88%E6%9C%AC%E5%92%8CGPU%E7%89%B9%E6%80%A7%E7%9A%84%E5%85%B3%E7%B3%BB.html</a><br /></li>
 <li>DirectX / OpenGL(Vulkan) concepts mapping chart <a href="https://computergraphics.stackexchange.com/questions/4422/directx-openglvulkan-concepts-mapping-chart">https://computergraphics.stackexchange.com/questions/4422/directx-openglvulkan-concepts-mapping-chart</a><br /></li>

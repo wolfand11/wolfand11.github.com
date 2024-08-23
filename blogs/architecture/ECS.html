@@ -1,0 +1,1152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2024-07-19 Fri 17:53 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ECS</title>
+<meta name="generator" content="Org Mode" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+         <meta name="viewport" content="width=device-width, initial-scale=1" />
+         <link rel="stylesheet" title="Standard" href="https://wolfand11.github.io/res/worg_theme/css/worg.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.github.io/res/worg_theme/css/worg-zenburn.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.github.io/res/worg_theme/css/worg-classic.css" type="text/css" />
+         <link rel="icon" href="https://wolfand11.github.io/res/favicon.ico" type="image/ico" />
+         <script type="text/javascript" src="https://wolfand11.github.io/res/blog-tools.js"></script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href=""> UP </a>
+ |
+ <a accesskey="H" href="https://wolfand11.github.io"> HOME </a>
+</div><div id="content" class="content">
+<h1 class="title">ECS</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#org8b239b6">Unity ECS</a>
+<ul>
+<li><a href="#org3faf1af">Get Started: ECS workflow tutorial</a>
+<ul>
+<li><a href="#org441fd99">Install ECS</a></li>
+<li><a href="#orgc9d9d18">Understand the ECS workflow</a>
+<ul>
+<li><a href="#orgded6382">Create a subscene</a></li>
+<li><a href="#orgd5e09e9">Create ECS components</a></li>
+<li><a href="#orgd2e7897">Create entities</a></li>
+<li><a href="#orgbb70dd2">Create systems</a></li>
+<li><a href="#org8e53044">Optimize systems</a></li>
+</ul>
+</li>
+<li><a href="#org1561351">Spawner example</a>
+<ul>
+<li><a href="#orgf5d0692">Create the subscene for the spawner example</a></li>
+<li><a href="#orgaf16e2f">Create a component for the spawner example</a></li>
+<li><a href="#orgf765f10">Create the spawner entity for the spawner example</a></li>
+<li><a href="#org544e5d1">Create the system for the spawner example</a></li>
+<li><a href="#orgcea3477">Optimize the system for the spawner example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org819994b">Entity Component System concepts</a>
+<ul>
+<li><a href="#org03c04ff">Entity concepts</a></li>
+<li><a href="#org2356234">Component concepts</a>
+<ul>
+<li><a href="#org6b0f6b7">Component types</a></li>
+</ul>
+</li>
+<li><a href="#orgbe85fd2">System concepts</a>
+<ul>
+<li><a href="#org58842ec">System types</a></li>
+<li><a href="#orgb081126">System groups</a></li>
+<li><a href="#org641ad8e">Inspecting systems</a></li>
+<li><a href="#orgebf1878">Systems in the Editor</a></li>
+</ul>
+</li>
+<li><a href="#orgf30fd62">World concepts</a>
+<ul>
+<li><a href="#org32e78ce">Initialization</a></li>
+</ul>
+</li>
+<li><a href="#org9efa849">Archetype concepts</a>
+<ul>
+<li><a href="#orgb146188">Archetype chunks</a></li>
+<li><a href="#org62126e7">Archetypes in the Editor</a></li>
+</ul>
+</li>
+<li><a href="#org59aec3f">Structural changes concepts</a>
+<ul>
+<li><a href="#org1219411">Create an entity</a></li>
+<li><a href="#orgb06f55c">Destroy an entity</a></li>
+<li><a href="#org77736a1">Add or remove components</a></li>
+<li><a href="#org6412684">Set a shared component value</a></li>
+<li><a href="#org4b68032">Sync points</a>
+<ul>
+<li><a href="#org230edce">Avoiding sync points</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org573566c">Safety in Entities</a>
+<ul>
+<li><a href="#org7f65063">Guarded safety violation</a>
+<ul>
+<li><a href="#org8834c2d">Structural changes</a></li>
+<li><a href="#org5c8d089">RefRW/RefRO</a></li>
+</ul>
+</li>
+<li><a href="#orgf80fae7">Unguarded safety violation</a>
+<ul>
+<li><a href="#org2e47f19">IJobEntity</a></li>
+<li><a href="#org8d0dee9">InternalCompilerInterface</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orga5dde4d">参考资料</a></li>
+</ul>
+</li>
+<li><a href="#org978d136">Implement ECS With CPP</a>
+<ul>
+<li><a href="#org0ef04c4">参考资料</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<p>
+ECS note.<br />
+</p>
+<div class="HTML" id="orga5e9014">
+<p>
+&lt;!&#x2013; more &#x2013;&gt;<br />
+</p>
+
+</div>
+
+<div id="outline-container-org8b239b6" class="outline-2">
+<h2 id="org8b239b6">Unity ECS</h2>
+<div class="outline-text-2" id="text-org8b239b6">
+</div>
+<div id="outline-container-org3faf1af" class="outline-3">
+<h3 id="org3faf1af">Get Started: ECS workflow tutorial</h3>
+<div class="outline-text-3" id="text-org3faf1af">
+</div>
+<div id="outline-container-org441fd99" class="outline-4">
+<h4 id="org441fd99">Install ECS</h4>
+<div class="outline-text-4" id="text-org441fd99">
+<p>
+安装如下 packages<br />
+com.unity.entities<br />
+com.unity.entities.graphics<br />
+</p>
+
+<p>
+为了让 ECS 项目在 Editor 下性能最佳，进行如下设置：<br />
+Edit &gt; Project Settings &gt; Editor 处 Enter Play Mode Settings 设置为 Do not reload Domain or Scene<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgc9d9d18" class="outline-4">
+<h4 id="orgc9d9d18">Understand the ECS workflow</h4>
+<div class="outline-text-4" id="text-orgc9d9d18">
+<p>
+使用 Unity 的 ECS 框架创建应用程序的工作流程在原理和实现上都与创建面向对象的 Unity 应用程序的工作流程不同。在开始使用该框架创建项目之前，理解 ECS 工作流程是很有帮助的。<br />
+</p>
+</div>
+<div id="outline-container-orgded6382" class="outline-5">
+<h5 id="orgded6382">Create a subscene</h5>
+<div class="outline-text-5" id="text-orgded6382">
+<p>
+ECS 使用子场景来包含应用程序的内容。你可以将游戏对象（GameObjects）和 MonoBehaviour 组件添加到子场景中，bakers 会将这些游戏对象和 MonoBehaviour 组件转换为 entities 和 ECS components。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgd5e09e9" class="outline-5">
+<h5 id="orgd5e09e9">Create ECS components</h5>
+<div class="outline-text-5" id="text-orgd5e09e9">
+<p>
+ECS components 存储应用程序的数据。为了在应用程序中创建行为，systems 提供了读取和写入 ECS components 数据的逻辑。ECS 工作流程是面向数据的，因此在开发系统或创建任何 Entities 之前，规划数据布局并创建 ECS components 是一个好习惯。<br />
+</p>
+
+<p>
+不同类型的 ECS components 具有不同的用途。有关更多信息，请参阅 Component types。<br />
+</p>
+<ul class="org-ul">
+<li><a href="https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/components-type.html">https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/components-type.html</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgd2e7897" class="outline-5">
+<h5 id="orgd2e7897">Create entities</h5>
+<div class="outline-text-5" id="text-orgd2e7897">
+<p>
+Entities 代表应用程序中存在的不同事物。要在编辑器中创建 Entities，你可以将 GameObjects 添加到子场景中。烘焙过程会将这些 GameObjects 转换为 Entities。可选地，为了将 ECS components 附加到转换后的 Entities 上，你可以创建 bakers。当你创建 baker 时，你需要定义它所针对的 MonoBehaviour 组件，然后编写代码，使用 MonoBehaviour 组件数据来创建并将 ECS components 附加到转换后的 Entities 上。你也可以从 baker 中创建额外的 Entities 并将 ECS components 附加到它们上。在这个工作流程中，MonoBehaviour 组件被称为创作组件（authoring component）。<br />
+</p>
+
+<p>
+提示：<br />
+将 Authoring 添加到你创建的任何 authoring component 的类名中是一个良好的组织习惯。<br />
+</p>
+
+<p>
+你也可以在运行时创建 Entities。下面的 spawner example 代码示例展示了如何设置一个在运行时实例化 Entities 的 spawner system。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgbb70dd2" class="outline-5">
+<h5 id="orgbb70dd2">Create systems</h5>
+<div class="outline-text-5" id="text-orgbb70dd2">
+<p>
+Systems 在你的应用程序中创建行为。为此，它们可以查询和转换 ECS components 数据，创建和销毁 Entities，并从 Entities 中添加和移除 ECS components。默认情况下，当你创建一个 system 时，Unity 会实例化它并将其添加到默认世界中。<br />
+</p>
+
+<p>
+不同类型的 system 具有不同的用途。有关更多信息，请参阅 System types。<br />
+</p>
+<ul class="org-ul">
+<li><a href="https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/concepts-systems.html#system-types">https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/concepts-systems.html#system-types</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org8e53044" class="outline-5">
+<h5 id="org8e53044">Optimize systems</h5>
+<div class="outline-text-5" id="text-org8e53044">
+<p>
+默认情况下，你在 system 中编写的任何代码都会在主线程上同步运行。如果 system 影响到许多 Entities 上的数据，并且多线程会带来好处，那么最佳实践是创建兼容 Burst 的 job，并尽可能并行调度它们运行。Burst 会将你的 C# 代码编译为优化的原生 CPU 代码，而 job 允许你在多个线程上分配工作，并利用多个处理器的优势。<br />
+</p>
+
+<p>
+如果一个 system 不做太多工作，例如它只处理少量 Entities 的 components 数据，那么并行调度 job 的开销可能超过多线程带来的性能提升。要确定这种情况是否适用于你的某个 job，可以使用 CPU 分析器来测量 Unity 在有无多线程的情况下运行你的 job 代码所需的时间。如果调度开销使得 Unity 使用多线程运行 job 代码所需的时间更长，请尝试以下方法来优化作业：<br />
+</p>
+
+<ul class="org-ul">
+<li>在主线程上运行 job。<br /></li>
+<li>如果系统是非托管的 ISystem，用 SystemAPI.Query 和普通的 foreach 替换 job。然后你可以将 BurstCompile 属性应用到包含 SystemAPI.Query 的函数上，以 Burst 编译 query 函数和你的代码。<br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org1561351" class="outline-4">
+<h4 id="org1561351">Spawner example</h4>
+<div class="outline-text-4" id="text-org1561351">
+<p>
+实现一个 ECS 示例，该示例创建一个 Spawner，读取和写入 components 数据，并在运行时实例化 entities。<br />
+</p>
+
+<p>
+本部分文档的主题是工作流程步骤，建议按照顺序阅读。每个任务都是后续任务的前提条件。<br />
+</p>
+<ul class="org-ul">
+<li>Create the subscene for the spawner example<br /></li>
+<li>Create a component for the spawner example<br /></li>
+<li>Create the spawner entity for the spawner example<br /></li>
+<li>Create the system for the spawner example<br /></li>
+<li>Optimize the system for the spawner example<br /></li>
+</ul>
+</div>
+
+<div id="outline-container-orgf5d0692" class="outline-5">
+<h5 id="orgf5d0692">Create the subscene for the spawner example</h5>
+<div class="outline-text-5" id="text-orgf5d0692">
+<p>
+ECS 工作流程的第一步是创建一个子场景，以包含应用程序的内容。本任务将展示如何创建一个新的子场景，你将在后续任务中使用该子场景来实例化 entities。<br />
+</p>
+
+<p>
+你需要在 Unity 编辑器中创建子场景。<br />
+</p>
+
+<ol class="org-ol">
+<li>在编辑器中，打开已保存为文件的场景。<br /></li>
+<li>在层级视图（Hierarchy）中，右键点击并选择“New Sub Scene &gt; Empty Scene”。<br /></li>
+<li>在出现的提示中，保存新的子场景。Unity 会将子场景添加到打开的场景中，你现在可以使用它了。<br /></li>
+</ol>
+</div>
+</div>
+
+<div id="outline-container-orgaf16e2f" class="outline-5">
+<h5 id="orgaf16e2f">Create a component for the spawner example</h5>
+<div class="outline-text-5" id="text-orgaf16e2f">
+<p>
+本任务展示如何创建一个 ECS component 来存储生成器示例的数据。后续任务将使用此 component 中的数据来确定生成器应该实例化哪个 entity、entity 实例化的频率以及实例化的位置。<br />
+</p>
+
+<p>
+在创建 component 之前，应该考虑 component 将存储的数据类型及其使用的上下文。然后可以决定使用哪种 component 类型来实现该 component。生成器示例的 component 将存储以下内容：<br />
+</p>
+
+<ul class="org-ul">
+<li>要实例化的 Prefab。<br /></li>
+<li>实例化 Prefab 的位置。<br /></li>
+<li>实例化 Prefab 的频率。<br /></li>
+<li>生成器上次实例化 Prefab 的时间。<br /></li>
+</ul>
+
+<p>
+存储这些数据的最合适的组件类型是非托管组件(Unmanaged components)。<br />
+</p>
+<ul class="org-ul">
+<li><a href="https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/components-unmanaged.html">https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/components-unmanaged.html</a><br /></li>
+</ul>
+
+<p>
+创建组件<br />
+</p>
+<ol class="org-ol">
+<li>创建一个名为 `Spawner` 的 C# 脚本。<br /></li>
+<li>用以下代码示例替换文件内容：<br /></li>
+</ol>
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">Unity</span>.<span style="color: #7590db;">Entities</span>;
+<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">Unity</span>.<span style="color: #7590db;">Mathematics</span>;
+
+<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">struct</span> <span style="color: #ce537a; font-weight: bold;">Spawner</span> : <span style="color: #ce537a; font-weight: bold;">IComponentData</span>
+{
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">Entity</span> <span style="color: #7590db;">Prefab</span>;
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float3</span> <span style="color: #7590db;">SpawnPosition</span>;
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #7590db;">NextSpawnTime</span>;
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #7590db;">SpawnRate</span>;
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf765f10" class="outline-5">
+<h5 id="orgf765f10">Create the spawner entity for the spawner example</h5>
+<div class="outline-text-5" id="text-orgf765f10">
+<p>
+本任务演示了烘焙过程如何为每个 authoring GameObject 创建一个 primary entity。然后展示如何创建一个 authoring GameObject 并使用 baker 将 ECS component 附加到生成的 primary entity。<br />
+</p>
+
+<p>
+要创建 entity 并将 ECS component 附加到其上，你需要创建以下内容：<br />
+</p>
+
+<ol class="org-ol">
+<li>一个 authoring component ，即一个 MonoBehaviour 组件，用于保存可以从编辑器传递到 ECS component 的值。<br /></li>
+<li>一个 baker，用于将 ECS component 附加到 entity，并使用 authoring component 中的值填充 ECS component。<br /></li>
+</ol>
+
+<p>
+创建生成器 Entity<br />
+</p>
+
+<ol class="org-ol">
+<li><p>
+创建一个名为 `SpawnerAuthoring` 的新 C# 脚本，并用以下代码示例替换文件内容。此代码示例包含创作组件和 baker。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-csharp">  <span style="color: #4f97d7; font-weight: bold;">using</span> Unity.Entities;
+  <span style="color: #4f97d7; font-weight: bold;">using</span> UnityEngine;
+
+  <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">SpawnerAuthoring</span> : <span style="color: #ce537a; font-weight: bold;">MonoBehaviour</span>
+  {
+      <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">GameObject</span> <span style="color: #7590db;">Prefab</span>;
+      <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">float</span> <span style="color: #7590db;">SpawnRate</span> = 1.0f;
+      <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">Vector3</span> <span style="color: #7590db;">SpawnPosition</span>;
+  }
+
+  <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">SpawnerBaker</span> : <span style="color: #ce537a; font-weight: bold;">Baker</span>&lt;<span style="color: #ce537a; font-weight: bold;">SpawnerAuthoring</span>&gt;
+  {
+      <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">override</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Bake</span>(<span style="color: #ce537a; font-weight: bold;">SpawnerAuthoring</span> <span style="color: #7590db;">authoring</span>)
+      {
+          <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">entity</span> = <span style="color: #bc6ec5; font-weight: bold;">GetEntity</span>(TransformUsageFlags.Dynamic);
+          <span style="color: #bc6ec5; font-weight: bold;">AddComponent</span>(entity, <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">Spawner</span>
+          {
+              <span style="color: #7590db;">Prefab</span> = <span style="color: #bc6ec5; font-weight: bold;">GetEntity</span>(authoring.Prefab, TransformUsageFlags.Dynamic),
+              <span style="color: #7590db;">SpawnPosition</span> = authoring.SpawnPosition,
+              <span style="color: #7590db;">NextSpawnTime</span> = 0.0f,
+              <span style="color: #7590db;">SpawnRate</span> = authoring.SpawnRate
+          });
+      }
+  }
+</pre>
+</div></li>
+
+<li>在子场景中创建一个名为 `Spawner` 的空游戏对象，并将 `SpawnerAuthoring` 组件附加到该对象上。<br /></li>
+<li>创建一个要生成的预制体。<br /></li>
+<li>选择 `Spawner` 游戏对象，并在 Inspector 中将预制体分配到 `Prefab` 属性，并将 `Spawn Rate` 设置为 2。<br /></li>
+<li>打开 Entities Hierarchy window ，并将数据模式设置为 runtime 或 mixed。这两种数据模式都显示烘焙系统从 authoring GameObject 生成的 entity。<br />
+从 Window &gt; Entities &gt; Hierarchy 打开 Entities Hierarchy window<br /></li>
+<li>在 Entities Hierarchy window 中选择 `Spawner` 实体。Entities Hierarchy window 显示 GameObjects 和 Entities。为了区分两者，Entity 以六边形图标表示。<br /></li>
+<li>在 Spawner 实体的 Inspector 中，打开 Entity Baking Preview。这将显示附加的 Spawner component 以及 baker 设置的组件值。<br /></li>
+</ol>
+</div>
+</div>
+<div id="outline-container-org544e5d1" class="outline-5">
+<h5 id="org544e5d1">Create the system for the spawner example</h5>
+<div class="outline-text-5" id="text-org544e5d1">
+<p>
+本任务展示如何创建一个与 Burst 兼容的 system，该 system 查询 components，读取和写入 component 值，并在运行时实例化 entities。<br />
+</p>
+
+<p>
+创建 Spawner system<br />
+</p>
+<ol class="org-ol">
+<li>创建一个名为 `SpawnerSystem` 的新 C# 脚本，并用以下代码示例替换文件内容。当你进入播放模式时，Unity 会创建一个 world instance 并将每个 system 添加到该默认 world 中。<br />
+有关更多信息，请参阅 Initialization: <a href="https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/concepts-worlds.html#initialization">https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/concepts-worlds.html#initialization</a><br /></li>
+<li>进入播放模式。你应该会看到 system 以你设置的速率实例化你分配的预制体。如果打开 Entities Hierarchy window，你可以看到 system 实例化的 entities 出现。<br />
+注意：如果在场景视图中看不到 entities，请确保安装并设置 Entities Graphics 以及 Universal Render Pipeline 或 High Definition Render Pipeline。<br /></li>
+</ol>
+
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">Unity</span>.<span style="color: #7590db;">Entities</span>;
+<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">Unity</span>.<span style="color: #7590db;">Transforms</span>;
+<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">Unity</span>.<span style="color: #7590db;">Burst</span>;
+
+[<span style="color: #7590db;">BurstCompile</span>]
+<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">partial</span> <span style="color: #4f97d7; font-weight: bold;">struct</span> SpawnerSystem : <span style="color: #ce537a; font-weight: bold;">ISystem</span>
+{
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">OnCreate</span>(<span style="color: #4f97d7; font-weight: bold;">ref</span> <span style="color: #ce537a; font-weight: bold;">SystemState</span> <span style="color: #7590db;">state</span>) { }
+
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">OnDestroy</span>(<span style="color: #4f97d7; font-weight: bold;">ref</span> <span style="color: #ce537a; font-weight: bold;">SystemState</span> <span style="color: #7590db;">state</span>) { }
+
+    [<span style="color: #7590db;">BurstCompile</span>]
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">OnUpdate</span>(<span style="color: #4f97d7; font-weight: bold;">ref</span> <span style="color: #ce537a; font-weight: bold;">SystemState</span> <span style="color: #7590db;">state</span>)
+    {
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Queries for all Spawner components. Uses RefRW because this system wants</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">to read from and write to the component. If the system only needed read-only</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">access, it would use RefRO instead.</span>
+        <span style="color: #4f97d7; font-weight: bold;">foreach</span> (<span style="color: #ce537a; font-weight: bold;">RefRW</span>&lt;<span style="color: #ce537a; font-weight: bold;">Spawner</span>&gt; <span style="color: #7590db;">spawner</span> <span style="color: #4f97d7; font-weight: bold;">in</span> SystemAPI.Query&lt;<span style="color: #ce537a; font-weight: bold;">RefRW</span>&lt;<span style="color: #ce537a; font-weight: bold;">Spawner</span>&gt;&gt;())
+        {
+            <span style="color: #bc6ec5; font-weight: bold;">ProcessSpawner</span>(<span style="color: #4f97d7; font-weight: bold;">ref</span> <span style="color: #ce537a; font-weight: bold;">state</span>, spawner);
+        }
+    }
+
+    <span style="color: #4f97d7; font-weight: bold;">private</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">ProcessSpawner</span>(<span style="color: #4f97d7; font-weight: bold;">ref</span> <span style="color: #ce537a; font-weight: bold;">SystemState</span> <span style="color: #7590db;">state</span>, <span style="color: #ce537a; font-weight: bold;">RefRW</span>&lt;<span style="color: #ce537a; font-weight: bold;">Spawner</span>&gt; <span style="color: #7590db;">spawner</span>)
+    {
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">If the next spawn time has passed.</span>
+        <span style="color: #4f97d7; font-weight: bold;">if</span> (spawner.ValueRO.NextSpawnTime &lt; SystemAPI.Time.ElapsedTime)
+        {
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Spawns a new entity and positions it at the spawner.</span>
+            <span style="color: #ce537a; font-weight: bold;">Entity</span> <span style="color: #7590db;">newEntity</span> = state.EntityManager.<span style="color: #bc6ec5; font-weight: bold;">Instantiate</span>(spawner.ValueRO.Prefab);
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">LocalPosition.FromPosition returns a Transform initialized with the given position.</span>
+            state.EntityManager.<span style="color: #bc6ec5; font-weight: bold;">SetComponentData</span>(newEntity, LocalTransform.<span style="color: #bc6ec5; font-weight: bold;">FromPosition</span>(spawner.ValueRO.SpawnPosition));
+
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Resets the next spawn time.</span>
+            spawner.ValueRW.NextSpawnTime = (<span style="color: #ce537a; font-weight: bold;">float</span>)SystemAPI.Time.ElapsedTime + spawner.ValueRO.SpawnRate;
+        }
+    }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgcea3477" class="outline-5">
+<h5 id="orgcea3477">Optimize the system for the spawner example</h5>
+<div class="outline-text-5" id="text-orgcea3477">
+<p>
+本任务展示如何修改 System，使其使用 job，该 job 会在多个线程上并行运行并且与 Burst 兼容。<br />
+</p>
+
+<p>
+注意：<br />
+在修改 system 以在多个线程上并行运行之前，请考虑你的 system 是否影响足够多的实体数据，以使多线程的好处超过调度作业的开销。有关更多信息，请参阅 Optimize systems。<br />
+Optimize systems <a href="https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/ecs-workflow-intro.html#optimize-systems">https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/ecs-workflow-intro.html#optimize-systems</a><br />
+</p>
+
+<p>
+本任务使用 `IJobEntity` 重新创建 `SpawnerSystem`，并调度作业在多个线程上并行运行。使用 `IJobEntity` 会改变你查询和迭代组件数据的方式，并改变你实例化新实体的方式。有关因 `IJobEntity` 引起的组件数据查询和迭代更改的信息，请参阅 Specify a query。<br />
+Specify a query <a href="https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/iterating-data-ijobentity.html#specify-a-query">https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/iterating-data-ijobentity.html#specify-a-query</a><br />
+</p>
+
+<p>
+Unity 只能在主线程上创建实体，这意味着并行作业必须使用 Entity Command Buffer 来记录创建和配置新实体的命令。并行作业运行后，Unity 会在主线程上回放实体命令缓冲区，以实际创建和配置实体。有关更多信息，请参阅 Use EntityCommandBuffer in a parallel job 和 Deterministic playback。<br />
+</p>
+<ul class="org-ul">
+<li>Use EntityCommandBuffer in a parallel job <a href="https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/systems-entity-command-buffer-use.html#parallel-jobs">https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/systems-entity-command-buffer-use.html#parallel-jobs</a><br /></li>
+<li>Deterministic playback <a href="https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/systems-entity-command-buffer-playback.html#deterministic-playback-in-parallel-jobs">https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/systems-entity-command-buffer-playback.html#deterministic-playback-in-parallel-jobs</a><br /></li>
+</ul>
+
+<p>
+优化 Spawner system<br />
+</p>
+<ol class="org-ol">
+<li>打开 `SpawnerSystem`。<br /></li>
+<li>用以下代码示例替换文件内容。<br /></li>
+<li>进入播放模式。你应该会看到 system 的行为与之前相同。然而，如果打开 Profiler window，你应该会看到 jobs 在多个线程上运行。注意：为了更清晰地看到多线程的结果，可以在子场景中复制 Spawner，以便 system 处理多个 Spawner component。<br /></li>
+</ol>
+
+<div class="org-src-container">
+<pre class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">Unity</span>.<span style="color: #7590db;">Collections</span>;
+<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">Unity</span>.<span style="color: #7590db;">Entities</span>;
+<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">Unity</span>.<span style="color: #7590db;">Transforms</span>;
+<span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #7590db;">Unity</span>.<span style="color: #7590db;">Burst</span>;
+
+[<span style="color: #7590db;">BurstCompile</span>]
+<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">partial</span> <span style="color: #4f97d7; font-weight: bold;">struct</span> OptimizedSpawnerSystem : <span style="color: #ce537a; font-weight: bold;">ISystem</span>
+{
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">OnCreate</span>(<span style="color: #4f97d7; font-weight: bold;">ref</span> <span style="color: #ce537a; font-weight: bold;">SystemState</span> <span style="color: #7590db;">state</span>) { }
+
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">OnDestroy</span>(<span style="color: #4f97d7; font-weight: bold;">ref</span> <span style="color: #ce537a; font-weight: bold;">SystemState</span> <span style="color: #7590db;">state</span>) { }
+
+    [<span style="color: #7590db;">BurstCompile</span>]
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">OnUpdate</span>(<span style="color: #4f97d7; font-weight: bold;">ref</span> <span style="color: #ce537a; font-weight: bold;">SystemState</span> <span style="color: #7590db;">state</span>)
+    {
+        EntityCommandBuffer.<span style="color: #ce537a; font-weight: bold;">ParallelWriter</span> <span style="color: #7590db;">ecb</span> = <span style="color: #bc6ec5; font-weight: bold;">GetEntityCommandBuffer</span>(<span style="color: #4f97d7; font-weight: bold;">ref</span> <span style="color: #ce537a; font-weight: bold;">state</span>);
+
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Creates a new instance of the job, assigns the necessary data, and schedules the job in parallel.</span>
+        <span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #ce537a; font-weight: bold;">ProcessSpawnerJob</span>
+        {
+            <span style="color: #7590db;">ElapsedTime</span> = SystemAPI.Time.ElapsedTime,
+            <span style="color: #7590db;">Ecb</span> = ecb
+        }.<span style="color: #bc6ec5; font-weight: bold;">ScheduleParallel</span>();
+    }
+
+    <span style="color: #4f97d7; font-weight: bold;">private</span> EntityCommandBuffer.<span style="color: #ce537a; font-weight: bold;">ParallelWriter</span> <span style="color: #bc6ec5; font-weight: bold;">GetEntityCommandBuffer</span>(<span style="color: #4f97d7; font-weight: bold;">ref</span> <span style="color: #ce537a; font-weight: bold;">SystemState</span> <span style="color: #7590db;">state</span>)
+    {
+        <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">ecbSingleton</span> = SystemAPI.GetSingleton&lt;BeginSimulationEntityCommandBufferSystem.Singleton&gt;();
+        <span style="color: #ce537a; font-weight: bold;">var</span> <span style="color: #7590db;">ecb</span> = ecbSingleton.<span style="color: #bc6ec5; font-weight: bold;">CreateCommandBuffer</span>(state.WorldUnmanaged);
+        <span style="color: #4f97d7; font-weight: bold;">return</span> ecb.<span style="color: #bc6ec5; font-weight: bold;">AsParallelWriter</span>();
+    }
+}
+
+[<span style="color: #7590db;">BurstCompile</span>]
+<span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #4f97d7; font-weight: bold;">partial</span> <span style="color: #4f97d7; font-weight: bold;">struct</span> ProcessSpawnerJob : <span style="color: #ce537a; font-weight: bold;">IJobEntity</span>
+{
+    <span style="color: #4f97d7; font-weight: bold;">public</span> EntityCommandBuffer.<span style="color: #ce537a; font-weight: bold;">ParallelWriter</span> <span style="color: #7590db;">Ecb</span>;
+    <span style="color: #4f97d7; font-weight: bold;">public</span> <span style="color: #ce537a; font-weight: bold;">double</span> <span style="color: #7590db;">ElapsedTime</span>;
+
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">IJobEntity generates a component data query based on the parameters of its `Execute` method.</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">This example queries for all Spawner components and uses `ref` to specify that the operation</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">requires read and write access. Unity processes `Execute` for each entity that matches the</span>
+    <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">component data query.</span>
+    <span style="color: #4f97d7; font-weight: bold;">private</span> <span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #bc6ec5; font-weight: bold;">Execute</span>([<span style="color: #7590db;">ChunkIndexInQuery</span>] <span style="color: #ce537a; font-weight: bold;">int</span> chunkIndex, <span style="color: #4f97d7; font-weight: bold;">ref</span> <span style="color: #ce537a; font-weight: bold;">Spawner</span> <span style="color: #7590db;">spawner</span>)
+    {
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">If the next spawn time has passed.</span>
+        <span style="color: #4f97d7; font-weight: bold;">if</span> (spawner.NextSpawnTime &lt; ElapsedTime)
+        {
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Spawns a new entity and positions it at the spawner.</span>
+            <span style="color: #ce537a; font-weight: bold;">Entity</span> <span style="color: #7590db;">newEntity</span> = Ecb.<span style="color: #bc6ec5; font-weight: bold;">Instantiate</span>(chunkIndex, spawner.Prefab);
+            Ecb.<span style="color: #bc6ec5; font-weight: bold;">SetComponent</span>(chunkIndex, newEntity, LocalTransform.<span style="color: #bc6ec5; font-weight: bold;">FromPosition</span>(spawner.SpawnPosition));
+
+            <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Resets the next spawn time.</span>
+            spawner.NextSpawnTime = (<span style="color: #ce537a; font-weight: bold;">float</span>)ElapsedTime + spawner.SpawnRate;
+        }
+    }
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org819994b" class="outline-3">
+<h3 id="org819994b">Entity Component System concepts</h3>
+<div class="outline-text-3" id="text-org819994b">
+<p>
+Entities package 使用 ECS 架构来组织代码和数据。一个 entity 是一个唯一标识符，类似于轻量级的非托管 GameObject 替代品。Entity 作为一个 ID，与包含 Entity 数据的各个 components 相关联。与 GameObject 不同，Entities 不包含代码：它们是数据单元，你创建的 system 会处理这些数据单元。<br />
+</p>
+</div>
+<div id="outline-container-org03c04ff" class="outline-4">
+<h4 id="org03c04ff">Entity concepts</h4>
+<div class="outline-text-4" id="text-org03c04ff">
+<p>
+一个 Entity 代表程序中具有自己数据集的离散元素，例如一个 character, visual effect, UI element, 甚至是抽象的东西如网络事务。Entity 类似于轻量级的非托管 GameObject，表示程序的特定元素。然而，一个 Entity 充当一个 ID，将各个独特的组件关联在一起，而不是包含任何代码或作为其关联组件的容器。<br />
+</p>
+
+<p>
+Entities 集合存储在一个 World（世界）中，世界的 EntityManager 管理世界中的所有实体。EntityManager 包含你可以用来创建、销毁和修改世界中实体的方法。这些方法包括以下常见方法：<br />
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">方法</th>
+<th scope="col" class="org-left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">CreateEntity</td>
+<td class="org-left">创建一个新实体。</td>
+</tr>
+
+<tr>
+<td class="org-left">Instantiate</td>
+<td class="org-left">复制现有实体并从该副本创建一个新实体。</td>
+</tr>
+
+<tr>
+<td class="org-left">DestroyEntity</td>
+<td class="org-left">销毁现有实体。</td>
+</tr>
+
+<tr>
+<td class="org-left">AddComponent</td>
+<td class="org-left">向现有实体添加组件。</td>
+</tr>
+
+<tr>
+<td class="org-left">RemoveComponent</td>
+<td class="org-left">从现有实体中移除组件。</td>
+</tr>
+
+<tr>
+<td class="org-left">GetComponent</td>
+<td class="org-left">检索实体组件的值。</td>
+</tr>
+
+<tr>
+<td class="org-left">SetComponent</td>
+<td class="org-left">覆盖实体组件的值。</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+注意：<br />
+当你创建或销毁实体时，这是一个结构性变化，会影响应用程序的性能。有关更多信息，请参阅结 Structural changes。<br />
+</p>
+<ul class="org-ul">
+<li>Structural changes <a href="https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/concepts-structural-changes.html">https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/concepts-structural-changes.html</a><br /></li>
+</ul>
+
+<p>
+实体没有类型，但你可以通过与其关联的 component 类型对实体进行分类。EntityManager 跟踪现有实体上组件的独特组合。这些独特组合称为 archetypes（原型）。<br />
+</p>
+<ul class="org-ul">
+<li>Archetypes concepts <a href="https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/concepts-archetypes.html">https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/concepts-archetypes.html</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org2356234" class="outline-4">
+<h4 id="org2356234">Component concepts</h4>
+<div class="outline-text-4" id="text-org2356234">
+<p>
+在 ECS 架构中，component 包含 system 可以读取或写入的实体数据。<br />
+</p>
+
+<p>
+使用没有方法的 IComponentData 接口将结构标记为组件类型。此组件类型只能包含非托管数据，并且可以包含方法，但最好只包含纯数据。如果你想创建托管组件，可以将其定义为类。有关更多信息，请参阅 Managed components。<br />
+</p>
+<ul class="org-ul">
+<li>Managed components <a href="https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/components-managed.html">https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/components-managed.html</a><br /></li>
+</ul>
+
+<p>
+实体组件的独特集合称为原型。ECS 架构将组件数据按原型存储在称为块的 16KiB 内存中。有关 ECS 如何存储组件数据的更多信息，请参阅 Archetype concepts。<br />
+</p>
+<ul class="org-ul">
+<li>Archetypes concepts <a href="https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/concepts-archetypes.html">https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/concepts-archetypes.html</a><br /></li>
+</ul>
+</div>
+<div id="outline-container-org6b0f6b7" class="outline-5">
+<h5 id="org6b0f6b7">Component types</h5>
+<div class="outline-text-5" id="text-org6b0f6b7">
+<p>
+有不同类型的组件用于不同的目的。根据你希望如何管理项目中的数据，某些组件允许更精细地控制应用程序的性能：<br />
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">Component</td>
+<td class="org-left">Description</td>
+</tr>
+
+<tr>
+<td class="org-left">Unmanaged components</td>
+<td class="org-left">最常见的组件类型，但只能存储某些类型的字段。</td>
+</tr>
+
+<tr>
+<td class="org-left">Managed components</td>
+<td class="org-left">可以存储任何字段类型的托管组件类型。</td>
+</tr>
+
+<tr>
+<td class="org-left">Shared components</td>
+<td class="org-left">根据其值将实体分组在块中。</td>
+</tr>
+
+<tr>
+<td class="org-left">Cleanup components</td>
+<td class="org-left">当你销毁包含清理组件的实体时，Unity 会移除所有非清理组件。这对于标记在销毁时需要清理的实体非常有用。</td>
+</tr>
+
+<tr>
+<td class="org-left">Tag components</td>
+<td class="org-left">不存储数据且不占用空间的非托管组件。你可以在实体查询中使用标记组件来过滤实体。</td>
+</tr>
+
+<tr>
+<td class="org-left">Buffer components</td>
+<td class="org-left">作为可调整大小的数组的组件。</td>
+</tr>
+
+<tr>
+<td class="org-left">Chunk components</td>
+<td class="org-left">存储与整个块相关的值的组件，而不是单个实体。</td>
+</tr>
+
+<tr>
+<td class="org-left">Enableable components</td>
+<td class="org-left">可以在运行时启用或禁用的组件，而不需要昂贵的结构性变化。</td>
+</tr>
+
+<tr>
+<td class="org-left">Singleton components</td>
+<td class="org-left">在给定世界中只有一个实例的组件。</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgbe85fd2" class="outline-4">
+<h4 id="orgbe85fd2">System concepts</h4>
+<div class="outline-text-4" id="text-orgbe85fd2">
+<p>
+System 提供将组件数据从当前状态转换为下一状态的逻辑。例如，System 可能会根据自上次更新以来的时间间隔乘以速度来更新所有移动实体的位置。<br />
+</p>
+
+<p>
+系统在主线程上每帧运行一次。System 组织成系统组的层次结构，你可以使用它来组织系统的更新顺序。<br />
+</p>
+
+<p>
+你可以在 Entities 中创建非托管系统或托管系统。要定义托管系统，创建一个继承自 SystemBase 的类。要定义非托管系统，创建一个继承自 ISystem 的结构。有关更多信息，请参阅 Systems overview。<br />
+</p>
+<ul class="org-ul">
+<li>Systems overview <a href="https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/concepts-systems.html">https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/concepts-systems.html</a><br /></li>
+</ul>
+
+<p>
+ISystem 和 SystemBase 都有三个可以重写的方法：OnUpdate、OnCreate 和 OnDestroy。系统的 OnUpdate 方法每帧执行一次。<br />
+</p>
+
+<p>
+系统只能处理一个世界中的实体，因此系统与特定世界相关联。你可以使用 World 属性返回系统附加的世界。<br />
+</p>
+
+<p>
+默认情况下，自动引导过程会创建每个系统和系统组的实例。引导过程创建一个默认世界，其中包含三个系统组：InitializationSystemGroup、SimulationSystemGroup 和 PresentationSystemGroup。默认情况下，系统实例添加到 SimulationSystemGroup。你可以使用[UpdateInGroup]属性覆盖此行为。<br />
+</p>
+
+<p>
+要禁用自动引导过程，请使用脚本定义#UNITY_DISABLE_AUTOMATIC_SYSTEM_BOOTSTRAP。<br />
+</p>
+</div>
+
+<div id="outline-container-org58842ec" class="outline-5">
+<h5 id="org58842ec">System types</h5>
+<div class="outline-text-5" id="text-org58842ec">
+<p>
+你可以使用几种类型的系统：<br />
+</p>
+
+<ul class="org-ul">
+<li>SystemBase：为托管系统提供基类。<br /></li>
+<li>ISystem：为非托管系统提供接口。<br /></li>
+<li>EntityCommandBufferSystem：为其他系统提供实体命令缓冲区实例。这允许你将结构性变化分组在一起，以提高应用程序的性能。<br /></li>
+<li>ComponentSystemGroup：提供系统的嵌套组织和更新顺序。<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgb081126" class="outline-5">
+<h5 id="orgb081126">System groups</h5>
+<div class="outline-text-5" id="text-orgb081126">
+<p>
+系统组可以有系统和其他系统组作为其子级。系统组有一个可以重写的更新方法，基类方法按排序顺序更新组的子级。<br />
+</p>
+
+<p>
+有关更多信息，请参阅 System groups。<br />
+</p>
+<ul class="org-ul">
+<li>System groups <a href="https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/systems-update-order.html">https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/systems-update-order.html</a><br /></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org641ad8e" class="outline-5">
+<h5 id="org641ad8e">Inspecting systems</h5>
+<div class="outline-text-5" id="text-org641ad8e">
+<p>
+你可以使用系统窗口检查每个世界中系统的更新顺序，并查看系统组的完整层次结构。有关更多信息，请参阅 Systems window reference。<br />
+从 Window &gt; Entities &gt; Systems 可以打开 Systems window。<br />
+</p>
+
+<ul class="org-ul">
+<li>Systems window reference <a href="https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/editor-systems-window.html">https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/editor-systems-window.html</a><br /></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgebf1878" class="outline-5">
+<h5 id="orgebf1878">Systems in the Editor</h5>
+<div class="outline-text-5" id="text-orgebf1878">
+<p>
+在编辑器中，以下图标代表不同类型的系统。当你使用特定的 Entities 窗口和 Inspector 时，你会看到这些图标。<br />
+</p>
+
+
+<div id="orga00fbdd" class="figure">
+<p><img src="./ECS/editor-system-icon.jpg" alt="editor-system-icon.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf30fd62" class="outline-4">
+<h4 id="orgf30fd62">World concepts</h4>
+<div class="outline-text-4" id="text-orgf30fd62">
+<p>
+一个世界是实体的集合。实体的 ID 号仅在其所属的世界内是唯一的。一个世界拥有一个 `EntityManager` 结构体，你可以使用它来创建、销毁和修改该世界内的实体。<br />
+</p>
+
+<p>
+一个世界拥有一组系统，这些系统通常只访问同一世界内的实体。此外，一个世界内具有相同组件类型集合的一组实体会存储在一个原型（archetype）中，原型决定了程序中组件在内存中的组织方式。<br />
+</p>
+</div>
+
+<div id="outline-container-org32e78ce" class="outline-5">
+<h5 id="org32e78ce">Initialization</h5>
+<div class="outline-text-5" id="text-org32e78ce">
+<p>
+默认情况下，当你进入播放模式时，Unity 会创建一个世界实例并将每个系统添加到该默认世界中。<br />
+</p>
+
+<p>
+如果你更喜欢手动将系统添加到默认世界中，可以创建一个实现 `ICustomBootstrap` 接口的类。<br />
+</p>
+
+<p>
+如果你想完全手动控制引导过程，可以使用以下定义来禁用默认世界的创建：<br />
+</p>
+
+<ul class="org-ul">
+<li>`#UNITY_DISABLE_AUTOMATIC_SYSTEM_BOOTSTRAP_RUNTIME_WORLD`：  禁用默认运行时世界的生成。<br /></li>
+<li>`#UNITY_DISABLE_AUTOMATIC_SYSTEM_BOOTSTRAP_EDITOR_WORLD`：   禁用默认编辑器世界的生成。<br /></li>
+<li>`#UNITY_DISABLE_AUTOMATIC_SYSTEM_BOOTSTRAP`：                禁用两个默认世界的生成。<br /></li>
+</ul>
+
+<p>
+然后，你的代码将负责创建你的世界和系统，并将这些世界的更新插入到 Unity 的可编写脚本的 PlayerLoop 中。<br />
+</p>
+
+<p>
+Unity 使用 `WorldFlags` 在编辑器中创建专门的世界。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org9efa849" class="outline-4">
+<h4 id="org9efa849">Archetype concepts</h4>
+<div class="outline-text-4" id="text-org9efa849">
+<p>
+一个原型（archetype）是世界中所有具有相同组件类型组合的实体的唯一标识符。例如，世界中所有具有组件类型 A 和 B 的实体共享一个原型。所有具有组件类型 A、B 和 C 的实体共享一个不同的原型，而所有具有组件类型 A 和 Z 的实体又共享另一个原型。<br />
+</p>
+
+<p>
+当你向实体添加或移除组件类型时，世界的 `EntityManager` 会将实体移动到合适的原型。例如，如果一个实体具有组件类型 A、B 和 C，而你移除了它的 B 组件，`EntityManager` 会将该实体移动到具有组件类型 A 和 C 的原型中。如果不存在这样的原型，`EntityManager` 会创建一个新的原型。<br />
+</p>
+
+<p>
+重要提示:<br />
+频繁移动实体会消耗大量资源并降低应用程序的性能。详情请参阅 Structural change concepts。<br />
+</p>
+<ul class="org-ul">
+<li>Structural changes concepts <a href="https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/concepts-structural-changes.html">https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/concepts-structural-changes.html</a><br /></li>
+</ul>
+
+<p>
+基于原型的实体组织方式意味着按组件类型查询实体非常高效。例如，如果你想找到所有具有组件类型 A 和 B 的实体，你可以找到所有具有这些组件类型的原型，这比扫描所有单个实体更高效。在程序的生命周期早期，现有原型的集合趋于稳定，因此可以缓存查询以提高性能。<br />
+</p>
+
+<p>
+只有当其所属的世界被销毁时，原型才会被销毁。<br />
+</p>
+</div>
+<div id="outline-container-orgb146188" class="outline-5">
+<h5 id="orgb146188">Archetype chunks</h5>
+<div class="outline-text-5" id="text-orgb146188">
+<p>
+所有具有相同原型的实体和组件都存储在称为块（chunk）的统一内存块中。每个块的大小为 16KiB，它们能存储的实体数量取决于块的原型中组件的数量和大小。`EntityManager` 会根据需要创建和销毁块。<br />
+</p>
+
+<p>
+一个块包含每种组件类型的数组，以及一个额外的数组来存储实体 ID。例如，在一个具有组件类型 A 和 B 的原型中，每个块都有三个数组：一个存储 A 组件值的数组，一个存储 B 组件值的数组，以及一个存储实体 ID 的数组。<br />
+</p>
+
+<p>
+块的数组是紧凑排列的：块的第一个实体存储在这些数组的索引 0 处，第二个实体存储在索引 1 处，后续实体依次存储在连续的索引中。当一个新实体被添加到块中时，它会存储在第一个可用的索引处。当一个实体从块中移除（无论是因为被销毁还是移动到另一个原型），块的最后一个实体会被移动以填补空缺。<br />
+</p>
+
+<p>
+当一个实体被添加到原型中时，如果该原型的现有块都已满，`EntityManager` 会创建一个新块。当最后一个实体从块中被移除时，`EntityManager` 会销毁该块。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org62126e7" class="outline-5">
+<h5 id="org62126e7">Archetypes in the Editor</h5>
+<div class="outline-text-5" id="text-org62126e7">
+<p>
+原型窗口列出了项目中所有世界的原型，并显示每个原型的已分配和未使用内存量。<br />
+</p>
+
+<p>
+在编辑器中，以下图标表示一个原型：<br />
+<img src="./ECS/editor-archetype-icon.png" alt="editor-archetype-icon.png" /><br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org59aec3f" class="outline-4">
+<h4 id="org59aec3f">Structural changes concepts</h4>
+<div class="outline-text-4" id="text-org59aec3f">
+<p>
+导致 Unity 重新组织内存块或内存中块内容的操作称为结构变化。了解哪些操作是结构变化是很重要的，因为这些操作可能消耗大量资源，并且只能在主线程上执行，不能在作业中执行。<br />
+</p>
+
+<p>
+以下操作被视为结构变化：<br />
+</p>
+<ul class="org-ul">
+<li>创建或销毁一个实体。<br /></li>
+<li>添加或移除组件。<br /></li>
+<li>设置共享组件值。<br /></li>
+</ul>
+</div>
+
+<div id="outline-container-org1219411" class="outline-5">
+<h5 id="org1219411">Create an entity</h5>
+<div class="outline-text-5" id="text-org1219411">
+<p>
+当你创建一个实体时，Unity 要么将实体添加到现有块中，要么如果没有适合该实体原型的块，则创建一个新块并将实体添加到其中。<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgb06f55c" class="outline-5">
+<h5 id="orgb06f55c">Destroy an entity</h5>
+<div class="outline-text-5" id="text-orgb06f55c">
+<p>
+当你销毁一个实体时，Unity 会将实体从其块中移除。如果移除实体在块中留下空缺，Unity 会将块中的最后一个实体移动以填补空缺。如果移除实体使块变为空，Unity 会释放该块。<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org77736a1" class="outline-5">
+<h5 id="org77736a1">Add or remove components</h5>
+<div class="outline-text-5" id="text-org77736a1">
+<p>
+当你向实体添加或移除组件时，你改变了实体的原型。Unity 将每个实体存储在与其原型匹配的块中。这意味着如果你改变了实体的原型，Unity 必须将实体移动到另一个块。如果不存在合适的块，Unity 会创建一个新的。如果移动导致前一个块出现空缺或变为空，Unity 会分别移动块中的最后一个实体以填补空缺或释放该块。<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org6412684" class="outline-5">
+<h5 id="org6412684">Set a shared component value</h5>
+<div class="outline-text-5" id="text-org6412684">
+<p>
+当你设置实体的共享组件值时，Unity 会将实体移动到符合新共享组件值的块中。如果不存在合适的块，Unity 会创建一个新的。如果移动导致前一个块出现空缺或变为空，Unity 会分别移动块中的最后一个实体以填补空缺或释放该块。<br />
+</p>
+
+<p>
+注意:<br />
+设置常规组件值不是结构变化，因为它不需要 Unity 移动实体。<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org4b68032" class="outline-5">
+<h5 id="org4b68032">Sync points</h5>
+<div class="outline-text-5" id="text-org4b68032">
+<p>
+你不能在作业中直接进行结构变化，因为这可能会使已经调度的其他作业失效，而是需要创建一个同步点。<br />
+</p>
+
+<p>
+同步点是程序执行中的一个点，它等待所有已调度的作业完成。同步点限制了你在一段时间内使用作业系统中所有工作线程的能力。因此，你应尽量避免同步点。对 ECS 数据的结构变化是同步点的主要原因。<br />
+</p>
+
+<p>
+结构变化不仅需要同步点，还会使对任何组件数据的直接引用失效。这包括 `DynamicBuffer` 实例和 `ComponentSystemBase.GetComponentDataFromEntity` 等方法提供的直接访问组件的结果。<br />
+</p>
+</div>
+
+<div id="outline-container-org230edce" class="outline-6">
+<h6 id="org230edce">Avoiding sync points</h6>
+<div class="outline-text-6" id="text-org230edce">
+<p>
+你可以使用实体命令缓冲区（Entity Command Buffer）来排队结构变化，而不是立即执行它们。你可以在帧的稍后时间点播放存储在实体命令缓冲区中的命令。这将帧中多个同步点减少为一个同步点。<br />
+</p>
+
+<p>
+每个标准的 `ComponentSystemGroup` 实例提供了一个 `EntityCommandBufferSystem` 作为组中第一个和最后一个更新的系统。如果你从这些标准系统之一获取一个实体命令缓冲区对象，所有的结构变化都会在帧中的同一点发生，从而产生一个同步点。你也可以使用实体命令缓冲区在作业中记录结构变化，而不是仅在主线程上进行。<br />
+</p>
+
+<p>
+如果你不能为某个任务使用实体命令缓冲区，请在系统执行顺序中将任何进行结构变化的系统组合在一起。如果两个系统都进行结构变化，它们顺序更新时只会产生一个同步点。<br />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org573566c" class="outline-4">
+<h4 id="org573566c">Safety in Entities</h4>
+<div class="outline-text-4" id="text-org573566c">
+<p>
+Entities package 提供了一个框架和一组 API，使你可以使用面向数据的设计原则高效地转换数据。这涉及利用 Burst 编译器和本地互操作尽可能直接访问数据。这种方法有时违反了 C# 语言内置的安全机制。<br />
+</p>
+
+<p>
+许多 Entities package 的内部 API 使用不安全的代码块和原始指针来尽可能获得最佳性能。一些 API 返回可能超过引用数据生命周期的数据引用。本页包含关于实体安全性的信息以及你可能遇到的一些陷阱。<br />
+</p>
+</div>
+<div id="outline-container-org7f65063" class="outline-5">
+<h5 id="org7f65063">Guarded safety violation</h5>
+<div class="outline-text-5" id="text-org7f65063">
+<p>
+受保护的安全违规<br />
+</p>
+
+<p>
+在大多数情况下，Entities framework and supporting packages 会在编辑器中和启用安全检查时尝试防止安全问题。在这些情况下的安全错误应抛出有效错误，提供有关如何修复的信息，并防止编辑器崩溃。然而，在运行时构建中，不保证这些情况不会导致崩溃或内存损坏。你还可以通过作业中的安全检查设置（Jobs &gt; Burst &gt; Safety Checks）禁用某些安全检查。有关详细信息，请参阅 Data access errors。<br />
+</p>
+<ul class="org-ul">
+<li>Data access errors <a href="https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/systems-looking-up-data.html#data-access-errors">https://docs.unity3d.com/Packages/com.unity.entities@1.3/manual/systems-looking-up-data.html#data-access-errors</a><br /></li>
+</ul>
+</div>
+<div id="outline-container-org8834c2d" class="outline-6">
+<h6 id="org8834c2d">Structural changes</h6>
+<div class="outline-text-6" id="text-org8834c2d">
+<p>
+实体安全性最常见的问题之一是结构变化使数据无效。这是因为结构变化修改了实体的原型，从而将实体移动到另一个块中。<br />
+</p>
+
+<p>
+注意:<br />
+启用和禁用可启用组件不是结构变化。然而，所有启用或禁用组件的作业必须在检查启用状态之前完成，以确保所有对组件启用状态的更改已完成。<br />
+</p>
+
+<p>
+Entities API 将数据存储在块中，通常通过作业系统或主线程访问。作业系统通常处理所有通过 `NativeContainers` 传入的数据的安全性，并使用 notations 标记数据是读取、写入还是两者。然而，任何导致结构变化的 API 可能会使数据在内存中移动并使对该数据的任何引用失效。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org5c8d089" class="outline-6">
+<h6 id="org5c8d089">RefRW/RefRO</h6>
+<div class="outline-text-6" id="text-org5c8d089">
+<p>
+Entities package 包含显式引用类型，你可以使用这些类型将包含的类型标记为 ReadWrite（RefRW）或 ReadOnly（RefRO）。当启用安全检查时，这些引用类型会进行检查，以确保包含的类型在运行时仍然有效。结构变化可能导致包含的类型不再有效。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf80fae7" class="outline-5">
+<h5 id="orgf80fae7">Unguarded safety violation</h5>
+<div class="outline-text-5" id="text-orgf80fae7">
+<p>
+未受保护的安全违规<br />
+</p>
+
+<p>
+有一些情况没有受到保护。本部分概述了由于 Entities API 导致编辑器中崩溃或内存损坏的情况。<br />
+</p>
+</div>
+<div id="outline-container-org2e47f19" class="outline-6">
+<h6 id="org2e47f19">IJobEntity</h6>
+<div class="outline-text-6" id="text-org2e47f19">
+<p>
+IJobEntity 允许你使用外部 `EntityQuery` 调度作业。这使用 `EntityQuery` 检索实体，然后使用这些实体执行 IJobEntity `Execute` 方法。ECS 不会检查实体是否实际具有组件参数，因此你必须确保这些参数与查询的组件保持同步。如果 `Execute` 参数与查询的组件不匹配，可能会导致崩溃或内存损坏。<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org8d0dee9" class="outline-6">
+<h6 id="org8d0dee9">InternalCompilerInterface</h6>
+<div class="outline-text-6" id="text-org8d0dee9">
+<p>
+`InternalCompilerInterface` 静态类包含许多方法，这些方法将一些 DOTS 内部内容暴露给源生成代码。这是必要的，因为生成的代码通常只能调用公共 API。<br />
+</p>
+
+<p>
+警告:<br />
+不要使用 `InternalCompilerInterface` 中包含的 API。它们仅在生成代码的上下文中调用，未来可能会发生变化。<br />
+</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orga5dde4d" class="outline-3">
+<h3 id="orga5dde4d">参考资料</h3>
+<div class="outline-text-3" id="text-orga5dde4d">
+<ul class="org-ul">
+<li>ECS concepts <a href="https://docs.unity3d.com/Packages/com.unity.entities@0.17/manual/ecs_core.html">https://docs.unity3d.com/Packages/com.unity.entities@0.17/manual/ecs_core.html</a><br /></li>
+<li>ECS 模型下的处理模式 <a href="https://blog.codingnow.com/2021/07/lua_ecs.html">https://blog.codingnow.com/2021/07/lua_ecs.html</a><br /></li>
+<li>开源 C++ ECS 框架：UECS <a href="https://zhuanlan.zhihu.com/p/141255752">https://zhuanlan.zhihu.com/p/141255752</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org978d136" class="outline-2">
+<h2 id="org978d136">Implement ECS With CPP</h2>
+<div class="outline-text-2" id="text-org978d136">
+</div>
+<div id="outline-container-org0ef04c4" class="outline-3">
+<h3 id="org0ef04c4">参考资料</h3>
+<div class="outline-text-3" id="text-org0ef04c4">
+<ul class="org-ul">
+<li>Ubpa Entity-Component-System in Unity3D-style <a href="https://github.com/Ubpa/UECS">https://github.com/Ubpa/UECS</a><br /></li>
+<li>luaecs <a href="https://github.com/cloudwu/luaecs">https://github.com/cloudwu/luaecs</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<div id="vssue"></div>
+        <link rel="stylesheet" href="https://unpkg.com/vssue/dist/vssue.min.css">
+        <script src="https://unpkg.com/vue@2.7.10/dist/vue.runtime.min.js"></script>
+        <script src="https://unpkg.com/vssue/dist/vssue.github.min.js"></script>
+        <script>
+          new Vue({
+            el: '#vssue',
+            render: h => h('Vssue', {
+              props: {
+                // 在这里设置当前页面对应的 Issue 标题
+                title: 'ECS',
+
+                // 在这里设置你使用的平台的 OAuth App 配置
+                options: {
+                    owner: 'wolfand11',
+                    repo: 'blog_comments',
+                    clientId: 'a02b49185d85859cb92c',
+                    clientSecret: '6f123085c6f1ce339e2517d24e5b099fa1dc9c85', // 只有在使用某些平台时需要
+                },
+              }
+            })
+          })
+        </script>
+</div>
+</body>
+</html>

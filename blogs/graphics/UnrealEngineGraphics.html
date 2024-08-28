@@ -1,0 +1,1347 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2024-08-28 Wed 09:39 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>UnrealEngineGraphics</title>
+<meta name="generator" content="Org Mode" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+         <meta name="viewport" content="width=device-width, initial-scale=1" />
+         <link rel="stylesheet" title="Standard" href="https://wolfand11.github.io/res/worg_theme/css/worg.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Zenburn" href="https://wolfand11.github.io/res/worg_theme/css/worg-zenburn.css" type="text/css" />
+         <link rel="alternate stylesheet" title="Classic" href="https://wolfand11.github.io/res/worg_theme/css/worg-classic.css" type="text/css" />
+         <link rel="icon" href="https://wolfand11.github.io/res/favicon.ico" type="image/ico" />
+         <script type="text/javascript" src="https://wolfand11.github.io/res/blog-tools.js"></script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href=""> UP </a>
+ |
+ <a accesskey="H" href="https://wolfand11.github.io"> HOME </a>
+</div><div id="content" class="content">
+<h1 class="title">UnrealEngineGraphics</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#orgf063358">UnrealEngineGraphics</a>
+<ul>
+<li><a href="#org84444ac">Graphics Programming</a>
+<ul>
+<li><a href="#org359bbbb">Graphics Programming Overview</a>
+<ul>
+<li><a href="#org7847078">Getting Started</a></li>
+<li><a href="#org015f251">Modules</a></li>
+<li><a href="#orgcde64f3">Scene representation</a>
+<ul>
+<li><a href="#org8f62cf2">Primary scene classes (主要场景类)</a></li>
+<li><a href="#org1c71d7d">Material classes</a></li>
+<li><a href="#org3c5b303">Primitive components and proxies</a></li>
+<li><a href="#orgca3aa1c">FPrimitiveSceneProxy 和 FPrimitiveSceneInfo</a></li>
+<li><a href="#orgcb09695">Important FPrimitiveSceneProxy methods</a></li>
+<li><a href="#org033baba">Scene rendering order</a></li>
+<li><a href="#orgc8ed957">Relevance (相关性)</a></li>
+<li><a href="#org0a00ca9">Drawing Policies (绘制规则)</a></li>
+<li><a href="#org7c4c3a6">Drawing Policy methods</a></li>
+</ul>
+</li>
+<li><a href="#org18e6538">Rendering paths</a>
+<ul>
+<li><a href="#orgafd82ec">Dynamic rendering path</a></li>
+<li><a href="#org09362d4">Static rendering path</a></li>
+</ul>
+</li>
+<li><a href="#org2e035d8">High level Rendering order</a></li>
+<li><a href="#org2afabf8">Render Hardware Interface(RHI)</a>
+<ul>
+<li><a href="#orga073ba1">Rendering state grouping</a></li>
+<li><a href="#org5488825">Rendering state defaults</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgbacc360">Mesh Drawing Pipeline</a>
+<ul>
+<li><a href="#org15705cb">Cached and Dynamic Mesh Batches</a></li>
+<li><a href="#org336f06b">FMeshPassProcessor</a></li>
+<li><a href="#orgc9ade76">Shader Bindings</a>
+<ul>
+<li><a href="#org43bb1ff">FMeshDrawCommand Performance Hazards</a></li>
+</ul>
+</li>
+<li><a href="#org0d22a77">Pass Types</a>
+<ul>
+<li><a href="#org7c2429b">FParallelMeshDrawCommandPass</a></li>
+<li><a href="#orgb7cb499">DrawDynamicMeshPass</a></li>
+</ul>
+</li>
+<li><a href="#orgfe3a8f4">Cached Mesh Draw Commands</a>
+<ul>
+<li><a href="#org694dc07">Cache Invalidation</a></li>
+<li><a href="#orge0b3102">Resource Lifetime Management</a></li>
+</ul>
+</li>
+<li><a href="#orgbaed1e6">Draw Call Merging</a>
+<ul>
+<li><a href="#org9ee2eb2">Dynamic Instancing</a></li>
+<li><a href="#orgb11f68a">GPU Scene</a></li>
+<li><a href="#org625ee80">Instancing Efficiency</a></li>
+</ul>
+</li>
+<li><a href="#org5214c23">Mesh Drawing Parallelism</a></li>
+<li><a href="#org5d1d7f1">Console Variables</a></li>
+<li><a href="#org9c91444">TMP</a></li>
+</ul>
+</li>
+<li><a href="#orgd786666">Parallel Rendering Overview</a></li>
+<li><a href="#org0b0ec0b">Threaded Rendering</a></li>
+<li><a href="#org86b43f8">Render Dependency Graph</a></li>
+<li><a href="#org7e5a169">Shader Development</a></li>
+<li><a href="#orgc76a55a">FShaderCache</a></li>
+<li><a href="#org49be4be">AsyncCompute</a></li>
+<li><a href="#org51ea89c">Shaders in Plugins</a></li>
+<li><a href="#org50e072b">Overview of Shaders in Plugins</a></li>
+<li><a href="#org47ed1b2">Creating a New Global Shader as a Plugin</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org0df105c">参考资料</a></li>
+</ul>
+</div>
+</div>
+<p>
+UnrealEngineGraphics note.<br />
+</p>
+<div class="HTML" id="org86b5c35">
+<p>
+&lt;!&#x2013; more &#x2013;&gt;<br />
+</p>
+
+</div>
+
+<div id="outline-container-orgf063358" class="outline-2">
+<h2 id="orgf063358">UnrealEngineGraphics</h2>
+<div class="outline-text-2" id="text-orgf063358">
+</div>
+<div id="outline-container-org84444ac" class="outline-3">
+<h3 id="org84444ac">Graphics Programming</h3>
+<div class="outline-text-3" id="text-org84444ac">
+<p>
+这部分文档是为图像程序员准备的，他们需要处理渲染系统和编写着色器。<br />
+</p>
+
+<p>
+引擎中的渲染器模块会管理并渲染场景，而场景拥有和每个世界场景相关的可渲染信息。它包括所有定义的绘制规则和着色器。<br />
+</p>
+
+<p>
+RHI 模块是渲染 API 的接口，是图形编程的另一个关键组件。<a href="#org359bbbb">Graphics Programming Overview</a> 介绍了一些关键的类、变量和设置，以下子页面介绍了特定的渲染主题。<br />
+</p>
+
+<p>
+<a href="#org359bbbb">Graphics Programming Overview</a><br />
+为与渲染系统一起工作的图形程序员和编写着色器的程序员提供的信息。<br />
+</p>
+
+<p>
+<a href="#orgbacc360">Mesh Drawing Pipeline</a><br />
+本指南介绍了如何添加自定义网格通道，以及 Unreal Engine 的网格绘制性能特性。<br />
+</p>
+
+<p>
+<a href="#orgd786666">Parallel Rendering Overview</a><br />
+并行渲染的概述。<br />
+</p>
+
+<p>
+<a href="#org0b0ec0b">Threaded Rendering</a><br />
+为与线程渲染器一起工作的图形程序员提供的信息。<br />
+</p>
+
+<p>
+<a href="#org86b43f8">Render Dependency Graph</a><br />
+一种即时模式 API，它将渲染命令记录到图数据结构中以进行编译和执行。<br />
+</p>
+
+<p>
+<a href="#org7e5a169">Shader Development</a><br />
+为编写着色器的图形程序员提供的信息。<br />
+</p>
+
+<p>
+<a href="#orgc76a55a">FShaderCache</a><br />
+提供了减少游戏中着色器卡顿的机制。<br />
+</p>
+
+<p>
+<a href="#org49be4be">AsyncCompute</a><br />
+AsyncCompute 是一种硬件功能，它通过交错不同的 GPU 任务来提高效率。<br />
+</p>
+
+<p>
+<a href="#org51ea89c">Shaders in Plugins</a><br />
+有关在插件中创建和使用着色器的信息。<br />
+</p>
+
+<p>
+<a href="#org50e072b">Overview of Shaders in Plugins</a><br />
+概述在插件中创建着色器。<br />
+</p>
+
+<p>
+<a href="#org47ed1b2">Creating a New Global Shader as a Plugin</a><br />
+通过插件创建和设置新的全局着色器。<br />
+</p>
+</div>
+
+<div id="outline-container-org359bbbb" class="outline-4">
+<h4 id="org359bbbb">Graphics Programming Overview</h4>
+<div class="outline-text-4" id="text-org359bbbb">
+</div>
+<div id="outline-container-org7847078" class="outline-5">
+<h5 id="org7847078">Getting Started</h5>
+<div class="outline-text-5" id="text-org7847078">
+<p>
+在 Unreal Engine 中，有大量的渲染代码，所以很难快速了解整体的情况。一个好的起点是阅读 FDeferredShadingSceneRenderer::Render，这就是在渲染线程上渲染新帧的地方。使用 profilegpu 命令查看绘制事件(draw events)也是很有用的。然后，你可以在 Visual Studio 中通过绘制事件名称进行文件查找，找到相应的 C++实现。<br />
+</p>
+
+<p>
+查看" <a href="#org7e5a169">Shader Development</a> "以获取有关着色器工作的信息。<br />
+</p>
+
+<p>
+查看" <a href="https://dev.epicgames.com/documentation/en-us/unreal-engine/coordinate-system-and-spaces-in-unreal-engine">Coordinate Spaces</a> "以了解 Unreal Engine 中使用的坐标空间术语的解释。<br />
+</p>
+
+<p>
+下面是和渲染相关的控制台命令（通常使用?作为参数会获得帮助，不带参数则显示当前状态）：<br />
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Console Command</th>
+<th scope="col" class="org-left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">stat unit</td>
+<td class="org-left">显示整体帧时间以及游戏线程、渲染线程和 GPU 时间。最长的那个是瓶颈。然而，GPU 时间包含空闲时间，所以只有当它是最长且 stands alone 时才是瓶颈。</td>
+</tr>
+
+<tr>
+<td class="org-left">Ctrl+Shift+. 或 recompileshaders changed</td>
+<td class="org-left">重新编译自上次保存.usf 文件以来更改的着色器。这将在加载时自动发生。</td>
+</tr>
+
+<tr>
+<td class="org-left">Ctrl+Shift+; 或 profilegpu</td>
+<td class="org-left">测量正在被渲染的 view 的 GPU 时间。你可以在弹出的 UI 或引擎日志中查看结果。</td>
+</tr>
+
+<tr>
+<td class="org-left">Vis 或 VisualizeTexture</td>
+<td class="org-left">可视化各种渲染目标的内容，并可以保存为 bmp。</td>
+</tr>
+
+<tr>
+<td class="org-left">show x</td>
+<td class="org-left">切换(开启或关闭)指定的显示标志(flag 标记)。使用 show 获取显示标志列表及他们当前的状态列表。在编辑器中，使用视口 UI 代替。</td>
+</tr>
+
+<tr>
+<td class="org-left">pause</td>
+<td class="org-left">暂停游戏，但继续渲染。任何模拟渲染工作将停止。</td>
+</tr>
+
+<tr>
+<td class="org-left">slomo x</td>
+<td class="org-left">更改游戏速度。在分析时非常有用，可以减慢时间而不跳过模拟工作，例如 slomo .01。</td>
+</tr>
+
+<tr>
+<td class="org-left">debugcreateplayer 1</td>
+<td class="org-left">用于测试分屏。</td>
+</tr>
+
+<tr>
+<td class="org-left">r.CompositionGraphDebug</td>
+<td class="org-left">执行以获取单帧 composition graph dump 数据。</td>
+</tr>
+
+<tr>
+<td class="org-left">r.DumpShaderDebugInfo</td>
+<td class="org-left">设置为 1 时，会导致任何随后编译的着色器都会将调试信息 dump 到 GameName/Saved/ShaderDebugInfo。</td>
+</tr>
+
+<tr>
+<td class="org-left">r.RenderTargetPoolTest</td>
+<td class="org-left">用特殊颜色清除由渲染目标池返回的纹理，以追踪颜色泄漏错误。</td>
+</tr>
+
+<tr>
+<td class="org-left">r.SetRes</td>
+<td class="org-left">设置当前游戏视图的显示分辨率。在编辑器中无效。</td>
+</tr>
+
+<tr>
+<td class="org-left">r.ViewportTest</td>
+<td class="org-left">允许测试不同的视口矩形配置（仅在游戏中），如使用 Matinee/Editor 时可能发生的。</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+show fog           开启关闭 fog<br />
+show specular      开启关闭高光<br />
+</p>
+
+<p>
+下面是和渲染相关的命令行参数：<br />
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Commandline</th>
+<th scope="col" class="org-left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">-d3ddebug</td>
+<td class="org-left">启用 D3D11 调试层，有助于捕获 API 错误。</td>
+</tr>
+
+<tr>
+<td class="org-left">-sm4</td>
+<td class="org-left">强制使用 SM4 功能级别的 D3D11 RHI。</td>
+</tr>
+
+<tr>
+<td class="org-left">-opengl3 / -opengl4</td>
+<td class="org-left">强制使用指定功能级别的 OpenGL RHI。</td>
+</tr>
+
+<tr>
+<td class="org-left">-dx11</td>
+<td class="org-left">目前是 Windows 上的默认值。</td>
+</tr>
+
+<tr>
+<td class="org-left">-dx12</td>
+<td class="org-left">实验性。</td>
+</tr>
+
+<tr>
+<td class="org-left">-featureleveles2</td>
+<td class="org-left">在运行编辑器时被忽略，需要在编辑器首选项中启用。</td>
+</tr>
+
+<tr>
+<td class="org-left">-featureleveles31</td>
+<td class="org-left">在运行编辑器时被忽略，需要在编辑器首选项中启用。</td>
+</tr>
+
+<tr>
+<td class="org-left">-ddc=noshared</td>
+<td class="org-left">防止使用网络（共享）Derived Data Cache（派生数据缓存）。在调试着色器缓存问题时可能很有用。</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-org015f251" class="outline-5">
+<h5 id="org015f251">Modules</h5>
+<div class="outline-text-5" id="text-org015f251">
+<p>
+渲染器代码存在于其自己的模块中，为了非单一构建（non-monolithic builds），该模块被编译为一个 独立的 dll。 这允许更快的迭代，因为当渲染代码更改时，我们不必重新链接整个应用程序。Renderer 模块依赖于 Engine，因为它有许多回调到 Engine。然而，当 Engine 需要调用 Renderer 中的某些代码时，是通过一个接口实现的，通常是 IRendererModule 或 FSceneInterface。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgcde64f3" class="outline-5">
+<h5 id="orgcde64f3">Scene representation</h5>
+<div class="outline-text-5" id="text-orgcde64f3">
+<p>
+渲染器看到的场景由 primitive components 和存储在 FScene 中的各种其他结构列表定义。维护一个 primitives 的八叉树以加速空间查询。<br />
+</p>
+</div>
+<div id="outline-container-org8f62cf2" class="outline-6">
+<h6 id="org8f62cf2">Primary scene classes (主要场景类)</h6>
+<div class="outline-text-6" id="text-org8f62cf2">
+<p>
+在 UE 中有一个渲染线程，它与游戏线程并行运行。大多数在渲染线程和游戏线程建立桥梁的类依据它的状态所有权属于哪个线程被分为两部分。<br />
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Class</th>
+<th scope="col" class="org-left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">UWorld</td>
+<td class="org-left">包含了可以互相交互的 Actors 和 Components 集合。 关卡（Levels）可以被流化到 world 中，也可以被流化出 world。程序中可以激活多个 world</td>
+</tr>
+
+<tr>
+<td class="org-left">ULevel</td>
+<td class="org-left">Actors 和 Components 集合，它们被同时加载和卸载。并且存储在同一个地图文件中</td>
+</tr>
+
+<tr>
+<td class="org-left">USceneComponent</td>
+<td class="org-left">任何需要添加到 FScene 的对象的基类，例如 lights，meshes，fog 等等</td>
+</tr>
+
+<tr>
+<td class="org-left">UPrimitiveComponent</td>
+<td class="org-left">任何可以被渲染或可以和物理交互的对象的基类。也作为可视性剔除的粒度以及渲染属性的说明（例如，投射阴影等等）。和 UObjects 一样，游戏线程拥有的变量和状态，渲染线程不能直接访问</td>
+</tr>
+
+<tr>
+<td class="org-left">ULightComponent</td>
+<td class="org-left">表示一个光源。渲染器负责计算并将其贡献添加到场景中。</td>
+</tr>
+
+<tr>
+<td class="org-left">FScene</td>
+<td class="org-left">渲染器版本的 UWorld。只有将对象添加到 FScene 中，该对象对于渲染器来说才存在。将对象添加到 FScene 被称为注册组件。渲染线程拥有 FScene 的全部状态，游戏线程不能直接修改。</td>
+</tr>
+
+<tr>
+<td class="org-left">FPrimitiveSceneProxy</td>
+<td class="org-left">渲染器版本的 UPrimitiveComponent,为渲染线程镜像 UPrimitiveComponent 状态。存在于 Engine 模块并且被子类化来支持不同类型的 Primitives（skeletal，rigid，BSP 等等）。实现了很多比较重要的函数，例如 GetViewRelevance DrawDynamicElements 等等</td>
+</tr>
+
+<tr>
+<td class="org-left">FPrimitiveSceneInfo</td>
+<td class="org-left">内部的渲染状态（特定于对 FRendererModule 的实现），其对应一个 UPrimitiveComponent 和 FPrimitiveSceneProxy。存在于渲染模块，所以引擎模块看不到它</td>
+</tr>
+
+<tr>
+<td class="org-left">FSceneView</td>
+<td class="org-left">单个视图的引擎表示。可以使用不同的 view 通过不同的 FSceneRenderer::Render 调用来渲染一个场景(从而支持编辑器的多个视口)。也可以使用不同的 view 通过同一个 FSceneRenderer::Render 调用来渲染场景（从而支持游戏中的分屏）。每一帧都会创建一个新的 View</td>
+</tr>
+
+<tr>
+<td class="org-left">FViewInfo</td>
+<td class="org-left">视图的内部渲染表示，存在于渲染模块</td>
+</tr>
+
+<tr>
+<td class="org-left">FSceneViewState</td>
+<td class="org-left">ViewState 存储了一个 view 的私有的渲染信息，这些信息被不同的帧使用。在游戏中，每个 ULocalPlayer 都有一个 ViewState</td>
+</tr>
+
+<tr>
+<td class="org-left">FSceneRenderer</td>
+<td class="org-left">每一帧都会创建的类，用于封装帧之间的临时变量</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+下表按照所属模块列出主要的类。这对解决链接问题很重要。<br />
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Engine Module</th>
+<th scope="col" class="org-left">Renderer Module</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">UWorld</td>
+<td class="org-left">FScene</td>
+</tr>
+
+<tr>
+<td class="org-left">UPrimitiveComponent/FPrimitiveSceneProxy</td>
+<td class="org-left">FPrimitiveSceneInfo</td>
+</tr>
+
+<tr>
+<td class="org-left">FSceneView</td>
+<td class="org-left">FViewInfo</td>
+</tr>
+
+<tr>
+<td class="org-left">ULocalPlayer</td>
+<td class="org-left">FSceneViewState</td>
+</tr>
+
+<tr>
+<td class="org-left">ULightComponent/FLightSceneProxy</td>
+<td class="org-left">FLightSceneInfo</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+下表按照所属线程列出主要的类。在编写代码时始终注意哪个线程拥有状态，以避免 race condition 是很重要的。<br />
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Game Thread</th>
+<th scope="col" class="org-left">Rendering Thread</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">UWorld</td>
+<td class="org-left">FScene</td>
+</tr>
+
+<tr>
+<td class="org-left">UPrimitiveComponent</td>
+<td class="org-left">FPrimitiveSceneProxy/FPrimitiveSceneInfo</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">FSceneView/FViewInfo</td>
+</tr>
+
+<tr>
+<td class="org-left">ULocalPlayer</td>
+<td class="org-left">FSceneViewState</td>
+</tr>
+
+<tr>
+<td class="org-left">ULightComponent</td>
+<td class="org-left">FLightSceneProxy/FLightSceneInfo</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-org1c71d7d" class="outline-6">
+<h6 id="org1c71d7d">Material classes</h6>
+<div class="outline-text-6" id="text-org1c71d7d">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Class</th>
+<th scope="col" class="org-left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">FMaterial</td>
+<td class="org-left">渲染使用的材质的接口。提供对材质属性（例如，混合模式）的访问。包含一个着色器地图，渲染器用于获取单个着色器</td>
+</tr>
+
+<tr>
+<td class="org-left">FMaterialResource</td>
+<td class="org-left">UMaterial 对 FMaterial 接口的实现。</td>
+</tr>
+
+<tr>
+<td class="org-left">FMaterialRenderProxy</td>
+<td class="org-left">渲染线程上材质的表示。提供对 FMaterial 接口及每个标量、向量和纹理参数当前值的访问。</td>
+</tr>
+
+<tr>
+<td class="org-left">UMaterialInterface</td>
+<td class="org-left">[抽象类] 材质功能的游戏线程接口。用于获取用于渲染的 FMaterialRenderProxy 和作为资源的 UMaterial</td>
+</tr>
+
+<tr>
+<td class="org-left">UMaterial</td>
+<td class="org-left">材质资源。创作为一个节点图。计算材质属性用于渲染，设置混合模式等等</td>
+</tr>
+
+<tr>
+<td class="org-left">UMaterialInstance</td>
+<td class="org-left">[抽象类] UMateiral 的实例。使用 UMaterial 中的节点图，但是提供不同的参数（标量，矢量，贴图，静态开关）。每个实例有一个父 UMaterialInterface。所以一个材质实例的父亲可以是一个 UMaterial 或另一个 UMaterialInstance。这将会创建一个链，最终指向一个 UMaterial</td>
+</tr>
+
+<tr>
+<td class="org-left">UMaterialInstanceConstant</td>
+<td class="org-left">只能在编辑器中修改的 UMaterialInstance。可以提供 scalar vector texture 以及静态开关参数</td>
+</tr>
+
+<tr>
+<td class="org-left">UMaterialInstanceDynamic</td>
+<td class="org-left">可以在运行时修改的 UMaterialInstance。可以提供 scalar vector texture 参数。不能提供静态开关参数，并且不能是另一个 UMaterialInstance 的父亲</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-org3c5b303" class="outline-6">
+<h6 id="org3c5b303">Primitive components and proxies</h6>
+<div class="outline-text-6" id="text-org3c5b303">
+<p>
+Primitive components 是可见性和相关性判定的基本单位。例如，遮挡和视锥体裁剪发生在每个 primitive 的基础上。因此，在设计系统时，考虑组件的大小很重要。每个组件都有一个用于各种操作的 bounds，如裁剪、投影阴影和光照影响确定。<br />
+</p>
+
+<p>
+组件只有被注册了以后，在场景中才可见。游戏线程修改了一个组件的属性后，必须在该组件上调用 MarkRenderStateDirty()，才能将改变传播到渲染线程。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgca3aa1c" class="outline-6">
+<h6 id="orgca3aa1c">FPrimitiveSceneProxy 和 FPrimitiveSceneInfo</h6>
+<div class="outline-text-6" id="text-orgca3aa1c">
+<p>
+FPrimitiveSceneProxy 是渲染线程版本的 UPrimitiveComponent。其用于依据不同类型的组件来子类化。它存在于 Engine 模块，并在渲染过程中被调用。FPrimitiveSceneInfo 是 Primitive component 状态,为渲染器模块私有。<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgcb09695" class="outline-6">
+<h6 id="orgcb09695">Important FPrimitiveSceneProxy methods</h6>
+<div class="outline-text-6" id="text-orgcb09695">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Function</th>
+<th scope="col" class="org-left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">GetViewRelevance</td>
+<td class="org-left">在帧的开始时，从 InitViews 中调用，返回一个填充后的 FPrimitiveViewRelevance</td>
+</tr>
+
+<tr>
+<td class="org-left">DrawDynamicElements</td>
+<td class="org-left">在代理相关的任何 Pass 中调用该函数来绘制代理。只有在代理表明它具有动态相关性时才调用。</td>
+</tr>
+
+<tr>
+<td class="org-left">DrawStaticElements</td>
+<td class="org-left">在游戏线程中附加 primitive 时调用该函数以提交 StaticMesh 元素。只有在代理表明它具有静态相关性时才调用。</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-org033baba" class="outline-6">
+<h6 id="org033baba">Scene rendering order</h6>
+<div class="outline-text-6" id="text-org033baba">
+<p>
+渲染器按其希望将数据组合到 render targets 的顺序处理场景。例如，Depth only pass 在 Base pass 之前渲染，以便填充 Hierarchical Z （HiZ）以减少 Base pass 的着色成本。这个顺序由 C++中调用的 pass 函数的顺序静态定义。<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgc8ed957" class="outline-6">
+<h6 id="orgc8ed957">Relevance (相关性)</h6>
+<div class="outline-text-6" id="text-orgc8ed957">
+<p>
+FPrimitiveViewRelevance 是关于哪些效果（即哪些 passes）与 primitive 相关的信息。一个 primitive 可能具有多个元素，这些元素有不同的相关性，因此 FPrimitiveViewRelevance 实际上是所有元素相关性的逻辑或。这意味着一个 primitive 可以同时具有不透明和半透明相关性，或动态和静态相关性；它们不是互斥的。<br />
+</p>
+
+<p>
+FPrimitiveViewRelevance 还指示 primitive 是否需要使用动态和/或静态 rendering path，其是通过 bStaticRelevance 和 bDynamicRelevance 来指定的。<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org0a00ca9" class="outline-6">
+<h6 id="org0a00ca9">Drawing Policies (绘制规则)</h6>
+<div class="outline-text-6" id="text-org0a00ca9">
+<p>
+绘制规则包含使用 pass 特定的 shader 渲染网格的逻辑。它们使用 FVertexFactory 接口来抽象网格类型，并使用 FMaterial 接口来抽象材质细节。在最低级别，绘制规则获取一组网格材质 shader 和顶点工厂，将顶点工厂的缓冲区绑定到渲染硬件接口（RHI），将网格材质 shader 绑定到 RHI，设置适当的着色器参数，然后发出 RHI 绘制调用。<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org7c4c3a6" class="outline-6">
+<h6 id="org7c4c3a6">Drawing Policy methods</h6>
+<div class="outline-text-6" id="text-org7c4c3a6">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Function</th>
+<th scope="col" class="org-left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">Constructor</td>
+<td class="org-left">从给定的顶点工厂和材质 shader 地图，查找合适的着色器，并存储这些引用</td>
+</tr>
+
+<tr>
+<td class="org-left">CreateBoundShaderState</td>
+<td class="org-left">为绘制规则创建 RHI 绑定着色器状态。</td>
+</tr>
+
+<tr>
+<td class="org-left">Matches/Compare</td>
+<td class="org-left">提供方法以在静态绘制列表中对绘制规则进行排序。Matches 必须比较 DrawShared 依赖的所有因素。</td>
+</tr>
+
+<tr>
+<td class="org-left">DrawShared</td>
+<td class="org-left">设置 RHI 状态，这些状态对于从 Matches 函数返回 true 的绘制规则是不变的。例如，大多数绘制规则按照材质和顶点工厂排序，所以只依赖于材质的着色器参数可以被设置，顶点工厂特有的顶点缓冲区可以被绑定。如果可以的话，应该尽量使用该函数代替 SetMeshRenderState 来设置状态，因为在静态渲染路径中，DrawShared 调用次数比较少。</td>
+</tr>
+
+<tr>
+<td class="org-left">SetMeshRenderState</td>
+<td class="org-left">设置 RHI 状态，这些状态 是 Mesh 特有的 或者任何没有在 DrawShared 中设置的状态。该函数比 DrawShared 调用次数多很多，所以性能比较敏感。</td>
+</tr>
+
+<tr>
+<td class="org-left">DrawMesh</td>
+<td class="org-left">真正地触发 RHI 的绘制调用</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="outline-container-org18e6538" class="outline-5">
+<h5 id="org18e6538">Rendering paths</h5>
+<div class="outline-text-5" id="text-org18e6538">
+<p>
+Unreal Engine 有一个动态渲染路径，提供更多控制但遍历速度较慢。还有一个静态渲染路径，它会缓存场景遍历，以尽可能接近 RHI 级别的性能。区别主要在高层，因为它们在最低级别都使用绘制规则（drawing policies）。每个渲染 pass（绘制规则）需要确保在需要时可以处理这两种渲染路径。<br />
+</p>
+</div>
+
+<div id="outline-container-orgafd82ec" class="outline-6">
+<h6 id="orgafd82ec">Dynamic rendering path</h6>
+<div class="outline-text-6" id="text-orgafd82ec">
+<p>
+动态渲染路径使用 TDynamicPrimitiveDrawer 并调用每个 primitive scene proxy 的 DrawDynamicElements 来进行渲染。需要使用动态路径渲染的 primitives 集合由 FViewInfo::VisibleDynamicPrimitives 跟踪。每个渲染 pass 需要迭代此数组，并在每个 primitive proxy 上调用 DrawDynamicElements。然后, DrawDynamicElements 会组装尽可能多的 FMeshElements，并使用 DrawRichMesh 或 TDynamicPrimitiveDrawer::DrawMesh 提交它们。这最终会创建一个新的临时绘制规则，调用 CreateBoundShaderState、DrawShared、SetMeshRenderState，最后是 DrawMesh。<br />
+</p>
+
+<p>
+动态渲染路径提供了很大的灵活性，因为每个代理在 DrawDynamicElements 中都有一个回调，可以在回调中执行特定于该组件类型的逻辑。它的插入成本最低，但遍历成本较高，因为没有状态排序，也没有任何缓存。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org09362d4" class="outline-6">
+<h6 id="org09362d4">Static rendering path</h6>
+<div class="outline-text-6" id="text-org09362d4">
+<p>
+静态渲染路径通过静态绘制列表实现。网格在附加到场景时被插入到绘制列表中。在此插入过程中，会调用代理上的 DrawStaticElements 以收集 FStaticMeshElements。然后创建一个绘制规则实例，并存储 CreateBoundShaderState 的结果。新的绘制规则根据其 Compare 和 Matches 函数进行排序，并插入到绘制列表中的适当位置（参见 TStaticMeshDrawList::AddMesh）。在 InitViews 中，初始化一个包含静态绘制列表可见性数据的位数组，并传递给 TStaticMeshDrawList::DrawVisible，在那里绘制列表实际被绘制。DrawShared 仅为所有匹配的绘制规则调用一次，而 SetMeshRenderState 和 DrawMesh 为每个 FStaticMeshElement 调用（参见 TStaticMeshDrawList::DrawElement）。<br />
+</p>
+
+<p>
+静态渲染路径将大量工作移到了附加时间，这显著加快了渲染时的场景遍历。对于静态网格，静态绘制列表渲染在渲染线程上快了大约 3 倍，这允许场景中有更多的静态网格。由于静态绘制列表在附加时缓存数据，它们只能缓存视图无关的状态。很少重新附加但经常被渲染的 primitives 是静态绘制列表的好候选者。<br />
+</p>
+
+<p>
+静态渲染路径可能会暴露错误，因为它每个状态桶只调用 DrawShared 一次。这些错误可能很难检测，因为它们依赖于渲染顺序和场景中网格的附加顺序。特殊视图模式，如仅照明、未照明等，将强制所有 primitives 使用动态路径，如果在强制动态渲染路径时 bug 消失，则其很可能是由于某绘制规则的 DrawShared 和/或 Matches 函数的错误实现而出现的。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org2e035d8" class="outline-5">
+<h5 id="org2e035d8">High level Rendering order</h5>
+<div class="outline-text-5" id="text-org2e035d8">
+<p>
+以下是从 FDeferredShadingSceneRenderer::Render 开始渲染帧的控制流描述：<br />
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Operation</th>
+<th scope="col" class="org-left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">GSceneRenderTargets.Allocate</td>
+<td class="org-left">如果需要，就重新分配全局场景 render target，使其适应当前视图</td>
+</tr>
+
+<tr>
+<td class="org-left">InitViews</td>
+<td class="org-left">通过各种剔除方法来初始化 primitive 可见性，设置这帧可见的动态阴影，按需对阴影视锥和场景进行求交（用于整个场景阴影或预阴影）</td>
+</tr>
+
+<tr>
+<td class="org-left">PrePass/Depth only pass</td>
+<td class="org-left">RenderPrePass/FDepthDrawingPolicy.只输出深度值到深度缓冲区中。这个 pass 可以在多个模式下起作用：disabled，occlusion only,complete depths, 取决于激活的特性需要什么。通常该 pass 的目的是初始化 Hierarchical Z 来减少 Base 阶段的着色消耗，尤其是昂贵的片段着色器</td>
+</tr>
+
+<tr>
+<td class="org-left">Base pass</td>
+<td class="org-left">RenderBasePass/TBasePassDrawingPolicy.渲染不透明和遮罩材质，输出材质属性到 GBuffer。Lightmap 贡献和天空光也会在此处计算并放入场景颜色</td>
+</tr>
+
+<tr>
+<td class="org-left">Issue Occlusion Queries/BeginOcclusionTests</td>
+<td class="org-left">开始延迟的遮挡查询，这将会在下一帧中的 InitViews 中被使用。这是通过渲染被查询物体的 bounding boxes 来完成的，有时候将边界盒分组，合在一起来减少 draw call。</td>
+</tr>
+
+<tr>
+<td class="org-left">Lighting</td>
+<td class="org-left">混合使用 standard deferred 和 tiled deferred 着色，每个光照的阴影贴图被渲染，并且光照贡献会被累计到场景颜色中。Light 也累积到 translucency lighting volumes 中。</td>
+</tr>
+
+<tr>
+<td class="org-left">Fog</td>
+<td class="org-left">在 deferred pass 中，基于每像素方式，为不透明表面进行雾和大气散射计算。</td>
+</tr>
+
+<tr>
+<td class="org-left">Translucency</td>
+<td class="org-left">半透明会被累积到一个 offscreen render target，在该 pass 雾被应用于每个顶点，以便能融入场景。半透明的最终光照计算在一个单独 pass 中进行，以保证正确混合。</td>
+</tr>
+
+<tr>
+<td class="org-left">Post Processing</td>
+<td class="org-left">使用 GBuffers 应用各种后期处理效果。半透明被合成到场景中。</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+这是一个相当简单的 high level view。具体细节，可以查阅相关代码或者查看 profilegpu 的日志输出。<br />
+Tips: 在控制台输入 profilegpu 命令，执行完毕后会弹出如下窗口。<br />
+<img src="./UnrealEngineGraphics/profileGPU.jpg" alt="profileGPU.jpg" /><br />
+</p>
+</div>
+</div>
+<div id="outline-container-org2afabf8" class="outline-5">
+<h5 id="org2afabf8">Render Hardware Interface(RHI)</h5>
+<div class="outline-text-5" id="text-org2afabf8">
+<p>
+渲染硬件接口（Render Hardware Interface, RHI）是位于平台特定图形 API 之上的一个薄层。在 Unreal Engine 中，RHI 的抽象层次尽可能保持在低层次，以便大多数功能可以用平台无关的代码编写，并在支持所需功能级别的所有平台上“正常工作”。<br />
+</p>
+
+<p>
+功能集被量化为 ERHIFeatureLevel，以保证低复杂性。如果一个平台无法支持某个功能级别所需的所有功能，则必须降低级别，直到能够支持为止。<br />
+</p>
+
+<p>
+功能级别描述：<br />
+</p>
+<ul class="org-ul">
+<li>SM5：通常对应于 D3D11 着色器模型 5，但由于 OpenGL 4.3 的限制，只能使用 16 个纹理。支持细分曲面、计算着色器和立方图数组。支持延迟着色路径。<br /></li>
+<li>SM4：对应于 D3D11 着色器模型 4，基本上与 SM5 相同，但不支持细分曲面、计算着色器或立方图数组。支持延迟着色路径。不支持眼睛适应，因为它使用计算着色器。<br /></li>
+<li>ES3_1：对应于 OpenGL ES3.1、Vulkan 和 Metal 支持的功能。<br /></li>
+</ul>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Feature Level</th>
+<th scope="col" class="org-left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">SM5</td>
+<td class="org-left">通常对应于 D3D11 Shader Model 5, 但由于 OpenGL 4.3 的限制，只能使用 16 个纹理。支持细分曲面、计算着色器和 cubemap arrays。支持 deferred shading path 。</td>
+</tr>
+
+<tr>
+<td class="org-left">SM4</td>
+<td class="org-left">对应于 D3D11 Shader Model 4,基本和 SM5 相同，但不支持细分着色器，计算着色器以及 cubemap arrays。支持 deferred shading path。不支持人眼适应，因为其使用了计算着色器。</td>
+</tr>
+
+<tr>
+<td class="org-left">ES3_1</td>
+<td class="org-left">对应于 OpenGL ES3.1、Vulkan 和 Metal 支持的功能</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div id="outline-container-orga073ba1" class="outline-6">
+<h6 id="orga073ba1">Rendering state grouping</h6>
+<div class="outline-text-6" id="text-orga073ba1">
+<p>
+渲染状态根据它们影响的 pipeline 部分进行分组。例如，RHISetDepthState 设置所有与深度缓冲相关的状态。<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org5488825" class="outline-6">
+<h6 id="org5488825">Rendering state defaults</h6>
+<div class="outline-text-6" id="text-org5488825">
+<p>
+由于渲染状态众多，每次绘制时设置所有状态是不实际的。相反，Unreal Engine 有一个隐式状态集，这些状态假设已被设置为默认值（因此在更改后必须恢复到这些默认值），以及一组必须显式设置的较小状态集。没有隐式默认值的状态集包括：<br />
+</p>
+
+<ul class="org-ul">
+<li>RHISetRenderTargets<br /></li>
+<li>RHISetBoundShaderState<br /></li>
+<li>RHISetDepthState<br /></li>
+<li>RHISetBlendState<br /></li>
+<li>RHISetRasterizerState<br /></li>
+<li>由 RHISetBoundShaderState 设置的着色器的任何依赖项<br /></li>
+</ul>
+
+<p>
+所有其他状态默认假定处于默认值（由相关的 TStaticState 定义，例如默认的 stencil 状态由 RHISetStencilState(TStaticStencilState&lt;&gt;::GetRHI())设置）。<br />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgbacc360" class="outline-4">
+<h4 id="orgbacc360">Mesh Drawing Pipeline</h4>
+<div class="outline-text-4" id="text-orgbacc360">
+<p>
+本页面的信息面向希望添加 custom mesh passes 或希望了解 Unreal Engine 的网格绘制性能特征的程序员。<br />
+</p>
+
+<p>
+网格绘制管道（Mesh Drawing Pipeline）基于保留模式(retained mode)的概念，在这种模式下，所有场景绘制提前准备好，而不是在每一帧中构建。利用静态网格的特性来积极的缓存和合并绘制调用，这些特性很少变化并且可以在多帧中重用。<br />
+</p>
+
+<p>
+网格渲染从 FPrimitiveSceneProxy 开始，它是游戏线程中 UPrimitiveComponent 的渲染线程表示。FPrimitiveSceneProxy 负责通过 GetDynamicMeshElements 和 DrawStaticElements 的回调将 FMeshBatch 提交给渲染器。<br />
+</p>
+
+<p>
+FMeshBatch 将 FPrimitiveSceneProxy 的实现（用户代码）与网格 Pass（私有渲染模块）分离。它包含了 Pass 所需的一切，以确定最终的 shader 绑定和渲染状态，因此代理从不知道它将在什么 Pass 中被渲染。<br />
+</p>
+
+<p>
+下一步是将 FMeshBatch 转换为网格 Pass 特定的 FMeshDrawCommand。FMeshDrawCommand 是 FMeshBatch 和 RHI 之间的接口。它是一个完全无状态的绘制描述，存储了 RHI 需要了解的关于网格绘制的所有信息：<br />
+</p>
+
+<ul class="org-ul">
+<li>使用哪些着色器。<br /></li>
+<li>它们的资源绑定。<br /></li>
+<li>绘制调用参数。<br /></li>
+</ul>
+
+<p>
+这使得可以在 RHI 级别之上进行缓存和合并绘制调用。FMeshDrawCommand 由网格 Pass 特定的 FMeshPassProcessor 从 FMeshBatch 创建。<br />
+</p>
+
+<p>
+最后，SubmitMeshDrawCommands 用于将 FMeshDrawCommand 转换为一系列 RHI 命令，这些 RHI 命令被放置到 RHICommandList 中。<br />
+</p>
+
+
+<div id="orge817041" class="figure">
+<p><img src="./UnrealEngineGraphics/meshpipelineoverview_1.png" alt="meshpipelineoverview_1.png" /><br />
+</p>
+</div>
+</div>
+<div id="outline-container-org15705cb" class="outline-5">
+<h5 id="org15705cb">Cached and Dynamic Mesh Batches</h5>
+<div class="outline-text-5" id="text-org15705cb">
+<p>
+FPrimitiveSceneProxy 有两种生成 FMeshBatch 的路径——缓存路径和动态路径。FPrimitiveSceneProxy 的实现中通过 GetViewRelevance()函数控制每帧使用哪种路径。<br />
+</p>
+
+<p>
+缓存路径构建并重用 FMeshBatch，适用于快速渲染那些不每帧更改的绘制，例如静态网格。缓存路径由 DrawStaticElements 实现，当代理被添加到场景时调用。创建的 FMeshBatch 存储在 FPrimitiveSceneInfo::StaticMeshes 中，并在每帧中重用，直到代理从场景中移除。<br />
+</p>
+
+<p>
+动态路径每帧重新创建 FMeshBatch。这是最灵活的路径，用于那些每帧经常变化的绘制，例如粒子。动态路径由 GetDynamicMeshElements 实现。该函数在每帧的 InitViews 中被调用，并为每个视图（view）创建一个临时的 FMeshBatch。<br />
+</p>
+
+<p>
+<img src="./UnrealEngineGraphics/meshpipelineoverview_2.png" alt="meshpipelineoverview_2.png" /><br />
+FMeshBatch 代码路径。橙色箭头表示每一帧都必须执行的操作，而蓝色箭头表示在被缓存之前执行一次的操作。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org336f06b" class="outline-5">
+<h5 id="org336f06b">FMeshPassProcessor</h5>
+<div class="outline-text-5" id="text-org336f06b">
+<p>
+特定的 mesh pass processor 派生自 FMeshPassProcessor 基类，负责将 FMeshBatch 转换为给定 Pass 的网格绘制命令。在此阶段进行最终的绘制过滤，还会选择合适的着色器并收集着色器绑定（shader bindings）。<br />
+</p>
+
+<p>
+要创建自定义 mesh pass processor，必须从 FMeshPassProcessor 派生，并重写 AddMeshBatch 函数。<br />
+</p>
+
+<p>
+AddMeshBatch 实现内容：<br />
+</p>
+
+<ul class="org-ul">
+<li>绘制过滤——例如，如果材质有透明绘制模式，则不要在 FDepthPassMeshProcessor 中处理它。<br /></li>
+<li>选择着色器和管线状态（深度/模版/混合状态）。<br /></li>
+<li>最后调用 BuildMeshDrawCommands()，它收集 Pass/材质/顶点工厂/primitive 的着色器绑定，并将新的绘制命令添加到适当的列表中。<br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgc9ade76" class="outline-5">
+<h5 id="orgc9ade76">Shader Bindings</h5>
+<div class="outline-text-5" id="text-orgc9ade76">
+<p>
+在 Unreal Engine 中，着色器绑定可以是 Uniform Buffers、Samplers、Textures、ShaderResourceViews 或松散参数（FShaderParameter）。<br />
+</p>
+
+<p>
+FMeshPassProcessor 并不直接通过 RHICmdList.SetShaderParameter 将着色器绑定发送到 RHI，而是将它们记录到 FMeshDrawSingleShaderBindings 类中。<br />
+BuildMeshDrawCommands()函数是所有 pass 公用的代码，该函数将调用 pass 对应的 shaders 的 GetShaderBindings() 函数。<br />
+</p>
+
+<p>
+着色器绑定分为几类：<br />
+</p>
+
+<ul class="org-ul">
+<li>传递常量的 uniform buffers，如 ViewUniformBuffer 或 DepthPassUniformBuffer<br /></li>
+<li>顶点工厂绑定<br /></li>
+<li>材质绑定<br /></li>
+<li>Primitive 绑定<br /></li>
+<li>pass 特定的绑定，该绑定在绘制之间会变化<br /></li>
+</ul>
+
+<p>
+注意，为每个绘制设置不同的绑定会阻止绘制调用合并。此外，设置松散参数（不在 Uniform Buffer 中的着色器参数）会阻止绘制调用合并，导致在绘制之间进行缓慢的常量缓冲区更新。<br />
+</p>
+
+<p>
+由于每个 FMeshPassProcessor 必须通过 BuildMeshDrawCommands()来调用传递着色器的 GetShaderBindings()，我们需要一种机制来从 FMeshPassProcessor 传递任意数据到 GetShaderBindings()调用。这通过 BuildMeshDrawCommands()的 ShaderElementData 参数实现。<br />
+</p>
+</div>
+<div id="outline-container-org43bb1ff" class="outline-6">
+<h6 id="org43bb1ff">FMeshDrawCommand Performance Hazards</h6>
+<div class="outline-text-6" id="text-org43bb1ff">
+<p>
+FMeshDrawCommand 性能隐患<br />
+FMeshDrawCommand 中使用了一些内联分配器(inline allocators)来存储可变长度数组，而无需额外的堆分配。溢出这些分配器会导致性能隐患，因为每个网格绘制命令必须构造/析构/复制堆分配，并在遍历命令时会发生缓存未命中。<br />
+</p>
+
+<p>
+FMeshDrawShaderBindings 假设有 2 个着色器频率（顶点+像素  Tips 这里的频率应该是指数量变化频率）：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #ce537a; font-weight: bold;">TArray</span>&lt;FMeshDrawShaderBindingsLayout, <span style="color: #ce537a; font-weight: bold;">TInlineAllocator</span>&lt;2&gt;&gt;<span style="color: #7590db;">ShaderLayouts</span>
+</pre>
+</div>
+
+<p>
+FMeshDrawCommand 假设在所有频率中有 10 个着色器绑定：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">int32</span> <span style="color: #7590db;">NumInlineShaderBindings</span> = 10;
+</pre>
+</div>
+
+<p>
+FMeshDrawCommand 假设顶点工厂中有 4 个顶点流(vertex streams)：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">typedef</span> <span style="color: #ce537a; font-weight: bold;">TArray</span>&lt;FVertexInputStream, <span style="color: #ce537a; font-weight: bold;">TInlineAllocator</span>&lt;4&gt;&gt;<span style="color: #ce537a; font-weight: bold;">FVertexInputStreamArray</span>;
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org0d22a77" class="outline-5">
+<h5 id="org0d22a77">Pass Types</h5>
+<div class="outline-text-5" id="text-org0d22a77">
+<p>
+有三种方式使用 FMeshPassProcessor 进行绘制：<br />
+</p>
+
+<ul class="org-ul">
+<li>EMeshPass::Type 枚举：在这里添加一个条目会在 FScene 内部分配一个 FParallelMeshDrawCommandPass。这使得 FScene 能够在 AddToScene 时缓存 pass 的网格绘制命令。必须使用 FRegisterPassProcessorCreateFunction 将 FMeshPassProcessor 注册到它们的枚举。Pass 设置（setup）和分派（dispatch）在任务中进行。<br /></li>
+<li>Manual Pass：使用 manual pass，其中 FParallelMeshDrawCommandPass 存储为任意类中的变量。当每帧有可变数量的 passes 时使用（例如，阴影深度 pass）。这种类型的 pass 不能在 FScene::AddToScene 时缓存命令，但仍然可以从任务中进行 pass 设置和分派得到好处。<br /></li>
+<li>DrawDynamicMeshPass：用于即时模式绘制，是最慢但最方便的方法。pass 设置和分派立即在调用线程中发生。<br /></li>
+</ul>
+
+<p>
+注意，目前渲染器尚未支持插件扩展，除了 DrawDynamicMeshPass 之外，添加新 Pass 需要更改渲染器模块代码。<br />
+</p>
+</div>
+<div id="outline-container-org7c2429b" class="outline-6">
+<h6 id="org7c2429b">FParallelMeshDrawCommandPass</h6>
+<div class="outline-text-6" id="text-org7c2429b">
+<p>
+为了添加自定义网格 Pass，首先需要在 EMeshPass 枚举中添加一个新条目。接下来，在 FRelevancePacket::MarkRelevant()内部，根据相关性标记，将静态网格添加到可见网格绘制命令列表中。例如，以下代码片段将网格绘制命令添加到深度 Pass 中，如果它与深度 Pass 相关：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">if</span> (StaticMeshRelevance.bUseForDepthPass)
+{
+    DrawCommandPacket.AddCommandsForMesh(PrimitiveIndex, PrimitiveSceneInfo, StaticMeshRelevance, StaticMesh, Scene, bCanCache, <span style="color: #a45bad;">EMeshPass</span>::DepthPass);
+}
+</pre>
+</div>
+
+<p>
+在 ComputeDynamicMeshRelevance 中为动态绘制标记 EMeshPass 相关性：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #4f97d7; font-weight: bold;">if</span> (ViewRelevance.bDrawRelevance &amp;&amp; (ViewRelevance.bRenderInMainPass || ViewRelevance.bRenderCustomDepth))
+{
+    PassMask.Set(<span style="color: #a45bad;">EMeshPass</span>::DepthPass);
+    View.NumVisibleDynamicMeshElements[<span style="color: #a45bad;">EMeshPass</span>::DepthPass] += NumElements;
+}
+</pre>
+</div>
+
+<p>
+使用 FParallelMeshDrawCommandPass::DispatchDraw 绘制这个特定 Pass：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp">View.ParallelMeshDrawCommandPasses[<span style="color: #a45bad;">EMeshPass</span>::DepthPass].DispatchDraw(<span style="color: #a45bad;">nullptr</span>, RHICmdList);
+</pre>
+</div>
+
+<p>
+还可以设置一个并行命令列表集，以便在并行中绘制此 Pass：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #ce537a; font-weight: bold;">FPrePassParallelCommandListSet</span> <span style="color: #7590db;">ParallelCommandListSet</span>(View, <span style="color: #4f97d7; font-weight: bold;">this</span>, ParentCmdList, <span style="color: #a45bad;">true</span>, DrawRenderState);
+View.ParallelMeshDrawCommandPasses[<span style="color: #a45bad;">EMeshPass</span>::DepthPass].DispatchDraw(&amp;ParallelCommandListSet, ParentCmdList);
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgb7cb499" class="outline-6">
+<h6 id="orgb7cb499">DrawDynamicMeshPass</h6>
+<div class="outline-text-6" id="text-orgb7cb499">
+<p>
+FParallelMeshDrawCommandPass 是常见网格 pass 的默认路径。它应该用于性能关键的网格 pass，因为它是唯一支持网格绘制命令缓存和并行渲染的路径。另一方面，性能要求强制执行非常严格的设计——例如，在 InitViews 之后无法修改网格绘制命令或着色器绑定。<br />
+</p>
+
+<p>
+对于某些用例，如在编辑器中绘制少量网格，DrawDynamicMeshPass 可能是一个更简单的解决方案。它提供即时模式网格绘制，是最灵活的渲染路径。Unreal Engine 在某些仅限编辑器的 pass 和 Canvas 渲染中使用 DrawDynamicMeshPass。<br />
+</p>
+
+<p>
+使用 DrawDynamicMeshPass 进行绘制非常简单，只需传递一个 lambda，该 lambda 将填充一个临时的网格绘制命令列表：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp">DrawDynamicMeshPass(View, RHICmdList, [&amp;<span style="color: #7590db;">View</span>, <span style="color: #a45bad;">CurrentDecalStage</span>, <span style="color: #a45bad;">RenderTargetMode</span>](<span style="color: #ce537a; font-weight: bold;">FDynamicPassMeshDrawListContext</span>* <span style="color: #7590db;">DynamicMeshPassContext</span>)
+{
+    <span style="color: #ce537a; font-weight: bold;">FMeshDecalMeshProcessor</span> <span style="color: #7590db;">PassMeshProcessor</span>(
+        View.Family-&gt;Scene-&gt;GetRenderScene(),
+        &amp;View,
+        CurrentDecalStage,
+        RenderTargetMode,
+        DynamicMeshPassContext);
+
+    <span style="color: #4f97d7; font-weight: bold;">for</span> (<span style="color: #ce537a; font-weight: bold;">int32</span> <span style="color: #7590db;">MeshBatchIndex</span> = 0; MeshBatchIndex &lt; View.MeshDecalBatches.Num(); ++MeshBatchIndex)
+    {
+        <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">FMeshBatch</span>* <span style="color: #7590db;">Mesh</span> = View.MeshDecalBatches[MeshBatchIndex].Mesh;
+        <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">FPrimitiveSceneProxy</span>* <span style="color: #7590db;">PrimitiveSceneProxy</span> = View.MeshDecalBatches[MeshBatchIndex].Proxy;
+        <span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #ce537a; font-weight: bold;">uint64</span> <span style="color: #7590db;">DefaultBatchElementMask</span> = ~0ull;
+
+        PassMeshProcessor.AddMeshBatch(*Mesh, DefaultBatchElementMask, PrimitiveSceneProxy);
+    }
+});
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgfe3a8f4" class="outline-5">
+<h5 id="orgfe3a8f4">Cached Mesh Draw Commands</h5>
+<div class="outline-text-5" id="text-orgfe3a8f4">
+<p>
+缓存的网格体绘制命令是调用"FPrimitiveSceneInfo::AddToScene&#x2013;&gt;FPrimitiveSceneInfo::CacheMeshDrawCommands"时构建的。使用这些命令进行绘制非常高效，因为我们只需在每帧选择适当的预构建命令（FDrawCommandRelevancePacket::AddCommandsForMesh）。缓存的绘制命令只能在绘制状态每帧不更改时使用，并且所有着色器绑定都可以在 AddToScene 中设置。<br />
+</p>
+
+<p>
+为了支持缓存网格绘制命令：<br />
+</p>
+<ul class="org-ul">
+<li>pass 必须使用 EMeshPass::Type 中的一个条目<br /></li>
+<li>注册自定义网格处理器时必须传递 EMeshPassFlags::CachedMeshCommands 标志<br /></li>
+<li>网格 pass 处理器需要能够设置所有着色器绑定，而不依赖于 FSceneView，因为在缓存过程中 FSceneView 为空<br /></li>
+</ul>
+
+<p>
+为了使着色器能够通过缓存网格绘制命令访问每帧数据，我们绑定场景范围的 uniform buffers（参见 FScene::UniformBuffers），然后使用 RHIUpdateUniformBuffer 在绘制之前更改其内容。<br />
+</p>
+
+<p>
+目前，只有 FLocalVertexFactory（UStaticMeshComponent）可以被缓存，因为所有其他顶点工厂都需要一个视图来设置它们的着色器绑定。<br />
+</p>
+</div>
+<div id="outline-container-org694dc07" class="outline-6">
+<h6 id="org694dc07">Cache Invalidation</h6>
+<div class="outline-text-6" id="text-org694dc07">
+<p>
+任何 Mesh Pass Processor 在 AddMeshBatch 中读取的数据都是缓存网格绘制命令的依赖项。当该依赖项发生变化时，缓存的命令必须失效。可以使用 FPrimitiveSceneInfo::BeginDeferredUpdateStaticMeshes 使单个 primitive 的缓存命令失效。可以通过将 Scene-&gt;bScenesPrimitivesNeedStaticMeshElementUpdate 设置为 true 来使整个场景的缓存命令失效。这是一个重量级操作，在游戏过程中应避免，因为它会导致较大的场景出现卡顿。<br />
+</p>
+
+<p>
+例如，FBasePassMeshProcessor::AddMeshBatch 使用 Scene-&gt;SkyLight 来决定是否选择 SkyLight 着色器排列(即 shader 变体)。当 Scene-SkyLight 更改时，我们必须使缓存网格绘制命令失效。<br />
+</p>
+
+<p>
+为了通过这种缓存方案实现良好的性能，重要的是将数据放入持久的 Uniform Buffers 中。然后，你需要更新这些缓冲区，而不是频繁地使缓存命令失效。例如，SkyLight 的情况可以更改为基于 PassUniformBuffer 内容在着色器中使用动态分支，而不是选择不同的着色器排列(即 shader 变体)。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orge0b3102" class="outline-6">
+<h6 id="orge0b3102">Resource Lifetime Management</h6>
+</div>
+</div>
+<div id="outline-container-orgbaed1e6" class="outline-5">
+<h5 id="orgbaed1e6">Draw Call Merging</h5>
+<div class="outline-text-5" id="text-orgbaed1e6">
+</div>
+<div id="outline-container-org9ee2eb2" class="outline-6">
+<h6 id="org9ee2eb2">Dynamic Instancing</h6>
+</div>
+<div id="outline-container-orgb11f68a" class="outline-6">
+<h6 id="orgb11f68a">GPU Scene</h6>
+</div>
+<div id="outline-container-org625ee80" class="outline-6">
+<h6 id="org625ee80">Instancing Efficiency</h6>
+</div>
+</div>
+<div id="outline-container-org5214c23" class="outline-5">
+<h5 id="org5214c23">Mesh Drawing Parallelism</h5>
+</div>
+<div id="outline-container-org5d1d7f1" class="outline-5">
+<h5 id="org5d1d7f1">Console Variables</h5>
+</div>
+<div id="outline-container-org9c91444" class="outline-5">
+<h5 id="org9c91444">TMP</h5>
+</div>
+</div>
+<div id="outline-container-orgd786666" class="outline-4">
+<h4 id="orgd786666">Parallel Rendering Overview</h4>
+</div>
+<div id="outline-container-org0b0ec0b" class="outline-4">
+<h4 id="org0b0ec0b">Threaded Rendering</h4>
+</div>
+<div id="outline-container-org86b43f8" class="outline-4">
+<h4 id="org86b43f8">Render Dependency Graph</h4>
+</div>
+<div id="outline-container-org7e5a169" class="outline-4">
+<h4 id="org7e5a169">Shader Development</h4>
+</div>
+<div id="outline-container-orgc76a55a" class="outline-4">
+<h4 id="orgc76a55a">FShaderCache</h4>
+</div>
+<div id="outline-container-org49be4be" class="outline-4">
+<h4 id="org49be4be">AsyncCompute</h4>
+</div>
+<div id="outline-container-org51ea89c" class="outline-4">
+<h4 id="org51ea89c">Shaders in Plugins</h4>
+</div>
+<div id="outline-container-org50e072b" class="outline-4">
+<h4 id="org50e072b">Overview of Shaders in Plugins</h4>
+</div>
+<div id="outline-container-org47ed1b2" class="outline-4">
+<h4 id="org47ed1b2">Creating a New Global Shader as a Plugin</h4>
+</div>
+</div>
+</div>
+<div id="outline-container-org0df105c" class="outline-2">
+<h2 id="org0df105c">参考资料</h2>
+<div class="outline-text-2" id="text-org0df105c">
+<ul class="org-ul">
+<li>UE source code <a href="https://github.com/EpicGames/UnrealEngine">https://github.com/EpicGames/UnrealEngine</a><br /></li>
+<li><a href="https://dev.epicgames.com/documentation/en-us/unreal-engine/designing-visuals-rendering-and-graphics-with-unreal-engine">https://dev.epicgames.com/documentation/en-us/unreal-engine/designing-visuals-rendering-and-graphics-with-unreal-engine</a><br /></li>
+<li><a href="https://dev.epicgames.com/documentation/en-us/unreal-engine/graphics-programming-for-unreal-engine">https://dev.epicgames.com/documentation/en-us/unreal-engine/graphics-programming-for-unreal-engine</a><br /></li>
+<li><a href="https://www.cnblogs.com/timlly/tag/Unreal%20Engine/">https://www.cnblogs.com/timlly/tag/Unreal%20Engine/</a><br /></li>
+<li>剖析虚幻渲染体系 <a href="https://www.cnblogs.com/timlly/p/13512787.html">https://www.cnblogs.com/timlly/p/13512787.html</a><br /></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<div id="vssue"></div>
+        <link rel="stylesheet" href="https://unpkg.com/vssue/dist/vssue.min.css">
+        <script src="https://unpkg.com/vue@2.7.10/dist/vue.runtime.min.js"></script>
+        <script src="https://unpkg.com/vssue/dist/vssue.github.min.js"></script>
+        <script>
+          new Vue({
+            el: '#vssue',
+            render: h => h('Vssue', {
+              props: {
+                // 在这里设置当前页面对应的 Issue 标题
+                title: 'UnrealEngineGraphics',
+
+                // 在这里设置你使用的平台的 OAuth App 配置
+                options: {
+                    owner: 'wolfand11',
+                    repo: 'blog_comments',
+                    clientId: 'a02b49185d85859cb92c',
+                    clientSecret: '6f123085c6f1ce339e2517d24e5b099fa1dc9c85', // 只有在使用某些平台时需要
+                },
+              }
+            })
+          })
+        </script>
+</div>
+</body>
+</html>

@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-08-28 Wed 12:08 -->
+<!-- 2024-08-28 Wed 17:52 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>UnrealEngineGraphics</title>
@@ -95,8 +95,37 @@
 <li><a href="#org5d1d7f1">Console Variables</a></li>
 </ul>
 </li>
-<li><a href="#orgd786666">Parallel Rendering Overview</a></li>
-<li><a href="#org0b0ec0b">Threaded Rendering</a></li>
+<li><a href="#orgd786666">Parallel Rendering Overview</a>
+<ul>
+<li><a href="#orgec5d2e8">Threading Overview</a></li>
+<li><a href="#org1dc3ac6">Graphical Commands and the Command List</a></li>
+<li><a href="#org3c34650">Synchronization</a></li>
+<li><a href="#org812470e">Debugging</a></li>
+</ul>
+</li>
+<li><a href="#org0b0ec0b">Threaded Rendering</a>
+<ul>
+<li><a href="#org2472de6">Rendering thread</a>
+<ul>
+<li><a href="#org88540e0">Development approach</a></li>
+<li><a href="#orgcb76910">Thread specific data structures</a></li>
+<li><a href="#orgcf7d033">Performance considerations</a></li>
+</ul>
+</li>
+<li><a href="#orga6af8bb">Inter-thread communication</a>
+<ul>
+<li><a href="#org390ef58">Asynchronous</a></li>
+<li><a href="#orgfc7b4ff">Blocking</a></li>
+<li><a href="#org9b1ee8e">Rendering resources</a></li>
+<li><a href="#orgc5acbbf">UObjects and Garbage Collection</a></li>
+<li><a href="#org0a20485">Game thread FRenderResource handling</a></li>
+<li><a href="#org61b1b96">Static resources</a></li>
+<li><a href="#org67aca8c">Dynamic resources</a></li>
+</ul>
+</li>
+<li><a href="#orgb1a2d62">Updating state vs Traversing the scene for rendering</a></li>
+</ul>
+</li>
 <li><a href="#org86b43f8">Render Dependency Graph</a></li>
 <li><a href="#org7e5a169">Shader Development</a></li>
 <li><a href="#orgc76a55a">FShaderCache</a></li>
@@ -115,7 +144,7 @@
 <p>
 UnrealEngineGraphics note.<br />
 </p>
-<div class="HTML" id="orgf7c5340">
+<div class="HTML" id="org8cab7ae">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -993,7 +1022,7 @@ FMeshBatch 将 FPrimitiveSceneProxy 的实现（用户代码）与网格 Pass（
 </p>
 
 
-<div id="org72e0910" class="figure">
+<div id="org7d94b07" class="figure">
 <p><img src="./UnrealEngineGraphics/meshpipelineoverview_1.png" alt="meshpipelineoverview_1.png" /><br />
 </p>
 </div>
@@ -1070,7 +1099,7 @@ BuildMeshDrawCommands()函数是所有 pass 公用的代码，该函数将调用
 </p>
 
 <p>
-由于每个 FMeshPassProcessor 必须通过 BuildMeshDrawCommands()来调用传递着色器的 GetShaderBindings()，我们需要一种机制来从 FMeshPassProcessor 传递任意数据到 GetShaderBindings()调用。这通过 BuildMeshDrawCommands()的 ShaderElementData 参数实现。<br />
+由于每个 FMeshPassProcessor 必须通过 BuildMeshDrawCommands()来调用 pass 着色器的 GetShaderBindings()，我们需要一种机制来从 FMeshPassProcessor 传递任意数据到 GetShaderBindings()调用。这是通过 BuildMeshDrawCommands()的 ShaderElementData 参数实现的。<br />
 </p>
 </div>
 <div id="outline-container-org43bb1ff" class="outline-6">
@@ -1230,6 +1259,11 @@ FParallelMeshDrawCommandPass 是常见网格 pass 的默认路径。它应该用
 <p>
 目前，只有 FLocalVertexFactory（UStaticMeshComponent）可以被缓存，因为所有其他顶点工厂都需要一个视图来设置它们的着色器绑定。<br />
 </p>
+
+<p>
+<img src="./UnrealEngineGraphics/meshpipelineoverview_3.png" alt="meshpipelineoverview_3.png" /><br />
+Mesh Draw Command caching paths。橙色箭头表示每一帧都必须执行的操作，而蓝色箭头表示仅执行一次并进行缓存的操作。<br />
+</p>
 </div>
 <div id="outline-container-org694dc07" class="outline-6">
 <h6 id="org694dc07">Cache Invalidation</h6>
@@ -1347,21 +1381,240 @@ FMeshDrawCommand 不负责维护其引用的任何资源的生命周期，因此
 以下是一些有助于诊断网格绘制管道中问题的有用控制台变量：<br />
 </p>
 <ul class="org-ul">
-<li>r.MeshDrawCommands.ParallelPassSetup：切换网格绘制命令处理任务，这对于诊断网格传递线程问题很有用。<br /></li>
+<li>r.MeshDrawCommands.ParallelPassSetup：切换网格绘制命令处理任务，这对于诊断网格 pass 线程问题很有用。<br /></li>
 <li>r.MeshDrawCommands.UseCachedCommands：禁用时强制所有网格绘制命令为动态，这对于诊断缓存网格绘制命令中的陈旧数据问题很有用。<br /></li>
 <li>r.MeshDrawCommands.DynamicInstancing：切换动态实例化，对诊断动态实例化问题很有用。<br /></li>
 <li>r.MeshDrawCommands.LogDynamicInstancingStats：对检查动态实例化效率很有用。<br /></li>
 <li>r.GPUScene.UploadEveryFrame：强制 GPU 场景每帧完全更新，这对于诊断陈旧 GPU 场景数据的问题很有用。<br /></li>
-<li>r.GPUScene.ValidatePrimitiveBuffer：将 GPU 场景下载到 CPU，并验证其内容与基本体 uniform buffer 一致。<br /></li>
+<li>r.GPUScene.ValidatePrimitiveBuffer：将 GPU 场景下载到 CPU，并验证其内容与 primitive uniform buffer 一致。<br /></li>
 </ul>
 </div>
 </div>
 </div>
 <div id="outline-container-orgd786666" class="outline-4">
 <h4 id="orgd786666">Parallel Rendering Overview</h4>
+<div class="outline-text-4" id="text-orgd786666">
+<p>
+<img src="./UnrealEngineGraphics/parallel_rendering_00.png" alt="parallel_rendering_00.png" /><br />
+上图展示了在虚幻引擎中并行命令列表生成的工作原理。<br />
+</p>
+</div>
+<div id="outline-container-orgec5d2e8" class="outline-5">
+<h5 id="orgec5d2e8">Threading Overview</h5>
+<div class="outline-text-5" id="text-orgec5d2e8">
+<p>
+最初，渲染器运行在渲染线程（Render Thread）中，游戏线程（Game Thread）通过将命令添加到队列中，这些命令在一帧中稍后执行。这些命令会调用渲染硬件接口（RHI）层，RHI 层是我们实现的跨平台图形 API 接口。<br />
+</p>
+
+<p>
+为了提高这一过程的效率并利用不同平台的能力，渲染线程现在作为前端，将平台无关的图形命令添加到渲染器的命令列表。然后，一个新的线程，即 RHI 线程，通过后端的适当图形 API 翻译（执行）这些命令。这种分离使得在不同的平台上能够实现不同的后端并行化，例如游戏主机、DX12 和 Vulkan。通常，前端并行生成的任何内容都会在后端并行翻译。<br />
+</p>
+
+<p>
+Tips: 某些命令不使用命令列表系统执行，例如锁定和解锁操作。这些命令由渲染线程直接发出。在这些情况下，引擎要么 flush RHI 线程并等待操作完成，要么复制数据并将其队列化。这根据操作和平台的不同而有所不同。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org1dc3ac6" class="outline-5">
+<h5 id="org1dc3ac6">Graphical Commands and the Command List</h5>
+<div class="outline-text-5" id="text-org1dc3ac6">
+<p>
+渲染线程添加到队列的命令是从 FRHICommand 模板派生的结构体的实例。它们重写 Execute 函数（该函数在翻译过程中被调用），并存储所需的任何数据。命令可以根据平台的最佳性能启发式在不同平台上以不同方式提交给 GPU（例如，每帧提交多次，或在帧末一次性提交），或者可以通过发出 FRHISubmitCommandsHint 命令来提交。<br />
+</p>
+
+<p>
+翻译中使用的主要接口是 IRHICommandContext。每个平台和 API 都有一个派生的 RHICommandContext。在翻译过程中，RHICommandList 被赋予一个 RHICommandContext 来操作，每个命令的 Execute 函数会调用 RHICommandContext API。命令的上下文负责状态遮蔽、验证和处理执行给定操作所需的任何 API 特定细节。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org3c34650" class="outline-5">
+<h5 id="org3c34650">Synchronization</h5>
+<div class="outline-text-5" id="text-org3c34650">
+<p>
+渲染器在游戏线程、渲染线程、RHI 线程以及 GPU 之间的同步是一个复杂的话题。在最高层面，Unreal Engine 通常配置为“延迟一帧”的渲染器。这意味着渲染线程在处理帧 N 时，游戏线程处理帧 N+1，除非渲染线程运行速度比游戏线程快。RHI 线程的加入使得这一情况稍微复杂，因为渲染线程能够在 RHI 线程处理帧 N 的同时完成帧 N+1 的可见性计算。最终结果是，当游戏线程处理帧 N+1 时，渲染线程可能正在处理帧 N 或帧 N+1 的命令，RHI 线程也可能在翻译帧 N 或帧 N+1 的命令，这取决于执行时间。这些保证由 FFrameEndSync 和 FRHICommandListImmediate 函数调用 RHIThreadFence 调节。无论并行化如何配置，还要保证提交给 GPU 的命令顺序与在单线程渲染器中的提交顺序保持不变。这是为了确保一致性，在更改渲染代码时必须维护。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org812470e" class="outline-5">
+<h5 id="org812470e">Debugging</h5>
+<div class="outline-text-5" id="text-org812470e">
+<p>
+有几个控制台变量可以用来控制并行行为。由于许多阶段是正交的，它们可以独立禁用以进行测试，并且可以在时间允许的情况下分阶段引入新平台。<br />
+</p>
+
+<ul class="org-ul">
+<li>r.rhicmdusedeferredcontexts：如果设置为 0，将禁用后端并行化。默认值为 1。<br /></li>
+<li>r.rhicmduseparallelalgorithms：如果设置为 0，将禁用前端并行化。默认值为 1。<br /></li>
+<li>r.rhithread.enable：如果设置为 0，将完全禁用 RHI 线程。命令列表仍会生成，但将在某些点直接在渲染线程上翻译。<br /></li>
+<li>r.rhicmdbypass：如果设置为 1，将完全禁用命令列表生成，使渲染器像最初那样运行，直接在渲染线程上调用 RHI 命令而不使用命令列表。注意，除非 RHI 线程被禁用，否则这一设置将被忽略。<br /></li>
+</ul>
+</div>
+</div>
 </div>
 <div id="outline-container-org0b0ec0b" class="outline-4">
 <h4 id="org0b0ec0b">Threaded Rendering</h4>
+<div class="outline-text-4" id="text-org0b0ec0b">
+</div>
+<div id="outline-container-org2472de6" class="outline-5">
+<h5 id="org2472de6">Rendering thread</h5>
+<div class="outline-text-5" id="text-org2472de6">
+<p>
+在 Unreal Engine 中，整个渲染器在其自身的线程中运行，该线程通常比游戏线程滞后一到两帧。<br />
+</p>
+
+<p>
+在处理渲染相关内容时，必须仔细考虑每次内存读写，以确保不仅线程安全，还要行为上的确定性。当功能行为依赖于两个线程之间的执行速度差异时，这被称为竞争条件(race condition)。避免竞争条件非常重要，因为它们通常很难重现，可能会因速度差异而依赖于机器、平台、调试器或配置。这类错误很难调试，修复这类 bug 所需时间可能是普通可重现错误的 10 倍。<br />
+</p>
+
+<p>
+以下是竞争条件/线程错误的简单示例：<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-cpp"><span style="color: #9f8766;">/** Actor &#22312;&#32452;&#20214;&#27880;&#20876;&#21040;&#22330;&#26223;&#26102;&#65292;&#22312;&#28216;&#25103;&#32447;&#31243;&#19978;&#35843;&#29992;FStaticMeshSceneProxy */</span>
+<span style="color: #a45bad;">FStaticMeshSceneProxy</span>::<span style="color: #bc6ec5; font-weight: bold;">FStaticMeshSceneProxy</span>(<span style="color: #ce537a; font-weight: bold;">UStaticMeshComponent</span>* <span style="color: #7590db;">InComponent</span>):
+    <span style="color: #ce537a; font-weight: bold;">FPrimitiveSceneProxy</span>(...),
+    <span style="color: #bc6ec5; font-weight: bold;">Owner</span>(InComponent-&gt;GetOwner()) &lt;======== &#27880;&#24847;&#65306;&#32531;&#23384;&#20102; AActor &#25351;&#38024;
+    ...
+
+<span style="color: #9f8766;">/** &#22312;&#28210;&#26579;&#22120;&#36941;&#21382;&#22330;&#26223;&#26102;&#22312;&#28210;&#26579;&#32447;&#31243;&#19978;&#35843;&#29992;DrawDynamicElements */</span>
+<span style="color: #ce537a; font-weight: bold;">void</span> <span style="color: #a45bad;">FStaticMeshSceneProxy</span>::DrawDynamicElements(...)
+{
+    <span style="color: #4f97d7; font-weight: bold;">if</span> (Owner-&gt;AnyProperty) &lt;========== &#31454;&#20105;&#26465;&#20214;&#65281;&#28216;&#25103;&#32447;&#31243;&#25317;&#26377;&#25152;&#26377; AActor/UObject &#29366;&#24577;&#65292;
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#36825;&#37324;&#21487;&#33021;&#22312;&#20219;&#20309;&#26102;&#20505;&#23545;Owner&#36827;&#34892;&#20889;&#20837;&#12290;&#32780;Owner&#29978;&#33267;&#21487;&#33021;&#24050;&#34987;&#22403;&#22334;&#22238;&#25910;&#20102;&#65292;&#27492;&#26102;&#20250;&#23548;&#33268;&#23849;&#28291;</span>
+        <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">&#36890;&#36807;&#22312;&#27492;&#20195;&#29702;&#20013;&#38236;&#20687; AnyProperty &#30340;&#20540;&#21487;&#20197;&#23433;&#20840;&#22320;&#23436;&#25104;&#27492;&#25805;&#20316;</span>
+}
+</pre>
+</div>
+</div>
+<div id="outline-container-org88540e0" class="outline-6">
+<h6 id="org88540e0">Development approach</h6>
+<div class="outline-text-6" id="text-org88540e0">
+<p>
+无法通过详尽测试找到竞争条件。重要的是要意识到，不能通过猜测和检查或事后修复错误来创建可靠的线程代码。最佳方法是完全理解游戏线程和渲染线程之间的交互，并使用机制确保确定性。你应该能够解释使每次交互确定的事件顺序，否则几乎可以肯定你在创造竞争条件。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgcb76910" class="outline-6">
+<h6 id="orgcb76910">Thread specific data structures</h6>
+<div class="outline-text-6" id="text-orgcb76910">
+<p>
+因此，最好将数据放在不同线程“拥有”的单独结构中，以便明确谁可以修改什么。这对函数也适用。最好始终从同一线程调用每个函数，否则事情会变得非常复杂。Unreal Engine 的大部分结构都是这样的，例如，UPrimitiveComponent 是任何可以渲染、投射阴影、具有自身可见性状态等的基础游戏线程类。渲染线程永远不能直接接触 UPrimitiveComponent 的内存，因为游戏线程可能随时写入其成员。渲染线程有自己的类来表示此功能，即 FPrimitiveSceneProxy。游戏线程在创建并注册 FPrimitiveSceneProxy 后，不能再接触其内存成员。通过创建 FPrimitiveSceneProxy, UActorComponent::RegisterComponent 将组件添加到场景中并使其对渲染器可见。一旦组件被注册，并且可见，则在每个需要的 pass 中都会调用 FPrimitiveSceneProxy::DrawDynamicElements。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgcf7d033" class="outline-6">
+<h6 id="orgcf7d033">Performance considerations</h6>
+<div class="outline-text-6" id="text-orgcf7d033">
+<p>
+游戏线程在每次 Tick()结束时阻塞，直到渲染线程赶上滞后一帧或两帧。由于渲染线程滞后较多，在游戏过程中不允许阻塞游戏线程以等待渲染线程完全赶上。在加载关卡或单个对象的 GC 期间阻塞也是一个坏主意，因为 Unreal Engine 支持异步流式加载关卡。有各种异步机制来避免阻塞。<br />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orga6af8bb" class="outline-5">
+<h5 id="orga6af8bb">Inter-thread communication</h5>
+<div class="outline-text-5" id="text-orga6af8bb">
+</div>
+<div id="outline-container-org390ef58" class="outline-6">
+<h6 id="org390ef58">Asynchronous</h6>
+<div class="outline-text-6" id="text-org390ef58">
+<p>
+两个线程之间的主要通信方法是通过 ENQUEUE_UNIQUE_RENDER_COMMAND_XXXPARAMETER 宏。该宏创建一个 local class, 类中包含一个 Execute 虚函数，其中包含了你输入的代码。游戏线程将命令插入渲染命令队列，渲染线程在适当的时候调用 Execute 函数。<br />
+</p>
+
+<p>
+FRenderCommandFence 为在游戏线程上跟踪渲染线程的进度提供了一种方便的方法。游戏线程调用 FRenderCommandFence::BeginFence 来开始栅栏。然后，游戏线程可以调用 FRenderCommandFence::Wait 来阻塞，直到渲染线程处理完栅栏，或者通过检查 GetNumPendingFences 来轮询渲染线程的进度。当 GetNumPendingFences 返回 0 时，渲染线程已处理完栅栏。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgfc7b4ff" class="outline-6">
+<h6 id="orgfc7b4ff">Blocking</h6>
+<div class="outline-text-6" id="text-orgfc7b4ff">
+<p>
+FlushRenderingCommands 是阻塞游戏线程直到渲染线程赶上的标准方法。这对于离线操作（编辑器）非常有用，离线操作会修改渲染线程访问的内存。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org9b1ee8e" class="outline-6">
+<h6 id="org9b1ee8e">Rendering resources</h6>
+<div class="outline-text-6" id="text-org9b1ee8e">
+<p>
+FRenderResource 提供了基本的渲染资源接口并提供初始化和释放的钩子。任何从 FRenderResource 派生的类（如 FVertexBuffer、FIndexBuffer 等）在用于渲染之前需要初始化，并在删除之前释放。只能从渲染线程调用 FRenderResource::InitResource，在游戏线程上可以调用一个辅助函数（BeginInitResource），将一个渲染命令加入队列，从而来调用 FRenderResource::InitResource。RHI 函数只能从渲染线程调用（除了创建设备、视口等少数情况）。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orgc5acbbf" class="outline-6">
+<h6 id="orgc5acbbf">UObjects and Garbage Collection</h6>
+<div class="outline-text-6" id="text-orgc5acbbf">
+<p>
+垃圾回收（GC）在游戏线程上进行并作用于 UObjects。游戏线程可能会删除一个 UObject，而此时渲染线程正在处理一个命令，该命令引用了被删除的 UObject。因此，渲染线程永远不应该对一个 UObject 指针取消引用，除非有机制确保在渲染线程不再引用它之前 UObject 不会被删除。一个例子是 UPrimitiveComponent，在渲染线程处理分离命令之前，它使用一个名为 DetachFence 的 FRenderCommandFence 来防止 GC 删除 UObject。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org0a20485" class="outline-6">
+<h6 id="org0a20485">Game thread FRenderResource handling</h6>
+<div class="outline-text-6" id="text-org0a20485">
+<p>
+在游戏线程与渲染线程资源交互中，有两种常见场景需要考虑：静态资源（如索引缓冲区，通常只在加载或编辑器中修改）和动态资源（需要在每帧更新以反映游戏线程模拟的最新结果）。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org61b1b96" class="outline-6">
+<h6 id="org61b1b96">Static resources</h6>
+<div class="outline-text-6" id="text-org61b1b96">
+<p>
+以下是 Unreal Engine 中处理静态资源交互的方式，以 USkeletalMesh 为例：<br />
+</p>
+
+<ol class="org-ol">
+<li>在加载时调用 USkeletalMesh::PostLoad，这会调用 InitResources。这会在它拥有的任何静态 FRenderResources（如索引缓冲区）上调用 BeginInitResource。BeginInitResource 将一个渲染命令加入队列以调用 FRenderResource::InitResource。从这一点开始，游戏线程不能再修改索引缓冲区内存，除非采取措施重新获得所有权。<br /></li>
+<li>一个组件注册并开始使用 USkeletalMesh 的索引缓冲区进行渲染。<br /></li>
+<li>垃圾回收（GC）确定在某个时刻不再引用该组件（例如，关卡卸载或不再引用）并解除组件。注意，此时游戏线程不能删除索引缓冲区内存，因为渲染线程可能尚未处理解除操作，可能仍在使用索引缓冲区进行渲染。<br /></li>
+<li>GC 调用 USkeletalMesh::BeginDestroy，这是游戏线程对象将命令加入队列以释放渲染资源的机会，它会执行 BeginReleaseResource(&amp;IndexBuffer);。游戏线程仍不能删除 IndexBuffer 的内存，因为渲染线程不一定已经处理完释放操作。我们可以让游戏线程阻塞直到渲染线程赶上，但这会导致卡顿和降帧，因此我们使用一个异步机制。为了跟踪渲染线程处理释放命令的进度，我们启动一个栅栏。<br /></li>
+<li>GC 调用 USkeletalMesh::IsReadyForFinishDestroy，并且只有该函数返回 true 时，才会销毁 UObject。该函数仅在栅栏被渲染线程通过后返回 true，这意味着现在可以安全地从游戏线程删除索引缓冲区内存。<br /></li>
+<li>最后，GC 调用 UObject::FinishDestroy，该函数可以在一个中心位置释放内存(release memory in a central location)。在索引缓冲区的情况下，USkeletalMesh 的析构函数调用 FRawStaticIndexBuffer 的析构函数时，索引缓冲区内存被释放。FRawStaticIndexBuffer 的析构函数会调用持有索引缓冲区内存的 TArray 的析构函数，从而释放内存。<br /></li>
+</ol>
+
+<p>
+这种机制运作良好，因为它有效率（从不阻塞任何线程，而且在中心位置初始化(initializes in a central location)，而不是每帧检查是否需要初始化），并且是确定性的。<br />
+</p>
+</div>
+</div>
+<div id="outline-container-org67aca8c" class="outline-6">
+<h6 id="org67aca8c">Dynamic resources</h6>
+<div class="outline-text-6" id="text-org67aca8c">
+<p>
+skeletal mesh bone 的 transforms 是由游戏线程的动画每帧生成的，其就是动态资源更新的一个很好的例子。目标是将每次动画更新后的 transforms 从游戏线程传输到渲染线程的数组中，在那里它们可以被设置为着色器常量。如果要每帧更新索引或顶点缓冲区，情况也是如此。以下是操作顺序：<br />
+</p>
+
+<ol class="org-ol">
+<li>USkinnedMeshComponent::CreateRenderState_Concurrent 分配 USkinnedMeshComponent::MeshObject。从这一点起，游戏线程只能写入 MeshObject 指针，而不能写入 FSkeletalMeshObject 的内存。<br /></li>
+<li>USkinnedMeshComponent::UpdateTransform 至少每帧调用一次以更新组件的运动。在 GPU 蒙皮时，这会调用 FSkeletalMeshObjectGPUSkin::Update。此时，我们在游戏线程上有最新的变换，需要将它们传输到渲染线程。这是通过首先在堆上分配内存（FDynamicSkelMeshObjectData），然后将骨骼变换复制到其中，然后使用 ENQUEUE_UNIQUE_RENDER_COMMAND_TWOPARAMETER 将此副本交给渲染线程。渲染线程现在拥有该副本，并负责删除它。ENQUEUE_UNIQUE_RENDER_COMMAND_TWOPARAMETER 宏包含将变换复制到其最终目的地的代码，以便可以将其设置为着色器常量。如果要更新顶点位置，对应的就是锁定并更新顶点缓冲区。<br /></li>
+<li>某个时刻，组件被解除。游戏线程将渲染命令加入队列以释放所有动态 FRenderResources，并且现在可以将 MeshObject 指针设置为 NULL，但实际内存仍被渲染线程引用，不能删除。这时延迟删除机制起作用。派生自 FDeferredCleanupInterface 的类可以以线程安全的异步方式删除。FSkeletalMeshObject 实现了此接口。游戏线程调用 BeginCleanup(MeshObject)，启动 FSkeletalMeshObject 的延迟删除。内存在安全时最终会被删除，并且清理完成。<br /></li>
+</ol>
+</div>
+</div>
+</div>
+<div id="outline-container-orgb1a2d62" class="outline-5">
+<h5 id="orgb1a2d62">Updating state vs Traversing the scene for rendering</h5>
+<div class="outline-text-5" id="text-orgb1a2d62">
+<p>
+在开发具有独立更新和渲染操作的系统时，将两者结合在 DrawDynamicElements 中是很诱人的，但这不是一个好的设计选择。更好的解决方案是将更新与渲染遍历分开，例如从游戏线程 Tick 中将更新命令加入队列。<br />
+</p>
+
+<p>
+DrawDynamicElements 由高级渲染代码调用，以绘制一个 primitive 组件的元素。高级代码假定没有 RHI 状态被改变，并且根据 shading passes、视图数量和场景捕获的需要，每帧可以多次调用 DrawDynamicElements。DrawDynamicElements 甚至可能被调用，但随后由于各种原因，底层绘制策略丢弃结果（例如，在深度 pass 期间提交的透明 FMeshElement 将被丢弃）。如果 primitive 组件实际上不可见，遮挡系统可能会根据其使用的启发式方法决定是否调用 DrawDynamicElements。所有这些因素都可能与应该每帧更新一次的状态更新发生冲突。<br />
+</p>
+
+<p>
+更好的解决方案是将更新与渲染遍历分开。游戏线程 Tick 可以将一个渲染命令加入队列来执行更新操作。如果这种用法可接受，通过使用 primitive 场景信息的 LastRenderTime，渲染命令可以选择基于可见性跳过更新。如果更新操作以这种方式单独加入队列，就可以使用任何 RHI 函数，包括设置不同的渲染目标（render targets）。<br />
+</p>
+
+<p>
+状态缓存（与更新相对）是此规则的一个例外。作为一种优化，状态缓存是将渲染遍历的中间结果缓存。它与遍历紧密相关，并且不改变 RHI 状态，因此不会遭受前述缺点（只要正确决定何时缓存）。<br />
+</p>
+</div>
+</div>
 </div>
 <div id="outline-container-org86b43f8" class="outline-4">
 <h4 id="org86b43f8">Render Dependency Graph</h4>

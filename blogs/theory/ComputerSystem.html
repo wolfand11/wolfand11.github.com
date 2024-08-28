@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-01-17 Wed 20:21 -->
+<!-- 2024-08-28 Wed 10:12 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Computer System</title>
@@ -93,7 +93,15 @@
 <ul>
 <li><a href="#orgb9eb389">7 链接</a></li>
 <li><a href="#org9560402">8 异常控制流</a></li>
-<li><a href="#orge228030">9 虚拟内存</a></li>
+<li><a href="#orge228030">9 虚拟内存</a>
+<ul>
+<li><a href="#org1ce11b7">内存映射</a>
+<ul>
+<li><a href="#org9a972de">再看 execve 函数</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#orgfafd5f1">第三部分程序间的交流和通信</a>
@@ -105,7 +113,7 @@
 </li>
 </ul>
 </li>
-<li><a href="#orgd668177">Misc</a>
+<li><a href="#org1aff13d">Misc</a>
 <ul>
 <li><a href="#orgaf83d37">Q&amp;A</a>
 <ul>
@@ -125,7 +133,7 @@
 <p>
 Computer System note.<br />
 </p>
-<div class="HTML" id="orgd666190">
+<div class="HTML" id="orgaf6af3d">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -136,7 +144,7 @@ Computer System note.<br />
 <h2 id="org592cb0a">Computer Science Map</h2>
 <div class="outline-text-2" id="text-org592cb0a">
 
-<div id="org08db0a4" class="figure">
+<div id="org2154f52" class="figure">
 <p><img src="./ComputerSystem/cs_map.png" alt="cs_map.png" width="1024px" /><br />
 </p>
 </div>
@@ -171,7 +179,7 @@ Computer System note.<br />
 <h6 id="orgdcbe313">整数的表示</h6>
 <div class="outline-text-6" id="text-orgdcbe313">
 
-<div id="org6b82e57" class="figure">
+<div id="org658f6a1" class="figure">
 <p><img src="./ComputerSystem/2020_05_24_int_uint_exp.jpg" alt="2020_05_24_int_uint_exp.jpg" /><br />
 </p>
 </div>
@@ -195,7 +203,7 @@ Computer System note.<br />
 <h6 id="org28fd21c">有符号数和无符号数之间的转换</h6>
 <div class="outline-text-6" id="text-org28fd21c">
 
-<div id="org4923842" class="figure">
+<div id="orgd162481" class="figure">
 <p><img src="./ComputerSystem/2020_05_24_int_uint_convert.jpg" alt="2020_05_24_int_uint_convert.jpg" /><br />
 </p>
 </div>
@@ -235,7 +243,7 @@ printf(<span style="color: #2d9574;">"v = %d, uv = %u\n"</span>, v, uv);
 </p>
 
 
-<div id="org7bac91c" class="figure">
+<div id="orgec4b284" class="figure">
 <p><img src="./ComputerSystem/2020_05_24_bitwize_shift.jpg" alt="2020_05_24_bitwize_shift.jpg" /><br />
 </p>
 </div>
@@ -402,7 +410,7 @@ e 间隔 1 的数落在 \([2^E, 2^{E+1})\) 范围内，并且这个范围内，�
 </p>
 
 
-<div id="org80198d2" class="figure">
+<div id="org75e6c37" class="figure">
 <p><img src="./ComputerSystem/02_04_float_round.jpg" alt="02_04_float_round.jpg" /><br />
 </p>
 </div>
@@ -426,7 +434,7 @@ e 间隔 1 的数落在 \([2^E, 2^{E+1})\) 范围内，并且这个范围内，�
 <li><a id="orga9626f3"></a>浮点数算术运算<br />
 <div class="outline-text-7" id="text-orga9626f3">
 
-<div id="orga1eba4c" class="figure">
+<div id="org7823cd1" class="figure">
 <p><img src="./ComputerSystem/2020_05_24_float_algrithem.jpg" alt="2020_05_24_float_algrithem.jpg" /><br />
 </p>
 </div>
@@ -469,8 +477,8 @@ e 间隔 1 的数落在 \([2^E, 2^{E+1})\) 范围内，并且这个范围内，�
 </p>
 </div>
 </li>
-<li><a id="org259051d"></a>Misc<br />
-<div class="outline-text-7" id="text-org259051d">
+<li><a id="orgd668177"></a>Misc<br />
+<div class="outline-text-7" id="text-orgd668177">
 <p>
 v&gt;0 v/0 = Infinity<br />
 v&lt;0 v/0 = -Infinity<br />
@@ -950,6 +958,46 @@ c++11 中的 alignof 关键字可用于得到一个类型的对齐大小。<br /
 </div>
 <div id="outline-container-orge228030" class="outline-4">
 <h4 id="orge228030">9 虚拟内存</h4>
+<div class="outline-text-4" id="text-orge228030">
+</div>
+<div id="outline-container-org1ce11b7" class="outline-5">
+<h5 id="org1ce11b7">内存映射</h5>
+<div class="outline-text-5" id="text-org1ce11b7">
+</div>
+<div id="outline-container-org9a972de" class="outline-6">
+<h6 id="org9a972de">再看 execve 函数</h6>
+<div class="outline-text-6" id="text-org9a972de">
+<p>
+execve 函数在当前进程中加载并运行包含在可执行文件 a.out 中的程序，用 a.out 程序替代当前程序。<br />
+</p>
+<div class="org-src-container">
+<pre class="src src-c">execve(<span style="color: #2d9574;">"a.out"</span>, <span style="color: #a45bad;">NULL</span>, <span style="color: #a45bad;">NULL</span>);
+</pre>
+</div>
+<p>
+上面代码执行以下几个步骤：<br />
+</p>
+<ol class="org-ol">
+<li>删除已存在的用户区域。删除当前进程虚拟地址的用户部分中的已存在的区域结构<br /></li>
+<li>映射私有区域。为 a.out 的代码、数据、bss 和栈区域创建新的区域结构。所有这些区域都是私有的、写时复制的。<br />
+代码和数据区域被映射为 a.out 文件中的.text 和 .data 区。<br />
+bss 区域是请求二进制零的，映射到匿名文件，其大小包含在 a.out 中。<br />
+栈和堆区域也是请求二进制零的，初始长度为零。图 9-31 概括了私有区域的不同映射<br /></li>
+<li>映射共享区域。如果 a.out 程序与共享对象链接，比如标准库 libc.so, 那么这些对象都是动态链接到这个程序的，然后在映射到用户虚拟地址空间中的共享区域内。<br /></li>
+<li>设置程序计数器(PC)。设置当前进程上下文中的程序计数器，使之指向代码区域的入口点。<br /></li>
+</ol>
+<p>
+下次调度这个进程时，它将从这个入口点开始执行。Linux 将更加需要换入代码和数据页面。<br />
+</p>
+
+
+<div id="org75d51e9" class="figure">
+<p><img src="./ComputerSystem/map_prog_area.jpg" alt="map_prog_area.jpg" /><br />
+</p>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div id="outline-container-orgfafd5f1" class="outline-3">
@@ -967,9 +1015,9 @@ c++11 中的 alignof 关键字可用于得到一个类型的对齐大小。<br /
 </div>
 </div>
 </div>
-<div id="outline-container-orgd668177" class="outline-2">
-<h2 id="orgd668177">Misc</h2>
-<div class="outline-text-2" id="text-orgd668177">
+<div id="outline-container-org1aff13d" class="outline-2">
+<h2 id="org1aff13d">Misc</h2>
+<div class="outline-text-2" id="text-org1aff13d">
 </div>
 <div id="outline-container-orgaf83d37" class="outline-3">
 <h3 id="orgaf83d37">Q&amp;A</h3>

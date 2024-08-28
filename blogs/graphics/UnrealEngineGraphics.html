@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-08-28 Wed 09:39 -->
+<!-- 2024-08-28 Wed 12:08 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>UnrealEngineGraphics</title>
@@ -93,7 +93,6 @@
 </li>
 <li><a href="#org5214c23">Mesh Drawing Parallelism</a></li>
 <li><a href="#org5d1d7f1">Console Variables</a></li>
-<li><a href="#org9c91444">TMP</a></li>
 </ul>
 </li>
 <li><a href="#orgd786666">Parallel Rendering Overview</a></li>
@@ -116,7 +115,7 @@
 <p>
 UnrealEngineGraphics note.<br />
 </p>
-<div class="HTML" id="org86b5c35">
+<div class="HTML" id="orgf7c5340">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -994,7 +993,7 @@ FMeshBatch 将 FPrimitiveSceneProxy 的实现（用户代码）与网格 Pass（
 </p>
 
 
-<div id="orge817041" class="figure">
+<div id="org72e0910" class="figure">
 <p><img src="./UnrealEngineGraphics/meshpipelineoverview_1.png" alt="meshpipelineoverview_1.png" /><br />
 </p>
 </div>
@@ -1250,30 +1249,112 @@ FParallelMeshDrawCommandPass 是常见网格 pass 的默认路径。它应该用
 </div>
 <div id="outline-container-orge0b3102" class="outline-6">
 <h6 id="orge0b3102">Resource Lifetime Management</h6>
+<div class="outline-text-6" id="text-orge0b3102">
+<p>
+FMeshDrawCommand 不负责维护其引用的任何资源的生命周期，因此在处理缓存的网格绘制命令时需要特别小心，应该将引用某个特定资源(资源已经被释放)的命令失效。例如，当重新创建由缓存网格绘制命令引用的 Uniform Buffer 时，在遍历缓存的网格绘制命令以进行渲染时会导致崩溃。此时应更新 Uniform Buffer，或者必须使缓存的网格绘制命令失效。<br />
+</p>
+
+<p>
+可以使用 VALIDATE_UNIFORM_BUFFER_LIFETIME 来跟踪已删除但仍由缓存网格绘制命令引用的 Uniform Buffer。<br />
+</p>
+</div>
 </div>
 </div>
 <div id="outline-container-orgbaed1e6" class="outline-5">
 <h5 id="orgbaed1e6">Draw Call Merging</h5>
 <div class="outline-text-5" id="text-orgbaed1e6">
+<p>
+由于 FMeshDrawCommands 在 RHI 级别之上捕获了绘制所需的所有状态，我们可以轻松地比较它们以进行绘制调用合并。目前实现的唯一形式的绘制调用合并是基于 D3D11 功能集的，这允许将具有相同着色器绑定的绘制调用合并为实例化绘制。更高级的 RHI（如 D3D12）可以实现更激进的绘制合并，但尚未实现。<br />
+</p>
 </div>
 <div id="outline-container-org9ee2eb2" class="outline-6">
 <h6 id="org9ee2eb2">Dynamic Instancing</h6>
+<div class="outline-text-6" id="text-org9ee2eb2">
+<p>
+要将两个绘制合并为一个实例化的绘制，它们必须具有相同的着色器绑定（FMeshDrawCommand::MatchesForDynamicInstancing）。在着色器中，只有 InstanceID 会在它们之间有所不同，或者 vertex streams 以 instance 频率进行设置。<br />
+</p>
+
+<p>
+着色器参数必须经过精心设计以实现动态实例化。根据参数变化频率，通过各种方法实现动态实例化：<br />
+</p>
+
+<ul class="org-ul">
+<li>pass 参数：这些放置在 pass uniform buffer 中，pass 中的任何绘制都可以合并。<br /></li>
+<li>FLocalVertexFactory 参数：这些放置在 UStaticMesh 拥有的 uniform buffer 中，任何使用相同 UStaticMesh 的绘制都可以合并。<br /></li>
+<li>材质实例参数：这些放置在材质 uniform buffer 中，任何使用相同材质实例的绘制都可以合并。<br /></li>
+<li>光照贴图资源参数：这些放置在 LightmapResourceCluster uniform buffer 中，任何使用相同 LightmapTexture 的绘制都可以合并。<br /></li>
+<li>primitive 参数：这些放置在场景范围的 primitive 数据缓冲区中，称为 GPUScene，并在着色器中使用 PrimitiveID 进行索引。<br /></li>
+</ul>
+</div>
 </div>
 <div id="outline-container-orgb11f68a" class="outline-6">
 <h6 id="orgb11f68a">GPU Scene</h6>
+<div class="outline-text-6" id="text-orgb11f68a">
+<p>
+为了在同一个实例绘制（该实例绘制包含 primitive 特定的参数）中可以有不同的 primitives，它们被上传到场景范围的缓冲区（UpdateGPUScene），并使用 PrimitiveId 进行索引。对于 FLocalVertexFactory，PrimitiveId 来自于一个实例频率的 vertex input stream。必须将其传递给像素着色器，并使用 GetPrimitiveData(Parameters.PrimitiveId).Member 来访问 primitive 着色器参数，而不是直接访问 primitive uniform buffer（Primitive.Member）。<br />
+</p>
+</div>
 </div>
 <div id="outline-container-org625ee80" class="outline-6">
 <h6 id="org625ee80">Instancing Efficiency</h6>
+<div class="outline-text-6" id="text-org625ee80">
+<p>
+目前，只有缓存的网格绘制命令可以通过动态实例化合并，这将动态实例化限制为 FLocalVertexFactory。<br />
+</p>
+
+<p>
+某些边缘情况也会阻止合并：<br />
+</p>
+
+<ul class="org-ul">
+<li>Lightmaps 的小纹理——调整 DefaultEngine.ini 中的 MaxLightmapRadius<br /></li>
+<li>Per-component vertex colors<br /></li>
+<li>SpeedTree Wind node<br /></li>
+</ul>
+
+<p>
+要在关卡中调查动态实例化效率，可以使用控制台命令 r.MeshDrawCommands.LogDynamicInstancingStats 1，并在日志中检查输出。<br />
+</p>
+
+<p>
+注意，Depth Prepass 和 Shadow Depth passes 通常实现了更高的合并效率，因为它们会尽可能使用默认材质的着色器进行覆盖。<br />
+</p>
+</div>
 </div>
 </div>
 <div id="outline-container-org5214c23" class="outline-5">
 <h5 id="org5214c23">Mesh Drawing Parallelism</h5>
+<div class="outline-text-5" id="text-org5214c23">
+<p>
+网格绘制的大部分工作是在任务中进行的，以避免占用渲染线程的关键路径。在 RT 帧的开始，InitViews 中，FParallelMeshDrawCommandPass 为每个 Pass 发布一个任务以进行 Pass 设置（动态命令生成、排序和绘制调用合并）。随着渲染线程在帧中推进并到达网格 Pass（例如，RenderBasePass），根据系统的内核数量和需要分派的绘制数量，它为每个 Pass 启动多个 FDrawVisibleMeshCommandsAnyThreadTasks 以进行绘制分派（记录 RHICmdList）。<br />
+</p>
+
+<ul class="org-ul">
+<li>将 r.MeshDrawCommands.ParallelPassSetup 设置为 0 将禁用 Pass 设置任务，并导致工作在渲染线程上进行，这对于调试很有用。<br /></li>
+
+<li>将 r.RHICmdBasePassDeferredContexts 设置为 0 将禁用 base pass 绘制分派的并行任务，导致这些任务在渲染线程上进行。<br /></li>
+</ul>
+
+<p>
+这些任务尽可能早地启动，并设置依赖链，以便它们可以与渲染线程并行执行一帧。渲染线程仅在帧结束时在这些任务完成时，在 FSceneRenderer::WaitForTasksClearSnapshotsAndDeleteSceneRenderer 中阻塞。<br />
+</p>
+</div>
 </div>
 <div id="outline-container-org5d1d7f1" class="outline-5">
 <h5 id="org5d1d7f1">Console Variables</h5>
+<div class="outline-text-5" id="text-org5d1d7f1">
+<p>
+以下是一些有助于诊断网格绘制管道中问题的有用控制台变量：<br />
+</p>
+<ul class="org-ul">
+<li>r.MeshDrawCommands.ParallelPassSetup：切换网格绘制命令处理任务，这对于诊断网格传递线程问题很有用。<br /></li>
+<li>r.MeshDrawCommands.UseCachedCommands：禁用时强制所有网格绘制命令为动态，这对于诊断缓存网格绘制命令中的陈旧数据问题很有用。<br /></li>
+<li>r.MeshDrawCommands.DynamicInstancing：切换动态实例化，对诊断动态实例化问题很有用。<br /></li>
+<li>r.MeshDrawCommands.LogDynamicInstancingStats：对检查动态实例化效率很有用。<br /></li>
+<li>r.GPUScene.UploadEveryFrame：强制 GPU 场景每帧完全更新，这对于诊断陈旧 GPU 场景数据的问题很有用。<br /></li>
+<li>r.GPUScene.ValidatePrimitiveBuffer：将 GPU 场景下载到 CPU，并验证其内容与基本体 uniform buffer 一致。<br /></li>
+</ul>
 </div>
-<div id="outline-container-org9c91444" class="outline-5">
-<h5 id="org9c91444">TMP</h5>
 </div>
 </div>
 <div id="outline-container-orgd786666" class="outline-4">

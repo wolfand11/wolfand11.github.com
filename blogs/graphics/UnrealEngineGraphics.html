@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-08-28 Wed 17:52 -->
+<!-- 2024-09-23 Mon 13:42 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>UnrealEngineGraphics</title>
@@ -144,7 +144,7 @@
 <p>
 UnrealEngineGraphics note.<br />
 </p>
-<div class="HTML" id="org8cab7ae">
+<div class="HTML" id="org711c033">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -1022,7 +1022,7 @@ FMeshBatch 将 FPrimitiveSceneProxy 的实现（用户代码）与网格 Pass（
 </p>
 
 
-<div id="org7d94b07" class="figure">
+<div id="orgeb54171" class="figure">
 <p><img src="./UnrealEngineGraphics/meshpipelineoverview_1.png" alt="meshpipelineoverview_1.png" /><br />
 </p>
 </div>
@@ -1262,7 +1262,10 @@ FParallelMeshDrawCommandPass 是常见网格 pass 的默认路径。它应该用
 
 <p>
 <img src="./UnrealEngineGraphics/meshpipelineoverview_3.png" alt="meshpipelineoverview_3.png" /><br />
-Mesh Draw Command caching paths。橙色箭头表示每一帧都必须执行的操作，而蓝色箭头表示仅执行一次并进行缓存的操作。<br />
+Mesh Draw Command caching paths。橙色箭头表示每一帧都必须执行的操作，而蓝色箭头表示仅执行一次并进行缓存的操作。UE 存在 3 种网格绘制路径（橙色为每帧动态生成，蓝色为只生成一次后缓存）：<br />
+第 1 种是动态绘制路径，从 FPrimitiveSceneProxy 到 RHICommandList 每帧都会动态创建，效率最低，但可控性最强；<br />
+第 2 种是需要 View 的静态路径，可以缓存 FMeshBatch 数据，效率中，可控性中；<br />
+第 3 种是不需要 view 的静态绘制路径，可以缓存 FMeshBatch 和 FMeshDrawCommand，效率最高，但可控性差，需满足的条件多。<br />
 </p>
 </div>
 <div id="outline-container-org694dc07" class="outline-6">
@@ -1360,7 +1363,7 @@ FMeshDrawCommand 不负责维护其引用的任何资源的生命周期，因此
 <h5 id="org5214c23">Mesh Drawing Parallelism</h5>
 <div class="outline-text-5" id="text-org5214c23">
 <p>
-网格绘制的大部分工作是在任务中进行的，以避免占用渲染线程的关键路径。在 RT 帧的开始，InitViews 中，FParallelMeshDrawCommandPass 为每个 Pass 发布一个任务以进行 Pass 设置（动态命令生成、排序和绘制调用合并）。随着渲染线程在帧中推进并到达网格 Pass（例如，RenderBasePass），根据系统的内核数量和需要分派的绘制数量，它为每个 Pass 启动多个 FDrawVisibleMeshCommandsAnyThreadTasks 以进行绘制分派（记录 RHICmdList）。<br />
+网格绘制的大部分工作是在任务中进行的，以避免占用渲染线程的关键路径。在 Rendering Thread 帧的开始，InitViews 中，FParallelMeshDrawCommandPass 为每个 Pass 发布一个任务以进行 Pass 设置（动态命令生成、排序和绘制调用合并）。随着渲染线程在帧中推进并到达网格 Pass（例如，RenderBasePass），根据系统的内核数量和需要分派的绘制数量，它为每个 Pass 启动多个 FDrawVisibleMeshCommandsAnyThreadTasks 以进行绘制分派（记录 RHICmdList）。<br />
 </p>
 
 <ul class="org-ul">
@@ -1431,7 +1434,7 @@ Tips: 某些命令不使用命令列表系统执行，例如锁定和解锁操�
 <h5 id="org3c34650">Synchronization</h5>
 <div class="outline-text-5" id="text-org3c34650">
 <p>
-渲染器在游戏线程、渲染线程、RHI 线程以及 GPU 之间的同步是一个复杂的话题。在最高层面，Unreal Engine 通常配置为“延迟一帧”的渲染器。这意味着渲染线程在处理帧 N 时，游戏线程处理帧 N+1，除非渲染线程运行速度比游戏线程快。RHI 线程的加入使得这一情况稍微复杂，因为渲染线程能够在 RHI 线程处理帧 N 的同时完成帧 N+1 的可见性计算。最终结果是，当游戏线程处理帧 N+1 时，渲染线程可能正在处理帧 N 或帧 N+1 的命令，RHI 线程也可能在翻译帧 N 或帧 N+1 的命令，这取决于执行时间。这些保证由 FFrameEndSync 和 FRHICommandListImmediate 函数调用 RHIThreadFence 调节。无论并行化如何配置，还要保证提交给 GPU 的命令顺序与在单线程渲染器中的提交顺序保持不变。这是为了确保一致性，在更改渲染代码时必须维护。<br />
+渲染器在游戏线程、渲染线程、RHI 线程以及 GPU 之间的同步是一个复杂的话题。在最高层面，Unreal Engine 通常配置为“延迟一帧”的渲染器。这意味着渲染线程在处理帧 N 时，游戏线程处理帧 N+1，除非渲染线程运行速度比游戏线程快。RHI 线程的加入使得这一情况稍微复杂，因为渲染线程能够在 RHI 线程处理帧 N 的同时完成帧 N+1 的可见性计算。最终结果是，当游戏线程处理帧 N+1 时，渲染线程可能正在处理帧 N 或帧 N+1 的命令，RHI 线程也可能在翻译帧 N 或帧 N+1 的命令，这取决于执行时间。这些保证由 FFrameEndSync 和 FRHICommandListImmediate 函数调用 RHIThreadFence 调节。无论并行化如何配置，都要保证提交给 GPU 的命令顺序与在单线程渲染器中的提交顺序保持不变。这是为了确保一致性，在更改渲染代码时必须维护。<br />
 </p>
 </div>
 </div>

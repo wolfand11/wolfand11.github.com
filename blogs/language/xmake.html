@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-05-27 Mon 14:37 -->
+<!-- 2024-09-23 Mon 13:42 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>xmake</title>
@@ -37,6 +37,13 @@
 </li>
 <li><a href="#orgb57851e">Base Usage</a>
 <ul>
+<li><a href="#org31c3a3a">创建工程</a>
+<ul>
+<li><a href="#org778e958">方法 1：手动创建</a></li>
+<li><a href="#org3e2b6c3">方法 2：命令行</a></li>
+</ul>
+</li>
+<li><a href="#orgfcaf008">工程配置</a></li>
 <li><a href="#orgc7fda40">C++包管理</a>
 <ul>
 <li><a href="#org2077c1c">查找 package</a></li>
@@ -45,14 +52,20 @@
 <li><a href="#org1329030">删除包</a></li>
 </ul>
 </li>
-<li><a href="#orgfccdadd">Vulkan Tutorial 配置</a></li>
 <li><a href="#orgae5bd3d">编译运行</a>
 <ul>
-<li><a href="#orgfd5196b">VSCode 中直接操作</a></li>
-<li><a href="#org05070e5">生成 VS 工程来操作</a></li>
-<li><a href="#orgd0ab1ba">命令行中操作</a></li>
+<li><a href="#org13d4825">方法 1：VSCode 中直接操作</a></li>
+<li><a href="#orga337b8d">方法 2：生成 VS 工程来操作</a></li>
+<li><a href="#orgce81552">方法 3：命令行中操作</a></li>
 </ul>
 </li>
+<li><a href="#orgc3d994a">调试</a>
+<ul>
+<li><a href="#org4ba4d25">方法 1：VSCode 和 VS 工程中操作</a></li>
+<li><a href="#org14ba35f">方法 2：命令行中操作</a></li>
+</ul>
+</li>
+<li><a href="#orgfccdadd">Vulkan Tutorial 配置</a></li>
 </ul>
 </li>
 <li><a href="#org204a6b4">Q&amp;A</a>
@@ -69,7 +82,7 @@
 <p>
 xmake note.<br />
 </p>
-<div class="HTML" id="org6485795">
+<div class="HTML" id="org7c4759f">
 <p>
 &lt;!&#x2013; more &#x2013;&gt;<br />
 </p>
@@ -166,9 +179,83 @@ xmake project -k compile_commands build<br />
 <div id="outline-container-orgb57851e" class="outline-3">
 <h3 id="orgb57851e">Base Usage</h3>
 <div class="outline-text-3" id="text-orgb57851e">
-<p>
-以 Vulkan Tutorial - Development environment 为例进行说明，<a href="../graphics/Vulkan.html#orgccf67b6">Vulkan Tutorial - Development environment</a><br />
-</p>
+</div>
+<div id="outline-container-org31c3a3a" class="outline-4">
+<h4 id="org31c3a3a">创建工程</h4>
+<div class="outline-text-4" id="text-org31c3a3a">
+</div>
+<div id="outline-container-org778e958" class="outline-5">
+<h5 id="org778e958">方法 1：手动创建</h5>
+<div class="outline-text-5" id="text-org778e958">
+<ol class="org-ol">
+<li>创建工程目录<br /></li>
+</ol>
+<div class="org-src-container">
+<pre class="src src-shell"><span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#21019;&#24314;&#30446;&#24405;</span>
+mkdir hello_world
+<span style="color: #4f97d7;">cd</span> hello_world
+</pre>
+</div>
+
+<ol class="org-ol">
+<li>创建 xmake.lua 文件<br /></li>
+</ol>
+<div class="org-src-container">
+<pre class="src src-lua">-- 创建 xmake.lua 文件, 使用下面内容填充
+add_rules("mode.debug", "mode.release")
+target("hello_world")
+  set_kind("binary")
+  add_files("src/*.cpp")
+</pre>
+</div>
+
+<ol class="org-ol">
+<li>自动配置工程<br /></li>
+</ol>
+<div class="org-src-container">
+<pre class="src src-shell"><span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#33258;&#21160;&#37197;&#32622;&#24037;&#31243;</span>
+xmake f    <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#25110;&#32773; xmake config</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#26597;&#30475;&#24037;&#31243;&#37197;&#32622;, &#22914;&#26524;&#27809;&#26377;&#37197;&#32622;&#24037;&#31243;&#65292;&#21017;&#33258;&#21160;&#37197;&#32622;&#24037;&#31243;</span>
+xmake f -v <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#25110;&#32773;xmake config -v</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org3e2b6c3" class="outline-5">
+<h5 id="org3e2b6c3">方法 2：命令行</h5>
+<div class="outline-text-5" id="text-org3e2b6c3">
+<div class="org-src-container">
+<pre class="src src-shell">xmake create hello_world
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#19978;&#38754;&#21629;&#20196;&#29983;&#25104;&#22914;&#19979;&#30446;&#24405;&#32467;&#26500;&#21644;&#25991;&#20214;&#65306;</span>
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">hello_world</span>
+<span style="color: #2aa1ae; background-color: #292e34;">#   </span><span style="color: #2aa1ae; background-color: #292e34;">src/</span>
+<span style="color: #2aa1ae; background-color: #292e34;">#       </span><span style="color: #2aa1ae; background-color: #292e34;">main.cpp</span>
+<span style="color: #2aa1ae; background-color: #292e34;">#   </span><span style="color: #2aa1ae; background-color: #292e34;">.gitignore</span>
+<span style="color: #2aa1ae; background-color: #292e34;">#   </span><span style="color: #2aa1ae; background-color: #292e34;">xmake.lua</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgfcaf008" class="outline-4">
+<h4 id="orgfcaf008">工程配置</h4>
+<div class="outline-text-4" id="text-orgfcaf008">
+<div class="org-src-container">
+<pre class="src src-shell"><span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#33258;&#21160;&#37197;&#32622;&#24037;&#31243;</span>
+xmake f    <span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#25110;&#32773; xmake config</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#26597;&#30475;&#24037;&#31243;&#37197;&#32622;, &#22914;&#26524;&#27809;&#26377;&#37197;&#32622;&#24037;&#31243;&#65292;&#21017;&#33258;&#21160;&#37197;&#32622;&#24037;&#31243;</span>
+xmake f -v
+
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#37197;&#32622;platform architecture mode</span>
+xmake f -p [windows|linux|macosx|android|iphoneos ..] -a [x86|arm64 ..] -m [debug|release]
+
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#37197;&#32622; vs&#29256;&#26412;</span>
+xmake f --vs=2022
+</pre>
+</div>
+</div>
 </div>
 <div id="outline-container-orgc7fda40" class="outline-4">
 <h4 id="orgc7fda40">C++包管理</h4>
@@ -259,10 +346,75 @@ add_requires("libpng ~1.16", "zlib 1.1.2 || &gt;=1.2.11 &lt;1.3.0")
 </div>
 </div>
 </div>
+<div id="outline-container-orgae5bd3d" class="outline-4">
+<h4 id="orgae5bd3d">编译运行</h4>
+<div class="outline-text-4" id="text-orgae5bd3d">
+</div>
+<div id="outline-container-org13d4825" class="outline-5">
+<h5 id="org13d4825">方法 1：VSCode 中直接操作</h5>
+<div class="outline-text-5" id="text-org13d4825">
+<p>
+VSCode 中直接操作<br />
+</p>
+</div>
+</div>
+<div id="outline-container-orga337b8d" class="outline-5">
+<h5 id="orga337b8d">方法 2：生成 VS 工程来操作</h5>
+<div class="outline-text-5" id="text-orga337b8d">
+<div class="org-src-container">
+<pre class="src src-shell"><span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#37197;&#32622; vs&#29256;&#26412;</span>
+xmake f --vs=2022
 
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#21442;&#25968;-a x64&#23601;&#26159;&#29983;&#25104;pc 64&#20301;&#26550;&#26500;vs&#39033;&#30446;&#65292;&#22914;&#26524;&#36755;&#20837;-a x86&#21017;&#29983;&#25104;x86&#26550;&#26500;vs&#39033;&#30446;</span>
+xmake project -k vsxmake -a x64
+</pre>
+</div>
+<ul class="org-ul">
+<li>Window11 下使用 Xmake 构建 VS2022 sln 项目工程，并进行调试 <a href="https://zhuanlan.zhihu.com/p/576298652">https://zhuanlan.zhihu.com/p/576298652</a><br /></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgce81552" class="outline-5">
+<h5 id="orgce81552">方法 3：命令行中操作</h5>
+<div class="outline-text-5" id="text-orgce81552">
+<div class="org-src-container">
+<pre class="src src-shell"><span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#32534;&#35793;</span>
+xmake build 09Multisampling
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#36816;&#34892;</span>
+xmake run 09Multisampling
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc3d994a" class="outline-4">
+<h4 id="orgc3d994a">调试</h4>
+<div class="outline-text-4" id="text-orgc3d994a">
+</div>
+<div id="outline-container-org4ba4d25" class="outline-5">
+<h5 id="org4ba4d25">方法 1：VSCode 和 VS 工程中操作</h5>
+</div>
+<div id="outline-container-org14ba35f" class="outline-5">
+<h5 id="org14ba35f">方法 2：命令行中操作</h5>
+<div class="outline-text-5" id="text-org14ba35f">
+<div class="org-src-container">
+<pre class="src src-shell"><span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#20999;&#25442;&#21040;debug&#27169;&#24335;</span>
+xmake config -m debug
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#37325;&#26032;&#32534;&#35793;</span>
+xmake build 09Multisampling
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#36816;&#34892;</span>
+xmake run 09Multisampling
+</pre>
+</div>
+</div>
+</div>
+</div>
 <div id="outline-container-orgfccdadd" class="outline-4">
 <h4 id="orgfccdadd">Vulkan Tutorial 配置</h4>
 <div class="outline-text-4" id="text-orgfccdadd">
+<p>
+以 Vulkan Tutorial - Development environment 为例进行说明，<a href="../graphics/Vulkan.html#orgccf67b6">Vulkan Tutorial - Development environment</a><br />
+</p>
 <div class="org-src-container">
 <pre class="src src-lua">add_rules("mode.debug", "mode.release")
 
@@ -332,44 +484,6 @@ target(targetName)
     add_packages("vulkansdk", "glm", "glfw", "stb", "tinyobjloader")
     add_rules("vulkan_tutorial")
 </pre>
-</div>
-</div>
-</div>
-<div id="outline-container-orgae5bd3d" class="outline-4">
-<h4 id="orgae5bd3d">编译运行</h4>
-<div class="outline-text-4" id="text-orgae5bd3d">
-</div>
-<div id="outline-container-orgfd5196b" class="outline-5">
-<h5 id="orgfd5196b">VSCode 中直接操作</h5>
-<div class="outline-text-5" id="text-orgfd5196b">
-<p>
-VSCode 中直接操作<br />
-</p>
-</div>
-</div>
-<div id="outline-container-org05070e5" class="outline-5">
-<h5 id="org05070e5">生成 VS 工程来操作</h5>
-<div class="outline-text-5" id="text-org05070e5">
-<div class="org-src-container">
-<pre class="src src-shell"><span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#21442;&#25968;-a x64&#23601;&#26159;&#29983;&#25104;pc 64&#20301;&#26550;&#26500;vs&#39033;&#30446;&#65292;&#22914;&#26524;&#36755;&#20837;-a x86&#21017;&#29983;&#25104;x86&#26550;&#26500;vs&#39033;&#30446;</span>
-xmake project -k vsxmake -a x64
-</pre>
-</div>
-<ul class="org-ul">
-<li>Window11 下使用 Xmake 构建 VS2022 sln 项目工程，并进行调试 <a href="https://zhuanlan.zhihu.com/p/576298652">https://zhuanlan.zhihu.com/p/576298652</a><br /></li>
-</ul>
-</div>
-</div>
-<div id="outline-container-orgd0ab1ba" class="outline-5">
-<h5 id="orgd0ab1ba">命令行中操作</h5>
-<div class="outline-text-5" id="text-orgd0ab1ba">
-<div class="org-src-container">
-<pre class="src src-shell"><span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#32534;&#35793;</span>
-xmake build 09Multisampling
-<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">&#36816;&#34892;</span>
-xmake run 09Multisampling
-</pre>
-</div>
 </div>
 </div>
 </div>

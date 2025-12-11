@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGPU Fullscreen Effect</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: black;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gpuCanvas"></canvas>
+
+    <script type="module">
+        // 检查浏览器是否支持 WebGPU
+        if (!navigator.gpu) {
+            alert("您的浏览器不支持 WebGPU，请使用 Chrome/Edge 113+");
+            throw new Error("WebGPU not supported");
+        }
+
+        const canvas = document.getElementById('gpuCanvas');
+        
+        async function init() {
+            // 1. 初始化 Adapter 和 Device
+            const adapter = await navigator.gpu.requestAdapter();
+            if (!adapter) {
+                throw new Error("No appropriate GPUAdapter found.");
+            }
+            const device = await adapter.requestDevice();
+
+            // 2. 配置 Canvas Context
+            const context = canvas.getContext('webgpu');
+            const presentationFormat = navigator.gpu.getPreferredCanvasFormat();
+            
+            context.configure({
+                device: device,
+                format: presentationFormat,
+                alphaMode: 'premultiplied',
+            });
+
+            // 3. 编写着色器 (WGSL)
+            // 包含顶点着色器(Vertex)和片段着色器(Fragment)
+            const shaderCode = `
+                struct Uniforms {
+                    time : f32,
+                    resolution : vec2<f32>,
+                };
+                
+                @group(0) @binding(0) var<uniform> uniforms : Uniforms;
+
+                struct VertexOutput {
+                    @builtin(position) position : vec4<f32>,
+                    @location(0) uv : vec2<f32>,
+                };
+
+                // 顶点着色器：生成覆盖全屏的一个大三角形
+                @vertex
+                fn vs_main(@builtin(vertex_index) vertexIndex : u32) -> VertexOutput {
+                    var pos = array<vec2<f32>, 3>(
+                        vec2<f32>(-1.0, -1.0),
+                        vec2<f32>( 3.0, -1.0),
+                        vec2<f32>(-1.0,  3.0)
+                    );
+
+                    var output : VertexOutput;
+                    output.position = vec4<f32>(pos[vertexIndex], 0.0, 1.0);
+                    // 将坐标从 [-1, 1] 映射到 [0, 1] 作为 UV
+                    output.uv = output.position.xy * 0.5 + 0.5;
+                    return output;
+                }
+
+                // 片段着色器：计算每个像素的颜色
+                @fragment
+                fn fs_main(input : VertexOutput) -> @location(0) vec4<f32> {
+                    // 获取 UV 坐标
+                    let uv = input.uv;
+                    
+                    // 基于时间和坐标生成动态颜色 (类似 ShaderToy 的逻辑)
+                    let t = uniforms.time;
+                    
+                    // 创建一个简单的动态波纹效果
+                    let col_r = 0.5 + 0.5 * cos(t + uv.x * 10.0);
+                    let col_g = 0.5 + 0.5 * cos(t + uv.y * 8.0 + 2.0);
+                    let col_b = 0.5 + 0.5 * cos(t + (uv.x + uv.y) * 5.0 + 4.0);
+                    
+                    return vec4<f32>(col_r, col_g, col_b, 1.0);
+                }
+            `;
+
+            const shaderModule = device.createShaderModule({
+                code: shaderCode,
+            });
+
+            // 4. 创建渲染管线 (Pipeline)
+            const pipeline = device.createRenderPipeline({
+                layout: 'auto',
+                vertex: {
+                    module: shaderModule,
+                    entryPoint: 'vs_main',
+                },
+                fragment: {
+                    module: shaderModule,
+                    entryPoint: 'fs_main',
+                    targets: [{
+                        format: presentationFormat,
+                    }],
+                },
+                primitive: {
+                    topology: 'triangle-list',
+                },
+            });
+
+            // 5. 设置 Uniform Buffer (用于传递时间)
+            // float32 (4 bytes) + vec2<f32> (8 bytes) = 12 bytes. 
+            // WebGPU 要求 uniform buffer 大小必须是 16 的倍数，所以申请 16 bytes
+            const uniformBufferSize = 16; 
+            const uniformBuffer = device.createBuffer({
+                size: uniformBufferSize,
+                usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+            });
+
+            // 创建 BindGroup 将 Buffer 绑定到着色器
+            const bindGroup = device.createBindGroup({
+                layout: pipeline.getBindGroupLayout(0),
+                entries: [{
+                    binding: 0,
+                    resource: { buffer: uniformBuffer },
+                }],
+            });
+
+            // 用于写入 Buffer 的临时数组
+            const uniformValues = new Float32Array(4); // [time, res_x, res_y, padding]
+
+            // 6. 渲染循环
+            function frame(time) {
+                // 处理 Canvas 大小调整 (Retina 屏幕支持)
+                const width = canvas.clientWidth * window.devicePixelRatio;
+                const height = canvas.clientHeight * window.devicePixelRatio;
+                if (canvas.width !== width || canvas.height !== height) {
+                    canvas.width = width;
+                    canvas.height = height;
+                    // Resize 后通常不需要重新 configure，WebGPU 会自动处理，但 buffer 大小可能变了
+                }
+
+                // 更新 Uniform 数据
+                uniformValues[0] = time * 0.001; // 时间 (秒)
+                uniformValues[1] = canvas.width;
+                uniformValues[2] = canvas.height;
+                device.queue.writeBuffer(uniformBuffer, 0, uniformValues);
+
+                // 创建指令编码器
+                const commandEncoder = device.createCommandEncoder();
+                const textureView = context.getCurrentTexture().createView();
+
+                // 开始渲染通道
+                const renderPassDescriptor = {
+                    colorAttachments: [{
+                        view: textureView,
+                        clearValue: { r: 0.0, g: 0.0, b: 0.0, a: 1.0 }, // 背景色
+                        loadOp: 'clear',
+                        storeOp: 'store',
+                    }],
+                };
+
+                const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor);
+                passEncoder.setPipeline(pipeline);
+                passEncoder.setBindGroup(0, bindGroup);
+                passEncoder.draw(3); // 绘制 3 个顶点 (一个覆盖全屏的三角形)
+                passEncoder.end();
+
+                // 提交指令
+                device.queue.submit([commandEncoder.finish()]);
+
+                requestAnimationFrame(frame);
+            }
+
+            requestAnimationFrame(frame);
+        }
+
+        init().catch(console.error);
+    </script>
+</body>
+</html>

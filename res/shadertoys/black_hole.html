@@ -1,184 +1,261 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Local Shadertoy</title>
-  <style>
-    html, body { margin: 0; height: 100%; overflow: hidden; background-color: black; }
-    canvas { width: 100%; height: 100%; display: block; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGPU Black Hole</title>
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: black; }
+        canvas { display: block; width: 100%; height: 100%; }
+    </style>
 </head>
 <body>
-<canvas id="c"></canvas>
-<script>
-// Vertex shader: full‑screen quad
-const vsSource = `
-attribute vec4 a_position;
-void main() {
-  gl_Position = a_position;
-}
-`;
+    <canvas id="gpuCanvas"></canvas>
+    <script type="module">
+        if (!navigator.gpu) {
+            alert("WebGPU not supported. Please use a compatible browser.");
+            throw new Error("WebGPU not supported");
+        }
 
-// Fragment shader: Shadertoy-style
-const fsSource = `
-precision highp float;
+        const canvas = document.getElementById('gpuCanvas');
+        const context = canvas.getContext('webgpu');
 
-uniform vec3  iResolution;
-uniform float iTime;
-uniform float iTimeDelta;
-uniform int   iFrame;
-uniform vec4  iMouse;
+        async function init() {
+            const adapter = await navigator.gpu.requestAdapter();
+            if (!adapter) throw new Error("No GPUAdapter found.");
+            const device = await adapter.requestDevice();
 
-//void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-//    // --- Your Shadertoy code goes here ---
-//    fragColor = vec4(fragCoord.xy / iResolution.xy, 0.0, 1.0);
-//}
+            const presentationFormat = navigator.gpu.getPreferredCanvasFormat();
+            context.configure({
+                device: device,
+                format: presentationFormat,
+                alphaMode: 'premultiplied',
+            });
 
-void mainImage(out vec4 O, in vec2 F)
-{
-    //Iterator and attenuation (distance-squared)
-    float i = .2, a;
-    //Resolution for scaling and centering
-    vec2 r = iResolution.xy,
-         //Centered ratio-corrected coordinates
-         p = ( F+F - r ) / r.y / .7,
-         //Diagonal vector for skewing
-         d = vec2(-1,1),
-         //Blackhole center
-         b = p - i*d,
-         //Rotate and apply perspective
-         c = p * mat2(1, 1, d/(.1 + i/dot(b,b))),
-         //Rotate into spiraling coordinates
-         v = c * mat2(cos(.5*log(a=dot(c,c)) + iTime*i + vec4(0,33,11,0)))/i,
-         //Waves cumulative total for coloring
-         w;
-    
-    //Loop through waves
-    for(float i=0.2; i<9.; i+=1.0)
-    {
-        //Distort coordinates
-        v = v + .7* sin(v.yx*i+iTime) / i + .5;
-        w = w + 1.+sin(v);
-    }
-    //Acretion disk radius
-    i = length( sin(v/.3)*.4 + c*(3.+d) );
-    //Red/blue gradient
-    O = 1. - exp( -exp( c.x * vec4(.6,-.4,-1,0) )
-                   //Wave coloring
-                   /  w.xyyx
-                   //Acretion disk brightness
-                   / ( 2. + i*i/4. - i )
-                   //Center darkness
-                   / ( .5 + 1. / a )
-                   //Rim highlight
-                   / ( .03 + abs( length(p)-.7 ) )
-             );
-}
+            const shaderCode = `
+                struct Uniforms {
+                    resolution: vec2<f32>,
+                    time: f32,
+                    timeDelta: f32,
+                    mouse: vec4<f32>,
+                    frame: u32,
+                };
 
-void main() {
-  vec4 color;
-  mainImage(color, gl_FragCoord.xy);
-  gl_FragColor = color;
-}
-`;
+                @group(0) @binding(0) var<uniform> uniforms: Uniforms;
 
-// Basic WebGL setup
-const canvas = document.getElementById('c');
-const gl = canvas.getContext('webgl');
-if (!gl) alert('WebGL not supported');
+                struct VertexOutput {
+                    @builtin(position) position: vec4<f32>,
+                };
 
-function resize() {
-  const dpr = window.devicePixelRatio || 1;
-  const w = Math.floor(innerWidth * dpr);
-  const h = Math.floor(innerHeight * dpr);
-  if (canvas.width !== w || canvas.height !== h) {
-    canvas.width = w;
-    canvas.height = h;
-    gl.viewport(0, 0, w, h);
-  }
-}
-window.addEventListener('resize', resize);
+                @vertex
+                fn vs_main(@builtin(vertex_index) vertexIndex: u32) -> VertexOutput {
+                    var pos = array<vec2<f32>, 3>(
+                        vec2<f32>(-1.0, -1.0),
+                        vec2<f32>( 3.0, -1.0),
+                        vec2<f32>(-1.0,  3.0)
+                    );
+                    var output: VertexOutput;
+                    output.position = vec4<f32>(pos[vertexIndex], 0.0, 1.0);
+                    return output;
+                }
 
-// Compile helpers
-function compile(type, src) {
-  const s = gl.createShader(type);
-  gl.shaderSource(s, src);
-  gl.compileShader(s);
-  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
-    console.error("shader error: "+gl.getShaderInfoLog(s));
-  }
-  return s;
-}
-const vs = compile(gl.VERTEX_SHADER, vsSource);
-const fs = compile(gl.FRAGMENT_SHADER, fsSource);
+                @fragment
+                fn fs_main(@builtin(position) coord: vec4<f32>) -> @location(0) vec4<f32> {
+                    // WebGPU coord.y is 0 at top, Shadertoy expects 0 at bottom.
+                    let F = vec2<f32>(coord.x, uniforms.resolution.y - coord.y);
+                    var i: f32 = 0.2;
+                    var a: f32;
+                    let r = uniforms.resolution;
+                    
+                    // Centered ratio-corrected coordinates
+                    // p = ( F+F - r ) / r.y / .7
+                    let p = (F + F - r) / r.y / 0.7;
+                    
+                    let d = vec2<f32>(-1.0, 1.0);
+                    
+                    // Blackhole center
+                    let b = p - i * d;
+                    
+                    // Rotate and apply perspective
+                    // c = p * mat2(1, 1, d/(.1 + i/dot(b,b)))
+                    let v2 = d / (0.1 + i / dot(b, b));
+                    // mat2 in GLSL is column-major: col1, col2.
+                    // col1 is (1,1), col2 is v2
+                    let M1 = mat2x2<f32>(vec2<f32>(1.0, 1.0), v2);
+                    let c = p * M1; 
 
-const prog = gl.createProgram();
-gl.attachShader(prog, vs);
-gl.attachShader(prog, fs);
-gl.linkProgram(prog);
-if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
-  console.error(gl.getProgramInfoLog(prog));
-}
-gl.useProgram(prog);
+                    // Rotate into spiraling coordinates
+                    // v = c * mat2(cos(.5*log(a=dot(c,c)) + iTime*i + vec4(0,33,11,0)))/i
+                    a = dot(c, c);
+                    let arg = 0.5 * log(a) + uniforms.time * i;
+                    // cos(vec4)
+                    let cos_arg = cos(vec4<f32>(arg) + vec4<f32>(0.0, 33.0, 11.0, 0.0));
+                    // Construct M2 from columns
+                    let M2 = mat2x2<f32>(cos_arg.xy, cos_arg.zw);
+                    var v = (c * M2) / i;
+                    
+                    var w = vec2<f32>(0.0);
+                    
+                    // Loop through waves
+                    // for(float i=0.2; i<9.; i+=1.0)
+                    for (var j: f32 = 0.2; j < 9.0; j += 1.0) {
+                        // Distort coordinates
+                        // v = v + .7* sin(v.yx*i+iTime) / i + .5;
+                        v = v + 0.7 * sin(v.yx * j + uniforms.time) / j + 0.5;
+                        w = w + 1.0 + sin(v);
+                    }
+                    
+                    // Acretion disk radius
+                    // i = length( sin(v/.3)*.4 + c*(3.+d) );
+                    // Using outer 'i' which is 0.2
+                    i = length( sin(v / 0.3) * 0.4 + c * (3.0 + d) );
+                    
+                    // Red/blue gradient
+                    // O = 1. - exp( -exp( c.x * vec4(.6,-.4,-1,0) ) ...
+                    let term1 = c.x * vec4<f32>(0.6, -0.4, -1.0, 0.0);
+                    let num = -exp(term1);
+                    
+                    let denom1 = w.xyyx; // vec4
+                    let denom2 = 2.0 + i*i/4.0 - i;
+                    let denom3 = 0.5 + 1.0 / a;
+                    let denom4 = 0.03 + abs(length(p) - 0.7);
+                    
+                    let result = 1.0 - exp( num / denom1 / denom2 / denom3 / denom4 );
+                    return result;
+                }
+            `;
 
-// Full‑screen quad
-const positionLoc = gl.getAttribLocation(prog, 'a_position');
-const buf = gl.createBuffer();
-gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-  -1,-1,  1,-1, -1, 1,
-  -1, 1,  1,-1,  1, 1,
-]), gl.STATIC_DRAW);
-gl.enableVertexAttribArray(positionLoc);
-gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 0, 0);
+            const shaderModule = device.createShaderModule({ code: shaderCode });
 
-// Uniform locations
-const iResolutionLoc = gl.getUniformLocation(prog, 'iResolution');
-const iTimeLoc       = gl.getUniformLocation(prog, 'iTime');
-const iTimeDeltaLoc  = gl.getUniformLocation(prog, 'iTimeDelta');
-const iFrameLoc      = gl.getUniformLocation(prog, 'iFrame');
-const iMouseLoc      = gl.getUniformLocation(prog, 'iMouse');
+            const pipeline = device.createRenderPipeline({
+                layout: 'auto',
+                vertex: { module: shaderModule, entryPoint: 'vs_main' },
+                fragment: { module: shaderModule, entryPoint: 'fs_main', targets: [{ format: presentationFormat }] },
+                primitive: { topology: 'triangle-list' },
+            });
 
-// Mouse handling
-let mouse = [0,0,0,0];
-let isDown = false;
-canvas.addEventListener('mousedown', e => {
-  isDown = true;
-  mouse[0] = e.clientX * (window.devicePixelRatio || 1);
-  mouse[1] = (innerHeight - e.clientY) * (window.devicePixelRatio || 1);
-  mouse[2] = mouse[0];
-  mouse[3] = mouse[1];
-});
-canvas.addEventListener('mouseup', () => { isDown = false; });
-canvas.addEventListener('mousemove', e => {
-  if (isDown) {
-    mouse[0] = e.clientX * (window.devicePixelRatio || 1);
-    mouse[1] = (innerHeight - e.clientY) * (window.devicePixelRatio || 1);
-  }
-});
+            // Uniform Buffer
+            // resolution(8) + time(4) + timeDelta(4) + mouse(16) + frame(4) + padding(12) = 48 bytes
+            const uniformBufferSize = 48;
+            const uniformBuffer = device.createBuffer({
+                size: uniformBufferSize,
+                usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+            });
 
-// Render loop
-let startTime = performance.now() / 1000;
-let lastTime = startTime;
-let frame = 0;
+            const bindGroup = device.createBindGroup({
+                layout: pipeline.getBindGroupLayout(0),
+                entries: [{ binding: 0, resource: { buffer: uniformBuffer } }],
+            });
 
-function render() {
-  resize();
-  const now = performance.now() / 1000;
-  const t = now - startTime;
-  const dt = now - lastTime;
-  lastTime = now;
+            const uniformData = new ArrayBuffer(uniformBufferSize);
+            const uniformView = new DataView(uniformData);
+            
+            // Mouse handling
+            let mouse = [0, 0, 0, 0];
+            let isDown = false;
+            
+            function updateMouse(e, down) {
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.clientX - rect.left) * window.devicePixelRatio;
+                // Web coordinates are usually top-left, Shadertoy/WebGL often use bottom-left for texture coords.
+                // In vs_main we output standard clip space. In fs_main we use coord.xy which is window coordinates (y down? or y up?)
+                // WebGPU coordinate system: 
+                // Normalized Device Coordinates (NDC): (-1, -1) to (1, 1). Y is up.
+                // Window/Fragment coords (@builtin(position)): (0, 0) to (width, height). (0,0) is TOP-LEFT usually in standard graphics APIs?
+                // Wait, WebGPU spec: "The viewport coordinate system... (0,0) is top-left" ?
+                // Let's check. Metal/DX12/Vulkan differences.
+                // WebGPU defaults: Y is down in NDC? No.
+                // "WebGPU uses a coordinate system where (-1, -1) is the bottom-left corner of the clip space... NO, Top-left is (-1, 1)?"
+                // MDN: "WebGPU's coordinate system... clip space y-axis points up." (Vulkan-like? No, Vulkan is y-down).
+                // Actually, WebGPU NDC: X[-1, 1], Y[-1, 1] (y points UP), Z[0, 1].
+                // Fragment coordinates: Origin (0,0) is TOP-LEFT.
+                // Shadertoy expects (0,0) at BOTTOM-LEFT.
+                // So if F = coord.xy (where y=0 is top), and Shadertoy expects y=0 bottom...
+                // We should flip Y in the mouse calc or in the shader.
+                // But the shader uses `p = (F+F - r) / r.y`.
+                // If F.y increases downwards (0 to H), then `F+F - r` goes from -H to H (inverted).
+                // To match Shadertoy, we want y=0 at bottom.
+                // So in shader, we might need `F.y = r.y - F.y`?
+                // Or just use mouse.y flipped as well.
+                // The original code `mouse[1] = (innerHeight - e.clientY)` suggests bottom-left origin for mouse.
+                // The Shader code uses `p = (F+F - r)...`.
+                // If F.y is top-based (0 at top, H at bottom):
+                // Top: F.y=0 -> (0-H)/H = -1.
+                // Bottom: F.y=H -> (2H-H)/H = 1.
+                // So y goes -1 to 1 (Top to Bottom).
+                // Shadertoy usually expects -1 to 1 (Bottom to Top).
+                // So the image will be upside down if we don't flip.
+                // I will flip F.y in the shader to match Shadertoy convention.
+                
+                const y = (canvas.height - (e.clientY - rect.top) * window.devicePixelRatio); 
+                mouse[0] = x;
+                mouse[1] = y;
+                if (down) {
+                   mouse[2] = x;
+                   mouse[3] = y;
+                }
+            }
 
-  gl.uniform3f(iResolutionLoc, canvas.width, canvas.height, 1.0);
-  gl.uniform1f(iTimeLoc, t);
-  gl.uniform1f(iTimeDeltaLoc, dt);
-  gl.uniform1i(iFrameLoc, frame++);
-  gl.uniform4f(iMouseLoc, mouse[0], mouse[1], mouse[2], mouse[3]);
+            canvas.addEventListener('mousedown', e => { isDown = true; updateMouse(e, true); });
+            window.addEventListener('mouseup', () => { isDown = false; }); 
+            canvas.addEventListener('mousemove', e => { if(isDown) updateMouse(e, false); });
 
-  gl.drawArrays(gl.TRIANGLES, 0, 6);
-  requestAnimationFrame(render);
-}
-render();
-</script>
+            let frameCount = 0;
+            let lastTime = performance.now();
+
+            function frame() {
+                const now = performance.now();
+                const time = now / 1000;
+                const dt = (now - lastTime) / 1000;
+                lastTime = now;
+
+                const width = Math.floor(canvas.clientWidth * window.devicePixelRatio);
+                const height = Math.floor(canvas.clientHeight * window.devicePixelRatio);
+                if (canvas.width !== width || canvas.height !== height) {
+                    canvas.width = width;
+                    canvas.height = height;
+                }
+
+                // Update uniforms
+                uniformView.setFloat32(0, width, true);
+                uniformView.setFloat32(4, height, true);
+                uniformView.setFloat32(8, time, true);
+                uniformView.setFloat32(12, dt, true);
+                uniformView.setFloat32(16, mouse[0], true);
+                uniformView.setFloat32(20, mouse[1], true);
+                uniformView.setFloat32(24, mouse[2], true);
+                uniformView.setFloat32(28, mouse[3], true);
+                uniformView.setUint32(32, frameCount++, true);
+
+                device.queue.writeBuffer(uniformBuffer, 0, uniformData);
+
+                const commandEncoder = device.createCommandEncoder();
+                const textureView = context.getCurrentTexture().createView();
+
+                const passEncoder = commandEncoder.beginRenderPass({
+                    colorAttachments: [{
+                        view: textureView,
+                        clearValue: { r: 0, g: 0, b: 0, a: 1 },
+                        loadOp: 'clear',
+                        storeOp: 'store',
+                    }],
+                });
+
+                passEncoder.setPipeline(pipeline);
+                passEncoder.setBindGroup(0, bindGroup);
+                passEncoder.draw(3);
+                passEncoder.end();
+
+                device.queue.submit([commandEncoder.finish()]);
+                requestAnimationFrame(frame);
+            }
+            requestAnimationFrame(frame);
+        }
+
+        init().catch(err => {
+            console.error(err);
+            document.body.innerHTML += `<div style="color:red; z-index:100; position:absolute; top:0;">${err.message}</div>`;
+        });
+    </script>
 </body>
 </html>

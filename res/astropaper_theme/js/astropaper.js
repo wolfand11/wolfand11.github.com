@@ -37,8 +37,6 @@
 
   var THEME_KEY = "theme";
   var THEME_EVENT = "astropaper:themechange";
-  var WIDE_TOC_QUERY = "(min-width: 1400px)";
-
   var root = document.documentElement;
   var currentScript = document.currentScript;
   var darkQuery = window.matchMedia("(prefers-color-scheme: dark)");
@@ -225,6 +223,7 @@
 
     menuBtn.addEventListener("click", function () {
       var open = header.classList.toggle("ap-menu-open");
+      document.body.classList.toggle("ap-menu-is-open", open);
       menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
       menuBtn.setAttribute("aria-label", open ? "Close Menu" : "Open Menu");
     });
@@ -377,18 +376,16 @@
     var list = document.getElementById("text-table-of-contents");
     if (!orgToc || !list) return null;
 
-    var details = h("details", { id: "table-of-contents", class: "ap-toc", role: "doc-toc" });
-    details.appendChild(h("summary", {}, config.tocLabel));
-    details.appendChild(list);
-    orgToc.parentNode.replaceChild(details, orgToc);
-
-    var wideQuery = window.matchMedia(WIDE_TOC_QUERY);
-    var syncMode = function () {
-      if (wideQuery.matches) details.open = true;
-    };
-    syncMode();
-    if (wideQuery.addEventListener) wideQuery.addEventListener("change", syncMode);
-    else if (wideQuery.addListener) wideQuery.addListener(syncMode);
+    var box = h("nav", { id: "table-of-contents", class: "ap-toc", role: "doc-toc", "aria-label": config.tocLabel });
+    var toggle = h("button", {
+      class: "ap-toc-title",
+      type: "button",
+      "aria-expanded": "false",
+      "aria-controls": "text-table-of-contents"
+    }, config.tocLabel);
+    box.appendChild(toggle);
+    box.appendChild(list);
+    orgToc.parentNode.replaceChild(box, orgToc);
 
     var links = Array.prototype.slice.call(list.querySelectorAll('a[href^="#"]'));
     var entries = links.map(function (link) {
@@ -398,7 +395,42 @@
       return entry.target;
     });
 
-    return { details: details, list: list, entries: entries, wideQuery: wideQuery, active: null };
+    var toc = { box: box, list: list, entries: entries, active: null };
+
+    var setOpen = function (open) {
+      box.classList.toggle("ap-toc-open", open);
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      if (open) revealActiveTocEntry(toc);
+    };
+
+    toggle.addEventListener("click", function () {
+      setOpen(!box.classList.contains("ap-toc-open"));
+    });
+    box.addEventListener("mouseenter", function () {
+      revealActiveTocEntry(toc);
+    });
+    list.addEventListener("click", function (event) {
+      if (event.target.closest("a") && window.matchMedia("(hover: none)").matches) setOpen(false);
+    });
+    document.addEventListener("click", function (event) {
+      if (!box.contains(event.target)) setOpen(false);
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.key !== "Escape") return;
+      setOpen(false);
+      if (box.contains(document.activeElement)) document.activeElement.blur();
+    });
+
+    return toc;
+  }
+
+  function revealActiveTocEntry(toc) {
+    var box = toc.box;
+    if (!toc.active || toc.list.offsetParent === null) return;
+    var linkTop = toc.active.link.offsetTop;
+    if (linkTop < box.scrollTop + 40 || linkTop > box.scrollTop + box.clientHeight - 40) {
+      box.scrollTop = linkTop - box.clientHeight / 3;
+    }
   }
 
   function updateTocHighlight(toc) {
@@ -417,14 +449,7 @@
     toc.active = current;
     if (!current) return;
     current.link.classList.add("active");
-
-    if (toc.wideQuery.matches) {
-      var box = toc.details;
-      var linkTop = current.link.offsetTop;
-      if (linkTop < box.scrollTop + 40 || linkTop > box.scrollTop + box.clientHeight - 40) {
-        box.scrollTop = linkTop - box.clientHeight / 3;
-      }
-    }
+    revealActiveTocEntry(toc);
   }
 
   /* ------------------------------------------------------------------ */

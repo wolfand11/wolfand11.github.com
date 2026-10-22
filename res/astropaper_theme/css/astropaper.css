@@ -46,6 +46,7 @@ html[data-theme="light"] {
 
   --todo: #d73a49;
   --done: #22863a;
+  --toc-shadow: rgba(0, 0, 0, 0.18);
 
   color-scheme: light;
 }
@@ -84,6 +85,7 @@ html[data-theme="dark"] {
 
   --todo: #ff5874;
   --done: #addb67;
+  --toc-shadow: rgba(0, 0, 0, 0.55);
 
   color-scheme: dark;
 }
@@ -93,7 +95,7 @@ html[data-theme="dark"] {
     ui-monospace, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", monospace;
   --font-code: "JetBrains Mono", "Cascadia Code", "SF Mono", Menlo, Consolas, ui-monospace,
     "PingFang SC", "Microsoft YaHei", monospace;
-  --max-width: 50rem;
+  --page-padding: clamp(1rem, 4vw, 3rem);
   --radius: 0.375rem;
 }
 
@@ -165,9 +167,7 @@ html.ap-ready .ap-back-to-top {
 .ap-hr {
   border: none;
   border-top: 1px solid var(--border);
-  margin: 0 auto;
-  max-width: var(--max-width);
-  width: calc(100% - 2rem);
+  margin: 0 var(--page-padding);
 }
 
 /* org's own home/up links are replaced by the header */
@@ -181,11 +181,8 @@ html.ap-ready .ap-back-to-top {
 .ap-footer-inner {
   box-sizing: border-box;
   width: 100%;
-  max-width: var(--max-width);
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding-left: var(--page-padding);
+  padding-right: var(--page-padding);
 }
 
 #content {
@@ -405,23 +402,75 @@ html[data-theme="dark"] #theme-btn .ap-icon-sun {
 /* Table of contents                                                    */
 /* ==================================================================== */
 
+/* Layout follows worg_theme: a tab fixed to the top-right corner that
+   expands on hover (or stays open after a click, for touch screens). */
 .ap-toc {
-  margin: 1.5rem 0 2rem;
-  padding: 0.5rem 1rem;
+  position: fixed;
+  top: 5rem;
+  right: 0;
+  z-index: 30;
+  box-sizing: border-box;
+  max-width: min(50vw, 36rem);
+  max-height: 80vh;
+  overflow: auto;
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  font-size: 0.9rem;
-  line-height: 1.6;
+  border-right: none;
+  border-radius: var(--radius) 0 0 var(--radius);
+  background-color: var(--background);
+  box-shadow: 0 0 1em var(--toc-shadow);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  text-align: right;
+  scrollbar-width: thin;
 }
 
-.ap-toc > summary {
-  cursor: pointer;
+.ap-menu-is-open .ap-toc {
+  display: none;
+}
+
+.ap-toc-title {
+  position: sticky;
+  top: 0;
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0.4rem 0.9rem;
+  border: none;
+  background-color: var(--background);
+  color: var(--foreground);
+  font: inherit;
   font-weight: 600;
-  padding: 0.25rem 0;
+  text-align: right;
+  white-space: nowrap;
+  cursor: pointer;
 }
 
-.ap-toc > summary:hover {
+.ap-toc-title:hover,
+.ap-toc-open .ap-toc-title {
   color: var(--accent);
+}
+
+.ap-toc #text-table-of-contents {
+  display: none;
+  padding: 0 0.9rem 0.75rem 0.5rem;
+  text-align: left;
+}
+
+.ap-toc-open #text-table-of-contents,
+.ap-toc:has(:focus-visible) #text-table-of-contents {
+  display: block;
+}
+
+@media (hover: hover) {
+  .ap-toc:hover #text-table-of-contents {
+    display: block;
+  }
+}
+
+@media (max-width: 639px) {
+  .ap-toc {
+    max-width: 85vw;
+  }
 }
 
 #content .ap-toc ul {
@@ -453,32 +502,6 @@ html[data-theme="dark"] #theme-btn .ap-icon-sun {
   color: var(--accent);
   font-weight: 600;
   opacity: 1;
-}
-
-@media (min-width: 1400px) {
-  .ap-toc {
-    position: fixed;
-    top: 6rem;
-    left: calc(50% + var(--max-width) / 2 + 1rem);
-    width: calc(50% - var(--max-width) / 2 - 3rem);
-    max-width: 20rem;
-    max-height: calc(100vh - 10rem);
-    margin: 0;
-    padding: 0 0.75rem 0.75rem;
-    overflow-y: auto;
-    border: none;
-    border-left: 1px solid var(--border);
-    border-radius: 0;
-    font-size: 0.8rem;
-    scrollbar-width: thin;
-  }
-
-  .ap-toc > summary {
-    position: sticky;
-    top: 0;
-    padding: 0.25rem 0 0.5rem;
-    background-color: var(--background);
-  }
 }
 
 /* ==================================================================== */
@@ -1163,6 +1186,13 @@ html[data-theme="dark"] .vssue .vssue-comment-body {
 
   .ap-toc {
     position: static !important;
+    max-width: none !important;
     max-height: none !important;
+    box-shadow: none !important;
+    text-align: left !important;
+  }
+
+  .ap-toc #text-table-of-contents {
+    display: block !important;
   }
 }
